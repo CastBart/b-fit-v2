@@ -2,7 +2,17 @@
   "permissions": {
     "allow": [
       "Bash(cmd /c dir /b)",
-      "Bash(powershell -Command \"Get-ChildItem -Path .claude -Recurse -Name\")"
+      "Bash(powershell -Command \"Get-ChildItem -Path .claude -Recurse -Name\")",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
+  },
+  "enabledPlugins": {
+    "everything-claude-code@everything-claude-code": true
   }
 }
