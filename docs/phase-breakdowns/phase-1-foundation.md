@@ -7,10 +7,11 @@
 
 ## Week 1: Project Initialization
 
-**Progress**: 2/5 tasks complete (40%)
+**Progress**: 3/5 tasks complete (60%)
+
 - ✅ Task 1.1: Initialize Next.js Project (COMPLETED 2026-01-26)
 - ✅ Task 1.2: Configure Tailwind CSS & Shadcn UI (COMPLETED 2026-01-26)
-- 🔲 Task 1.3: Code Quality Tools Setup
+- ✅ Task 1.3: Code Quality Tools Setup (COMPLETED 2026-01-26)
 - 🔲 Task 1.4: Project Folder Structure
 - 🔲 Task 1.5: Base Layout Components
 
@@ -23,6 +24,7 @@
 **Dependencies**: None
 
 #### Sub-tasks:
+
 1. **Initialize Next.js with App Router** ✅ COMPLETED (2026-01-26)
    - [x] Run `npx create-next-app@latest` with TypeScript and App Router
    - [x] Choose configuration:
@@ -54,6 +56,7 @@
    - [x] Check for any TypeScript errors
 
 **Acceptance Criteria**: ✅ ALL MET
+
 - ✅ Next.js dev server runs without errors
 - ✅ TypeScript strict mode enabled
 - ✅ Basic page renders at localhost:3000
@@ -69,6 +72,7 @@
 **Dependencies**: Task 1.1
 
 #### Sub-tasks:
+
 1. **Configure Tailwind CSS** ✅ COMPLETED (2026-01-26)
    - [x] Updated `tailwind.config.ts` with custom theme colors:
      - Primary colors (50-900 scale, main: #0ea5e9)
@@ -117,6 +121,7 @@
    - File: `src/app/test/page.tsx`
 
 **Acceptance Criteria**: ✅ ALL MET
+
 - ✅ Tailwind CSS configured with custom theme and CSS variables
 - ✅ Shadcn UI initialized with proper configuration
 - ✅ 12 core components installed and working
@@ -126,91 +131,71 @@
 
 ---
 
-### Task 1.3: Code Quality Tools Setup
+### Task 1.3: Code Quality Tools Setup ✅ COMPLETED
 
 **Priority**: High
 **Estimated Effort**: 2-3 hours
 **Dependencies**: Task 1.1
 
 #### Sub-tasks:
-1. **Configure ESLint**
-   - [ ] Install additional plugins:
-     ```bash
-     npm install -D @typescript-eslint/eslint-plugin @typescript-eslint/parser
-     npm install -D eslint-config-prettier eslint-plugin-prettier
-     ```
-   - [ ] Update `.eslintrc.json` with rules:
-     ```json
-     {
-       "extends": [
-         "next/core-web-vitals",
-         "plugin:@typescript-eslint/recommended",
-         "prettier"
-       ],
-       "rules": {
-         "@typescript-eslint/no-unused-vars": "error",
-         "@typescript-eslint/no-explicit-any": "error"
-       }
-     }
-     ```
-   - File: `.eslintrc.json`
 
-2. **Configure Prettier**
-   - [ ] Create `.prettierrc`:
-     ```json
-     {
-       "semi": false,
-       "singleQuote": true,
-       "tabWidth": 2,
-       "printWidth": 100,
-       "trailingComma": "es5"
-     }
-     ```
-   - [ ] Create `.prettierignore`:
-     ```
-     .next
-     node_modules
-     out
-     build
-     ```
+1. **Configure ESLint** ✅ COMPLETED (2026-01-26)
+   - [x] Installed TypeScript ESLint plugins:
+     - @typescript-eslint/eslint-plugin
+     - @typescript-eslint/parser
+     - eslint-config-prettier
+     - eslint-plugin-prettier
+     - prettier
+   - [x] Created `eslint.config.mjs` (ESLint v9 flat config format)
+   - [x] Configured rules:
+     - `@typescript-eslint/no-unused-vars`: error (with \_ prefix ignore)
+     - `@typescript-eslint/no-explicit-any`: error
+     - `prettier/prettier`: error
+     - `no-console`: warn (allow warn/error)
+     - `prefer-const`: error
+   - [x] Removed legacy `.eslintrc.json`
+   - File: `eslint.config.mjs`
+
+2. **Configure Prettier** ✅ COMPLETED (2026-01-26)
+   - [x] Created `.prettierrc` with rules:
+     - semi: false (no semicolons)
+     - singleQuote: true
+     - tabWidth: 2
+     - printWidth: 100
+     - trailingComma: es5
+     - arrowParens: always
+     - endOfLine: lf
+   - [x] Created `.prettierignore` to exclude build directories
    - Files: `.prettierrc`, `.prettierignore`
 
-3. **Set Up Husky Pre-commit Hooks**
-   - [ ] Install Husky and lint-staged:
-     ```bash
-     npm install -D husky lint-staged
-     npx husky install
-     ```
-   - [ ] Create pre-commit hook:
-     ```bash
-     npx husky add .husky/pre-commit "npx lint-staged"
-     ```
-   - [ ] Configure lint-staged in `package.json`:
-     ```json
-     "lint-staged": {
-       "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-       "*.{json,md}": ["prettier --write"]
-     }
-     ```
+3. **Set Up Husky Pre-commit Hooks** ✅ COMPLETED (2026-01-26)
+   - [x] Installed Husky v9 and lint-staged
+   - [x] Ran `npx husky init` to initialize hooks
+   - [x] Updated `.husky/pre-commit` to run `npx lint-staged`
+   - [x] Configured lint-staged in `package.json`:
+     - \*.{ts,tsx}: eslint --fix, prettier --write
+     - \*.{json,md,css}: prettier --write
+   - [x] Tested pre-commit hook successfully
    - Files: `.husky/pre-commit`, `package.json`
 
-4. **Add NPM Scripts**
-   - [ ] Add to `package.json`:
-     ```json
-     "scripts": {
-       "lint": "eslint . --ext .ts,.tsx",
-       "lint:fix": "eslint . --ext .ts,.tsx --fix",
-       "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
-       "type-check": "tsc --noEmit"
-     }
-     ```
+4. **Add NPM Scripts** ✅ COMPLETED (2026-01-26)
+   - [x] Added to `package.json`:
+     - `lint`: eslint .
+     - `lint:fix`: eslint . --fix
+     - `format`: prettier --write (all file types)
+     - `format:check`: prettier --check (all file types)
+     - `type-check`: tsc --noEmit
+   - [x] Tested all scripts work correctly
+   - [x] Auto-fixed existing code formatting issues
    - File: `package.json`
 
-**Acceptance Criteria**:
-- ✅ ESLint configured and runs without errors
+**Acceptance Criteria**: ✅ ALL MET
+
+- ✅ ESLint configured with flat config and runs without errors
 - ✅ Prettier formats code consistently
-- ✅ Husky pre-commit hook runs linting
-- ✅ All quality scripts work (`lint`, `format`, `type-check`)
+- ✅ Husky pre-commit hook runs lint-staged successfully
+- ✅ All quality scripts work (lint, lint:fix, format, format:check, type-check)
+- ✅ Build completes successfully after formatting
 
 ---
 
@@ -221,6 +206,7 @@
 **Dependencies**: Task 1.1
 
 #### Sub-tasks:
+
 1. **Create Core Directories**
    - [ ] Create folder structure:
      ```
@@ -277,6 +263,7 @@
    - [ ] Create basic `README.md` in key folders explaining purpose
 
 **Acceptance Criteria**:
+
 - ✅ All directories created following feature-based architecture
 - ✅ Path aliases configured and working
 - ✅ Import statements use aliases (`@/components/...`)
@@ -290,6 +277,7 @@
 **Dependencies**: Task 1.2, Task 1.4
 
 #### Sub-tasks:
+
 1. **Create Root Layout**
    - [ ] Update `src/app/layout.tsx`:
      - Add HTML structure
@@ -322,6 +310,7 @@
    - [ ] Test navigation between pages
 
 **Acceptance Criteria**:
+
 - ✅ Root layout configured with metadata
 - ✅ Dashboard layout with navbar and sidebar
 - ✅ Responsive design works on all screen sizes
@@ -338,6 +327,7 @@
 **Dependencies**: Vercel account
 
 #### Sub-tasks:
+
 1. **Create Vercel Project**
    - [ ] Sign in to Vercel dashboard
    - [ ] Connect GitHub repository
@@ -371,6 +361,7 @@
    - [ ] Run script to verify connection
 
 **Acceptance Criteria**:
+
 - ✅ Vercel project created and connected
 - ✅ Postgres database created
 - ✅ Environment variables configured
@@ -385,6 +376,7 @@
 **Dependencies**: Task 2.1
 
 #### Sub-tasks:
+
 1. **Install Prisma**
    - [ ] Install Prisma CLI and client:
      ```bash
@@ -401,6 +393,7 @@
 
 3. **Create Initial Schema (User Table)**
    - [ ] Add User model to `schema.prisma`:
+
      ```prisma
      model User {
        id            String    @id @default(cuid())
@@ -422,6 +415,7 @@
        ORG
      }
      ```
+
    - File: `prisma/schema.prisma`
 
 4. **Run First Migration**
@@ -435,6 +429,7 @@
 
 6. **Create Prisma Client Singleton**
    - [ ] Create `src/lib/db/prisma.ts`:
+
      ```typescript
      import { PrismaClient } from '@prisma/client'
 
@@ -448,9 +443,11 @@
 
      if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
      ```
+
    - File: `src/lib/db/prisma.ts`
 
 **Acceptance Criteria**:
+
 - ✅ Prisma installed and initialized
 - ✅ User model defined in schema
 - ✅ First migration run successfully
@@ -466,6 +463,7 @@
 **Dependencies**: Task 2.2
 
 #### Sub-tasks:
+
 1. **Install NextAuth**
    - [ ] Install NextAuth and adapters:
      ```bash
@@ -476,6 +474,7 @@
 
 2. **Update Prisma Schema for NextAuth**
    - [ ] Add NextAuth models to `schema.prisma`:
+
      ```prisma
      model Account {
        id                String  @id @default(cuid())
@@ -511,6 +510,7 @@
        @@unique([identifier, token])
      }
      ```
+
    - [ ] Run migration: `npx prisma migrate dev --name add_auth_tables`
    - File: `prisma/schema.prisma`
 
@@ -524,6 +524,7 @@
 
 4. **Create API Route Handler**
    - [ ] Create `src/app/api/auth/[...nextauth]/route.ts`:
+
      ```typescript
      import NextAuth from 'next-auth'
      import { authConfig } from '@/lib/auth/auth.config'
@@ -532,6 +533,7 @@
 
      export { handler as GET, handler as POST }
      ```
+
    - File: `src/app/api/auth/[...nextauth]/route.ts`
 
 5. **Create Auth Helper Functions**
@@ -550,6 +552,7 @@
      ```
 
 **Acceptance Criteria**:
+
 - ✅ NextAuth installed and configured
 - ✅ Prisma adapter working
 - ✅ Auth API route created
@@ -565,6 +568,7 @@
 **Dependencies**: Task 2.3
 
 #### Sub-tasks:
+
 1. **Create Auth Pages**
    - [ ] Create `src/app/(auth)/login/page.tsx`:
      - Email/password login form
@@ -578,6 +582,7 @@
 
 2. **Create Validation Schemas**
    - [ ] Create `src/lib/validations/auth.ts`:
+
      ```typescript
      import { z } from 'zod'
 
@@ -592,6 +597,7 @@
        password: z.string().min(8),
      })
      ```
+
    - File: `src/lib/validations/auth.ts`
 
 3. **Create Server Actions**
@@ -615,6 +621,7 @@
    - [ ] Verify session persists across page refresh
 
 **Acceptance Criteria**:
+
 - ✅ Signup page creates new users
 - ✅ Login page authenticates users
 - ✅ Form validation works correctly
@@ -630,8 +637,10 @@
 **Dependencies**: Task 2.3
 
 #### Sub-tasks:
+
 1. **Create Middleware**
    - [ ] Create `src/middleware.ts`:
+
      ```typescript
      import { withAuth } from 'next-auth/middleware'
      import { NextResponse } from 'next/server'
@@ -651,6 +660,7 @@
        matcher: ['/dashboard/:path*', '/workouts/:path*'],
      }
      ```
+
    - File: `src/middleware.ts`
 
 2. **Create Auth Guard HOC**
@@ -665,6 +675,7 @@
    - [ ] Access while logged in (should allow access)
 
 **Acceptance Criteria**:
+
 - ✅ Middleware protects specified routes
 - ✅ Unauthenticated users redirected to login
 - ✅ Authenticated users can access protected routes
@@ -679,6 +690,7 @@
 **Dependencies**: All previous tasks
 
 #### Sub-tasks:
+
 1. **Configure Vercel Project**
    - [ ] Push code to GitHub
    - [ ] Ensure Vercel project is connected to GitHub repo
@@ -709,6 +721,7 @@
    - [ ] Test creating a PR and reviewing preview URL
 
 **Acceptance Criteria**:
+
 - ✅ App deployed to Vercel
 - ✅ Environment variables configured
 - ✅ Signup and login work on deployed app
@@ -724,8 +737,10 @@
 **Dependencies**: Task 2.6
 
 #### Sub-tasks:
+
 1. **Create Environment Variable Template**
    - [ ] Create `.env.example`:
+
      ```env
      # Database
      POSTGRES_URL=""
@@ -739,6 +754,7 @@
      # STRIPE_SECRET_KEY=""
      # STRIPE_WEBHOOK_SECRET=""
      ```
+
    - File: `.env.example`
 
 2. **Document Environment Setup**
@@ -754,6 +770,7 @@
    - File: `scripts/setup.sh`
 
 **Acceptance Criteria**:
+
 - ✅ `.env.example` created with all variables
 - ✅ Documentation updated
 - ✅ Setup script created and tested
@@ -764,13 +781,15 @@
 ## Phase 1 Completion Checklist
 
 ### Infrastructure
+
 - [x] Next.js 14+ initialized with App Router and TypeScript
 - [x] Tailwind CSS configured with custom theme and CSS variables
 - [x] Shadcn UI installed with 12 core components
-- [ ] ESLint, Prettier, and Husky configured
+- [x] ESLint, Prettier, and Husky configured
 - [ ] Folder structure created following best practices
 
 ### Database & Auth
+
 - [ ] Vercel Postgres database created
 - [ ] Prisma ORM initialized
 - [ ] User model and auth tables created
@@ -780,12 +799,14 @@
 - [ ] Protected route middleware implemented
 
 ### Deployment
+
 - [ ] Deployed to Vercel development environment
 - [ ] Environment variables configured
 - [ ] Preview deployments working
 - [ ] CI/CD pipeline basics in place
 
 ### Testing
+
 - [ ] All pages load without errors
 - [ ] Auth flow tested end-to-end
 - [ ] Protected routes redirect correctly
