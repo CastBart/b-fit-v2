@@ -9,7 +9,24 @@
       "Bash(npx tsc:*)",
       "Bash(npm run build:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(timeout 10 npm run dev)",
+      "Bash(git push:*)",
+      "Bash(if [ -d \"app\" ])",
+      "Bash(then echo \"app directory exists\")",
+      "Bash(fi)",
+      "Bash(if [ -d \"src\" ])",
+      "Bash(then echo \"src directory exists\")",
+      "Bash(npx shadcn@latest add button input card dialog dropdown-menu label form toast sheet avatar separator skeleton)",
+      "Bash(npx shadcn@latest add button)",
+      "Bash(npx shadcn@latest add sheet avatar separator skeleton sonner)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run format:check:*)",
+      "Bash(npx husky init)",
+      "Bash(git rm:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)"
     ]
   },
   "enabledPlugins": {

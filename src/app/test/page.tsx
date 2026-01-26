@@ -45,6 +45,8 @@ import { Toaster } from '@/components/ui/sonner'
 export default function TestPage() {
   return (
     <div className="container mx-auto p-8 space-y-8">
+      <div className="text-2xl font-bold">Test</div>
+
       <Toaster />
 
       <div className="space-y-2">
