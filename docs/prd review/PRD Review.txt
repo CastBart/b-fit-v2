@@ -1,0 +1,443 @@
+I have reviewed the documents, if the file is not mentioned here, im all ok with it. If a file is mentioned and a section is not mentioned, im also ok with it. I only mentioned notes that I needed to clafiry or needed more input.
+
+infrastructure.md Review:
+Cost Optimisation:
+1. its really good that the estimates are there but during development will there be any costs incurred?
+
+------------------------
+feature-flows.md Review:
+------------------------
+1. Workout Builder Flow:
+1.1 Navigate to create workout
+	- we will have a Workouts dashboard where all existing workouts will be displayed
+	- the create workout button will be visible on this page.
+1.3 Add Exercise:
+	- main difference with creating and modifying workouts is the device that this will be done on.
+		- on desktop devices:
+			- the exercises list should appear on the left side in a scrollable panel that always displays search and filters on top
+			- main section in the middle with workout name and description and also a list of exercises that are in the workout.
+			- users can add exercises to a workout by drag and drop from the list of exercises to the list of workout exercises.
+			- users can also select an exercise/exercises on the list by just clicking on them
+				- Once a users selects one or more exercises, the drawer should have a button at the bottom
+					- Button name is add and should only appear if user selected one or more exercises
+					- the button should also have number of exercises that the user selected
+					- Eg. if user selected 3 exercises the button should say "Add (3)"
+		- on mobile and tablet devices:
+			- there should be a button called "add exercise"
+			- a drawer opens with the list of exercises.
+			- each exercise is clickable
+			- Once a users selects one or more exercises, the drawer should have a button at the bottom
+				- Button name is add and should only appear if user selected one or more exercises
+				- the button should also have number of exercises that the user selected
+				- Eg. if user selected 3 exercises the button should say "(3) Add"
+	- Add to filter options to exercise list
+		- Movement Pattern
+		- Difficulty level
+
+1.4 Configure Exercises Parameters:
+	- By default each exercises added has 3 sets the following default configurations for each metric:
+		- WEIGHT_REPS:
+			- weight = 0, reps = 10
+		- COUNTER_WEIGHT_REPS:
+			- weight = 0, reps = 10
+		- REPS:
+			- reps = 10
+		- REPS_DURATION:
+			- reps = 10, duration = 30 seconds
+		- DURATION:
+			- duration = 30 seconds
+		- DISTANCE_DURATION:
+			- distance = 0, duration = 30 seconds
+		- WEIGHT_DISTANCE:
+			- weight = 0, distance = 0
+		- WEIGHT_DURATION
+			- weight = 0, duration = 30 seconds
+	- When in workout builder, after users adds exercises to a workout, the workout will display each exercise card in a table. the exercise card will contain Exercise thumbnail, name, metrics. Each metric is a clickable item so that user can configure its information
+
+1.5 Reorder Exercises:
+	- Reordering an exercise should invoke the superset manager on the dragged exercise to check its adjacent exercise superset state. more details of superset manager in 1.6
+	- reordering should involke the super
+
+1.6 Create Superset:
+	- Dragging exercises together as you suggested is not what I want.
+	- We will create a superset manager utility which will work in the following way:
+		- 1. User clicks on name of exerice
+		- 2. A drawer will appear with additional options
+		- 3. one of the options will be superset. user clicks on superset
+		- 4. a superset drawer opens
+		- 5. the super set drawer will have following options depending on where the exercise is positioned in the list.
+			- if selected exercise is not within a superset:
+				- if exercise is first in the list, the only option will appear is "superset with next"
+				- if exercise is last on the list, the only option will appear is "superset with previous"
+				- if exercise is between exercises on the list, option are "superset with next" or "superset with previous"
+					- if the next or previous exercises are already in the a superset, the already existing supersetID should be passed down to the selected exercise
+					- if the next or previous exercise are not within a superset, a new supersetID is generated and assigned to both exercises.
+			- if selected exercise is already within a superset:
+				- if exercise is first in the list, the only option will appear is "remove from next"
+				- if exercise is last on the list, the only option will appear is "remove from previous"
+				- if exercise is between exercises and: - (multi options available depending if adjacent exercises are within a set or not)
+					- previously adjacent exercise is not within a superset or within a different superset(contains different supersetid), "superset with previous" option available
+						- when the previously adjacent exercise is not part of a superset, new superset ID is generated and assigned to both exercises
+						- when the previously adjacent exercise is already part of a superset, the existing supersetID should be set to the exercise that is joining the superset
+					- previously adjacent exercise is within the same superset(contains the same supersetid), "remove with previous" option available
+						- the removal of the exercise from the superset should set the selected exercise to null and also check the adjacent exercise superset state
+							- if the adjacent exercise is the only exercise that has the same superset ID then this superset is resolved
+							- if the adjacent exercise is part of a group of exercises that has the same supersetID, then the superset stays intact
+					- next adjacent exercise is not within a superset or within a different superset(contains different supersetid), "superset with next" option available
+						- when the next adjacent exercise is not part of a superset, new superset ID is generated and assigned to both exercises
+						- when the next adjacent exercise is already part of a superset, the existing supersetID should be set to the exercise that is joining the superset
+					- next adjacent exercise is within the same superset(contains the same supersetid), "remove with previous" option available
+							- if the adjacent exercise is the only exercise that has the same superset ID then this superset is resolved
+							- if the adjacent exercise is part of a group of exercises that has the same supersetID, then the superset stays intact
+			- a superset is a group of exercises that share the same supersetID and are adjacent to each other.
+	- Dragging exercises:
+		- if an exercise is dragged in between exercises that share the same supersetID and the dragged exercise does not contain a supersetID or has a different one, the dragged exercise should be assigned the same supersetID as the adjacent exercises to perform a "join" the superset.
+		- if an exercises exercise is dragged in between exercises that do not share the same supersetID, the supersetID of the dragged exercise should become null. but if the dragged exercise is dragged to an adjacent exercise that shares the same id, the superset should be still intact.
+		- dragging should invoke the superset manager on the modev exercise.
+			- a reorder should happen first and then the dragged exercise should check its adjacent exercises to see if they are already part of a superset
+
+1.7 Save workout.
+	- correct and accurate
+
+2. Live Session Flow:
+2.1 Start Session
+	- A user will be able to start a workout from the workout details page or straight from a Workouts page
+	- a workouts page will display the list of existin workout with a "quick start" button available on the workout card. 
+	- a user can either go to workout details page by clicking the workout -> start workout or directly clicking on the "quick start" button on the workout card in the Workouts page.
+
+2.2 Session UI
+	- Header of the session:
+		- instead of the exit button, a settings button should be displayed. clicking this button will open a settings drawer displaying following info:
+			- Started: day, date (day, month, year), time
+			- duration: how long is the session lasting
+			- Complete: clickable button allowing to complete the session
+				- more details in section 2.7
+			- Pause: clickable button pausing the session timer
+			- cancel: clickable button cancelling a session
+				- more details in section 2.7
+	- we will work with "current exercise" strategy.
+		- when session starts, first exercise is always the current one
+	- Exercise Carousel can be clickable -> if clicked by the user, the set logger should display the clicked exercise metric details
+	- the user can move independently between exercises either by clicking on the exercise in the exercise carousel or by swiping left or right which will move the current exercise to next or prev
+	- the footer will not display next or prev buttons, it will display the current exercise history
+		- exercise history will display the latest logged sets of a completed session of the current exercise
+2.3 Log Set
+	- exercise sets will be visible in a table and the current set will always default to the first one for each exercise
+	- each set row will have a wits own metrics dependant on the exercise metrics and checkmark on the right side. there should be a column heading on tables. 
+		- default colour of checkbox is grayed out
+		- once checkbox is clicked the colour will changed to success colour
+			- if exercise is not within a super set, the rest timer is started 
+			- if an exercise is within a superset, the current exercise is changed to the next adjacent exercise holding the same supersetID
+				- this will keep going until the next adjacent exercise is not part of the same superset, if the exercises is th last on the superset, then rest time is started.
+	- users will be able to add and remove sets if necessary. the checkbox column title should be a spanner icon, once this icon is pressed an set drawer should be displayed
+		- the set drawer should display the current number of sets and a "+" icon to add set and a "-" icon to remove sets
+		- a user will also be able to "un-do" a set. if the current exercise has a set or more completed, the set drawer should have a button to "undo last set"
+			- this will unmark the last set 
+
+2.4 Rest timer
+	- once checkbox is clicked the colour will changed to success colour
+		- if exercise is not within a super set, the rest timer is started 
+		- if an exercise is within a superset, the current exercise is changed to the next adjacent exercise holding the same supersetID
+			- this will keep going until the next adjacent exercise is not part of the same superset, if the exercises is the last on the superset, then rest time is started.
+	- rest timer is controlled depending of the Exercise type
+		- SMALL, default 1min 30sec
+		- MEDIUM, default 2min
+		- LARGE, default 3min
+		- STABILITY, default 1min 30sec
+		- CARDIO, default 2min
+
+2.5 Navigate between exercises:
+	- we will work with "current exercise" strategy.
+		- when session starts, first exercise is always the current one
+	- Exercise Carousel can be clickable -> if clicked by the user, the set logger should display the clicked exercise metric details
+	- the user can move independently between exercises either by clicking on the exercise in the exercise carousel or by swiping left or right which will move the current exercise to next or prev
+	- the footer will not display next or prev buttons, it will display the current exercise history
+		- exercise history will display the latest logged sets of a completed session of the current exercise
+	- also reference the 2.3 Log Set notes
+
+2.6 Handle page refresh
+	- all good but also make sure to store all current state of the session such as current exercise and current set on each exercise.
+
+2.7 Complete session
+	- session can be completed once all sets in each exercise is completed
+	- we should have a "exercise complete" state which is marked only if all sets are completed
+	- once all exercise are marked as complete a complete session button should be displayed to the user.
+	- the session can still be modified if this button appears, for example if a user decides to do another set for an exercise, they can navigate to an exercise, add a set. this will make the complete session button disappear because we have added another set which means an exercise is unmarked with the complete state.
+	same goes for when removing a set. for example if a user completes most of the exercises and its sets and only has one set left of the last exercise, the remove set should re-calulate if all sets are completed. if so then complete session will appear.
+	- completing a session can also be done via session settings.
+		- on the header of the session, there should be a settings button.
+		- the settings button will display a session settings drawer, one of the settings will be "complete session"
+			- if not all sets and exercises are complete, an alert dialog will open stating that "your session has uncompleted sets, are you sure you want to complete? Only the completed sets of exercises will be stored"
+			- another option in the settings will be "cancel session"
+				- this will prompt an alert dialog asking for confimartion if the user wants to cancel the session, no data will be stored.
+2.8 Session Summary
+	- All good for v1
+
+3 Client Assignment Flow (PT):
+	- A PT role will have a "Clients" dashboard
+	- Clients dashboards
+		- displays all clients in a table
+		- clicking on a client will open the client profile for PTs
+		- Client Profile will display multiple tabs and one of them will be a workouts tab
+			- Workouts tab
+				- options that allows PT to "assign existing workout"
+					- drawer opens with a list of workouts owned by the PT
+					- drawer should have a search bar that searches for title and description content
+					- multiple workouts can be selected
+					- once one or more workouts have been selected an add button appears
+						- this action creates a workout copy for each selected workout by the PT
+				- option that allows PT to "Create bespoke workout"
+					- opens a create workout page/dialog/drawer - ensure users stays in the clients profile main page
+				- list of workouts in a table
+					- card displays of workouts
+					- card contains options button, once clicked a options will appear to
+						- copy workout as own
+						- delete workout
+						- edit workout
+			- Plan Tab
+				- displays list of "client" plans - active plan on top always (one active plan at a time)
+					- card displays of plans
+					- card contains options button, once clicked a options will appear to
+						- copy plan as own
+						- delete plan
+						- edit plan
+				- option that allows to create a bespoke "client "plan
+					- open a create plan page/dialog/drawer - ensure users stay in the clients profile main page
+					- refer to section Planning Flow in the below section
+				- option that allows to copy PT owned plans as a "client" plan
+					- drawer opens with a list of plans owned by the PT
+					- drawer should have a search bar that searches for title and description content
+					- multiple plans can be selected
+					- once one or more plans have been selected an add button appears
+						- this action creates a plan copy for each selected plan by the PT
+
+
+4. Role Upgrade Flow:
+4.1 Navigate to Upgrade
+	- Settings page should have a subscription option which opens the subscription page.
+	- this will have the current subscription details and another option to upgrade
+	- upgrade will show available subscription options
+
+4.2 - 4.4
+	- all good, no additional comments
+
+5. Messaging Flow:
+	- all good, no further notes
+
+
+As an additional piece I want to describe is "Planning Flow"
+6. Planning Flow:
+6.1 Personal Account
+	- Plans dashboard should be available in the navigation
+	- displays list of plans - active plan on top always (one active plan at a time)
+		- card displays of plans
+		- card contains options button, once clicked a options will appear to
+			- delete plan
+			- edit plan
+		- option that allows to create a bespoke plan
+			- open a create plan page/dialog/drawer
+				- First step - select number of days 1-7
+				- user selects an option clicks next
+				- user selects plan duration in week, unlimited is first choice and then 1-52 options
+				- user click on create
+				- this moves the user to the "days" planning (this is similar to a workout creation with some differences)
+					- Days planning:
+						- carousel display on the top with the chosen amount of days by the user in previous screen.
+							- this works similar as the live session screen. days are displayed in a carousel on top while the "current" selected day displays exercises selected by the user
+							- clicking day changes current day
+							- you can also swipe to move back and forth between days if you scroll on the main section where exercises are listed.
+						- each day is treated like a workout
+						- in this screen a user can follow same patters of adding exercises as section 1.3 in this document or he can also choose an option "copy exercises from a existing workout"
+						- "copy exercises from a existing workout" will display a workuots drawer list where the user can select only one workout. the exercises in that workout will be copied to the current day
+			- option that allows to copy plans
+		- plan details screen
+			- displays plan name
+			- displays plan description
+			- option to activate a plan
+			- option to copy a plan
+			- option to delete plan
+			- option to edit "days"
+				- opens similar screen to create plan where user can edit
+6.2 Personal Trainer (PT) Account
+	- 2 options on how this works
+		- 1. Personal Use plans accessed through Plans Dashbaord nd has exact same flow as Personal Account
+		- 2. Client focus usage which is accessed from the Clients -> Client Profile page -> Plan tab
+			 Plan Tab
+				- displays list of "client" plans - active plan on top always (one active plan at a time)
+					- card displays of plans
+					- card contains options button, once clicked a options will appear to
+						- copy plan as own
+						- delete plan
+						- edit plan
+				- option that allows to create a bespoke "client "plan
+					- open a create plan page/dialog/drawer - ensure users stay in the clients profile main page
+					- same flow of creation as Personal Account
+				- option that allows to copy PT owned plans as a "client" plan
+					- drawer opens with a list of plans owned by the PT
+					- drawer should have a search bar that searches for title and description content
+					- multiple plans can be selected
+					- once one or more plans have been selected an add button appears
+						- this action creates a plan copy for each selected plan by the PT
+		
+--------------------------
+exercise-library.md Review
+--------------------------
+Exercise Categorization:
+Muscle Group:
+	- Each exercise should have a single "Primary" Muscle Group
+	- each exercise should have an optional "Secondary" muscle group. this can have 0 or multiple muscle groups attached in a list
+
+Equipment Types
+	- add a MISC option.
+
+Movement Patters and Difficulty levels
+	- all good
+
+Seed Exercise Example:
+this is good but added a few more options that the exercise schema should look like: 
+{
+  "name": "Barbell Bench Press",
+  "exerciseType": "MEDIUM",
+  "metricType": "WEIGHT_REPS",
+  "primaryMuscleGroups": ["CHEST"], - changed from muscleGroup to primaryMuscleGroup
+  "secondaryMuscleGroups": ["TRICEPS", "SHOULDERS"] - added this
+  "equipmentType": "BARBELL",
+  "movementPattern": "PUSH",
+  "difficultyLevel": "INTERMEDIATE",
+  "description": "Lie on bench, lower bar to chest, press up",
+  "isDefault": true
+  "instructions" ["Lie on a flat bench with a dumbbell in each hand, palms facing each other or slightly forward.", "Position the dumbbells at chest height, slightly wider than your shoulders, with elbows bent at about a 90-degree angle.","Press the dumbbells upwards in a controlled motion until your arms are fully extended, squeezing your chest at the top." ,"Slowly lower the dumbbells back to the starting position, maintaining control throughout the movement. Avoid letting your elbows go too far below your shoulders."] - added instructions
+}
+ 
+
+Exercise Seach & Filtering:
+Search Algorithim:
+	- I can see that from the function it creates a search request to the database. im not sure if this is the most efficient way as there might be a lot of searching to be done.
+	- would it be possible that the exercises are cached for users and it uses react query to handle searches like this?
+	- as mentioned before i want to add secondary muscle group for exercises 
+		- this will affect the searching so that if a user selects a musclegroup in the musclegroup filter, both the primary muscles and secondary muscles are added to the filter
+
+
+Custom Exercise Creation
+User Creation Flow
+	- User clicks "Create Custom Exercise"
+		- Form fields:
+		- Name (required)
+		- Description (optional)
+		- Exercise Type (required)
+		- Metric Type (required)
+		- Primary Muscle Groups (single-select, required)
+		- Secondary Muscle Groups (single-select, optional)
+		- Equipment Type (required)
+		- Movement Pattern (required)
+		- Difficulty Level (required)
+		- Instructions (optional array)
+			- user can "add instruction"
+			- this adds an item into an array
+			- instructions should have a number assigned o them and can be re-ordered (maybe move up or down buttons)
+Validation
+const customExerciseSchema = z.object({
+  name: z.string().min(3).max(100),
+  description: z.string().max(500).optional(),
+  exerciseType: z.enum(['SMALL', 'MEDIUM', 'LARGE', 'STABILITY', 'CARDIO']),
+  metricType: z.enum([
+    'WEIGHT_REPS',
+    'COUNTER_WEIGHT_REPS',
+    'REPS',
+    'REPS_DURATION',
+    'DURATION',
+    'DISTANCE_DURATION',
+    'WEIGHT_DISTANCE',
+    'WEIGHT_DURATION'
+  ]),
+  primaryMuscleGroups: z.array(z.enum(MUSCLE_GROUPS)).min(1), - changed name of this and this needs to be required, only single select
+  secondaryMuscleGroups: z.array(z.enum(MUSCLE_GROUPS)).min(1) - added this, just copied from above but this is optional
+  equipmentType: z.enum(EQUIPMENT_TYPES),
+  movementPattern: z.enum(MOVEMENT_PATTERNS),
+  difficultyLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED'])
+  instruction: z.aray - added this, optional array of instructions, each array item is an instruction 
+})
+
+Exercise Card UI Component
+Display Format:
+	- no need to display history
+	- there will be different exercie cards depending on where its displayed
+		- eg, general exercise list 
+		- exercise list when in a workout create or plan create
+
+Exercise Detail View
+	- this will contain 3 tabs. 
+		- Info tab
+			- Name
+			- Description
+			- Exercise Type
+			- Metric Type
+			- Primary Muscle Groups
+			- Secondary Muscle Groups
+			- Equipment Type
+			- Movement Pattern
+			- Difficulty Level
+		- Instructions tab
+			- instructions in a numbered format
+		- History tab
+			- displays the history information such as session details (name and when it was performed
+			- akso display set information done during that session.
+			- always show latest exercises first
+
+--------------------
+database-schema.md
+--------------------
+User Model:
+	- need to add isActive field. this field will be mostly used for clients as a PT can deactivate their client but keep data if ever the client return training under the PT. The same will go for PT account if linked to an ORG, and ORG can deactivate PT accounts, this means that the workouts and exercises will not be deleted as they can be used by another ORG PT
+Exercise Model:
+	- muscleGroup changed to primaryMuscleGroup 
+	- add secondaryMuscleGroup with an optional array of MuscleGroup
+
+TrainingSession model:
+	- the only relation a training session has is to a user
+	- workoutID can be there but optional.
+	- if a workout is deleted and is linked to a training session(s), then the training sessions shouldn't get deleted, only the workoutID should be set to NULL
+
+BrandingSettings Model:
+	- Branding options should be available both for PT and ORG subscriptions
+	- PT that is linked to an ORG, should see the ORG branding and the clients linked to those PTs should also see the ORG branding
+	- If a PT account is not linked to an ORG, then the PT account has branding options
+
+Key Design Decisions:
+1. Superset Implementation:
+	- you reference super sets via groupID, I referenced them as supersetID but that's the same thing, doesn't matter which one is used.
+
+2. Session Instance Tracking
+	- all good
+
+3. Workout Assignment (Copy-on-Assign)
+	- all good
+
+Data Integrity Constraints:
+Cascade Delete Rules
+| Parent → Child | On Delete | Reasoning |
+|----------------|-----------|-----------|
+| User → Exercise | SET NULL | Preserve exercises if user deleted |
+| User → Workout | CASCADE | User's workouts deleted with user |
+| User → TrainingSession | CASCADE | User's sessions deleted with user |
+| Workout → TrainingSession | RESTRICT | Cannot delete workout with sessions | 
+| Exercise → WorkoutExercise | RESTRICT | Cannot delete exercise in use |
+| TrainingSession → SessionSet | CASCADE | Sets deleted with session |
+
+	- Workout -> trainingSessions: can be linked to a workout but not specifically restrict deletion of workouts. a workout can be deleted and workout session should live in the database
+	- Exercise → WorkoutExercise: similar to workout -> trainingSession. a workout exercise can be linked to exercise but if an exercise is deleted, the workout exercise should not get deleted.
+
+There was a couple of changes and notes I added to the database-schema.md, review and make appropriate changes to each model
+
+
+-----------------
+auth-rbac.md
+-----------------
+File is ok for v1. We will flesh the exact details during development and testing.
+
+
+--------------------
+Other files are ok for version 1 we can adjust during development
+
+
+

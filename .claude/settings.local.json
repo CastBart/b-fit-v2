@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c dir /b)",
+      "Bash(powershell -Command \"Get-ChildItem -Path .claude -Recurse -Name\")"
+    ]
+  }
+}
