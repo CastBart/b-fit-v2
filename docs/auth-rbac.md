@@ -49,10 +49,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           throw new Error('Invalid credentials')
         }
 
-        const isValid = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        )
+        const isValid = await bcrypt.compare(credentials.password as string, user.password)
 
         if (!isValid) {
           throw new Error('Invalid credentials')
@@ -106,11 +103,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 import { hash } from 'bcryptjs'
 import { prisma } from '@/lib/db/prisma'
 
-export async function signUp(data: {
-  email: string
-  password: string
-  name: string
-}) {
+export async function signUp(data: { email: string; password: string; name: string }) {
   // Check if user exists
   const existingUser = await prisma.user.findUnique({
     where: { email: data.email },
@@ -140,6 +133,7 @@ export async function signUp(data: {
 ### Sign Up with Google OAuth
 
 Flow:
+
 1. User clicks "Sign in with Google"
 2. Redirect to Google OAuth consent
 3. Google redirects back with code
@@ -203,48 +197,48 @@ export const config = {
 
 ### Permission Matrix
 
-| Action | Personal | PT (Self) | PT (Client) | Client | Org Admin |
-|--------|----------|-----------|-------------|--------|-----------|
-| **Exercises** |
-| Create Exercise | ✓ | ✓ | ✗ | ✗ | ✗ |
-| Edit Own Exercise | ✓ | ✓ | - | ✗ | ✗ |
-| Delete Own Exercise | ✓ | ✓ | - | ✗ | ✗ |
-| View Default Exercises | ✓ | ✓ | ✓ | ✓ | ✓ |
-| **Workouts** |
-| Create Workout | ✓ | ✓ | ✗ | ✗ | ✗ |
-| Edit Own Workout | ✓ | ✓ | - | ✗ | ✗ |
-| Edit Assigned Workout | ✗ | - | ✓ | ✗ | ✗ |
-| Delete Own Workout | ✓ | ✓ | - | ✗ | ✗ |
-| Assign Workout to Client | ✗ | - | ✓ | ✗ | ✗ |
-| View Assigned Workouts | ✓ | ✓ | ✓ | ✓ (assigned to self) | ✗ |
-| **Sessions** |
-| Start Session | ✓ | ✓ | - | ✓ | ✗ |
-| Complete Own Session | ✓ | ✓ | - | ✓ | ✗ |
-| View Own Sessions | ✓ | ✓ | - | ✓ | ✗ |
-| View Client Sessions | ✗ | - | ✓ (read-only) | ✗ | Aggregate |
-| **Clients** |
-| Invite Client | ✗ | ✓ | - | ✗ | Invite PT |
-| Accept Invitation | ✗ | - | - | ✓ | ✗ |
-| End Relationship | ✗ | ✓ | - | ✓ | ✓ |
-| View Client List | ✗ | ✓ | - | ✗ | ✓ (all) |
-| **Analytics** |
-| View Own Analytics | ✓ | ✓ | - | ✓ | ✗ |
-| View Client Analytics | ✗ | - | ✓ | ✗ | Aggregate |
-| View Org Analytics | ✗ | - | - | ✗ | ✓ |
-| **Plans** |
-| Create Plan | ✓ | ✓ | ✗ | ✗ | ✗ |
-| Assign Plan | ✗ | - | ✓ | ✗ | ✗ |
-| View Assigned Plans | ✓ | ✓ | ✓ | ✓ (assigned to self) | ✗ |
-| **Branding** |
-| Update Branding | ✗ | ✓ | - | ✗ | ✗ |
-| View PT Branding | ✗ | ✓ | - | ✓ (own PT) | ✗ |
-| **Messaging** |
-| Send Message to PT | ✗ | - | - | ✓ | ✗ |
-| Send Message to Client | ✗ | - | ✓ | ✗ | ✗ |
-| View Conversations | ✗ | ✓ (with clients) | - | ✓ (with PT) | ✗ |
-| **Subscription** |
-| Manage Own Subscription | ✓ | ✓ | - | ✗ | ✓ |
-| Upgrade to PT | ✓ | - | - | ✗ | ✗ |
+| Action                   | Personal | PT (Self)        | PT (Client)   | Client               | Org Admin |
+| ------------------------ | -------- | ---------------- | ------------- | -------------------- | --------- |
+| **Exercises**            |
+| Create Exercise          | ✓        | ✓                | ✗             | ✗                    | ✗         |
+| Edit Own Exercise        | ✓        | ✓                | -             | ✗                    | ✗         |
+| Delete Own Exercise      | ✓        | ✓                | -             | ✗                    | ✗         |
+| View Default Exercises   | ✓        | ✓                | ✓             | ✓                    | ✓         |
+| **Workouts**             |
+| Create Workout           | ✓        | ✓                | ✗             | ✗                    | ✗         |
+| Edit Own Workout         | ✓        | ✓                | -             | ✗                    | ✗         |
+| Edit Assigned Workout    | ✗        | -                | ✓             | ✗                    | ✗         |
+| Delete Own Workout       | ✓        | ✓                | -             | ✗                    | ✗         |
+| Assign Workout to Client | ✗        | -                | ✓             | ✗                    | ✗         |
+| View Assigned Workouts   | ✓        | ✓                | ✓             | ✓ (assigned to self) | ✗         |
+| **Sessions**             |
+| Start Session            | ✓        | ✓                | -             | ✓                    | ✗         |
+| Complete Own Session     | ✓        | ✓                | -             | ✓                    | ✗         |
+| View Own Sessions        | ✓        | ✓                | -             | ✓                    | ✗         |
+| View Client Sessions     | ✗        | -                | ✓ (read-only) | ✗                    | Aggregate |
+| **Clients**              |
+| Invite Client            | ✗        | ✓                | -             | ✗                    | Invite PT |
+| Accept Invitation        | ✗        | -                | -             | ✓                    | ✗         |
+| End Relationship         | ✗        | ✓                | -             | ✓                    | ✓         |
+| View Client List         | ✗        | ✓                | -             | ✗                    | ✓ (all)   |
+| **Analytics**            |
+| View Own Analytics       | ✓        | ✓                | -             | ✓                    | ✗         |
+| View Client Analytics    | ✗        | -                | ✓             | ✗                    | Aggregate |
+| View Org Analytics       | ✗        | -                | -             | ✗                    | ✓         |
+| **Plans**                |
+| Create Plan              | ✓        | ✓                | ✗             | ✗                    | ✗         |
+| Assign Plan              | ✗        | -                | ✓             | ✗                    | ✗         |
+| View Assigned Plans      | ✓        | ✓                | ✓             | ✓ (assigned to self) | ✗         |
+| **Branding**             |
+| Update Branding          | ✗        | ✓                | -             | ✗                    | ✗         |
+| View PT Branding         | ✗        | ✓                | -             | ✓ (own PT)           | ✗         |
+| **Messaging**            |
+| Send Message to PT       | ✗        | -                | -             | ✓                    | ✗         |
+| Send Message to Client   | ✗        | -                | ✓             | ✗                    | ✗         |
+| View Conversations       | ✗        | ✓ (with clients) | -             | ✓ (with PT)          | ✗         |
+| **Subscription**         |
+| Manage Own Subscription  | ✓        | ✓                | -             | ✗                    | ✓         |
+| Upgrade to PT            | ✓        | -                | -             | ✗                    | ✗         |
 
 ---
 
@@ -289,17 +283,11 @@ export const permissions = {
   'subscription:upgrade': ['PERSONAL'],
 } as const
 
-export function hasPermission(
-  userRole: UserRole,
-  permission: keyof typeof permissions
-): boolean {
+export function hasPermission(userRole: UserRole, permission: keyof typeof permissions): boolean {
   return permissions[permission]?.includes(userRole) ?? false
 }
 
-export function requirePermission(
-  userRole: UserRole,
-  permission: keyof typeof permissions
-) {
+export function requirePermission(userRole: UserRole, permission: keyof typeof permissions) {
   if (!hasPermission(userRole, permission)) {
     throw new Error('Forbidden: Insufficient permissions')
   }
@@ -334,10 +322,7 @@ export async function createWorkout(input: WorkoutInput) {
 ```typescript
 // lib/auth/access.ts
 
-export async function canAccessWorkout(
-  userId: string,
-  workoutId: string
-): Promise<boolean> {
+export async function canAccessWorkout(userId: string, workoutId: string): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
@@ -382,10 +367,7 @@ export async function canAccessWorkout(
 ### Session Access
 
 ```typescript
-export async function canAccessSession(
-  userId: string,
-  sessionId: string
-): Promise<boolean> {
+export async function canAccessSession(userId: string, sessionId: string): Promise<boolean> {
   const session = await prisma.trainingSession.findUnique({
     where: { id: sessionId },
     include: {
@@ -403,9 +385,7 @@ export async function canAccessSession(
   if (session.userId === userId) return true
 
   // PT can access client's sessions
-  const isPT = session.user.trainers.some(
-    (rel) => rel.ptId === userId && rel.status === 'ACTIVE'
-  )
+  const isPT = session.user.trainers.some((rel) => rel.ptId === userId && rel.status === 'ACTIVE')
 
   return isPT
 }
@@ -481,10 +461,7 @@ export async function convertClientToPersonal(relationshipId: string) {
   }
 
   // Ensure requester is PT or client
-  if (
-    session.user.id !== relationship.ptId &&
-    session.user.id !== relationship.clientId
-  ) {
+  if (session.user.id !== relationship.ptId && session.user.id !== relationship.clientId) {
     return { success: false, error: 'Forbidden' }
   }
 
@@ -519,12 +496,12 @@ export async function convertClientToPersonal(relationshipId: string) {
 
 ```typescript
 interface JWT {
-  id: string              // User ID
+  id: string // User ID
   email: string
   name: string
   role: UserRole
-  iat: number            // Issued at
-  exp: number            // Expires at
+  iat: number // Issued at
+  exp: number // Expires at
 }
 ```
 

@@ -221,15 +221,15 @@ src/
 
 ### React Query vs Redux Decision Matrix
 
-| Data Type | Tool | Reasoning |
-|-----------|------|-----------|
-| Workouts list | React Query | Server data, caching, refetching |
-| Session history | React Query | Server data, rarely changes |
-| User profile | React Query | Server data, infrequent updates |
-| Active session sets | Redux | Frequent updates, optimistic UI |
-| Workout builder state | Redux | Complex form state, undo/redo |
-| Modal visibility | Redux | UI state, cross-component |
-| Exercise filters | URL State | Shareable, bookmarkable |
+| Data Type             | Tool        | Reasoning                        |
+| --------------------- | ----------- | -------------------------------- |
+| Workouts list         | React Query | Server data, caching, refetching |
+| Session history       | React Query | Server data, rarely changes      |
+| User profile          | React Query | Server data, infrequent updates  |
+| Active session sets   | Redux       | Frequent updates, optimistic UI  |
+| Workout builder state | Redux       | Complex form state, undo/redo    |
+| Modal visibility      | Redux       | UI state, cross-component        |
+| Exercise filters      | URL State   | Shareable, bookmarkable          |
 
 ---
 
@@ -257,7 +257,7 @@ export async function createWorkout(formData: FormData) {
   const rawData = {
     name: formData.get('name'),
     description: formData.get('description'),
-    exercises: JSON.parse(formData.get('exercises') as string)
+    exercises: JSON.parse(formData.get('exercises') as string),
   }
 
   const parsed = createWorkoutSchema.safeParse(rawData)
@@ -285,17 +285,17 @@ export async function createWorkout(formData: FormData) {
             sets: ex.sets,
             reps: ex.reps,
             weight: ex.weight,
-            restSeconds: ex.restSeconds
-          }))
-        }
+            restSeconds: ex.restSeconds,
+          })),
+        },
       },
       include: {
         exercises: {
           include: {
-            exercise: true
-          }
-        }
-      }
+            exercise: true,
+          },
+        },
+      },
     })
 
     // 5. Revalidate cache
@@ -386,6 +386,7 @@ export function useSessionState(sessionId: string) {
 ## Performance Optimization
 
 ### Target Metrics
+
 - **Page Load**: <2s (p95)
 - **Session UI Update**: <100ms
 - **API Response**: <500ms (p95)
@@ -393,6 +394,7 @@ export function useSessionState(sessionId: string) {
 ### Strategies
 
 #### 1. Code Splitting
+
 ```typescript
 // Lazy load heavy components
 const SessionCarousel = dynamic(
@@ -402,6 +404,7 @@ const SessionCarousel = dynamic(
 ```
 
 #### 2. Database Optimization
+
 ```prisma
 // Add indexes for common queries
 model Session {
@@ -416,6 +419,7 @@ model Session {
 ```
 
 #### 3. Optimistic Updates
+
 ```typescript
 // Immediate UI feedback before server confirmation
 const completeSet = useMutation({
@@ -431,7 +435,7 @@ const completeSet = useMutation({
     queryClient.setQueryData(['session', sessionId], (old) => {
       return {
         ...old,
-        sets: [...old.sets, newSet]
+        sets: [...old.sets, newSet],
       }
     })
 
@@ -440,11 +444,12 @@ const completeSet = useMutation({
   onError: (err, newSet, context) => {
     // Rollback on error
     queryClient.setQueryData(['session', sessionId], context.previous)
-  }
+  },
 })
 ```
 
 #### 4. React Server Components
+
 ```typescript
 // app/(dashboard)/workouts/page.tsx
 // Server Component - no JS shipped to client
@@ -472,13 +477,10 @@ export const permissions = {
   'workout:assign': ['PT'],
   'session:start': ['PERSONAL', 'PT', 'CLIENT'],
   'client:view': ['PT', 'ORG'],
-  'analytics:view_client': ['PT', 'ORG']
+  'analytics:view_client': ['PT', 'ORG'],
 }
 
-export function hasPermission(
-  userRole: UserRole,
-  permission: string
-): boolean {
+export function hasPermission(userRole: UserRole, permission: string): boolean {
   return permissions[permission]?.includes(userRole) ?? false
 }
 ```
@@ -499,12 +501,12 @@ export async function getWorkout(id: string) {
           // PTs can access client workouts
           createdBy: {
             clients: {
-              some: { ptId: session.user.id }
-            }
-          }
-        }
-      ]
-    }
+              some: { ptId: session.user.id },
+            },
+          },
+        },
+      ],
+    },
   })
 
   if (!workout) {
@@ -524,15 +526,17 @@ import { z } from 'zod'
 export const createWorkoutSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
-  exercises: z.array(
-    z.object({
-      exerciseId: z.string().uuid(),
-      sets: z.number().int().min(1).max(20),
-      reps: z.number().int().min(1).max(100),
-      weight: z.number().min(0).optional(),
-      groupId: z.string().optional()
-    })
-  ).min(1)
+  exercises: z
+    .array(
+      z.object({
+        exerciseId: z.string().uuid(),
+        sets: z.number().int().min(1).max(20),
+        reps: z.number().int().min(1).max(100),
+        weight: z.number().min(0).optional(),
+        groupId: z.string().optional(),
+      })
+    )
+    .min(1),
 })
 ```
 
@@ -545,7 +549,7 @@ import { Redis } from '@upstash/redis'
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, '10 s')
+  limiter: Ratelimit.slidingWindow(10, '10 s'),
 })
 
 export async function middleware(request: NextRequest) {
@@ -601,9 +605,7 @@ type ActionResult<T> =
   | { success: false; error: string; details?: unknown }
 
 // Consistent return type for all server actions
-export async function createWorkout(
-  input: unknown
-): Promise<ActionResult<Workout>> {
+export async function createWorkout(input: unknown): Promise<ActionResult<Workout>> {
   try {
     // ... implementation
     return { success: true, data: workout }
@@ -611,7 +613,7 @@ export async function createWorkout(
     Sentry.captureException(error)
     return {
       success: false,
-      error: 'Failed to create workout'
+      error: 'Failed to create workout',
     }
   }
 }

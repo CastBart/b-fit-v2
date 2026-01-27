@@ -13,6 +13,7 @@
 **Estimated Effort**: 8-10 hours
 
 #### Sub-tasks:
+
 1. **Configure Jest**
    - [ ] Install: `npm install -D jest @testing-library/react @testing-library/jest-dom`
    - [ ] Create `jest.config.js`
@@ -26,6 +27,7 @@
    - Target: 80%+ coverage
 
 **Acceptance Criteria**:
+
 - ✅ Jest configured
 - ✅ 80%+ unit test coverage
 - ✅ All tests pass
@@ -38,6 +40,7 @@
 **Estimated Effort**: 10-12 hours
 
 #### Sub-tasks:
+
 1. **Install Playwright**
    - [ ] Install: `npm install -D @playwright/test`
    - [ ] Run: `npx playwright install`
@@ -57,6 +60,7 @@
    - [ ] Create test users
 
 **Acceptance Criteria**:
+
 - ✅ Playwright configured
 - ✅ All critical flows tested
 - ✅ E2E tests pass
@@ -69,6 +73,7 @@
 **Estimated Effort**: 6-8 hours
 
 #### Sub-tasks:
+
 1. **Run Lighthouse Audit**
    - [ ] Audit all key pages
    - [ ] Target scores:
@@ -88,6 +93,7 @@
    - [ ] Image optimization
 
 **Acceptance Criteria**:
+
 - ✅ Lighthouse scores meet targets
 - ✅ Performance issues fixed
 - ✅ Page load < 2s
@@ -100,6 +106,7 @@
 **Estimated Effort**: 5-6 hours
 
 #### Sub-tasks:
+
 1. **Profile Session Updates**
    - [ ] Use React DevTools Profiler
    - [ ] Identify slow renders
@@ -114,6 +121,7 @@
    - [ ] Use useCallback for stable references
 
 **Acceptance Criteria**:
+
 - ✅ Set completion updates < 100ms
 - ✅ No unnecessary re-renders
 - ✅ Smooth user experience
@@ -126,6 +134,7 @@
 **Estimated Effort**: 4-5 hours
 
 #### Sub-tasks:
+
 1. **Implement Dynamic Imports**
    - [ ] Lazy load heavy components (charts, editor)
    - [ ] Use React.lazy() for route components
@@ -135,6 +144,7 @@
    - [ ] Split large dependencies
 
 **Acceptance Criteria**:
+
 - ✅ Initial bundle < 200KB
 - ✅ Lazy loading implemented
 - ✅ Faster initial page load
@@ -147,6 +157,7 @@
 **Estimated Effort**: 4-5 hours
 
 #### Sub-tasks:
+
 1. **Create Skeleton Components**
    - [ ] Create `src/components/ui/Skeleton.tsx`
    - [ ] Workout card skeleton
@@ -158,6 +169,7 @@
    - [ ] Replace with actual content when loaded
 
 **Acceptance Criteria**:
+
 - ✅ Skeletons created
 - ✅ Loading states smooth
 - ✅ No layout shift
@@ -170,6 +182,7 @@
 **Estimated Effort**: 5-6 hours
 
 #### Sub-tasks:
+
 1. **Analyze Slow Queries**
    - [ ] Enable Prisma query logging
    - [ ] Identify N+1 queries
@@ -183,6 +196,7 @@
    - [ ] Use `select` to fetch only needed fields
 
 **Acceptance Criteria**:
+
 - ✅ No N+1 queries
 - ✅ Indexes added
 - ✅ Query times < 100ms
@@ -195,6 +209,7 @@
 **Estimated Effort**: 4-5 hours
 
 #### Sub-tasks:
+
 1. **Test on Devices**
    - [ ] iOS (iPhone)
    - [ ] Android (Samsung/Pixel)
@@ -207,6 +222,7 @@
    - [ ] Browser compatibility
 
 **Acceptance Criteria**:
+
 - ✅ Tested on all major devices
 - ✅ No critical issues
 - ✅ Responsive design works everywhere
@@ -221,6 +237,7 @@
 **Estimated Effort**: 3-4 hours
 
 #### Sub-tasks:
+
 1. **Create Sentry Account**
    - [ ] Sign up at sentry.io
    - [ ] Create project
@@ -235,6 +252,7 @@
    - [ ] Verify error appears in Sentry dashboard
 
 **Acceptance Criteria**:
+
 - ✅ Sentry configured
 - ✅ Errors tracked
 - ✅ Source maps uploaded
@@ -247,6 +265,7 @@
 **Estimated Effort**: 3-4 hours
 
 #### Sub-tasks:
+
 1. **Create PostHog Account**
    - [ ] Sign up at posthog.com
    - [ ] Create project
@@ -263,6 +282,7 @@
    - [ ] Complete session
 
 **Acceptance Criteria**:
+
 - ✅ PostHog configured
 - ✅ Events tracked
 - ✅ Dashboard shows data
@@ -275,6 +295,7 @@
 **Estimated Effort**: 2-3 hours
 
 #### Sub-tasks:
+
 1. **Set Up Feature Flags**
    - [ ] Use PostHog feature flags or Vercel flags
    - [ ] Create flags for new features
@@ -284,6 +305,7 @@
    - [ ] Enable/disable features remotely
 
 **Acceptance Criteria**:
+
 - ✅ Feature flags configured
 - ✅ Can toggle features remotely
 
@@ -295,6 +317,7 @@
 **Estimated Effort**: 6-7 hours
 
 #### Sub-tasks:
+
 1. **Create Onboarding Pages**
    - [ ] Create `src/app/onboarding/page.tsx`
    - [ ] Welcome screen
@@ -307,6 +330,7 @@
    - [ ] Complete profile
 
 **Acceptance Criteria**:
+
 - ✅ Onboarding flow complete
 - ✅ Users guided through key actions
 - ✅ Can skip onboarding
@@ -319,6 +343,7 @@
 **Estimated Effort**: 5-6 hours
 
 #### Sub-tasks:
+
 1. **Create Help Center**
    - [ ] Create `src/app/help/page.tsx`
    - [ ] FAQ section
@@ -329,6 +354,7 @@
    - [ ] Use Shadcn Tooltip component
 
 **Acceptance Criteria**:
+
 - ✅ Help center created
 - ✅ FAQs documented
 - ✅ Tooltips added
@@ -341,6 +367,7 @@
 **Estimated Effort**: 4-5 hours
 
 #### Sub-tasks:
+
 1. **Configure Production Database**
    - [ ] Create production Postgres database on Vercel
    - [ ] Run migrations on production
@@ -355,6 +382,7 @@
    - [ ] Enable SSL
 
 **Acceptance Criteria**:
+
 - ✅ Production environment ready
 - ✅ Database configured
 - ✅ Custom domain working
@@ -367,6 +395,7 @@
 **Estimated Effort**: 4-5 hours
 
 #### Sub-tasks:
+
 1. **Security Checklist**
    - [ ] All environment variables secure
    - [ ] No hardcoded secrets
@@ -381,6 +410,7 @@
    - [ ] Fix any vulnerabilities
 
 **Acceptance Criteria**:
+
 - ✅ Security checklist complete
 - ✅ No critical vulnerabilities
 - ✅ Audit passed
@@ -393,6 +423,7 @@
 **Estimated Effort**: 2-3 hours
 
 #### Sub-tasks:
+
 1. **Final Testing**
    - [ ] Run all tests
    - [ ] Test on staging environment
@@ -408,6 +439,7 @@
    - [ ] Verify database connection
 
 **Acceptance Criteria**:
+
 - ✅ Deployed to production
 - ✅ All features working
 - ✅ No errors in logs
@@ -420,6 +452,7 @@
 **Estimated Effort**: Ongoing
 
 #### Sub-tasks:
+
 1. **Monitor Sentry**
    - [ ] Check for errors
    - [ ] Fix critical issues immediately
@@ -433,6 +466,7 @@
    - [ ] Monitor uptime
 
 **Acceptance Criteria**:
+
 - ✅ Error rate < 0.1%
 - ✅ No critical issues
 - ✅ Performance within targets
@@ -445,6 +479,7 @@
 **Estimated Effort**: 2-3 hours
 
 #### Sub-tasks:
+
 1. **Pre-Launch Checklist**
    - [ ] All tests passing
    - [ ] Documentation complete
@@ -461,6 +496,7 @@
    - [ ] Submit to product directories
 
 **Acceptance Criteria**:
+
 - ✅ Checklist complete
 - ✅ Launched successfully
 - ✅ Users can sign up and use app
@@ -470,28 +506,33 @@
 ## Phase 6 Completion Checklist
 
 ### Testing
+
 - [ ] 80%+ unit test coverage
 - [ ] E2E tests for critical flows
 - [ ] All tests passing
 
 ### Optimization
+
 - [ ] Lighthouse scores meet targets
 - [ ] Session UI < 100ms updates
 - [ ] Bundle optimized
 - [ ] Database queries optimized
 
 ### Monitoring
+
 - [ ] Sentry error tracking configured
 - [ ] PostHog analytics configured
 - [ ] Metrics tracked
 
 ### Launch Prep
+
 - [ ] User onboarding complete
 - [ ] Help documentation published
 - [ ] Production environment ready
 - [ ] Security audit passed
 
 ### Launch
+
 - [ ] Deployed to production
 - [ ] Custom domain configured
 - [ ] Monitored for 48 hours

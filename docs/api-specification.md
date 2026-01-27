@@ -76,15 +76,19 @@ import { z } from 'zod'
 const createWorkoutSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
-  exercises: z.array(z.object({
-    exerciseId: z.string(),
-    order: z.number().int().min(0),
-    groupId: z.string().optional(),
-    sets: z.number().int().min(1).max(20),
-    reps: z.number().int().min(1).max(100).optional(),
-    weight: z.number().min(0).optional(),
-    restSeconds: z.number().int().min(0).max(600).default(60)
-  })).min(1)
+  exercises: z
+    .array(
+      z.object({
+        exerciseId: z.string(),
+        order: z.number().int().min(0),
+        groupId: z.string().optional(),
+        sets: z.number().int().min(1).max(20),
+        reps: z.number().int().min(1).max(100).optional(),
+        weight: z.number().min(0).optional(),
+        restSeconds: z.number().int().min(0).max(600).default(60),
+      })
+    )
+    .min(1),
 })
 
 export async function createWorkout(
@@ -95,12 +99,11 @@ export async function createWorkout(
 ```
 
 **Usage**:
+
 ```typescript
 const result = await createWorkout({
   name: 'Push Day',
-  exercises: [
-    { exerciseId: '...', order: 0, sets: 3, reps: 10 }
-  ]
+  exercises: [{ exerciseId: '...', order: 0, sets: 3, reps: 10 }],
 })
 
 if (result.success) {
@@ -126,9 +129,7 @@ export async function updateWorkout(
 ### deleteWorkout
 
 ```typescript
-export async function deleteWorkout(
-  workoutId: string
-): Promise<ActionResult<void>>
+export async function deleteWorkout(workoutId: string): Promise<ActionResult<void>>
 ```
 
 ---
@@ -139,14 +140,18 @@ export async function deleteWorkout(
 const assignSchema = z.object({
   workoutId: z.string(),
   clientId: z.string(),
-  customizations: z.object({
-    exercises: z.array(z.object({
-      exerciseId: z.string(),
-      sets: z.number().optional(),
-      reps: z.number().optional(),
-      weight: z.number().optional()
-    }))
-  }).optional()
+  customizations: z
+    .object({
+      exercises: z.array(
+        z.object({
+          exerciseId: z.string(),
+          sets: z.number().optional(),
+          reps: z.number().optional(),
+          weight: z.number().optional(),
+        })
+      ),
+    })
+    .optional(),
 })
 
 export async function assignWorkoutToClient(
@@ -163,9 +168,7 @@ export async function assignWorkoutToClient(
 ### getWorkoutById
 
 ```typescript
-export async function getWorkoutById(
-  workoutId: string
-): Promise<ActionResult<WorkoutWithExercises>>
+export async function getWorkoutById(workoutId: string): Promise<ActionResult<WorkoutWithExercises>>
 
 type WorkoutWithExercises = Workout & {
   exercises: (WorkoutExercise & {
@@ -185,9 +188,7 @@ type ListWorkoutsFilters = {
   copiedFromId?: string
 }
 
-export async function listWorkouts(
-  filters?: ListWorkoutsFilters
-): Promise<ActionResult<Workout[]>>
+export async function listWorkouts(filters?: ListWorkoutsFilters): Promise<ActionResult<Workout[]>>
 ```
 
 ---
@@ -198,7 +199,7 @@ export async function listWorkouts(
 
 ```typescript
 const startSessionSchema = z.object({
-  workoutId: z.string()
+  workoutId: z.string(),
 })
 
 export async function startSession(
@@ -211,6 +212,7 @@ export async function startSession(
 ```
 
 **Example Response**:
+
 ```typescript
 {
   success: true,
@@ -248,7 +250,7 @@ const updateSetSchema = z.object({
   weight: z.number().min(0).optional(),
   duration: z.number().int().min(0).optional(),
   distance: z.number().min(0).optional(),
-  notes: z.string().max(200).optional()
+  notes: z.string().max(200).optional(),
 })
 
 export async function updateSessionSet(
@@ -265,9 +267,7 @@ export async function updateSessionSet(
 ### completeSession
 
 ```typescript
-export async function completeSession(
-  sessionId: string
-): Promise<ActionResult<SessionSummary>>
+export async function completeSession(sessionId: string): Promise<ActionResult<SessionSummary>>
 
 // Marks session as COMPLETED
 // Calculates total volume
@@ -276,18 +276,19 @@ export async function completeSession(
 ```
 
 **Response**:
+
 ```typescript
 type SessionSummary = {
   sessionId: string
   completedAt: string
-  duration: number  // seconds
+  duration: number // seconds
   totalVolume: number
   totalSets: number
   exercisesCompleted: number
   prsAchieved: Array<{
     exerciseId: string
     exerciseName: string
-    prType: string  // "1RM", "5RM", etc.
+    prType: string // "1RM", "5RM", etc.
     previousRecord: number
     newRecord: number
   }>
@@ -299,9 +300,7 @@ type SessionSummary = {
 ### abandonSession
 
 ```typescript
-export async function abandonSession(
-  sessionId: string
-): Promise<ActionResult<void>>
+export async function abandonSession(sessionId: string): Promise<ActionResult<void>>
 
 // Marks session as ABANDONED
 // Preserves completed sets
@@ -318,8 +317,8 @@ const syncSchema = z.object({
   state: z.object({
     sets: z.array(z.any()),
     currentExerciseIndex: z.number(),
-    timestamp: z.number()
-  })
+    timestamp: z.number(),
+  }),
 })
 
 export async function syncSessionState(
@@ -349,12 +348,12 @@ const createExerciseSchema = z.object({
     'DURATION',
     'DISTANCE_DURATION',
     'WEIGHT_DISTANCE',
-    'WEIGHT_DURATION'
+    'WEIGHT_DURATION',
   ]),
   muscleGroups: z.array(z.string()).min(1),
   equipmentType: z.string(),
   movementPattern: z.string(),
-  difficultyLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED'])
+  difficultyLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']),
 })
 
 export async function createExercise(
@@ -376,9 +375,7 @@ type SearchFilters = {
   includeCustom?: boolean
 }
 
-export async function searchExercises(
-  filters: SearchFilters
-): Promise<ActionResult<Exercise[]>>
+export async function searchExercises(filters: SearchFilters): Promise<ActionResult<Exercise[]>>
 ```
 
 ---
@@ -410,7 +407,7 @@ type ExerciseHistoryData = {
 const updateProfileSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   email: z.string().email().optional(),
-  image: z.string().url().optional()
+  image: z.string().url().optional(),
 })
 
 export async function updateProfile(
@@ -437,7 +434,7 @@ export async function upgradeToPT(): Promise<ActionResult<{ checkoutUrl: string 
 ```typescript
 const inviteClientSchema = z.object({
   email: z.string().email(),
-  name: z.string().min(1).max(100)
+  name: z.string().min(1).max(100),
 })
 
 export async function inviteClient(
@@ -469,7 +466,7 @@ export async function acceptClientInvitation(
 ```typescript
 const endRelationshipSchema = z.object({
   relationshipId: z.string(),
-  convertToPersonal: z.boolean().default(false)
+  convertToPersonal: z.boolean().default(false),
 })
 
 export async function endClientRelationship(
@@ -489,7 +486,7 @@ export async function endClientRelationship(
 
 ```typescript
 type AdherenceParams = {
-  userId?: string  // For PTs viewing client data
+  userId?: string // For PTs viewing client data
   startDate: string
   endDate: string
 }
@@ -501,7 +498,7 @@ export async function getWorkoutAdherence(
 type AdherenceData = {
   assignedWorkouts: number
   completedSessions: number
-  adherenceRate: number  // percentage
+  adherenceRate: number // percentage
   byWeek: Array<{ week: string; rate: number }>
 }
 ```
@@ -511,14 +508,12 @@ type AdherenceData = {
 ### getVolumeProgression
 
 ```typescript
-export async function getVolumeProgression(
-  params: {
-    userId?: string
-    exerciseId?: string
-    startDate: string
-    endDate: string
-  }
-): Promise<ActionResult<VolumeData>>
+export async function getVolumeProgression(params: {
+  userId?: string
+  exerciseId?: string
+  startDate: string
+  endDate: string
+}): Promise<ActionResult<VolumeData>>
 
 type VolumeData = {
   totalVolume: number
@@ -536,15 +531,13 @@ type VolumeData = {
 ### getPersonalRecords
 
 ```typescript
-export async function getPersonalRecords(
-  userId?: string
-): Promise<ActionResult<PRData[]>>
+export async function getPersonalRecords(userId?: string): Promise<ActionResult<PRData[]>>
 
 type PRData = {
   exerciseId: string
   exerciseName: string
   records: Array<{
-    repRange: string  // "1RM", "5RM", etc.
+    repRange: string // "1RM", "5RM", etc.
     weight: number
     achievedAt: string
   }>
@@ -564,7 +557,7 @@ const sendMessageSchema = z.object({
   workoutId: z.string().optional(),
   sessionId: z.string().optional(),
   planId: z.string().optional(),
-  mediaUrl: z.string().url().optional()
+  mediaUrl: z.string().url().optional(),
 })
 
 export async function sendMessage(
@@ -581,7 +574,7 @@ export async function getConversation(
   otherUserId: string,
   options?: {
     limit?: number
-    before?: string  // cursor-based pagination
+    before?: string // cursor-based pagination
   }
 ): Promise<ActionResult<ConversationData>>
 
@@ -597,9 +590,7 @@ type ConversationData = {
 ### uploadMedia
 
 ```typescript
-export async function uploadMedia(
-  formData: FormData
-): Promise<ActionResult<{ url: string }>>
+export async function uploadMedia(formData: FormData): Promise<ActionResult<{ url: string }>>
 
 // Uploads file to Vercel Blob
 // Returns blob URL
@@ -617,7 +608,7 @@ export async function uploadMedia(
 const checkoutSchema = z.object({
   priceId: z.string(),
   successUrl: z.string().url(),
-  cancelUrl: z.string().url()
+  cancelUrl: z.string().url(),
 })
 
 export async function createCheckoutSession(
@@ -641,9 +632,7 @@ export async function manageBilling(): Promise<ActionResult<{ portalUrl: string 
 ### upgradeSubscription
 
 ```typescript
-export async function upgradeSubscription(
-  newPriceId: string
-): Promise<ActionResult<Subscription>>
+export async function upgradeSubscription(newPriceId: string): Promise<ActionResult<Subscription>>
 
 // Updates Stripe subscription
 // Prorates charges
@@ -664,7 +653,7 @@ const ERROR_CODES = {
   INVALID_INPUT: 'Input validation failed',
   CONFLICT: 'Resource conflict (e.g., duplicate)',
   RATE_LIMIT: 'Rate limit exceeded',
-  INTERNAL: 'Internal server error'
+  INTERNAL: 'Internal server error',
 } as const
 ```
 

@@ -9,6 +9,7 @@ This document details the user flows for all major features in B-Fit, including 
 ## 1. Workout Builder Flow
 
 ### User Story
+
 As a Personal User or PT, I want to create structured workouts with exercises, sets, reps, and supersets so that I can follow them during training sessions.
 
 ### Flow Steps
@@ -16,6 +17,7 @@ As a Personal User or PT, I want to create structured workouts with exercises, s
 #### 1.1 Navigate to Create Workout
 
 **Entry Points**:
+
 - **Workouts Dashboard**: Primary entry point displaying all existing workouts in a list/grid view
   - "Create Workout" button prominently displayed on dashboard
   - Each workout card shows: name, description preview, exercise count, last used date
@@ -23,6 +25,7 @@ As a Personal User or PT, I want to create structured workouts with exercises, s
 - Quick action menu
 
 **Workouts Dashboard Layout**:
+
 ```tsx
 <WorkoutsPage>
   <PageHeader>
@@ -31,7 +34,7 @@ As a Personal User or PT, I want to create structured workouts with exercises, s
   </PageHeader>
 
   <WorkoutsList>
-    {workouts.map(workout => (
+    {workouts.map((workout) => (
       <WorkoutCard key={workout.id}>
         <WorkoutName>{workout.name}</WorkoutName>
         <WorkoutMetadata>
@@ -50,6 +53,7 @@ As a Personal User or PT, I want to create structured workouts with exercises, s
 ---
 
 #### 1.2 Enter Workout Metadata
+
 ```tsx
 <WorkoutMetadataForm>
   <Input name="workoutName" placeholder="e.g., Push Day A" required />
@@ -58,6 +62,7 @@ As a Personal User or PT, I want to create structured workouts with exercises, s
 ```
 
 **Validation**:
+
 - Name: 1-100 characters
 - Description: max 500 characters
 
@@ -83,7 +88,7 @@ Layout: Split-screen design with persistent exercise list
     </FilterSection>
 
     <ScrollableExerciseList>
-      {exercises.map(exercise => (
+      {exercises.map((exercise) => (
         <ExerciseCard
           key={exercise.id}
           exercise={exercise}
@@ -97,9 +102,7 @@ Layout: Split-screen design with persistent exercise list
 
     {/* Add Button - Appears when exercises selected */}
     {selectedExercises.length > 0 && (
-      <FixedBottomButton>
-        Add ({selectedExercises.length})
-      </FixedBottomButton>
+      <FixedBottomButton>Add ({selectedExercises.length})</FixedBottomButton>
     )}
   </ExerciseListPanel>
 
@@ -111,7 +114,7 @@ Layout: Split-screen design with persistent exercise list
     </WorkoutMetadataForm>
 
     <WorkoutExercisesList>
-      {workoutExercises.map(exercise => (
+      {workoutExercises.map((exercise) => (
         <WorkoutExerciseCard
           key={exercise.id}
           exercise={exercise}
@@ -132,6 +135,7 @@ Layout: Split-screen design with persistent exercise list
 ```
 
 **Interaction Methods (Desktop)**:
+
 1. **Drag & Drop**: Drag exercise from left panel directly into workout list
 2. **Click Selection**:
    - Click exercise(s) in left panel to select (multi-select with checkboxes)
@@ -145,32 +149,32 @@ Layout: Split-screen design with persistent exercise list
 Layout: Drawer-based with "Add Exercise" button
 
 ```tsx
-<WorkoutBuilder>
+;<WorkoutBuilder>
   <WorkoutMetadataForm>
     <Input name="workoutName" placeholder="e.g., Push Day A" />
     <Textarea name="description" placeholder="Optional notes" />
   </WorkoutMetadataForm>
 
-  <AddExerciseButton onClick={openExerciseDrawer}>
-    + Add Exercise
-  </AddExerciseButton>
+  <AddExerciseButton onClick={openExerciseDrawer}>+ Add Exercise</AddExerciseButton>
 
   <WorkoutExercisesList>
-    {workoutExercises.map(exercise => (
+    {workoutExercises.map((exercise) => (
       <WorkoutExerciseCard key={exercise.id} exercise={exercise} />
     ))}
   </WorkoutExercisesList>
 </WorkoutBuilder>
 
-{/* Exercise Drawer */}
-<Drawer open={exerciseDrawerOpen} position="bottom" height="80%">
+{
+  /* Exercise Drawer */
+}
+;<Drawer open={exerciseDrawerOpen} position="bottom" height="80%">
   <DrawerHeader>
     <SearchBar placeholder="Search exercises..." />
     <FilterButton onClick={openFilters} />
   </DrawerHeader>
 
   <ScrollableExerciseList>
-    {exercises.map(exercise => (
+    {exercises.map((exercise) => (
       <ExerciseCard
         key={exercise.id}
         exercise={exercise}
@@ -182,14 +186,14 @@ Layout: Drawer-based with "Add Exercise" button
 
   {/* Add Button - Appears when exercises selected */}
   {selectedExercises.length > 0 && (
-    <FixedBottomButton>
-      ({selectedExercises.length}) Add
-    </FixedBottomButton>
+    <FixedBottomButton>({selectedExercises.length}) Add</FixedBottomButton>
   )}
 </Drawer>
 
-{/* Filter Drawer */}
-<Drawer open={filterDrawerOpen} position="right">
+{
+  /* Filter Drawer */
+}
+;<Drawer open={filterDrawerOpen} position="right">
   <MuscleGroupFilter />
   <MovementPatternFilter />
   <EquipmentFilter />
@@ -199,6 +203,7 @@ Layout: Drawer-based with "Add Exercise" button
 ```
 
 **Filter Options** (Both Desktop & Mobile):
+
 - Muscle Group (Primary + Secondary)
 - Movement Pattern
 - Equipment Type
@@ -213,16 +218,16 @@ Layout: Drawer-based with "Add Exercise" button
 
 When an exercise is added to a workout, it automatically gets 3 sets with the following defaults:
 
-| Metric Type | Default Values |
-|-------------|----------------|
-| WEIGHT_REPS | weight: 0kg, reps: 10 |
-| COUNTER_WEIGHT_REPS | weight: 0kg, reps: 10 |
-| REPS | reps: 10 |
-| REPS_DURATION | reps: 10, duration: 30 seconds |
-| DURATION | duration: 30 seconds |
-| DISTANCE_DURATION | distance: 0, duration: 30 seconds |
-| WEIGHT_DISTANCE | weight: 0kg, distance: 0 |
-| WEIGHT_DURATION | weight: 0kg, duration: 30 seconds |
+| Metric Type         | Default Values                    |
+| ------------------- | --------------------------------- |
+| WEIGHT_REPS         | weight: 0kg, reps: 10             |
+| COUNTER_WEIGHT_REPS | weight: 0kg, reps: 10             |
+| REPS                | reps: 10                          |
+| REPS_DURATION       | reps: 10, duration: 30 seconds    |
+| DURATION            | duration: 30 seconds              |
+| DISTANCE_DURATION   | distance: 0, duration: 30 seconds |
+| WEIGHT_DISTANCE     | weight: 0kg, distance: 0          |
+| WEIGHT_DURATION     | weight: 0kg, duration: 30 seconds |
 
 **UI Layout**:
 
@@ -238,7 +243,7 @@ After adding exercises, display them in a table format:
     <Column>Actions</Column>
   </TableHeader>
 
-  {workoutExercises.map(exercise => (
+  {workoutExercises.map((exercise) => (
     <ExerciseRow key={exercise.id}>
       <ExerciseCell>
         <ExerciseThumbnail src={exercise.thumbnailUrl} />
@@ -248,7 +253,7 @@ After adding exercises, display them in a table format:
       <SetsCell>
         <NumberInput
           value={exercise.sets}
-          onChange={value => updateExercise(exercise.id, { sets: value })}
+          onChange={(value) => updateExercise(exercise.id, { sets: value })}
         />
       </SetsCell>
 
@@ -276,7 +281,7 @@ After adding exercises, display them in a table format:
         <NumberInput
           value={exercise.restSeconds}
           suffix="sec"
-          onChange={value => updateExercise(exercise.id, { restSeconds: value })}
+          onChange={(value) => updateExercise(exercise.id, { restSeconds: value })}
         />
       </RestCell>
 
@@ -290,6 +295,7 @@ After adding exercises, display them in a table format:
 ```
 
 **Metric Editor Modal**:
+
 ```tsx
 <MetricEditorModal exercise={selectedExercise}>
   <Title>Configure {selectedMetric}</Title>
@@ -320,15 +326,15 @@ function handleDragEnd(event: DragEndEvent) {
   const { active, over } = event
 
   if (over && active.id !== over.id) {
-    const oldIndex = exercises.findIndex(ex => ex.id === active.id)
-    const newIndex = exercises.findIndex(ex => ex.id === over.id)
+    const oldIndex = exercises.findIndex((ex) => ex.id === active.id)
+    const newIndex = exercises.findIndex((ex) => ex.id === over.id)
 
     const reordered = arrayMove(exercises, oldIndex, newIndex)
 
     // Update order field for each exercise
     const withUpdatedOrder = reordered.map((ex, index) => ({
       ...ex,
-      order: index
+      order: index,
     }))
 
     setExercises(withUpdatedOrder)
@@ -357,6 +363,7 @@ Supersets are managed through a dedicated utility that handles all superset oper
 **Superset Manager Logic**:
 
 The Superset Manager presents different options based on:
+
 - Whether the selected exercise is currently in a superset
 - The position of the exercise in the workout (first, last, or middle)
 - The superset state of adjacent exercises
@@ -392,7 +399,7 @@ function getSupersetOptions(options: SupersetManagerOptions): SupersetOption[] {
     // Middle position
     return [
       { action: 'superset-with-next', label: 'Superset with next' },
-      { action: 'superset-with-previous', label: 'Superset with previous' }
+      { action: 'superset-with-previous', label: 'Superset with previous' },
     ]
   }
 
@@ -438,7 +445,7 @@ function getSupersetOptions(options: SupersetManagerOptions): SupersetOption[] {
 ```typescript
 // Create superset with next exercise
 function supersetWithNext(exerciseId: string, exercises: WorkoutExercise[]) {
-  const currentIndex = exercises.findIndex(ex => ex.id === exerciseId)
+  const currentIndex = exercises.findIndex((ex) => ex.id === exerciseId)
   const nextExercise = exercises[currentIndex + 1]
 
   if (!nextExercise) return
@@ -456,7 +463,7 @@ function supersetWithNext(exerciseId: string, exercises: WorkoutExercise[]) {
 
 // Create superset with previous exercise
 function supersetWithPrevious(exerciseId: string, exercises: WorkoutExercise[]) {
-  const currentIndex = exercises.findIndex(ex => ex.id === exerciseId)
+  const currentIndex = exercises.findIndex((ex) => ex.id === exerciseId)
   const previousExercise = exercises[currentIndex - 1]
 
   if (!previousExercise) return
@@ -474,7 +481,7 @@ function supersetWithPrevious(exerciseId: string, exercises: WorkoutExercise[]) 
 
 // Remove exercise from superset
 function removeFromSuperset(exerciseId: string, exercises: WorkoutExercise[]) {
-  const exercise = exercises.find(ex => ex.id === exerciseId)
+  const exercise = exercises.find((ex) => ex.id === exerciseId)
   if (!exercise || !exercise.supersetId) return
 
   const supersetId = exercise.supersetId
@@ -484,7 +491,7 @@ function removeFromSuperset(exerciseId: string, exercises: WorkoutExercise[]) {
 
   // Check if superset still has multiple exercises
   const remainingInSuperset = exercises.filter(
-    ex => ex.id !== exerciseId && ex.supersetId === supersetId
+    (ex) => ex.id !== exerciseId && ex.supersetId === supersetId
   )
 
   // If only one exercise remains, remove its superset ID too
@@ -499,8 +506,12 @@ function removeFromSuperset(exerciseId: string, exercises: WorkoutExercise[]) {
 When an exercise is dragged and reordered:
 
 ```typescript
-function handleExerciseDragEnd(draggedExerciseId: string, newIndex: number, exercises: WorkoutExercise[]) {
-  const draggedExercise = exercises.find(ex => ex.id === draggedExerciseId)
+function handleExerciseDragEnd(
+  draggedExerciseId: string,
+  newIndex: number,
+  exercises: WorkoutExercise[]
+) {
+  const draggedExercise = exercises.find((ex) => ex.id === draggedExerciseId)
   if (!draggedExercise) return
 
   // Reorder first
@@ -511,10 +522,11 @@ function handleExerciseDragEnd(draggedExerciseId: string, newIndex: number, exer
   const nextExercise = reordered[newIndex + 1]
 
   // Case 1: Dropped between exercises with same superset ID
-  if (previousExercise?.supersetId &&
-      nextExercise?.supersetId &&
-      previousExercise.supersetId === nextExercise.supersetId) {
-
+  if (
+    previousExercise?.supersetId &&
+    nextExercise?.supersetId &&
+    previousExercise.supersetId === nextExercise.supersetId
+  ) {
     // Join the existing superset
     updateExercise(draggedExerciseId, { supersetId: previousExercise.supersetId })
   }
@@ -523,8 +535,8 @@ function handleExerciseDragEnd(draggedExerciseId: string, newIndex: number, exer
   else {
     // Check if dragged exercise should stay in its superset
     const adjacentHasSameSuperset =
-      (previousExercise?.supersetId === draggedExercise.supersetId) ||
-      (nextExercise?.supersetId === draggedExercise.supersetId)
+      previousExercise?.supersetId === draggedExercise.supersetId ||
+      nextExercise?.supersetId === draggedExercise.supersetId
 
     // If no adjacent exercise shares the superset, remove from superset
     if (!adjacentHasSameSuperset) {
@@ -549,9 +561,7 @@ function handleExerciseDragEnd(draggedExerciseId: string, newIndex: number, exer
   )}
 
   {/* Visual grouping for adjacent exercises in same superset */}
-  {exercise.supersetId && nextExercise?.supersetId === exercise.supersetId && (
-    <SupersetConnector />
-  )}
+  {exercise.supersetId && nextExercise?.supersetId === exercise.supersetId && <SupersetConnector />}
 </WorkoutExerciseCard>
 ```
 
@@ -562,15 +572,17 @@ function handleExerciseDragEnd(draggedExerciseId: string, newIndex: number, exer
 **Trigger**: Click "Save" button
 
 **Validation**:
+
 - At least 1 exercise required
 - All exercises have valid sets/reps
 
 **Action**:
+
 ```typescript
 const result = await createWorkout({
   name: workoutName,
   description,
-  exercises: exercises.map(ex => ({
+  exercises: exercises.map((ex) => ({
     exerciseId: ex.id,
     order: ex.order,
     groupId: ex.groupId,
@@ -578,8 +590,8 @@ const result = await createWorkout({
     reps: ex.reps,
     weight: ex.weight,
     restSeconds: ex.restSeconds,
-    notes: ex.notes
-  }))
+    notes: ex.notes,
+  })),
 })
 
 if (result.success) {
@@ -588,6 +600,7 @@ if (result.success) {
 ```
 
 **Success**:
+
 - Redirect to workout detail page
 - Show success toast
 - Workout appears in workout list
@@ -597,6 +610,7 @@ if (result.success) {
 ## 2. Live Session Flow
 
 ### User Story
+
 As a user, I want to start a workout session and log my sets in real-time with minimal friction so that I can track my performance during training.
 
 ### Flow Steps
@@ -604,10 +618,12 @@ As a user, I want to start a workout session and log my sets in real-time with m
 #### 2.1 Start Session
 
 **Entry Points**:
+
 1. **Workout Details Page** → "Start Workout" button
 2. **Workouts Dashboard** → "Quick Start" button on workout card (bypasses details page)
 
 **Quick Start Flow**:
+
 ```typescript
 // From Workouts Dashboard
 function handleQuickStart(workoutId: string) {
@@ -621,15 +637,19 @@ function handleQuickStart(workoutId: string) {
     dispatch(loadSession(result.data))
 
     // Initialize local storage backup
-    localStorage.setItem(`session-${result.data.id}`, JSON.stringify({
-      timestamp: Date.now(),
-      data: result.data
-    }))
+    localStorage.setItem(
+      `session-${result.data.id}`,
+      JSON.stringify({
+        timestamp: Date.now(),
+        data: result.data,
+      })
+    )
   }
 }
 ```
 
 **Standard Start Flow**:
+
 ```typescript
 // From Workout Details Page
 function handleStartWorkout(workoutId: string) {
@@ -640,6 +660,7 @@ function handleStartWorkout(workoutId: string) {
 ```
 
 **Session Created**:
+
 - Status: `IN_PROGRESS`
 - Pre-populate expected exercises with `instanceId`
 - Load into Redux store
@@ -650,6 +671,7 @@ function handleStartWorkout(workoutId: string) {
 #### 2.2 Session UI Layout
 
 **Current Exercise Strategy**:
+
 - When session starts, the first exercise is always the "current" exercise
 - All UI elements respond to the current exercise state
 - Navigation changes the current exercise
@@ -681,10 +703,7 @@ function handleStartWorkout(workoutId: string) {
   </ExerciseCarousel>
 
   {/* Set Logger for Current Exercise */}
-  <SetLogger
-    exercise={currentExercise}
-    onSetComplete={handleSetComplete}
-  />
+  <SetLogger exercise={currentExercise} onSetComplete={handleSetComplete} />
 
   {/* Footer: Exercise History (not navigation buttons) */}
   <SessionFooter>
@@ -727,9 +746,7 @@ function handleStartWorkout(workoutId: string) {
   </SettingsSection>
 
   <ActionsSection>
-    <ActionButton onClick={handleCompleteSession}>
-      Complete Session
-    </ActionButton>
+    <ActionButton onClick={handleCompleteSession}>Complete Session</ActionButton>
 
     <ActionButton onClick={handlePauseSession} variant="secondary">
       {isPaused ? 'Resume' : 'Pause'} Timer
@@ -743,6 +760,7 @@ function handleStartWorkout(workoutId: string) {
 ```
 
 **Navigation Methods**:
+
 1. Click exercise in carousel → Sets current exercise
 2. Swipe left/right on carousel → Changes current exercise
 3. Swipe up/down on main section → Changes current exercise
@@ -767,11 +785,7 @@ function handleStartWorkout(workoutId: string) {
       )}
       {/* Spanner icon for set management */}
       <Column>
-        <IconButton
-          icon="spanner"
-          onClick={openSetDrawer}
-          aria-label="Manage sets"
-        />
+        <IconButton icon="spanner" onClick={openSetDrawer} aria-label="Manage sets" />
       </Column>
     </TableHeader>
 
@@ -785,12 +799,12 @@ function handleStartWorkout(workoutId: string) {
             <>
               <WeightInput
                 value={set.weight}
-                onChange={value => updateSet(index, { weight: value })}
+                onChange={(value) => updateSet(index, { weight: value })}
                 disabled={set.completed}
               />
               <RepsInput
                 value={set.reps}
-                onChange={value => updateSet(index, { reps: value })}
+                onChange={(value) => updateSet(index, { reps: value })}
                 disabled={set.completed}
               />
             </>
@@ -823,25 +837,14 @@ function handleStartWorkout(workoutId: string) {
   <SetCounter>
     <Label>Sets</Label>
     <CounterControls>
-      <IconButton
-        icon="minus"
-        onClick={removeSet}
-        disabled={sets.length <= 1}
-      />
+      <IconButton icon="minus" onClick={removeSet} disabled={sets.length <= 1} />
       <Count>{sets.length}</Count>
-      <IconButton
-        icon="plus"
-        onClick={addSet}
-      />
+      <IconButton icon="plus" onClick={addSet} />
     </CounterControls>
   </SetCounter>
 
   {/* Undo last set - only shows if sets completed */}
-  {hasCompletedSets && (
-    <UndoButton onClick={undoLastSet}>
-      Undo Last Set
-    </UndoButton>
-  )}
+  {hasCompletedSets && <UndoButton onClick={undoLastSet}>Undo Last Set</UndoButton>}
 </Drawer>
 ```
 
@@ -852,13 +855,15 @@ async function handleSetComplete(setIndex: number) {
   const currentSet = sets[setIndex]
 
   // 1. Mark set as complete (optimistic update)
-  dispatch(completeSet({
-    sessionId,
-    exerciseId: currentExercise.id,
-    instanceId: currentExercise.instanceId,
-    setNumber: setIndex + 1,
-    ...currentSet
-  }))
+  dispatch(
+    completeSet({
+      sessionId,
+      exerciseId: currentExercise.id,
+      instanceId: currentExercise.instanceId,
+      setNumber: setIndex + 1,
+      ...currentSet,
+    })
+  )
 
   // 2. Update local storage
   saveToLocalStorage(sessionId, getState())
@@ -896,6 +901,7 @@ async function handleSetComplete(setIndex: number) {
 **Trigger**: After completing a set (or last set in superset)
 
 **Default Rest Times by Exercise Type**:
+
 - **SMALL**: 1 minute 30 seconds (90s)
 - **MEDIUM**: 2 minutes (120s)
 - **LARGE**: 3 minutes (180s)
@@ -903,6 +909,7 @@ async function handleSetComplete(setIndex: number) {
 - **CARDIO**: 2 minutes (120s)
 
 **Superset Rest Behavior**:
+
 ```typescript
 function handleSetComplete(set: SetData) {
   // Mark set complete
@@ -935,13 +942,14 @@ function getRestTimeForExerciseType(exerciseType: ExerciseType): number {
     MEDIUM: 120,
     LARGE: 180,
     STABILITY: 90,
-    CARDIO: 120
+    CARDIO: 120,
   }
   return restTimes[exerciseType]
 }
 ```
 
 **UI**:
+
 ```tsx
 <RestTimer duration={restSeconds} onComplete={playAlert}>
   {(secondsRemaining) => (
@@ -957,6 +965,7 @@ function getRestTimeForExerciseType(exerciseType: ExerciseType): number {
 ```
 
 **Timer End**:
+
 - Play audio alert
 - Vibrate (if supported)
 - Show ready notification
@@ -969,11 +978,13 @@ function getRestTimeForExerciseType(exerciseType: ExerciseType): number {
 The application maintains a `currentExerciseIndex` state that determines which exercise is active.
 
 **Navigation Methods**:
+
 1. **Swipe left/right on carousel** → Changes current exercise
 2. **Click exercise in carousel** → Sets as current exercise
 3. **Swipe up/down on main content area** → Changes current exercise
 
 **State Update**:
+
 ```typescript
 function setCurrentExercise(index: number) {
   if (index < 0 || index >= exercises.length) return
@@ -988,9 +999,7 @@ function setCurrentExercise(index: number) {
 }
 
 function handleCarouselSwipe(direction: 'left' | 'right') {
-  const newIndex = direction === 'right'
-    ? currentExerciseIndex + 1
-    : currentExerciseIndex - 1
+  const newIndex = direction === 'right' ? currentExerciseIndex + 1 : currentExerciseIndex - 1
 
   setCurrentExercise(newIndex)
 }
@@ -1030,6 +1039,7 @@ The footer displays exercise history for the **current exercise**, not navigatio
 #### 2.6 Handle Page Refresh
 
 **Session State to Persist**:
+
 - Session metadata (id, status, startedAt, workoutId)
 - All completed sets with timestamps
 - Current exercise index
@@ -1037,6 +1047,7 @@ The footer displays exercise history for the **current exercise**, not navigatio
 - Rest timer state (if active)
 
 **On Page Load**:
+
 ```typescript
 useEffect(() => {
   async function recoverSession() {
@@ -1071,6 +1082,7 @@ useEffect(() => {
 ```
 
 **Local Storage Backup Structure**:
+
 ```typescript
 interface SessionBackup {
   timestamp: number
@@ -1103,6 +1115,7 @@ interface SessionBackup {
 ```
 
 **Auto-save Triggers**:
+
 - After completing any set
 - After adding/removing sets
 - After changing current exercise
@@ -1118,7 +1131,7 @@ An exercise is marked as "complete" when all of its sets are completed:
 
 ```typescript
 function isExerciseComplete(exercise: SessionExercise): boolean {
-  return exercise.sets.every(set => set.completed)
+  return exercise.sets.every((set) => set.completed)
 }
 
 function areAllExercisesComplete(exercises: SessionExercise[]): boolean {
@@ -1158,13 +1171,17 @@ function handleRemoveSet(exerciseId: string) {
 **Complete Session UI**:
 
 ```tsx
-{/* Floating Complete Button - shows when all exercises done */}
-{showCompleteButton && (
-  <FloatingCompleteButton onClick={openCompleteDialog}>
-    <CheckIcon />
-    Complete Session
-  </FloatingCompleteButton>
-)}
+{
+  /* Floating Complete Button - shows when all exercises done */
+}
+{
+  showCompleteButton && (
+    <FloatingCompleteButton onClick={openCompleteDialog}>
+      <CheckIcon />
+      Complete Session
+    </FloatingCompleteButton>
+  )
+}
 ```
 
 **Complete Session via Settings**:
@@ -1182,9 +1199,7 @@ Session settings drawer always shows "Complete Session" option:
 
   <ActionsSection>
     {/* Complete - always available */}
-    <ActionButton onClick={handleCompleteFromSettings}>
-      Complete Session
-    </ActionButton>
+    <ActionButton onClick={handleCompleteFromSettings}>Complete Session</ActionButton>
 
     <ActionButton onClick={handlePause} variant="secondary">
       {isPaused ? 'Resume' : 'Pause'}
@@ -1210,11 +1225,12 @@ async function handleCompleteFromSettings() {
     // Show confirmation dialog
     const confirmed = await showAlertDialog({
       title: 'Incomplete Session',
-      message: 'Your session has uncompleted sets. Are you sure you want to complete? Only the completed sets will be stored.',
+      message:
+        'Your session has uncompleted sets. Are you sure you want to complete? Only the completed sets will be stored.',
       actions: [
         { label: 'Cancel', value: false },
-        { label: 'Complete Anyway', value: true, variant: 'primary' }
-      ]
+        { label: 'Complete Anyway', value: true, variant: 'primary' },
+      ],
     })
 
     if (!confirmed) return
@@ -1236,8 +1252,8 @@ async function handleCancel() {
     message: 'Are you sure you want to cancel this session? No data will be stored.',
     actions: [
       { label: 'Keep Training', value: false },
-      { label: 'Cancel Session', value: true, variant: 'destructive' }
-    ]
+      { label: 'Cancel Session', value: true, variant: 'destructive' },
+    ],
   })
 
   if (!confirmed) return
@@ -1272,6 +1288,7 @@ async function completeSession() {
 ```
 
 **Backend Processing on Complete**:
+
 1. Mark session as `COMPLETED`
 2. Set `completedAt` timestamp
 3. Calculate total volume (sum of weight × reps for all completed sets)
@@ -1297,7 +1314,7 @@ async function completeSession() {
   {prsAchieved.length > 0 && (
     <PRHighlights>
       <SectionTitle>Personal Records! 🎉</SectionTitle>
-      {prsAchieved.map(pr => (
+      {prsAchieved.map((pr) => (
         <PRCard key={pr.exerciseId}>
           <ExerciseName>{pr.exerciseName}</ExerciseName>
           <PRDetails>
@@ -1312,9 +1329,7 @@ async function completeSession() {
   <ExerciseBreakdown exercises={session.exercises} />
 
   <Actions>
-    <Button onClick={() => router.push('/workouts')}>
-      Back to Workouts
-    </Button>
+    <Button onClick={() => router.push('/workouts')}>Back to Workouts</Button>
     <Button variant="outline" onClick={shareSession}>
       Share
     </Button>
@@ -1327,6 +1342,7 @@ async function completeSession() {
 ## 3. Client Assignment Flow (PT)
 
 ### User Story
+
 As a PT, I want to assign workouts and plans to my clients so they can see them in their dashboard and perform them.
 
 ### Flow Steps
@@ -1355,11 +1371,8 @@ As a PT, I want to assign workouts and plans to my clients so they can see them 
     </TableHeader>
 
     <TableBody>
-      {clients.map(client => (
-        <ClientRow
-          key={client.id}
-          onClick={() => router.push(`/clients/${client.id}`)}
-        >
+      {clients.map((client) => (
+        <ClientRow key={client.id} onClick={() => router.push(`/clients/${client.id}`)}>
           <ClientInfo>
             <Avatar src={client.image} />
             <Name>{client.name}</Name>
@@ -1423,14 +1436,12 @@ As a PT, I want to assign workouts and plans to my clients so they can see them 
       <AssignExistingButton onClick={openWorkoutSelector}>
         Assign Existing Workout
       </AssignExistingButton>
-      <CreateBespokeButton onClick={openWorkoutBuilder}>
-        Create Bespoke Workout
-      </CreateBespokeButton>
+      <CreateBespokeButton onClick={openWorkoutBuilder}>Create Bespoke Workout</CreateBespokeButton>
     </ActionsRow>
   </TabHeader>
 
   <WorkoutsList>
-    {clientWorkouts.map(workout => (
+    {clientWorkouts.map((workout) => (
       <WorkoutCard key={workout.id}>
         <WorkoutHeader>
           <WorkoutName>{workout.name}</WorkoutName>
@@ -1444,12 +1455,8 @@ As a PT, I want to assign workouts and plans to my clients so they can see them 
 
         {/* Workout options */}
         <OptionsMenu>
-          <MenuItem onClick={() => copyWorkoutAsOwn(workout.id)}>
-            Copy as My Own
-          </MenuItem>
-          <MenuItem onClick={() => editWorkout(workout.id)}>
-            Edit Workout
-          </MenuItem>
+          <MenuItem onClick={() => copyWorkoutAsOwn(workout.id)}>Copy as My Own</MenuItem>
+          <MenuItem onClick={() => editWorkout(workout.id)}>Edit Workout</MenuItem>
           <MenuItem onClick={() => deleteWorkout(workout.id)} variant="destructive">
             Delete Workout
           </MenuItem>
@@ -1470,7 +1477,7 @@ As a PT, I want to assign workouts and plans to my clients so they can see them 
   </DrawerHeader>
 
   <WorkoutList>
-    {ptWorkouts.map(workout => (
+    {ptWorkouts.map((workout) => (
       <WorkoutSelectCard
         key={workout.id}
         workout={workout}
@@ -1493,11 +1500,11 @@ As a PT, I want to assign workouts and plans to my clients so they can see them 
 ```typescript
 async function assignSelectedWorkouts() {
   const results = await Promise.all(
-    selectedWorkouts.map(workoutId =>
+    selectedWorkouts.map((workoutId) =>
       assignWorkoutToClient({
         workoutId,
         clientId,
-        customizations: {} // PT can customize after assignment
+        customizations: {}, // PT can customize after assignment
       })
     )
   )
@@ -1532,9 +1539,7 @@ function openBespokeWorkoutBuilder() {
 <PlansTab clientId={clientId}>
   <TabHeader>
     <ActionsRow>
-      <CopyPTPlansButton onClick={openPlanSelector}>
-        Copy PT Plan
-      </CopyPTPlansButton>
+      <CopyPTPlansButton onClick={openPlanSelector}>Copy PT Plan</CopyPTPlansButton>
       <CreateBespokePlanButton onClick={openPlanBuilder}>
         Create Bespoke Plan
       </CreateBespokePlanButton>
@@ -1549,13 +1554,15 @@ function openBespokeWorkoutBuilder() {
         <PlanName>{activePlan.name}</PlanName>
         <PlanMetadata>
           <Duration>{activePlan.durationWeeks} weeks</Duration>
-          <Progress>Week {activePlan.currentWeek} of {activePlan.durationWeeks}</Progress>
+          <Progress>
+            Week {activePlan.currentWeek} of {activePlan.durationWeeks}
+          </Progress>
         </PlanMetadata>
       </ActivePlanCard>
     )}
 
     {/* All other plans */}
-    {otherPlans.map(plan => (
+    {otherPlans.map((plan) => (
       <PlanCard key={plan.id}>
         <PlanHeader>
           <PlanName>{plan.name}</PlanName>
@@ -1570,12 +1577,8 @@ function openBespokeWorkoutBuilder() {
 
         {/* Plan options */}
         <OptionsMenu>
-          <MenuItem onClick={() => copyPlanAsOwn(plan.id)}>
-            Copy as My Own
-          </MenuItem>
-          <MenuItem onClick={() => editPlan(plan.id)}>
-            Edit Plan
-          </MenuItem>
+          <MenuItem onClick={() => copyPlanAsOwn(plan.id)}>Copy as My Own</MenuItem>
+          <MenuItem onClick={() => editPlan(plan.id)}>Edit Plan</MenuItem>
           <MenuItem onClick={() => deletePlan(plan.id)} variant="destructive">
             Delete Plan
           </MenuItem>
@@ -1596,7 +1599,7 @@ function openBespokeWorkoutBuilder() {
   </DrawerHeader>
 
   <PlanList>
-    {ptPlans.map(plan => (
+    {ptPlans.map((plan) => (
       <PlanSelectCard
         key={plan.id}
         plan={plan}
@@ -1607,9 +1610,7 @@ function openBespokeWorkoutBuilder() {
   </PlanList>
 
   {selectedPlans.length > 0 && (
-    <FixedBottomButton onClick={copySelectedPlans}>
-      Copy ({selectedPlans.length})
-    </FixedBottomButton>
+    <FixedBottomButton onClick={copySelectedPlans}>Copy ({selectedPlans.length})</FixedBottomButton>
   )}
 </Drawer>
 ```
@@ -1619,10 +1620,10 @@ function openBespokeWorkoutBuilder() {
 ```typescript
 async function copySelectedPlans() {
   const results = await Promise.all(
-    selectedPlans.map(planId =>
+    selectedPlans.map((planId) =>
       copyPlanToClient({
         planId,
-        clientId
+        clientId,
       })
     )
   )
@@ -1644,6 +1645,7 @@ Opens plan builder but stays within client profile context (see section 6 for pl
 ## 4. Role Upgrade Flow
 
 ### User Story
+
 As a Personal User, I want to upgrade to PT so I can manage clients and assign workouts.
 
 ### Flow Steps
@@ -1651,6 +1653,7 @@ As a Personal User, I want to upgrade to PT so I can manage clients and assign w
 #### 4.1 Navigate to Upgrade
 
 **Entry Points**:
+
 - Dashboard → "Upgrade to PT" CTA
 - Pricing page
 - Settings → Subscription
@@ -1661,7 +1664,7 @@ As a Personal User, I want to upgrade to PT so I can manage clients and assign w
 
 ```tsx
 <PricingPage>
-  {tiers.map(tier => (
+  {tiers.map((tier) => (
     <PricingCard key={tier.id}>
       <TierName>{tier.name}</TierName>
       <Price>
@@ -1670,7 +1673,7 @@ As a Personal User, I want to upgrade to PT so I can manage clients and assign w
       </Price>
 
       <FeatureList>
-        {tier.features.map(feature => (
+        {tier.features.map((feature) => (
           <Feature key={feature}>{feature}</Feature>
         ))}
       </FeatureList>
@@ -1702,6 +1705,7 @@ async function handleUpgrade(priceId: string) {
 ```
 
 **Stripe Checkout**:
+
 - Enter payment details
 - Review subscription
 - Complete payment
@@ -1713,23 +1717,27 @@ async function handleUpgrade(priceId: string) {
 **Success URL**: `/dashboard?checkout=success`
 
 **UI**:
+
 ```tsx
-{searchParams.get('checkout') === 'success' && (
-  <SuccessMessage>
-    <Title>Welcome to B-Fit PT! 🎉</Title>
-    <Message>
-      Your subscription is now active. You can now invite clients and assign workouts.
-    </Message>
-    <OnboardingChecklist>
-      <ChecklistItem>Set up your branding</ChecklistItem>
-      <ChecklistItem>Invite your first client</ChecklistItem>
-      <ChecklistItem>Create a workout template</ChecklistItem>
-    </OnboardingChecklist>
-  </SuccessMessage>
-)}
+{
+  searchParams.get('checkout') === 'success' && (
+    <SuccessMessage>
+      <Title>Welcome to B-Fit PT! 🎉</Title>
+      <Message>
+        Your subscription is now active. You can now invite clients and assign workouts.
+      </Message>
+      <OnboardingChecklist>
+        <ChecklistItem>Set up your branding</ChecklistItem>
+        <ChecklistItem>Invite your first client</ChecklistItem>
+        <ChecklistItem>Create a workout template</ChecklistItem>
+      </OnboardingChecklist>
+    </SuccessMessage>
+  )
+}
 ```
 
 **Backend** (Webhook):
+
 - Update `user.role` to `PT`
 - Set `subscriptionTier` and `clientCapacity`
 - Create `Subscription` record
@@ -1739,6 +1747,7 @@ async function handleUpgrade(priceId: string) {
 ## 5. Messaging Flow
 
 ### User Story
+
 As a client, I want to send messages to my PT about specific workouts or sessions so I can get feedback.
 
 ### Flow Steps
@@ -1746,6 +1755,7 @@ As a client, I want to send messages to my PT about specific workouts or session
 #### 5.1 Open Conversation
 
 **Entry Points**:
+
 - Client dashboard → "Message PT" button
 - PT client list → Click client → "Message" button
 - Workout detail → "Ask about this workout"
@@ -1795,7 +1805,8 @@ As a client, I want to send messages to my PT about specific workouts or session
 ```typescript
 async function handleMediaUpload(file: File) {
   // Validate
-  if (file.size > 10 * 1024 * 1024) {  // 10MB
+  if (file.size > 10 * 1024 * 1024) {
+    // 10MB
     showError('File too large (max 10MB)')
     return
   }
@@ -1828,7 +1839,7 @@ async function sendMessage() {
     content: message,
     workoutId: contextWorkout?.id,
     sessionId: contextSession?.id,
-    mediaUrl: mediaUrl
+    mediaUrl: mediaUrl,
   })
 
   if (result.success) {
@@ -1858,17 +1869,11 @@ async function sendMessage() {
   </ConversationHeader>
 
   <MessageList>
-    {messages.map(msg => (
-      <MessageBubble
-        key={msg.id}
-        message={msg}
-        isOwnMessage={msg.senderId === currentUser.id}
-      >
+    {messages.map((msg) => (
+      <MessageBubble key={msg.id} message={msg} isOwnMessage={msg.senderId === currentUser.id}>
         <MessageContent>{msg.content}</MessageContent>
 
-        {msg.mediaUrl && (
-          <MediaAttachment src={msg.mediaUrl} />
-        )}
+        {msg.mediaUrl && <MediaAttachment src={msg.mediaUrl} />}
 
         {msg.workoutId && (
           <WorkoutContext workout={msg.workout}>
@@ -1893,6 +1898,7 @@ async function sendMessage() {
 ## 6. Planning Flow
 
 ### User Story
+
 As a user (Personal or PT), I want to create multi-day training plans so I can schedule workouts across weeks.
 
 ### 6.1 Personal Account - Plans Dashboard
@@ -1918,7 +1924,8 @@ As a user (Personal or PT), I want to create multi-day training plans so I can s
         <PlanProgress>
           <ProgressBar value={activePlan.progress} />
           <ProgressText>
-            Week {activePlan.currentWeek} of {activePlan.durationWeeks === 0 ? '∞' : activePlan.durationWeeks}
+            Week {activePlan.currentWeek} of{' '}
+            {activePlan.durationWeeks === 0 ? '∞' : activePlan.durationWeeks}
           </ProgressText>
         </PlanProgress>
         <OptionsButton onClick={openPlanOptions} />
@@ -1927,11 +1934,8 @@ As a user (Personal or PT), I want to create multi-day training plans so I can s
 
     {/* All other plans */}
     <PlansList>
-      {otherPlans.map(plan => (
-        <PlanCard
-          key={plan.id}
-          onClick={() => router.push(`/plans/${plan.id}`)}
-        >
+      {otherPlans.map((plan) => (
+        <PlanCard key={plan.id} onClick={() => router.push(`/plans/${plan.id}`)}>
           <PlanHeader>
             <PlanName>{plan.name}</PlanName>
             <OptionsButton onClick={openPlanOptions} />
@@ -1949,12 +1953,8 @@ As a user (Personal or PT), I want to create multi-day training plans so I can s
             <MenuItem onClick={() => deletePlan(plan.id)} variant="destructive">
               Delete Plan
             </MenuItem>
-            <MenuItem onClick={() => editPlan(plan.id)}>
-              Edit Plan
-            </MenuItem>
-            <MenuItem onClick={() => copyPlan(plan.id)}>
-              Copy Plan
-            </MenuItem>
+            <MenuItem onClick={() => editPlan(plan.id)}>Edit Plan</MenuItem>
+            <MenuItem onClick={() => copyPlan(plan.id)}>Copy Plan</MenuItem>
           </OptionsMenu>
         </PlanCard>
       ))}
@@ -1975,12 +1975,8 @@ As a user (Personal or PT), I want to create multi-day training plans so I can s
   </StepHeader>
 
   <DaySelector>
-    {[1, 2, 3, 4, 5, 6, 7].map(days => (
-      <DayOption
-        key={days}
-        selected={selectedDays === days}
-        onClick={() => setSelectedDays(days)}
-      >
+    {[1, 2, 3, 4, 5, 6, 7].map((days) => (
+      <DayOption key={days} selected={selectedDays === days} onClick={() => setSelectedDays(days)}>
         <DayNumber>{days}</DayNumber>
         <DayLabel>{days === 1 ? 'day' : 'days'}</DayLabel>
       </DayOption>
@@ -2003,11 +1999,7 @@ As a user (Personal or PT), I want to create multi-day training plans so I can s
   </StepHeader>
 
   {/* Unlimited first */}
-  <DurationOption
-    selected={duration === 0}
-    onClick={() => setDuration(0)}
-    featured
-  >
+  <DurationOption selected={duration === 0} onClick={() => setDuration(0)} featured>
     <DurationLabel>Unlimited</DurationLabel>
     <DurationDescription>No end date, run indefinitely</DurationDescription>
   </DurationOption>
@@ -2022,7 +2014,9 @@ As a user (Personal or PT), I want to create multi-day training plans so I can s
           selected={duration === weeks}
           onClick={() => setDuration(weeks)}
         >
-          <DurationLabel>{weeks} {weeks === 1 ? 'week' : 'weeks'}</DurationLabel>
+          <DurationLabel>
+            {weeks} {weeks === 1 ? 'week' : 'weeks'}
+          </DurationLabel>
         </DurationOption>
       )
     })}
@@ -2049,10 +2043,7 @@ After creating the plan structure, user is taken to the days planning screen:
   </PlanHeader>
 
   {/* Day Carousel - similar to session exercise carousel */}
-  <DayCarousel
-    currentIndex={currentDayIndex}
-    onIndexChange={setCurrentDayIndex}
-  >
+  <DayCarousel currentIndex={currentDayIndex} onIndexChange={setCurrentDayIndex}>
     {plan.days.map((day, index) => (
       <DaySlide
         key={index}
@@ -2072,9 +2063,7 @@ After creating the plan structure, user is taken to the days planning screen:
       <DayTitle>Day {currentDayIndex + 1}</DayTitle>
 
       <DayActions>
-        <AddExerciseButton onClick={openExerciseSelector}>
-          + Add Exercise
-        </AddExerciseButton>
+        <AddExerciseButton onClick={openExerciseSelector}>+ Add Exercise</AddExerciseButton>
         <CopyFromWorkoutButton onClick={openWorkoutSelector}>
           Copy from Workout
         </CopyFromWorkoutButton>
@@ -2083,13 +2072,8 @@ After creating the plan structure, user is taken to the days planning screen:
 
     {/* Exercises for current day - same UI as workout builder */}
     <DayExercisesList>
-      {currentDay.exercises.map(exercise => (
-        <ExerciseCard
-          key={exercise.id}
-          exercise={exercise}
-          draggable
-          onReorder={handleReorder}
-        />
+      {currentDay.exercises.map((exercise) => (
+        <ExerciseCard key={exercise.id} exercise={exercise} draggable onReorder={handleReorder} />
       ))}
 
       {currentDay.exercises.length === 0 && (
@@ -2117,7 +2101,7 @@ After creating the plan structure, user is taken to the days planning screen:
   </DrawerHeader>
 
   <WorkoutList>
-    {workouts.map(workout => (
+    {workouts.map((workout) => (
       <WorkoutCard
         key={workout.id}
         workout={workout}
@@ -2136,15 +2120,15 @@ async function copyExercisesFromWorkout(workoutId: string) {
   const workout = await getWorkout(workoutId)
 
   // Copy all exercises from workout to current day
-  const copiedExercises = workout.exercises.map(ex => ({
+  const copiedExercises = workout.exercises.map((ex) => ({
     ...ex,
     id: generateId(), // New ID for plan day
-    dayIndex: currentDayIndex
+    dayIndex: currentDayIndex,
   }))
 
   // Add to current day
   updateDay(currentDayIndex, {
-    exercises: [...currentDay.exercises, ...copiedExercises]
+    exercises: [...currentDay.exercises, ...copiedExercises],
   })
 
   closeWorkoutSelector()
@@ -2153,6 +2137,7 @@ async function copyExercisesFromWorkout(workoutId: string) {
 ```
 
 **Navigation Between Days**:
+
 1. Click day in carousel → Sets current day
 2. Swipe left/right on carousel → Changes current day
 3. Swipe up/down on main section → Changes current day
@@ -2172,27 +2157,17 @@ async function copyExercisesFromWorkout(workoutId: string) {
     <MetadataRow label="Duration">
       {plan.durationWeeks === 0 ? 'Unlimited' : `${plan.durationWeeks} weeks`}
     </MetadataRow>
-    <MetadataRow label="Days per Week">
-      {plan.daysPerWeek}
-    </MetadataRow>
-    <MetadataRow label="Total Exercises">
-      {plan.totalExercises}
-    </MetadataRow>
+    <MetadataRow label="Days per Week">{plan.daysPerWeek}</MetadataRow>
+    <MetadataRow label="Total Exercises">{plan.totalExercises}</MetadataRow>
   </PlanMetadata>
 
   <Actions>
-    <ActivatePlanButton onClick={activatePlan}>
-      Activate Plan
-    </ActivatePlanButton>
-    <CopyPlanButton onClick={copyPlan}>
-      Copy Plan
-    </CopyPlanButton>
+    <ActivatePlanButton onClick={activatePlan}>Activate Plan</ActivatePlanButton>
+    <CopyPlanButton onClick={copyPlan}>Copy Plan</CopyPlanButton>
     <DeletePlanButton onClick={deletePlan} variant="destructive">
       Delete Plan
     </DeletePlanButton>
-    <EditDaysButton onClick={editPlanDays}>
-      Edit Days
-    </EditDaysButton>
+    <EditDaysButton onClick={editPlanDays}>Edit Days</EditDaysButton>
   </Actions>
 
   {/* Day-by-day breakdown */}
@@ -2205,10 +2180,8 @@ async function copyExercisesFromWorkout(workoutId: string) {
         </DayHeader>
 
         <ExercisesList>
-          {day.exercises.map(exercise => (
-            <ExerciseListItem key={exercise.id}>
-              {exercise.name}
-            </ExerciseListItem>
+          {day.exercises.map((exercise) => (
+            <ExerciseListItem key={exercise.id}>{exercise.name}</ExerciseListItem>
           ))}
         </ExercisesList>
       </DayCard>
@@ -2250,6 +2223,7 @@ PT can create and manage their own training plans with the exact same interface 
 **Behavior**: Same as section 3.4, with full plan builder capability
 
 The plan builder interface is identical to personal use, but:
+
 - Plans are owned by the client
 - PT has full edit permissions
 - PT can copy their own plans to client

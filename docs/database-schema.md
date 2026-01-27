@@ -711,11 +711,13 @@ model BrandingSettings {
 **Approach**: `groupId` field in `WorkoutExercise`
 
 Exercises with the same `groupId` value form a superset. This allows:
+
 - Flexible group sizes (2, 3, or more exercises)
 - Simple querying: `WHERE groupId = 'xyz'`
 - Easy reordering: just update `order` field
 
 **Example**:
+
 ```sql
 -- Workout with superset (Bench Press + Rows)
 WorkoutExercise:
@@ -735,6 +737,7 @@ WorkoutExercise:
 - Enables proper history aggregation
 
 **Example**:
+
 ```typescript
 // Workout: Squats (3x5) in superset, then Squats (5x10) solo
 // Session creates two instanceIds: 'instance-1', 'instance-2'
@@ -759,6 +762,7 @@ SessionSet:
 - Enables client-to-personal conversion (retain workouts)
 
 **Flow**:
+
 ```typescript
 // 1. PT creates template
 const template = { id: '1', createdById: 'pt-id', isTemplate: true }
@@ -766,9 +770,9 @@ const template = { id: '1', createdById: 'pt-id', isTemplate: true }
 // 2. PT assigns to client
 const clientCopy = {
   id: '2',
-  createdById: 'client-id',  // Client owns the copy
-  copiedFromId: '1',          // Reference to template
-  isTemplate: false
+  createdById: 'client-id', // Client owns the copy
+  copiedFromId: '1', // Reference to template
+  isTemplate: false,
 }
 
 // 3. PT can customize client's copy
@@ -847,16 +851,16 @@ Optimize common multi-field queries:
 
 ### Cascade Delete Rules
 
-| Parent → Child | On Delete | Reasoning |
-|----------------|-----------|-----------|
-| User → Exercise | SET NULL | Preserve exercises if user deleted |
-| User → Workout | CASCADE | User's workouts deleted with user |
-| User → TrainingSession | CASCADE | User's sessions deleted with user |
-| Workout → TrainingSession | SET NULL | Session data preserved even if workout deleted |
-| Exercise → WorkoutExercise | SET NULL | Workout exercise preserved but exercise reference removed |
-| TrainingSession → SessionSet | CASCADE | Sets deleted with session |
-| Organisation → User (PT) | SET NULL | PT account preserved if organisation deleted |
-| Organisation → OrganisationBranding | CASCADE | Branding deleted with organisation |
+| Parent → Child                      | On Delete | Reasoning                                                 |
+| ----------------------------------- | --------- | --------------------------------------------------------- |
+| User → Exercise                     | SET NULL  | Preserve exercises if user deleted                        |
+| User → Workout                      | CASCADE   | User's workouts deleted with user                         |
+| User → TrainingSession              | CASCADE   | User's sessions deleted with user                         |
+| Workout → TrainingSession           | SET NULL  | Session data preserved even if workout deleted            |
+| Exercise → WorkoutExercise          | SET NULL  | Workout exercise preserved but exercise reference removed |
+| TrainingSession → SessionSet        | CASCADE   | Sets deleted with session                                 |
+| Organisation → User (PT)            | SET NULL  | PT account preserved if organisation deleted              |
+| Organisation → OrganisationBranding | CASCADE   | Branding deleted with organisation                        |
 
 ### Unique Constraints
 
@@ -924,10 +928,10 @@ async function main() {
         equipmentType: 'BARBELL',
         movementPattern: 'PUSH',
         difficultyLevel: 'INTERMEDIATE',
-        isDefault: true
+        isDefault: true,
       },
       // ... 200+ more exercises
-    ]
+    ],
   })
 }
 

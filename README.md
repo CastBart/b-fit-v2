@@ -5,6 +5,7 @@ A modern, production-ready web application for fitness enthusiasts, personal tra
 ## Overview
 
 B-Fit is a comprehensive fitness platform that enables:
+
 - **Custom workout creation** with advanced structures (supersets, exercise ordering)
 - **Live session tracking** with real-time set logging and exercise navigation
 - **Multi-role support** for Personal Users, Personal Trainers, Clients, and Organizations
@@ -17,6 +18,7 @@ B-Fit is a comprehensive fitness platform that enables:
 ## Tech Stack
 
 ### Frontend
+
 - **Framework:** Next.js 14+ (App Router)
 - **Language:** TypeScript (strict mode)
 - **Styling:** Tailwind CSS
@@ -25,6 +27,7 @@ B-Fit is a comprehensive fitness platform that enables:
 - **State Management:** Redux Toolkit, React Query (TanStack)
 
 ### Backend
+
 - **Database:** Vercel Postgres
 - **ORM:** Prisma
 - **Authentication:** NextAuth.js
@@ -32,6 +35,7 @@ B-Fit is a comprehensive fitness platform that enables:
 - **Payments:** Stripe
 
 ### DevOps & Monitoring
+
 - **Deployment:** Vercel
 - **Error Tracking:** Sentry
 - **Analytics:** PostHog
@@ -109,12 +113,14 @@ The project includes extensive documentation to guide development:
 ## Key Features
 
 ### User Roles
+
 - **Personal User** - Individual fitness enthusiasts managing their own workouts
 - **Personal Trainer** - Manage clients, assign workouts, track progress
 - **Client** - Access PT-assigned workouts and track sessions
 - **Organization** - Manage multiple PTs and aggregate analytics
 
 ### Core Functionality
+
 - Exercise library with custom exercises
 - Workout builder with drag-and-drop, supersets, and ordering
 - Live session mode with carousel navigation
@@ -127,33 +133,37 @@ The project includes extensive documentation to guide development:
 
 ## Development Phases
 
-| Phase | Duration | Focus |
-|-------|----------|-------|
-| **Phase 0** | Week 0 | Documentation & Setup |
-| **Phase 1** | Weeks 1-2 | Foundation (Next.js, Auth, DB) |
-| **Phase 2** | Weeks 3-6 | Core Features (Exercises, Workouts, Sessions) |
-| **Phase 3** | Weeks 7-9 | Multi-Role Features (PT-Client) |
-| **Phase 4** | Weeks 10-11 | Payments & Subscriptions |
-| **Phase 5** | Weeks 12-14 | Advanced Features (Analytics, Messaging) |
-| **Phase 6** | Weeks 15-16 | Polish & Launch |
+| Phase       | Duration    | Focus                                         |
+| ----------- | ----------- | --------------------------------------------- |
+| **Phase 0** | Week 0      | Documentation & Setup                         |
+| **Phase 1** | Weeks 1-2   | Foundation (Next.js, Auth, DB)                |
+| **Phase 2** | Weeks 3-6   | Core Features (Exercises, Workouts, Sessions) |
+| **Phase 3** | Weeks 7-9   | Multi-Role Features (PT-Client)               |
+| **Phase 4** | Weeks 10-11 | Payments & Subscriptions                      |
+| **Phase 5** | Weeks 12-14 | Advanced Features (Analytics, Messaging)      |
+| **Phase 6** | Weeks 15-16 | Polish & Launch                               |
 
 Full breakdown available in [docs/project-plan.md](./docs/project-plan.md)
 
 ## Architecture Highlights
 
 ### Workout Assignment Pattern
+
 When a PT assigns a workout to a client, the client receives a **copy** of the workout. This enables:
+
 - Per-client customization by the PT
 - Client-to-Personal User role transitions without data loss
 - Clear ownership boundaries
 
 ### Session State Management
+
 - Sessions use `instanceId` to track individual exercise instances
 - State persists across page refreshes (database + local storage)
 - Optimistic updates for sub-100ms UI performance
 - Clear separation between workout definition and session execution
 
 ### Multi-Role Architecture
+
 - Four first-class user roles with standalone value
 - PTs are a superset of Personal User capabilities
 - Role-based data access with Prisma RLS patterns
@@ -181,6 +191,7 @@ npm run test:coverage
 ## Deployment
 
 The application is designed for deployment on Vercel with:
+
 - Vercel Postgres for database
 - Vercel Blob for media storage
 - Edge runtime for API routes where possible
@@ -198,6 +209,7 @@ vercel deploy
 ## Support
 
 For issues and questions:
+
 - GitHub Issues: [TBD]
 - Documentation: See [docs/](./docs) folder
 

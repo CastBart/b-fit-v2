@@ -14,12 +14,14 @@ B-Fit is a modern fitness application designed to help users **build workouts, m
 ## 2. Goals & Objectives
 
 ### Primary Goals
+
 - Allow users to **create and manage workouts** with advanced structures (ordered exercises, supersets).
 - Enable **live workout sessions** with real-time set tracking and exercise navigation.
 - Persist completed sessions and generate **exercise history & progress data**.
 - Deliver a **fast, reliable, and intuitive UX** across devices.
 
 ### Secondary Goals
+
 - Support **progressive enhancement** into analytics, AI-driven plans, and nutrition features.
 - Be architected for **scalability** (multi-sessions, large exercise libraries).
 - Serve as a **portfolio-grade production app**.
@@ -29,16 +31,19 @@ B-Fit is a modern fitness application designed to help users **build workouts, m
 ## 3. User Personas
 
 ### 3.1 Fitness Enthusiast
+
 - Wants custom workouts and progression tracking
 - Uses supersets and structured sessions
 - Trains 3–6x per week
 
 ### 3.2 Hybrid / Hyrox Athlete
+
 - Needs strength + conditioning sessions
 - Cares about timing, flow, and minimal friction during sessions
 - Uses repeated workouts and templates
 
 ### 3.3 Casual Gym User
+
 - Wants simple workout creation
 - Needs clear session guidance
 - Tracks basic performance improvements
@@ -52,6 +57,7 @@ B-Fit is a modern fitness application designed to help users **build workouts, m
 B-Fit supports four **first-class, standalone user roles**. Each role represents a valid long-term use of the platform and has its own subscription model.
 
 #### 4.1.1 Personal User
+
 - Standalone product offering
 - Pays individual subscription
 - Can create and manage:
@@ -66,6 +72,7 @@ Personal users are **not** clients by default and do not belong to any organisat
 ---
 
 #### 4.1.2 Personal Trainer (PT)
+
 - Pays a base subscription plus client capacity
 - Superset of Personal User capabilities
 - Can:
@@ -76,12 +83,14 @@ Personal users are **not** clients by default and do not belong to any organisat
   - Brand the experience (logo, colours)
 
 PTs operate either:
+
 - Independently (solo PT)
 - Or as part of an Organisation
 
 ---
 
 #### 4.1.3 Client User
+
 - Access provided through an associated PT
 - Does not pay directly (covered by PT or Organisation)
 - Can:
@@ -92,9 +101,11 @@ PTs operate either:
   - Communicate with PTs via async messaging
 
 Restrictions:
+
 - Cannot create exercises, workouts, or plans
 
 Role Transition:
+
 - If PT relationship ends, client account can be converted into a **Personal User** account
 - Assigned workouts are retained as owned copies
 
@@ -105,6 +116,7 @@ Role Transition:
 An Organisation represents a gym, studio, or coaching business.
 
 Capabilities:
+
 - Pays for PT seats and client capacity
 - Creates and manages PT accounts
 - Views aggregate dashboards across:
@@ -114,6 +126,7 @@ Capabilities:
   - Adherence metrics
 
 Limitations:
+
 - Organisations do **not** directly modify training data
 - Training ownership remains with PTs and clients
 
@@ -124,21 +137,25 @@ Limitations:
 Subscriptions are role-based and capacity-driven.
 
 #### Personal User
+
 - Flat recurring subscription
 - Full access to personal training features
 
 #### Personal Trainer
+
 - Base subscription
 - Client capacity tiers (e.g. 10, 20, unlimited)
 - Automatic tier upgrades when capacity limits are exceeded
 
 #### Organisation
+
 - Subscription based on:
   - Number of PT seats
   - Client capacity per PT or pooled capacity
 - Automatic scaling as limits are exceeded
 
 Billing Rules:
+
 - No hard feature blocks due to capacity
 - Auto-upgrade ensures uninterrupted workflows
 
@@ -153,6 +170,7 @@ Billing Rules:
   - The PT can customise the copy per client
 
 Ownership Rules:
+
 - PT owns the original workout
 - Client owns their assigned copy
 
@@ -168,6 +186,7 @@ Ownership Rules:
   - Completion status
 
 Session Data:
+
 - Owned by the user performing the session
 - Read-only access for associated PTs
 
@@ -183,6 +202,7 @@ Core analytics available in v1:
 - **Strength PRs** – personal records per exercise
 
 Visibility:
+
 - Personal Users: own analytics only
 - PTs: analytics for themselves and all assigned clients
 - Organisations: aggregated analytics across PTs and clients
@@ -206,8 +226,8 @@ Real-time chat is out of scope for v1
 
 ## 5. Data Model Overview (High Level)
 
-
 ### Key Entities
+
 - User
 - Exercise
 - Workout
@@ -215,6 +235,7 @@ Real-time chat is out of scope for v1
 - ExerciseHistory
 
 ### Notable Design Decisions
+
 - `instanceId` used for session exercises
 - Separation of **Workout definition** vs **Session execution**
 
@@ -223,18 +244,22 @@ Real-time chat is out of scope for v1
 ## 6. Non-Functional Requirements
 
 ### Performance
+
 - Sub-100ms UI updates during sessions
 - No blocking renders during set completion
 
 ### Reliability
+
 - Session state must survive refresh
 - No data loss during completion
 
 ### Scalability
+
 - Designed for thousands of users
 - Expandable to mobile & offline use
 
 ### Security
+
 - OAuth + credential auth
 - Server-side validation
 - Prisma schema validation
@@ -253,6 +278,7 @@ Real-time chat is out of scope for v1
 ## 8. Technical Stack
 
 **Frontend**
+
 - Next.js 14+
 - React
 - TypeScript
@@ -262,10 +288,12 @@ Real-time chat is out of scope for v1
 - DnD Kit
 
 **State & Data**
+
 - Redux Toolkit
 - React Query (TanStack)
 
 **Backend**
+
 - Vercel Postgres
 - Prisma ORM
 - NextAuth

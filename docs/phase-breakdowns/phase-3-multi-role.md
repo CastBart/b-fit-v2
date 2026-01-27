@@ -13,6 +13,7 @@
 **Estimated Effort**: 5-6 hours
 
 #### Sub-tasks:
+
 1. **Implement Complete Session Logic**
    - [ ] Update `completeSession()` in `src/server/actions/sessions.ts`
    - [ ] Calculate `totalVolume` (sets × reps × weight)
@@ -27,6 +28,7 @@
    - [ ] "Finish" button to return to workouts
 
 **Acceptance Criteria**:
+
 - ✅ Session completes successfully
 - ✅ Summary displays correct stats
 - ✅ New PRs highlighted
@@ -39,6 +41,7 @@
 **Estimated Effort**: 6-7 hours
 
 #### Sub-tasks:
+
 1. **Add ExerciseHistory Model**
    - [ ] Add to Prisma schema
    - [ ] Run migration
@@ -57,6 +60,7 @@
    - [ ] Keep last 100 entries
 
 **Acceptance Criteria**:
+
 - ✅ PRs detected correctly
 - ✅ ExerciseHistory updated on completion
 - ✅ Volume history tracks over time
@@ -69,6 +73,7 @@
 **Estimated Effort**: 5-6 hours
 
 #### Sub-tasks:
+
 1. **Create History Page**
    - [ ] Create `src/app/sessions/history/page.tsx`
    - [ ] List all completed sessions
@@ -81,6 +86,7 @@
    - [ ] Click to view detailed summary
 
 **Acceptance Criteria**:
+
 - ✅ History page shows all sessions
 - ✅ Can filter by workout
 - ✅ Can view session details
@@ -95,12 +101,14 @@
 **Estimated Effort**: 2-3 hours
 
 #### Sub-tasks:
+
 1. **Add ClientRelationship Model**
    - [ ] Add to Prisma schema
    - [ ] Fields: ptId, clientId, status, startedAt, endedAt
    - [ ] Run migration
 
 **Acceptance Criteria**:
+
 - ✅ ClientRelationship table created
 - ✅ Relations to User configured
 
@@ -112,6 +120,7 @@
 **Estimated Effort**: 6-7 hours
 
 #### Sub-tasks:
+
 1. **Create Invite Server Action**
    - [ ] Create `src/server/actions/clients.ts`
    - [ ] `inviteClient(email)` - Create PENDING relationship
@@ -129,6 +138,7 @@
    - [ ] Send invitation
 
 **Acceptance Criteria**:
+
 - ✅ PT can invite clients by email
 - ✅ Relationship created as PENDING
 - ✅ Invitation sent (or logged for now)
@@ -141,6 +151,7 @@
 **Estimated Effort**: 5-6 hours
 
 #### Sub-tasks:
+
 1. **Create Accept Invitation Page**
    - [ ] Create `src/app/invitations/[id]/page.tsx`
    - [ ] Show PT details
@@ -152,6 +163,7 @@
    - File: `src/server/actions/clients.ts`
 
 **Acceptance Criteria**:
+
 - ✅ Client can accept invitation
 - ✅ Client role updated to CLIENT
 - ✅ Relationship active
@@ -164,6 +176,7 @@
 **Estimated Effort**: 7-8 hours
 
 #### Sub-tasks:
+
 1. **Create Assign Workout Action**
    - [ ] `assignWorkoutToClient(workoutId, clientId)` in `src/server/actions/workouts.ts`
    - [ ] Create deep copy of workout
@@ -180,6 +193,7 @@
    - [ ] Show assigned workouts (createdById = clientId, copiedFromId !== null)
 
 **Acceptance Criteria**:
+
 - ✅ PT can assign workouts to clients
 - ✅ Workout copied correctly
 - ✅ Client can view assigned workouts
@@ -193,6 +207,7 @@
 **Estimated Effort**: 5-6 hours
 
 #### Sub-tasks:
+
 1. **Create RBAC Utility**
    - [ ] Create `src/lib/auth/rbac.ts`
    - [ ] Check user role
@@ -206,6 +221,7 @@
    - [ ] Client can only view assigned workouts
 
 **Acceptance Criteria**:
+
 - ✅ RBAC enforced on all operations
 - ✅ PT has correct access to client data
 - ✅ Client cannot access unauthorized data
@@ -220,12 +236,14 @@
 **Estimated Effort**: 2-3 hours
 
 #### Sub-tasks:
+
 1. **Add BrandingSettings Model**
    - [ ] Add to Prisma schema
    - [ ] Fields: ptId, logoUrl, primaryColor, accentColor
    - [ ] Run migration
 
 **Acceptance Criteria**:
+
 - ✅ BrandingSettings table created
 - ✅ One-to-one relation with User (PT)
 
@@ -237,6 +255,7 @@
 **Estimated Effort**: 6-7 hours
 
 #### Sub-tasks:
+
 1. **Create Upgrade Page**
    - [ ] Create `src/app/upgrade/page.tsx`
    - [ ] Show PT features and pricing
@@ -249,6 +268,7 @@
    - [ ] Set clientCapacity
 
 **Acceptance Criteria**:
+
 - ✅ User can upgrade to PT
 - ✅ Role updated correctly
 - ✅ PT capabilities unlocked
@@ -261,6 +281,7 @@
 **Estimated Effort**: 5-6 hours
 
 #### Sub-tasks:
+
 1. **Create Branding Settings Page**
    - [ ] Create `src/app/pt/branding/page.tsx`
    - [ ] Logo upload (future: use Vercel Blob)
@@ -272,6 +293,7 @@
    - [ ] Show PT logo in client dashboard
 
 **Acceptance Criteria**:
+
 - ✅ PT can customize branding
 - ✅ Branding applies to client view
 - ✅ Colors update in real-time
@@ -284,6 +306,7 @@
 **Estimated Effort**: 4-5 hours
 
 #### Sub-tasks:
+
 1. **Create End Relationship Action**
    - [ ] `endClientRelationship()` in `src/server/actions/clients.ts`
    - [ ] Set status to ENDED
@@ -296,6 +319,7 @@
    - [ ] Notify client
 
 **Acceptance Criteria**:
+
 - ✅ PT can end relationship
 - ✅ Client role reverts to PERSONAL
 - ✅ Client retains all data
@@ -306,18 +330,21 @@
 ## Phase 3 Completion Checklist
 
 ### Session Features
+
 - [ ] Session completion flow working
 - [ ] PR detection functional
 - [ ] ExerciseHistory updated correctly
 - [ ] Session history page complete
 
 ### PT-Client Relationships
+
 - [ ] ClientRelationship schema complete
 - [ ] Invite/accept flow working
 - [ ] Workout assignment (copy-on-assign) functional
 - [ ] RBAC middleware enforced
 
 ### Role Management
+
 - [ ] Role upgrade flow working
 - [ ] PT branding customization
 - [ ] End relationship flow complete

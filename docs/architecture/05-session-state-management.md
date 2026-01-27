@@ -229,13 +229,13 @@ flowchart TB
 
 ## Performance Requirements
 
-| Metric | Target | Implementation |
-|--------|--------|----------------|
-| Set completion UI update | < 100ms | Optimistic Redux update |
-| LocalStorage backup | < 50ms | Synchronous write |
-| Database sync | < 500ms | Debounced batch |
-| Session recovery | < 1s | Parallel fetch + compare |
-| Memory usage | < 10MB | Minimal state shape |
+| Metric                   | Target  | Implementation           |
+| ------------------------ | ------- | ------------------------ |
+| Set completion UI update | < 100ms | Optimistic Redux update  |
+| LocalStorage backup      | < 50ms  | Synchronous write        |
+| Database sync            | < 500ms | Debounced batch          |
+| Session recovery         | < 1s    | Parallel fetch + compare |
+| Memory usage             | < 10MB  | Minimal state shape      |
 
 ---
 

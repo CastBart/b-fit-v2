@@ -36,6 +36,27 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -119,6 +140,56 @@ export default function TestPage() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+        </CardContent>
+      </Card>
+
+      {/* Drawer */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Drawer</CardTitle>
+          <CardDescription>Bottom drawer component (Vaul)</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Drawer>
+            <DrawerTrigger asChild>
+              <Button variant="outline">Open Drawer</Button>
+            </DrawerTrigger>
+
+            <DrawerContent>
+              <div className="mx-auto w-full max-w-md">
+                <DrawerHeader>
+                  <DrawerTitle>Quick Actions</DrawerTitle>
+                  <DrawerDescription>
+                    This is a drawer. Great for mobile actions & forms.
+                  </DrawerDescription>
+                </DrawerHeader>
+
+                <div className="p-4 space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="drawer-note">Note</Label>
+                    <Input id="drawer-note" placeholder="e.g. Add 2 warmup sets" />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button className="flex-1" onClick={() => toast.success('Saved from drawer!')}>
+                      Save
+                    </Button>
+                    <DrawerClose asChild>
+                      <Button className="flex-1" variant="outline">
+                        Close
+                      </Button>
+                    </DrawerClose>
+                  </div>
+                </div>
+
+                <DrawerFooter>
+                  <p className="text-xs text-muted-foreground">
+                    Tip: use drawers for “Add exercise”, “Edit set”, etc.
+                  </p>
+                </DrawerFooter>
+              </div>
+            </DrawerContent>
+          </Drawer>
         </CardContent>
       </Card>
 
@@ -211,6 +282,40 @@ export default function TestPage() {
         </CardContent>
       </Card>
 
+      {/* Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Table</CardTitle>
+          <CardDescription>Basic table component</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableCaption>Example set history table</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[80px]">Set</TableHead>
+                <TableHead>Weight</TableHead>
+                <TableHead>Reps</TableHead>
+                <TableHead className="text-right">RPE</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[
+                { set: 1, weight: '60 kg', reps: 10, rpe: 7 },
+                { set: 2, weight: '60 kg', reps: 10, rpe: 8 },
+                { set: 3, weight: '62.5 kg', reps: 8, rpe: 9 },
+              ].map((row) => (
+                <TableRow key={row.set}>
+                  <TableCell className="font-medium">{row.set}</TableCell>
+                  <TableCell>{row.weight}</TableCell>
+                  <TableCell>{row.reps}</TableCell>
+                  <TableCell className="text-right">{row.rpe}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle>Component Status</CardTitle>
@@ -232,6 +337,10 @@ export default function TestPage() {
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-success"></div>
               <span className="text-sm">Dialog</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-success"></div>
+              <span className="text-sm">Drawer</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-success"></div>
@@ -264,6 +373,10 @@ export default function TestPage() {
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-success"></div>
               <span className="text-sm">Sonner (Toast)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-success"></div>
+              <span className="text-sm">Table</span>
             </div>
           </div>
         </CardContent>

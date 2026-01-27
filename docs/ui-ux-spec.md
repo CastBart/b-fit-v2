@@ -13,7 +13,7 @@ const colors = {
     200: '#bae6fd',
     300: '#7dd3fc',
     400: '#38bdf8',
-    500: '#0ea5e9',  // Primary
+    500: '#0ea5e9', // Primary
     600: '#0284c7',
     700: '#0369a1',
     800: '#075985',
@@ -25,7 +25,7 @@ const colors = {
     200: '#e9d5ff',
     300: '#d8b4fe',
     400: '#c084fc',
-    500: '#a855f7',  // Secondary
+    500: '#a855f7', // Secondary
     600: '#9333ea',
     700: '#7e22ce',
     800: '#6b21a8',
@@ -47,7 +47,7 @@ const colors = {
     800: '#1f2937',
     900: '#111827',
     950: '#030712',
-  }
+  },
 }
 ```
 
@@ -62,15 +62,15 @@ const fontFamily = {
 
 // Font Sizes
 const fontSize = {
-  xs: '0.75rem',      // 12px
-  sm: '0.875rem',     // 14px
-  base: '1rem',       // 16px
-  lg: '1.125rem',     // 18px
-  xl: '1.25rem',      // 20px
-  '2xl': '1.5rem',    // 24px
-  '3xl': '1.875rem',  // 30px
-  '4xl': '2.25rem',   // 36px
-  '5xl': '3rem',      // 48px
+  xs: '0.75rem', // 12px
+  sm: '0.875rem', // 14px
+  base: '1rem', // 16px
+  lg: '1.125rem', // 18px
+  xl: '1.25rem', // 20px
+  '2xl': '1.5rem', // 24px
+  '3xl': '1.875rem', // 30px
+  '4xl': '2.25rem', // 36px
+  '5xl': '3rem', // 48px
 }
 
 // Font Weights
@@ -96,19 +96,19 @@ Based on 4px grid:
 ```typescript
 const spacing = {
   0: '0',
-  0.5: '0.125rem',  // 2px
-  1: '0.25rem',     // 4px
-  2: '0.5rem',      // 8px
-  3: '0.75rem',     // 12px
-  4: '1rem',        // 16px
-  5: '1.25rem',     // 20px
-  6: '1.5rem',      // 24px
-  8: '2rem',        // 32px
-  10: '2.5rem',     // 40px
-  12: '3rem',       // 48px
-  16: '4rem',       // 64px
-  20: '5rem',       // 80px
-  24: '6rem',       // 96px
+  0.5: '0.125rem', // 2px
+  1: '0.25rem', // 4px
+  2: '0.5rem', // 8px
+  3: '0.75rem', // 12px
+  4: '1rem', // 16px
+  5: '1.25rem', // 20px
+  6: '1.5rem', // 24px
+  8: '2rem', // 32px
+  10: '2.5rem', // 40px
+  12: '3rem', // 48px
+  16: '4rem', // 64px
+  20: '5rem', // 80px
+  24: '6rem', // 96px
 }
 ```
 
@@ -118,10 +118,10 @@ Mobile-first responsive design:
 
 ```typescript
 const screens = {
-  sm: '640px',   // Mobile landscape
-  md: '768px',   // Tablet
-  lg: '1024px',  // Desktop
-  xl: '1280px',  // Large desktop
+  sm: '640px', // Mobile landscape
+  md: '768px', // Tablet
+  lg: '1024px', // Desktop
+  xl: '1280px', // Large desktop
   '2xl': '1536px', // Extra large
 }
 ```
@@ -131,13 +131,13 @@ const screens = {
 ```typescript
 const borderRadius = {
   none: '0',
-  sm: '0.125rem',   // 2px
+  sm: '0.125rem', // 2px
   DEFAULT: '0.25rem', // 4px
-  md: '0.375rem',   // 6px
-  lg: '0.5rem',     // 8px
-  xl: '0.75rem',    // 12px
-  '2xl': '1rem',    // 16px
-  full: '9999px',   // Pill shape
+  md: '0.375rem', // 6px
+  lg: '0.5rem', // 8px
+  xl: '0.75rem', // 12px
+  '2xl': '1rem', // 16px
+  full: '9999px', // Pill shape
 }
 ```
 
@@ -189,20 +189,15 @@ const buttonVariants = cva(
 )
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {}
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {}
 
 export function Button({ className, variant, size, ...props }: ButtonProps) {
-  return (
-    <button
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
+  return <button className={cn(buttonVariants({ variant, size, className }))} {...props} />
 }
 ```
 
 **Usage**:
+
 ```tsx
 <Button>Default Button</Button>
 <Button variant="outline">Outline Button</Button>
@@ -219,31 +214,18 @@ export function Button({ className, variant, size, ...props }: ButtonProps) {
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        'rounded-lg border border-neutral-200 bg-white shadow-sm',
-        className
-      )}
+      className={cn('rounded-lg border border-neutral-200 bg-white shadow-sm', className)}
       {...props}
     />
   )
 }
 
 export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn('flex flex-col space-y-1.5 p-6', className)}
-      {...props}
-    />
-  )
+  return <div className={cn('flex flex-col space-y-1.5 p-6', className)} {...props} />
 }
 
 export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return (
-    <h3
-      className={cn('text-2xl font-semibold leading-none', className)}
-      {...props}
-    />
-  )
+  return <h3 className={cn('text-2xl font-semibold leading-none', className)} {...props} />
 }
 
 export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
@@ -252,6 +234,7 @@ export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDi
 ```
 
 **Usage**:
+
 ```tsx
 <Card>
   <CardHeader>
@@ -269,8 +252,7 @@ export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDi
 
 ```tsx
 // components/ui/input.tsx
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 export function Input({ className, type, ...props }: InputProps) {
   return (
@@ -312,13 +294,12 @@ const badgeVariants = cva(
 )
 
 export function Badge({ className, variant, ...props }: BadgeProps) {
-  return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
-  )
+  return <div className={cn(badgeVariants({ variant }), className)} {...props} />
 }
 ```
 
 **Usage**:
+
 ```tsx
 <Badge>3 sets</Badge>
 <Badge variant="success">PR!</Badge>
@@ -332,6 +313,7 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
 ### 1. Dashboard
 
 **Layout**:
+
 ```tsx
 <DashboardLayout>
   {/* Header */}
@@ -351,16 +333,8 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
       icon={<CheckCircle />}
       trend="+2 from last week"
     />
-    <StatCard
-      label="Total Volume"
-      value="12,500 kg"
-      icon={<Weight />}
-    />
-    <StatCard
-      label="PRs This Month"
-      value="3"
-      icon={<Trophy />}
-    />
+    <StatCard label="Total Volume" value="12,500 kg" icon={<Weight />} />
+    <StatCard label="PRs This Month" value="3" icon={<Trophy />} />
   </StatsGrid>
 
   {/* Recent Activity */}
@@ -382,6 +356,7 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
 ### 2. Workout Builder
 
 **Mobile-First Layout**:
+
 ```tsx
 <WorkoutBuilderLayout>
   {/* Sticky Header */}
@@ -423,6 +398,7 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
 ### 3. Live Session
 
 **Full-Screen Immersive UI**:
+
 ```tsx
 <SessionLayout>
   {/* Minimal Top Bar */}
@@ -433,11 +409,8 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
   </SessionHeader>
 
   {/* Exercise Carousel */}
-  <Carousel
-    index={currentExerciseIndex}
-    onChange={setCurrentExerciseIndex}
-  >
-    {exercises.map(exercise => (
+  <Carousel index={currentExerciseIndex} onChange={setCurrentExerciseIndex}>
+    {exercises.map((exercise) => (
       <ExerciseSlide key={exercise.instanceId}>
         <ExerciseName>{exercise.name}</ExerciseName>
         <ExerciseImage src={exercise.imageUrl} />
@@ -447,20 +420,9 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
           {Array.from({ length: exercise.targetSets }).map((_, i) => (
             <SetRow key={i} setNumber={i + 1}>
               <SetNumber>{i + 1}</SetNumber>
-              <LargeInput
-                placeholder="100"
-                label="kg"
-                inputMode="decimal"
-              />
-              <LargeInput
-                placeholder="10"
-                label="reps"
-                inputMode="numeric"
-              />
-              <CompleteButton
-                size="lg"
-                onClick={() => completeSet(i + 1)}
-              >
+              <LargeInput placeholder="100" label="kg" inputMode="decimal" />
+              <LargeInput placeholder="10" label="reps" inputMode="numeric" />
+              <CompleteButton size="lg" onClick={() => completeSet(i + 1)}>
                 <CheckIcon />
               </CompleteButton>
             </SetRow>
@@ -468,12 +430,7 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
         </SetLogger>
 
         {/* Rest Timer */}
-        {isResting && (
-          <RestTimer
-            duration={restSeconds}
-            onComplete={handleTimerComplete}
-          />
-        )}
+        {isResting && <RestTimer duration={restSeconds} onComplete={handleTimerComplete} />}
       </ExerciseSlide>
     ))}
   </Carousel>
@@ -494,6 +451,7 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
 ```
 
 **Touch Targets**:
+
 - Minimum 44x44px for all interactive elements
 - Extra padding around buttons during workouts
 - Large input fields for easy data entry
@@ -503,6 +461,7 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
 ### 4. Session Summary
 
 **Celebration UI**:
+
 ```tsx
 <SummaryLayout>
   {/* Hero Section */}
@@ -524,7 +483,7 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
   {prs.length > 0 && (
     <PRSection>
       <SectionTitle>Personal Records! 🎉</SectionTitle>
-      {prs.map(pr => (
+      {prs.map((pr) => (
         <PRCard key={pr.exerciseId}>
           <ExerciseName>{pr.exerciseName}</ExerciseName>
           <PRDetail>
@@ -580,12 +539,12 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
   leftAction={{
     icon: <TrashIcon />,
     color: 'error',
-    label: 'Delete'
+    label: 'Delete',
   }}
   rightAction={{
     icon: <CopyIcon />,
     color: 'primary',
-    label: 'Duplicate'
+    label: 'Duplicate',
   }}
 >
   <WorkoutCard workout={workout} />
@@ -625,6 +584,7 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
 ### Loading States
 
 **Skeleton Loaders**:
+
 ```tsx
 <WorkoutCardSkeleton>
   <Skeleton className="h-6 w-3/4" />
@@ -641,6 +601,7 @@ export function Badge({ className, variant, ...props }: BadgeProps) {
 ### Success Animations
 
 **Confetti on PR**:
+
 ```tsx
 import confetti from 'canvas-confetti'
 
@@ -648,7 +609,7 @@ function celebratePR() {
   confetti({
     particleCount: 100,
     spread: 70,
-    origin: { y: 0.6 }
+    origin: { y: 0.6 },
   })
 }
 ```
@@ -702,6 +663,7 @@ useEffect(() => {
 ### Color Contrast
 
 All text meets WCAG 2.1 AA standards:
+
 - Normal text: 4.5:1
 - Large text: 3:1
 - UI components: 3:1
@@ -713,17 +675,20 @@ All text meets WCAG 2.1 AA standards:
 ### Breakpoint Strategy
 
 **Mobile (<768px)**:
+
 - Single column layout
 - Full-width cards
 - Bottom navigation
 - Hamburger menu
 
 **Tablet (768px - 1024px)**:
+
 - Two-column grid
 - Side drawer navigation
 - Larger touch targets
 
 **Desktop (>1024px)**:
+
 - Three-column grid
 - Persistent sidebar
 - Hover states

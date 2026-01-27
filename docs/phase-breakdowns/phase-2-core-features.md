@@ -14,6 +14,7 @@
 **Dependencies**: Phase 1 complete
 
 #### Sub-tasks:
+
 1. **Add Exercise Model to Prisma Schema**
    - [ ] Add complete Exercise model with all enums
    - [ ] Run migration: `npx prisma migrate dev --name add_exercise_model`
@@ -24,6 +25,7 @@
    - File: `src/types/exercise.ts`
 
 **Acceptance Criteria**:
+
 - ✅ Exercise table created in database
 - ✅ All enums defined (MuscleGroup, EquipmentType, etc.)
 - ✅ Types exported for use in app
@@ -37,6 +39,7 @@
 **Dependencies**: Task 3.1
 
 #### Sub-tasks:
+
 1. **Create Seed File**
    - [ ] Create `prisma/seed.ts` with 50 default exercises
    - [ ] Include variety: compound lifts, isolation, cardio
@@ -48,6 +51,7 @@
    - [ ] Verify exercises in database
 
 **Acceptance Criteria**:
+
 - ✅ 50+ default exercises seeded
 - ✅ Covers all major muscle groups
 - ✅ All marked as `isDefault: true`
@@ -61,6 +65,7 @@
 **Dependencies**: Task 3.1
 
 #### Sub-tasks:
+
 1. **Create Server Actions**
    - [ ] Create `src/server/actions/exercises.ts`:
      - `getExercises()` - List with filters
@@ -80,6 +85,7 @@
    - [ ] All can view default exercises
 
 **Acceptance Criteria**:
+
 - ✅ All CRUD operations work
 - ✅ Validation prevents invalid data
 - ✅ RBAC enforced correctly
@@ -93,6 +99,7 @@
 **Dependencies**: Task 3.3
 
 #### Sub-tasks:
+
 1. **Create Exercise List Page**
    - [ ] Create `src/app/exercises/page.tsx`
    - [ ] Display grid of exercise cards
@@ -112,6 +119,7 @@
    - File: `src/components/features/exercises/ExerciseCard.tsx`
 
 **Acceptance Criteria**:
+
 - ✅ Exercise list displays all exercises
 - ✅ Filters work correctly
 - ✅ Search finds exercises by name
@@ -126,6 +134,7 @@
 **Dependencies**: Task 3.4
 
 #### Sub-tasks:
+
 1. **Create Detail Page**
    - [ ] Create `src/app/exercises/[id]/page.tsx`
    - [ ] Display all exercise details
@@ -138,6 +147,7 @@
    - [ ] Confirm delete dialog
 
 **Acceptance Criteria**:
+
 - ✅ Detail page shows all exercise info
 - ✅ Owner can edit/delete
 - ✅ Non-owners cannot modify
@@ -153,12 +163,14 @@
 **Dependencies**: Task 3.1
 
 #### Sub-tasks:
+
 1. **Add Workout Models**
    - [ ] Add Workout and WorkoutExercise models to Prisma
    - [ ] Run migration
    - Files: `prisma/schema.prisma`
 
 **Acceptance Criteria**:
+
 - ✅ Workout and WorkoutExercise tables created
 - ✅ Relations configured correctly
 
@@ -171,6 +183,7 @@
 **Dependencies**: Task 4.1
 
 #### Sub-tasks:
+
 1. **Create Server Actions**
    - [ ] Create `src/server/actions/workouts.ts`:
      - `getWorkouts()` - List user's workouts
@@ -189,6 +202,7 @@
    - File: `src/lib/validations/workout.ts`
 
 **Acceptance Criteria**:
+
 - ✅ All workout CRUD operations work
 - ✅ Exercises can be added/removed/reordered
 
@@ -201,6 +215,7 @@
 **Dependencies**: Task 4.2
 
 #### Sub-tasks:
+
 1. **Create Workout Builder Page**
    - [ ] Create `src/app/workouts/builder/page.tsx`
    - [ ] Three-column layout:
@@ -216,6 +231,7 @@
    - Files: `src/components/features/workouts/`
 
 **Acceptance Criteria**:
+
 - ✅ Layout renders correctly
 - ✅ Responsive on mobile/desktop
 - ✅ Panels can be toggled
@@ -229,6 +245,7 @@
 **Dependencies**: Task 4.3
 
 #### Sub-tasks:
+
 1. **Install DnD Kit**
    - [ ] Install: `npm install @dnd-kit/core @dnd-kit/sortable`
 
@@ -243,6 +260,7 @@
    - [ ] Optimistic update
 
 **Acceptance Criteria**:
+
 - ✅ Can drag exercises from library to workout
 - ✅ Visual feedback during drag
 - ✅ Exercises added to workout
@@ -256,6 +274,7 @@
 **Dependencies**: Task 4.4
 
 #### Sub-tasks:
+
 1. **Implement Sortable List**
    - [ ] Make workout exercises sortable
    - [ ] Update order on drag end
@@ -268,6 +287,7 @@
    - File: `src/components/features/workouts/SupersetGroup.tsx`
 
 **Acceptance Criteria**:
+
 - ✅ Exercises can be reordered
 - ✅ Supersets can be created
 - ✅ Supersets visually distinct
@@ -283,6 +303,7 @@
 **Dependencies**: Task 4.5
 
 #### Sub-tasks:
+
 1. **Create Configuration Panel**
    - [ ] Sets input
    - [ ] Reps input
@@ -295,6 +316,7 @@
    - [ ] Debounce updates
 
 **Acceptance Criteria**:
+
 - ✅ Can configure sets/reps/weight per exercise
 - ✅ Changes saved to database
 - ✅ Default values pre-filled
@@ -308,12 +330,14 @@
 **Dependencies**: Task 5.1
 
 #### Sub-tasks:
+
 1. **Add Notes Field**
    - [ ] Textarea for notes per exercise
    - [ ] Save to `WorkoutExercise.notes`
    - File: `src/components/features/workouts/ExerciseNotes.tsx`
 
 **Acceptance Criteria**:
+
 - ✅ Notes can be added per exercise
 - ✅ Notes persist
 
@@ -326,6 +350,7 @@
 **Dependencies**: Task 4.2
 
 #### Sub-tasks:
+
 1. **Create Workout List Page**
    - [ ] Create `src/app/workouts/page.tsx`
    - [ ] Display user's workouts as cards
@@ -340,6 +365,7 @@
    - File: `src/components/features/workouts/WorkoutCard.tsx`
 
 **Acceptance Criteria**:
+
 - ✅ List shows all user workouts
 - ✅ Can start workout from card
 - ✅ Actions work correctly
@@ -353,6 +379,7 @@
 **Dependencies**: Task 5.3
 
 #### Sub-tasks:
+
 1. **Create Detail Page**
    - [ ] Create `src/app/workouts/[id]/page.tsx`
    - [ ] Show workout details
@@ -361,6 +388,7 @@
    - File: `src/app/workouts/[id]/page.tsx`
 
 **Acceptance Criteria**:
+
 - ✅ Detail page shows workout
 - ✅ Can start workout
 - ✅ Can navigate to edit
@@ -376,12 +404,14 @@
 **Dependencies**: Task 4.1
 
 #### Sub-tasks:
+
 1. **Add Session Models**
    - [ ] Add TrainingSession and SessionSet models
    - [ ] Run migration
    - File: `prisma/schema.prisma`
 
 **Acceptance Criteria**:
+
 - ✅ Session tables created
 - ✅ Relations to Workout configured
 
@@ -394,6 +424,7 @@
 **Dependencies**: Task 6.1
 
 #### Sub-tasks:
+
 1. **Create Session Actions**
    - [ ] Create `src/server/actions/sessions.ts`:
      - `startSession()` - Create session from workout
@@ -403,6 +434,7 @@
    - File: `src/server/actions/sessions.ts`
 
 **Acceptance Criteria**:
+
 - ✅ Can start session from workout
 - ✅ Session created with IN_PROGRESS status
 
@@ -415,6 +447,7 @@
 **Dependencies**: Task 6.2
 
 #### Sub-tasks:
+
 1. **Install Embla Carousel**
    - [ ] Install: `npm install embla-carousel-react`
 
@@ -432,6 +465,7 @@
    - File: `src/components/features/sessions/ExerciseSlide.tsx`
 
 **Acceptance Criteria**:
+
 - ✅ Carousel navigates between exercises
 - ✅ Smooth transitions
 - ✅ Progress indicator shows position
@@ -445,6 +479,7 @@
 **Dependencies**: Task 6.3
 
 #### Sub-tasks:
+
 1. **Create Set Logger**
    - [ ] Create `src/components/features/sessions/SetLogger.tsx`
    - [ ] List of sets for current exercise
@@ -458,6 +493,7 @@
    - [ ] Visual feedback (checkmark)
 
 **Acceptance Criteria**:
+
 - ✅ Can log reps/weight per set
 - ✅ Set marked complete on submission
 - ✅ UI updates immediately
@@ -471,6 +507,7 @@
 **Dependencies**: Task 6.4
 
 #### Sub-tasks:
+
 1. **Install Redux Toolkit**
    - [ ] Install: `npm install @reduxjs/toolkit react-redux`
 
@@ -491,6 +528,7 @@
    - [ ] Use Redux state in components
 
 **Acceptance Criteria**:
+
 - ✅ Redux store configured
 - ✅ Session state managed in Redux
 - ✅ Components read from Redux
@@ -504,6 +542,7 @@
 **Dependencies**: Task 6.5
 
 #### Sub-tasks:
+
 1. **Create Persistence Middleware**
    - [ ] Redux middleware to save state to LocalStorage
    - [ ] Save on every state change
@@ -516,6 +555,7 @@
    - File: `src/hooks/useSessionRecovery.ts`
 
 **Acceptance Criteria**:
+
 - ✅ Session state saves to LocalStorage
 - ✅ State recovers on page refresh
 - ✅ No data loss on refresh
@@ -525,12 +565,14 @@
 ## Phase 2 Completion Checklist
 
 ### Exercise Library
+
 - [ ] Exercise schema complete
 - [ ] 50+ exercises seeded
 - [ ] CRUD operations working
 - [ ] Search/filter UI functional
 
 ### Workout Builder
+
 - [ ] Workout schema complete
 - [ ] Drag-and-drop working
 - [ ] Exercise ordering functional
@@ -538,6 +580,7 @@
 - [ ] Configuration panel complete
 
 ### Live Session
+
 - [ ] Session schema complete
 - [ ] Session can be started
 - [ ] Carousel UI working

@@ -13,6 +13,7 @@
 **Estimated Effort**: 2-3 hours
 
 #### Sub-tasks:
+
 1. **Create Stripe Account**
    - [ ] Sign up at stripe.com
    - [ ] Complete business verification
@@ -30,6 +31,7 @@
      ```
 
 **Acceptance Criteria**:
+
 - ✅ Stripe account created
 - ✅ API keys configured
 - ✅ SDK installed
@@ -42,6 +44,7 @@
 **Estimated Effort**: 2-3 hours
 
 #### Sub-tasks:
+
 1. **Create Products in Stripe Dashboard**
    - [ ] Personal User: $9.99/month
    - [ ] PT Starter: $29.99/month (10 clients)
@@ -53,6 +56,7 @@
    - [ ] Add to environment variables
 
 **Acceptance Criteria**:
+
 - ✅ All products created in Stripe
 - ✅ Price IDs documented
 
@@ -64,6 +68,7 @@
 **Estimated Effort**: 4-5 hours
 
 #### Sub-tasks:
+
 1. **Create Pricing Page**
    - [ ] Create `src/app/pricing/page.tsx`
    - [ ] Display all tiers with features
@@ -75,6 +80,7 @@
    - [ ] Feature list per tier
 
 **Acceptance Criteria**:
+
 - ✅ Pricing page displays all tiers
 - ✅ Responsive layout
 - ✅ Subscribe buttons functional
@@ -87,6 +93,7 @@
 **Estimated Effort**: 6-7 hours
 
 #### Sub-tasks:
+
 1. **Create Checkout Server Action**
    - [ ] Create `src/server/actions/stripe.ts`
    - [ ] `createCheckoutSession(priceId)`:
@@ -103,6 +110,7 @@
    - [ ] Create `src/app/checkout/cancel/page.tsx`
 
 **Acceptance Criteria**:
+
 - ✅ Checkout session created
 - ✅ User redirected to Stripe
 - ✅ Success/cancel pages work
@@ -115,6 +123,7 @@
 **Estimated Effort**: 7-8 hours
 
 #### Sub-tasks:
+
 1. **Create Webhook Route**
    - [ ] Create `src/app/api/webhooks/stripe/route.ts`
    - [ ] Verify webhook signature
@@ -135,6 +144,7 @@
    - [ ] Test checkout completion
 
 **Acceptance Criteria**:
+
 - ✅ Webhook endpoint created
 - ✅ Signature verification working
 - ✅ Subscription created on checkout
@@ -150,6 +160,7 @@
 **Estimated Effort**: 4-5 hours
 
 #### Sub-tasks:
+
 1. **Create Portal Session Action**
    - [ ] `createPortalSession()` in `src/server/actions/stripe.ts`
    - [ ] Create Stripe portal session
@@ -160,6 +171,7 @@
    - [ ] Redirect to portal
 
 **Acceptance Criteria**:
+
 - ✅ Portal session created
 - ✅ User can access Stripe portal
 - ✅ Can update payment method
@@ -172,6 +184,7 @@
 **Estimated Effort**: 5-6 hours
 
 #### Sub-tasks:
+
 1. **Create Subscription Middleware**
    - [ ] Create `src/lib/subscription/check-subscription.ts`
    - [ ] Check subscription status before key actions
@@ -183,6 +196,7 @@
    - [ ] Display upgrade prompt if limit reached
 
 **Acceptance Criteria**:
+
 - ✅ Subscription checked before key actions
 - ✅ Limits enforced correctly
 - ✅ Upgrade prompts shown when needed
@@ -195,6 +209,7 @@
 **Estimated Effort**: 6-7 hours
 
 #### Sub-tasks:
+
 1. **Implement Auto-Upgrade**
    - [ ] When PT exceeds client capacity, trigger auto-upgrade
    - [ ] Create `upgradeSubscription()` in `src/server/actions/stripe.ts`
@@ -206,6 +221,7 @@
    - [ ] Display message in dashboard
 
 **Acceptance Criteria**:
+
 - ✅ Auto-upgrade triggers when capacity exceeded
 - ✅ Subscription updated correctly
 - ✅ User notified of change
@@ -218,6 +234,7 @@
 **Estimated Effort**: 4-5 hours
 
 #### Sub-tasks:
+
 1. **Handle customer.subscription.updated**
    - [ ] Update Subscription record in database
    - [ ] Update user tier and capacity
@@ -227,6 +244,7 @@
    - [ ] Downgrade user role if needed
 
 **Acceptance Criteria**:
+
 - ✅ Subscription updates reflected in database
 - ✅ User tier updated on subscription change
 - ✅ Cancellation handled correctly
@@ -239,6 +257,7 @@
 **Estimated Effort**: 3-4 hours
 
 #### Sub-tasks:
+
 1. **Create Cancel Action**
    - [ ] `cancelSubscription()` in `src/server/actions/stripe.ts`
    - [ ] Cancel Stripe subscription
@@ -249,6 +268,7 @@
    - [ ] Confirmation dialog
 
 **Acceptance Criteria**:
+
 - ✅ User can cancel subscription
 - ✅ Access continues until period end
 - ✅ Status updated correctly
@@ -261,6 +281,7 @@
 **Estimated Effort**: 4-5 hours
 
 #### Sub-tasks:
+
 1. **Handle invoice.payment_failed**
    - [ ] Set subscription status to PAST_DUE
    - [ ] Send notification to user
@@ -271,6 +292,7 @@
    - [ ] Link to update payment method
 
 **Acceptance Criteria**:
+
 - ✅ Payment failures detected
 - ✅ User notified
 - ✅ Access restricted if not resolved
@@ -283,6 +305,7 @@
 **Estimated Effort**: 5-6 hours
 
 #### Sub-tasks:
+
 1. **Create Billing Page**
    - [ ] Create `src/app/settings/billing/page.tsx`
    - [ ] Display current plan
@@ -291,6 +314,7 @@
    - [ ] "Manage Subscription" button
 
 **Acceptance Criteria**:
+
 - ✅ Billing page shows subscription details
 - ✅ Can manage subscription
 - ✅ Can update payment method
@@ -300,12 +324,14 @@
 ## Phase 4 Completion Checklist
 
 ### Stripe Integration
+
 - [ ] Stripe account configured
 - [ ] Products and prices created
 - [ ] Checkout flow working
 - [ ] Webhook endpoint handling events
 
 ### Subscription Management
+
 - [ ] Customer portal integrated
 - [ ] Subscription status checks enforced
 - [ ] Auto-upgrade logic working

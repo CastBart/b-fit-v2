@@ -9,13 +9,16 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 ## Exercise Type Definitions
 
 ### SMALL - Isolation Exercises
+
 **Characteristics**:
+
 - Single joint movement
 - Targets one primary muscle
 - Lower fatigue impact
 - Typically 2-4 sets
 
 **Examples**:
+
 - Bicep curls
 - Lateral raises
 - Leg curls
@@ -23,13 +26,16 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 - Calf raises
 
 ### MEDIUM - Compound Exercises
+
 **Characteristics**:
+
 - Multi-joint movement
 - Targets 2-3 muscle groups
 - Moderate fatigue impact
 - Typically 3-5 sets
 
 **Examples**:
+
 - Bench press
 - Barbell rows
 - Romanian deadlifts
@@ -37,7 +43,9 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 - Pull-ups
 
 ### LARGE - Major Compounds
+
 **Characteristics**:
+
 - Full-body engagement
 - High CNS demand
 - Significant fatigue impact
@@ -45,6 +53,7 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 - Often programmed first in workout
 
 **Examples**:
+
 - Back squats
 - Conventional deadlifts
 - Front squats
@@ -52,13 +61,16 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 - Snatch
 
 ### STABILITY - Core & Stabilization
+
 **Characteristics**:
+
 - Static or controlled movement
 - Core engagement
 - Balance/stability focus
 - Often time-based
 
 **Examples**:
+
 - Planks
 - Bird dogs
 - Dead bugs
@@ -66,13 +78,16 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 - Single-leg balance
 
 ### CARDIO - Cardiovascular Exercises
+
 **Characteristics**:
+
 - Elevates heart rate
 - Aerobic or anaerobic
 - Distance or time-based
 - Conditioning focus
 
 **Examples**:
+
 - Running
 - Rowing
 - Assault bike
@@ -84,9 +99,11 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 ## Metric Type Definitions
 
 ### WEIGHT_REPS
+
 **Format**: Weight (kg/lbs) + Repetitions
 
 **Use Cases**:
+
 - Standard resistance training
 - Barbell/dumbbell exercises
 - Machine exercises
@@ -94,6 +111,7 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 **Example**: Bench Press - 100kg x 5 reps
 
 **UI Fields**:
+
 - Weight input (number)
 - Reps input (number)
 - Unit toggle (kg/lbs)
@@ -101,9 +119,11 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 ---
 
 ### COUNTER_WEIGHT_REPS
+
 **Format**: Assistance Weight + Repetitions
 
 **Use Cases**:
+
 - Assisted pull-ups/dips
 - Counterbalance machines
 - Weight reduces difficulty
@@ -111,6 +131,7 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 **Example**: Assisted Pull-ups - 20kg assistance x 8 reps
 
 **UI Fields**:
+
 - Assistance weight (number)
 - Reps (number)
 - Note: "20kg assistance" means 20kg helping
@@ -118,9 +139,11 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 ---
 
 ### REPS
+
 **Format**: Repetitions only
 
 **Use Cases**:
+
 - Bodyweight exercises
 - No external resistance
 - Rep count is primary metric
@@ -128,14 +151,17 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 **Example**: Push-ups - 20 reps
 
 **UI Fields**:
+
 - Reps input (number)
 
 ---
 
 ### REPS_DURATION
+
 **Format**: Repetitions + Time
 
 **Use Cases**:
+
 - Timed holds with movement
 - Slow eccentrics
 - Tempo-based exercises
@@ -143,15 +169,18 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 **Example**: Slow Push-ups - 10 reps in 30 seconds
 
 **UI Fields**:
+
 - Reps (number)
 - Duration (seconds)
 
 ---
 
 ### DURATION
+
 **Format**: Time only
 
 **Use Cases**:
+
 - Static holds
 - Planks
 - Wall sits
@@ -160,15 +189,18 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 **Example**: Plank - 60 seconds
 
 **UI Fields**:
+
 - Duration input (seconds)
 - Optional: Auto-timer with alerts
 
 ---
 
 ### DISTANCE_DURATION
+
 **Format**: Distance + Time
 
 **Use Cases**:
+
 - Cardio work
 - Running, rowing, cycling
 - Swimming
@@ -176,6 +208,7 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 **Example**: Running - 5km in 25:00
 
 **UI Fields**:
+
 - Distance (meters/km or miles)
 - Duration (minutes:seconds)
 - Calculated pace display
@@ -183,9 +216,11 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 ---
 
 ### WEIGHT_DISTANCE
+
 **Format**: Weight + Distance
 
 **Use Cases**:
+
 - Loaded carries
 - Sled pushes/pulls
 - Farmer walks
@@ -193,15 +228,18 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 **Example**: Farmer Carry - 50kg x 50 meters
 
 **UI Fields**:
+
 - Weight (kg/lbs)
 - Distance (meters/feet)
 
 ---
 
 ### WEIGHT_DURATION
+
 **Format**: Weight + Time
 
 **Use Cases**:
+
 - Weighted holds
 - Loaded carries (timed)
 - Isometric holds with weight
@@ -209,6 +247,7 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 **Example**: Weighted Plank - 20kg plate x 45 seconds
 
 **UI Fields**:
+
 - Weight (kg/lbs)
 - Duration (seconds)
 
@@ -221,6 +260,7 @@ The exercise library is the foundation of B-Fit, containing 200-300 pre-seeded e
 Exercises are categorized by **primary** and **secondary** muscle groups for accurate filtering and workout balancing.
 
 #### Primary Muscle Group (Required, Single Selection)
+
 Every exercise must have exactly one primary muscle group:
 
 - **CHEST**: Pectorals
@@ -236,14 +276,17 @@ Every exercise must have exactly one primary muscle group:
 - **FULL_BODY**: Multi-muscle compound movements
 
 #### Secondary Muscle Groups (Optional, Multiple Selection)
+
 Exercises can have zero or more secondary muscle groups from the same list above.
 
 **Examples**:
+
 - Bench Press: Primary = CHEST, Secondary = [TRICEPS, SHOULDERS]
 - Pull-ups: Primary = BACK, Secondary = [BICEPS]
 - Plank: Primary = CORE, Secondary = []
 
 ### Equipment Types
+
 - **BARBELL**: Olympic barbell, EZ bar
 - **DUMBBELL**: Single or paired dumbbells
 - **KETTLEBELL**: Single or paired kettlebells
@@ -256,6 +299,7 @@ Exercises can have zero or more secondary muscle groups from the same list above
 - **MISC**: Miscellaneous equipment not fitting other categories
 
 ### Movement Patterns
+
 - **PUSH**: Pressing movements (bench, overhead press)
 - **PULL**: Pulling movements (rows, pull-ups)
 - **SQUAT**: Squatting patterns (back squat, goblet squat)
@@ -266,6 +310,7 @@ Exercises can have zero or more secondary muscle groups from the same list above
 - **OLYMPIC**: Olympic lifts (snatch, clean & jerk)
 
 ### Difficulty Levels
+
 - **BEGINNER**: Basic movement, low skill requirement
 - **INTERMEDIATE**: Moderate complexity, some experience needed
 - **ADVANCED**: High skill, significant experience required
@@ -528,16 +573,18 @@ function searchExercises(query: string, filters: ExerciseFilters) {
         {
           OR: [
             { name: { contains: query, mode: 'insensitive' } },
-            { description: { contains: query, mode: 'insensitive' } }
-          ]
+            { description: { contains: query, mode: 'insensitive' } },
+          ],
         },
         // Muscle Group Filter - searches both primary AND secondary
-        filters.muscleGroups ? {
-          OR: [
-            { primaryMuscleGroup: { in: filters.muscleGroups } },
-            { secondaryMuscleGroups: { hasSome: filters.muscleGroups } }
-          ]
-        } : {},
+        filters.muscleGroups
+          ? {
+              OR: [
+                { primaryMuscleGroup: { in: filters.muscleGroups } },
+                { secondaryMuscleGroups: { hasSome: filters.muscleGroups } },
+              ],
+            }
+          : {},
         // Other filters
         filters.equipmentType ? { equipmentType: filters.equipmentType } : {},
         filters.exerciseType ? { exerciseType: filters.exerciseType } : {},
@@ -545,17 +592,14 @@ function searchExercises(query: string, filters: ExerciseFilters) {
         filters.movementPattern ? { movementPattern: filters.movementPattern } : {},
         // Show defaults + user's custom exercises
         {
-          OR: [
-            { isDefault: true },
-            { createdById: userId }
-          ]
-        }
-      ]
+          OR: [{ isDefault: true }, { createdById: userId }],
+        },
+      ],
     },
     orderBy: [
-      { isDefault: 'desc' },  // Defaults first
-      { name: 'asc' }
-    ]
+      { isDefault: 'desc' }, // Defaults first
+      { name: 'asc' },
+    ],
   })
 }
 ```
@@ -611,14 +655,14 @@ const customExerciseSchema = z.object({
     'DURATION',
     'DISTANCE_DURATION',
     'WEIGHT_DISTANCE',
-    'WEIGHT_DURATION'
+    'WEIGHT_DURATION',
   ]),
   primaryMuscleGroup: z.enum(MUSCLE_GROUPS), // Single selection, required
   secondaryMuscleGroups: z.array(z.enum(MUSCLE_GROUPS)).optional(), // Multiple selection, optional
   equipmentType: z.enum([...EQUIPMENT_TYPES, 'MISC']),
   movementPattern: z.enum(MOVEMENT_PATTERNS),
   difficultyLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']),
-  instructions: z.array(z.string().max(500)).optional() // Array of instruction strings
+  instructions: z.array(z.string().max(500)).optional(), // Array of instruction strings
 })
 ```
 
@@ -631,13 +675,14 @@ const customExerciseSchema = z.object({
 Exercise cards vary by context:
 
 **Context 1: General Exercise List (Browse/Search)**
+
 ```tsx
 <ExerciseCard>
   <ExerciseThumbnail src={exercise.thumbnailUrl} />
   <ExerciseName>{exercise.name}</ExerciseName>
   <MuscleGroupTags>
     <PrimaryTag>{exercise.primaryMuscleGroup}</PrimaryTag>
-    {exercise.secondaryMuscleGroups.map(group => (
+    {exercise.secondaryMuscleGroups.map((group) => (
       <SecondaryTag key={group}>{group}</SecondaryTag>
     ))}
   </MuscleGroupTags>
@@ -649,12 +694,9 @@ Exercise cards vary by context:
 ```
 
 **Context 2: Exercise Selector (Workout/Plan Builder)**
+
 ```tsx
-<ExerciseCard
-  selectable
-  selected={isSelected}
-  onClick={handleSelect}
->
+<ExerciseCard selectable selected={isSelected} onClick={handleSelect}>
   <Checkbox checked={isSelected} />
   <ExerciseThumbnail src={exercise.thumbnailUrl} size="small" />
   <ExerciseInfo>
@@ -667,6 +709,7 @@ Exercise cards vary by context:
 ```
 
 **Context 3: Workout Exercise (In Workout Builder)**
+
 ```tsx
 <ExerciseCard draggable>
   <DragHandle />
@@ -728,7 +771,7 @@ Exercise details are displayed in a tabbed interface:
   {exercise.secondaryMuscleGroups.length > 0 && (
     <InfoRow label="Secondary Muscle Groups">
       <MuscleGroupTags>
-        {exercise.secondaryMuscleGroups.map(group => (
+        {exercise.secondaryMuscleGroups.map((group) => (
           <MuscleGroupTag key={group}>{group}</MuscleGroupTag>
         ))}
       </MuscleGroupTags>
@@ -781,7 +824,7 @@ Exercise details are displayed in a tabbed interface:
 ```tsx
 <HistoryTab>
   <HistoryList>
-    {exerciseHistory.map(session => (
+    {exerciseHistory.map((session) => (
       <HistoryCard key={session.id}>
         <SessionHeader>
           <SessionName>{session.workoutName || 'Unnamed Session'}</SessionName>
@@ -792,16 +835,12 @@ Exercise details are displayed in a tabbed interface:
           {session.sets.map((set, index) => (
             <SetRow key={index}>
               <SetNumber>Set {index + 1}:</SetNumber>
-              <SetData>
-                {formatSetData(set, exercise.metricType)}
-              </SetData>
+              <SetData>{formatSetData(set, exercise.metricType)}</SetData>
             </SetRow>
           ))}
         </SetsPerformed>
 
-        {session.notes && (
-          <SessionNotes>{session.notes}</SessionNotes>
-        )}
+        {session.notes && <SessionNotes>{session.notes}</SessionNotes>}
       </HistoryCard>
     ))}
   </HistoryList>

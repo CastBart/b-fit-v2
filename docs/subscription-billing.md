@@ -9,9 +9,11 @@ B-Fit uses Stripe for subscription management with automatic tier upgrades based
 ## Subscription Tiers
 
 ### Personal User
+
 **Price**: $9.99/month or $99/year (17% discount)
 
 **Features**:
+
 - Unlimited personal workouts
 - Unlimited personal sessions
 - Exercise library access
@@ -20,15 +22,18 @@ B-Fit uses Stripe for subscription management with automatic tier upgrades based
 
 **Stripe Product**: `prod_personal`
 **Stripe Prices**:
+
 - Monthly: `price_personal_monthly`
 - Annual: `price_personal_annual`
 
 ---
 
 ### PT Starter
+
 **Price**: $29.99/month or $299/year (17% discount)
 
 **Included**:
+
 - All Personal User features
 - Up to 10 clients
 - Client workout assignment
@@ -38,15 +43,18 @@ B-Fit uses Stripe for subscription management with automatic tier upgrades based
 
 **Stripe Product**: `prod_pt_starter`
 **Stripe Prices**:
+
 - Monthly: `price_pt_starter_monthly`
 - Annual: `price_pt_starter_annual`
 
 ---
 
 ### PT Pro
+
 **Price**: $49.99/month or $499/year (17% discount)
 
 **Included**:
+
 - All PT Starter features
 - Up to 25 clients
 - Advanced analytics
@@ -54,15 +62,18 @@ B-Fit uses Stripe for subscription management with automatic tier upgrades based
 
 **Stripe Product**: `prod_pt_pro`
 **Stripe Prices**:
+
 - Monthly: `price_pt_pro_monthly`
 - Annual: `price_pt_pro_annual`
 
 ---
 
 ### PT Elite
+
 **Price**: $99.99/month or $999/year (17% discount)
 
 **Included**:
+
 - All PT Pro features
 - Up to 100 clients
 - Priority support
@@ -70,15 +81,18 @@ B-Fit uses Stripe for subscription management with automatic tier upgrades based
 
 **Stripe Product**: `prod_pt_elite`
 **Stripe Prices**:
+
 - Monthly: `price_pt_elite_monthly`
 - Annual: `price_pt_elite_annual`
 
 ---
 
 ### Organisation (Custom Pricing)
+
 **Base**: $199/month per PT seat + pooled client capacity
 
 **Included**:
+
 - PT seat management
 - Aggregate analytics dashboard
 - Multi-PT oversight
@@ -106,6 +120,7 @@ stripe prices create --product=prod_personal --unit-amount=9900 --currency=usd -
 ### Metadata Tags
 
 Each product/price includes metadata:
+
 ```json
 {
   "tier": "PT_STARTER",
@@ -204,11 +219,7 @@ export async function POST(req: Request) {
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    )
+    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!)
   } catch (err) {
     return new Response('Webhook signature verification failed', {
       status: 400,
@@ -245,12 +256,8 @@ export async function POST(req: Request) {
 ### Checkout Completed
 
 ```typescript
-async function handleCheckoutCompleted(
-  session: Stripe.Checkout.Session
-) {
-  const subscription = await stripe.subscriptions.retrieve(
-    session.subscription as string
-  )
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
 
   const price = subscription.items.data[0].price
   const tier = price.metadata.tier
@@ -280,9 +287,7 @@ async function handleCheckoutCompleted(
 ### Subscription Updated
 
 ```typescript
-async function handleSubscriptionUpdated(
-  subscription: Stripe.Subscription
-) {
+async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const price = subscription.items.data[0].price
   const tier = price.metadata.tier
   const capacity = parseInt(price.metadata.client_capacity || '0')
@@ -313,9 +318,7 @@ async function handleSubscriptionUpdated(
 ### Subscription Deleted
 
 ```typescript
-async function handleSubscriptionDeleted(
-  subscription: Stripe.Subscription
-) {
+async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   await prisma.subscription.update({
     where: { stripeSubscriptionId: subscription.id },
     data: {
@@ -409,9 +412,9 @@ export async function inviteClient(email: string, name: string) {
 async function autoUpgradeTier(user: User & { subscription: Subscription }) {
   // Determine next tier
   const tierUpgrades = {
-    PT_STARTER: 'PT_PRO',      // 10 → 25
-    PT_PRO: 'PT_ELITE',        // 25 → 100
-    PT_ELITE: null,            // Already at max
+    PT_STARTER: 'PT_PRO', // 10 → 25
+    PT_PRO: 'PT_ELITE', // 25 → 100
+    PT_ELITE: null, // Already at max
   }
 
   const nextTier = tierUpgrades[user.subscriptionTier as keyof typeof tierUpgrades]
@@ -434,18 +437,15 @@ async function autoUpgradeTier(user: User & { subscription: Subscription }) {
   // Update Stripe subscription
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
-  const subscription = await stripe.subscriptions.update(
-    user.subscription.stripeSubscriptionId,
-    {
-      items: [
-        {
-          id: user.subscription.stripePriceId,
-          price: newPriceId,
-        },
-      ],
-      proration_behavior: 'always_invoice',
-    }
-  )
+  const subscription = await stripe.subscriptions.update(user.subscription.stripeSubscriptionId, {
+    items: [
+      {
+        id: user.subscription.stripePriceId,
+        price: newPriceId,
+      },
+    ],
+    proration_behavior: 'always_invoice',
+  })
 
   // Webhook will handle database update
 
@@ -484,6 +484,7 @@ export async function createPortalSession() {
 ```
 
 **Portal Features**:
+
 - Update payment method
 - View invoices
 - Cancel subscription
@@ -496,11 +497,13 @@ export async function createPortalSession() {
 ### Mid-Cycle Upgrade
 
 When user upgrades mid-cycle:
+
 1. Stripe calculates prorated amount
 2. User charged difference immediately
 3. New billing cycle starts
 
 **Example**:
+
 - User on PT Starter ($29.99/mo), 15 days into cycle
 - Upgrades to PT Pro ($49.99/mo)
 - Prorated charge: ~$10 (half of $20 difference)
@@ -511,6 +514,7 @@ When user upgrades mid-cycle:
 B-Fit **does not allow downgrades** that would put PT below current client count.
 
 **Logic**:
+
 ```typescript
 async function canDowngrade(userId: string, targetTier: string): Promise<boolean> {
   const currentClientCount = await prisma.clientRelationship.count({
@@ -601,6 +605,7 @@ const checkoutSession = await stripe.checkout.sessions.create({
 ```
 
 **Trial Features**:
+
 - Full access to chosen tier
 - No charge until trial ends
 - Cancel anytime during trial
@@ -612,6 +617,7 @@ const checkoutSession = await stripe.checkout.sessions.create({
 ### Invoice Emails
 
 Stripe automatically sends:
+
 - Invoice receipts
 - Payment failure notifications
 - Upcoming invoice reminders (3 days before)
@@ -642,6 +648,7 @@ await stripe.subscriptions.update(subscriptionId, {
 ### Grace Period
 
 **7-day grace period** for payment failures:
+
 - User retains access for 7 days
 - Daily email reminders
 - After 7 days, subscription canceled
@@ -653,6 +660,7 @@ await stripe.subscriptions.update(subscriptionId, {
 ### Test Mode
 
 Use Stripe test mode with test cards:
+
 - Success: `4242 4242 4242 4242`
 - Decline: `4000 0000 0000 0002`
 - Requires 3DS: `4000 0027 6000 3184`
@@ -686,6 +694,7 @@ stripe trigger customer.subscription.updated
 ### Stripe Dashboard
 
 Monitor in Stripe Dashboard:
+
 - Active subscriptions
 - Failed payments
 - Churn trends

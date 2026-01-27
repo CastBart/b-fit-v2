@@ -31,17 +31,20 @@ The application is built around these key entities:
 ### Key Design Patterns
 
 **Workout Assignment & Ownership:**
+
 - When a PT assigns a workout to a client, the client receives a **copy** of the workout
 - The PT can customize the copy per client
 - Original workout remains owned by the PT; assigned copy is owned by the client
 - This enables client-to-Personal User role transitions without data loss
 
 **Session State Management:**
+
 - Sessions use `instanceId` for tracking individual exercise instances within a session
 - Clear separation between workout **definition** (template) and session **execution** (live tracking)
 - Session state must survive page refreshes (persist to database or local storage)
 
 **Multi-Role Architecture:**
+
 - Four first-class user roles, each with standalone value and subscription model
 - PTs are a **superset** of Personal User capabilities (can train themselves + manage clients)
 - Organisations manage PTs but don't directly modify training data

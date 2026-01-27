@@ -9,11 +9,13 @@ B-Fit is deployed on Vercel with a fully automated CI/CD pipeline, comprehensive
 ## Environments
 
 ### Local Development
+
 **URL**: http://localhost:3000
 
 **Database**: Vercel Postgres development instance or Docker Postgres
 
 **Setup**:
+
 ```bash
 # Clone repository
 git clone https://github.com/your-org/b-fit.git
@@ -36,6 +38,7 @@ npm run dev
 ```
 
 **Environment Variables** (.env.local):
+
 ```bash
 # Database
 DATABASE_URL="postgres://..."
@@ -63,11 +66,13 @@ NEXT_PUBLIC_POSTHOG_KEY="..."
 ---
 
 ### Preview (Staging)
-**URL**: https://b-fit-preview-*.vercel.app
+
+**URL**: https://b-fit-preview-\*.vercel.app
 
 **Trigger**: Every pull request
 
 **Purpose**:
+
 - Test changes in production-like environment
 - QA and review before merge
 - Automated E2E tests run against preview
@@ -75,6 +80,7 @@ NEXT_PUBLIC_POSTHOG_KEY="..."
 **Database**: Isolated Vercel Postgres preview instance
 
 **Features**:
+
 - Automatic deployment on PR
 - Unique URL per PR
 - Synced environment variables
@@ -83,11 +89,13 @@ NEXT_PUBLIC_POSTHOG_KEY="..."
 ---
 
 ### Staging
+
 **URL**: https://staging.bfit.app
 
 **Branch**: `staging`
 
 **Purpose**:
+
 - Pre-production testing
 - Final validation before production
 - User acceptance testing (UAT)
@@ -99,6 +107,7 @@ NEXT_PUBLIC_POSTHOG_KEY="..."
 ---
 
 ### Production
+
 **URL**: https://app.bfit.com
 
 **Branch**: `main`
@@ -108,6 +117,7 @@ NEXT_PUBLIC_POSTHOG_KEY="..."
 **Deployment**: Automatic on merge to `main`
 
 **Protection**:
+
 - Branch protection rules
 - Require review approvals
 - Status checks must pass
@@ -292,6 +302,7 @@ jobs:
 ### Migrations
 
 **Development**:
+
 ```bash
 # Create new migration
 npx prisma migrate dev --name add_user_preferences
@@ -301,6 +312,7 @@ npx prisma migrate reset
 ```
 
 **Production**:
+
 ```bash
 # Apply migrations (run automatically in build)
 npx prisma migrate deploy
@@ -309,12 +321,14 @@ npx prisma migrate deploy
 ### Seeding
 
 **Development**:
+
 ```bash
 # Seed database
 npx prisma db seed
 ```
 
 **Seed Script** (prisma/seed.ts):
+
 ```typescript
 import { PrismaClient } from '@prisma/client'
 import { exerciseSeedData } from './seeds/exercises'
@@ -325,7 +339,7 @@ async function main() {
   // Seed default exercises
   await prisma.exercise.createMany({
     data: exerciseSeedData,
-    skipDuplicates: true
+    skipDuplicates: true,
   })
 
   console.log('Database seeded successfully')
@@ -344,6 +358,7 @@ main()
 ### Backups
 
 **Vercel Postgres Backups**:
+
 - Automatic daily backups
 - Point-in-time recovery (14 days)
 - Manual backup via Vercel CLI
@@ -366,6 +381,7 @@ vercel postgres backup restore <backup-id>
 ### Error Tracking (Sentry)
 
 **Setup**:
+
 ```typescript
 // sentry.server.config.ts
 import * as Sentry from '@sentry/nextjs'
@@ -381,11 +397,12 @@ Sentry.init({
       delete event.request.headers['cookie']
     }
     return event
-  }
+  },
 })
 ```
 
 **Alerts**:
+
 - New error occurrence
 - Error frequency spike
 - Performance degradation
@@ -395,12 +412,14 @@ Sentry.init({
 ### Performance Monitoring (Vercel Analytics)
 
 **Metrics Tracked**:
+
 - Core Web Vitals (LCP, FID, CLS)
 - Time to First Byte (TTFB)
 - Function execution time
 - Edge function invocations
 
 **Thresholds**:
+
 - LCP: <2.5s (good), <4s (needs improvement)
 - FID: <100ms (good), <300ms (needs improvement)
 - CLS: <0.1 (good), <0.25 (needs improvement)
@@ -410,6 +429,7 @@ Sentry.init({
 ### Product Analytics (PostHog)
 
 **Setup**:
+
 ```typescript
 // lib/analytics/posthog.ts
 import posthog from 'posthog-js'
@@ -418,7 +438,7 @@ if (typeof window !== 'undefined') {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
     api_host: 'https://app.posthog.com',
     capture_pageview: false, // We'll handle manually
-    autocapture: false // Prefer explicit tracking
+    autocapture: false, // Prefer explicit tracking
   })
 }
 
@@ -426,6 +446,7 @@ export { posthog }
 ```
 
 **Events Tracked**:
+
 - User signup
 - Workout created
 - Session started
@@ -435,11 +456,12 @@ export { posthog }
 - Client invited
 
 **Example**:
+
 ```typescript
 posthog.capture('workout_created', {
   workout_id: workoutId,
   exercise_count: exercises.length,
-  has_supersets: exercises.some(e => e.groupId)
+  has_supersets: exercises.some((e) => e.groupId),
 })
 ```
 
@@ -448,11 +470,13 @@ posthog.capture('workout_created', {
 ### Uptime Monitoring
 
 **Vercel Monitors**:
+
 - Endpoint: https://app.bfit.com/api/health
 - Frequency: 1 minute
 - Regions: Global
 
 **Health Check Endpoint**:
+
 ```typescript
 // app/api/health/route.ts
 import { NextResponse } from 'next/server'
@@ -467,14 +491,14 @@ export async function GET() {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       checks: {
-        database: 'ok'
-      }
+        database: 'ok',
+      },
     })
   } catch (error) {
     return NextResponse.json(
       {
         status: 'unhealthy',
-        error: error.message
+        error: error.message,
       },
       { status: 503 }
     )
@@ -489,11 +513,13 @@ export async function GET() {
 ### Environment Variables
 
 **Vercel Environment Variables**:
+
 - Production: Encrypted at rest
 - Preview: Isolated per deployment
 - Development: Local .env.local
 
 **Rotation Policy**:
+
 - Rotate secrets every 90 days
 - Immediate rotation on suspected compromise
 
@@ -510,6 +536,7 @@ export async function GET() {
 ### Rate Limiting
 
 **Upstash Rate Limiting**:
+
 ```typescript
 // middleware.ts
 import { Ratelimit } from '@upstash/ratelimit'
@@ -518,7 +545,7 @@ import { Redis } from '@upstash/redis'
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(10, '10 s'),
-  analytics: true
+  analytics: true,
 })
 
 export async function middleware(request: NextRequest) {
@@ -531,8 +558,8 @@ export async function middleware(request: NextRequest) {
       headers: {
         'X-RateLimit-Limit': limit.toString(),
         'X-RateLimit-Remaining': remaining.toString(),
-        'X-RateLimit-Reset': reset.toString()
-      }
+        'X-RateLimit-Reset': reset.toString(),
+      },
     })
   }
 
@@ -547,15 +574,18 @@ export async function middleware(request: NextRequest) {
 ### Backup Strategy
 
 **Database**:
+
 - Daily automated backups
 - 14-day retention
 - Point-in-time recovery
 
 **Code**:
+
 - Git repository (GitHub)
 - Vercel deployment history
 
 **Media**:
+
 - Vercel Blob redundancy
 - No additional backup needed
 
@@ -574,6 +604,7 @@ export async function middleware(request: NextRequest) {
 ### Rollback Procedure
 
 **Vercel Instant Rollback**:
+
 ```bash
 # List deployments
 vercel ls
@@ -583,6 +614,7 @@ vercel rollback <deployment-url>
 ```
 
 **Database Rollback**:
+
 ```bash
 # Revert migration
 npx prisma migrate resolve --rolled-back <migration-name>
@@ -598,6 +630,7 @@ npx prisma migrate dev --name fix_issue
 ### Caching Strategy
 
 **ISR (Incremental Static Regeneration)**:
+
 ```typescript
 // app/workouts/page.tsx
 export const revalidate = 60 // Revalidate every 60 seconds
@@ -609,14 +642,15 @@ export default async function WorkoutsPage() {
 ```
 
 **React Query Caching**:
+
 ```typescript
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 10 * 60 * 1000 // 10 minutes
-    }
-  }
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+    },
+  },
 })
 ```
 
@@ -625,10 +659,10 @@ const queryClient = new QueryClient({
 ### Image Optimization
 
 **Next.js Image Component**:
+
 ```tsx
 import Image from 'next/image'
-
-<Image
+;<Image
   src={exercise.imageUrl}
   alt={exercise.name}
   width={400}
@@ -639,6 +673,7 @@ import Image from 'next/image'
 ```
 
 **Vercel Image Optimization**:
+
 - Automatic WebP conversion
 - Responsive sizes
 - Edge caching
@@ -648,6 +683,7 @@ import Image from 'next/image'
 ### Bundle Optimization
 
 **Code Splitting**:
+
 ```typescript
 import dynamic from 'next/dynamic'
 
@@ -658,6 +694,7 @@ const SessionCarousel = dynamic(
 ```
 
 **Tree Shaking**:
+
 - ES modules import (not `require`)
 - Unused exports eliminated
 - `sideEffects: false` in package.json
@@ -669,12 +706,14 @@ const SessionCarousel = dynamic(
 ### Vercel Pricing Estimate
 
 **Expected Monthly Costs** (1000 users):
+
 - Vercel Pro: $20/month
 - Vercel Postgres: ~$50/month (1GB storage)
 - Vercel Blob: ~$10/month (10GB storage, 100GB bandwidth)
 - **Total**: ~$80/month
 
 **At Scale** (10,000 users):
+
 - Vercel Pro: $20/month
 - Vercel Postgres: ~$200/month (10GB storage)
 - Vercel Blob: ~$50/month (50GB storage, 500GB bandwidth)
@@ -683,26 +722,31 @@ const SessionCarousel = dynamic(
 ### Development Environment Costs
 
 **Local Development**:
+
 - Vercel Postgres: Free tier includes 256MB storage, 60 compute hours/month
 - Local Docker alternative: Free (but requires setup)
 - Cost during development: **$0/month** (within free tier limits)
 
 **Preview Deployments** (Per PR):
+
 - Vercel Pro free preview deployments (unlimited)
 - Isolated database instances share dev environment
 - Cost per preview: **$0** (included in Pro plan during development)
 
 **Testing Environments**:
+
 - Staging database: Vercel Postgres starter (~$20-50/month depending on usage)
 - Shared across team during development
 - Estimated cost: **$20-50/month**
 
 **Development Database**:
+
 - Vercel Postgres development instance
 - Typically under 1GB during development
 - Estimated cost: **Included in free tier or ~$0-20/month**
 
 **Total Estimated Development Costs**: $20-70/month
+
 - Primarily for staging/testing database
 - Production infrastructure costs listed above kick in only after launch
 
@@ -711,12 +755,14 @@ const SessionCarousel = dynamic(
 ### Cost Monitoring
 
 **Vercel Usage Dashboard**:
+
 - Function execution time
 - Bandwidth usage
 - Database storage and queries
 - Blob storage and bandwidth
 
 **Alerts**:
+
 - 80% of plan limits
 - Unexpected usage spikes
 
@@ -727,6 +773,7 @@ const SessionCarousel = dynamic(
 ### Horizontal Scaling
 
 **Auto-scaling**:
+
 - Vercel automatically scales serverless functions
 - No manual intervention required
 - Pay-per-use pricing
@@ -736,11 +783,13 @@ const SessionCarousel = dynamic(
 ### Database Scaling
 
 **Read Replicas** (when needed):
+
 - Vercel Postgres supports read replicas
 - Route read queries to replicas
 - Write queries to primary
 
 **Connection Pooling**:
+
 ```typescript
 // lib/db/prisma.ts
 import { PrismaClient } from '@prisma/client'

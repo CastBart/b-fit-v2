@@ -11,17 +11,19 @@ This document defines the formulas and algorithms for all analytics metrics in B
 ### Total Volume
 
 **Formula**:
+
 ```
 Volume = Σ (weight × reps) for all sets
 ```
 
 **Implementation**:
+
 ```typescript
 function calculateTotalVolume(sets: SessionSet[]): number {
   return sets.reduce((total, set) => {
     // Only count sets with both weight and reps
     if (set.weight && set.reps) {
-      return total + (set.weight * set.reps)
+      return total + set.weight * set.reps
     }
     return total
   }, 0)
@@ -29,6 +31,7 @@ function calculateTotalVolume(sets: SessionSet[]): number {
 ```
 
 **Example**:
+
 ```
 Sets:
   Set 1: 100kg × 10 reps = 1000kg
@@ -43,18 +46,18 @@ Total Volume = 1000 + 800 + 600 = 2400kg
 ### Volume by Exercise
 
 **Formula**:
+
 ```
 VolumePerExercise = Σ (weight × reps) for sets of specific exercise
 ```
 
 **Implementation**:
+
 ```typescript
-function calculateVolumeByExercise(
-  session: TrainingSession
-): Record<string, number> {
+function calculateVolumeByExercise(session: TrainingSession): Record<string, number> {
   const volumeMap: Record<string, number> = {}
 
-  session.sets.forEach(set => {
+  session.sets.forEach((set) => {
     if (!volumeMap[set.exerciseId]) {
       volumeMap[set.exerciseId] = 0
     }
@@ -73,11 +76,13 @@ function calculateVolumeByExercise(
 ### Volume Progression (Time Series)
 
 **Formula**:
+
 ```
 WeeklyVolume = Σ (total session volume) for sessions in week
 ```
 
 **Implementation**:
+
 ```typescript
 function calculateVolumeProgression(
   sessions: TrainingSession[],
@@ -87,17 +92,12 @@ function calculateVolumeProgression(
   const weeklyVolume: Map<string, number> = new Map()
 
   sessions
-    .filter(session =>
-      session.completedAt >= startDate && session.completedAt <= endDate
-    )
-    .forEach(session => {
+    .filter((session) => session.completedAt >= startDate && session.completedAt <= endDate)
+    .forEach((session) => {
       const weekKey = getWeekKey(session.completedAt) // e.g., "2024-W01"
 
       const currentVolume = weeklyVolume.get(weekKey) || 0
-      weeklyVolume.set(
-        weekKey,
-        currentVolume + (session.totalVolume || 0)
-      )
+      weeklyVolume.set(weekKey, currentVolume + (session.totalVolume || 0))
     })
 
   return Array.from(weeklyVolume.entries())
@@ -127,6 +127,7 @@ function getWeekNumber(date: Date): number {
 **Approach**: Track max weight for different rep ranges
 
 **Rep Range Buckets**:
+
 - 1RM: 1 rep
 - 3RM: 2-3 reps
 - 5RM: 4-6 reps
@@ -135,6 +136,7 @@ function getWeekNumber(date: Date): number {
 - 20RM+: 20+ reps
 
 **Implementation**:
+
 ```typescript
 type RepRange = '1RM' | '3RM' | '5RM' | '10RM' | '15RM' | '20RM+'
 
@@ -172,7 +174,7 @@ async function detectPRs(
   }> = []
 
   // Group sets by rep range
-  completedSets.forEach(set => {
+  completedSets.forEach((set) => {
     if (!set.weight || !set.reps) return
 
     const repRange = getRepRange(set.reps)
@@ -186,9 +188,9 @@ async function detectPRs(
           weight: set.weight,
           reps: set.reps,
           achievedAt: set.completedAt!,
-          sessionId: set.sessionId
+          sessionId: set.sessionId,
         },
-        previousRecord: currentPR || null
+        previousRecord: currentPR || null,
       })
 
       // Update current PRs for subsequent checks in this session
@@ -196,7 +198,7 @@ async function detectPRs(
         weight: set.weight,
         reps: set.reps,
         achievedAt: set.completedAt!,
-        sessionId: set.sessionId
+        sessionId: set.sessionId,
       }
     }
   })
@@ -210,11 +212,13 @@ async function detectPRs(
 ### Estimated 1RM (Epley Formula)
 
 **Formula**:
+
 ```
 1RM = weight × (1 + reps / 30)
 ```
 
 **Implementation**:
+
 ```typescript
 function calculateEstimated1RM(weight: number, reps: number): number {
   if (reps === 1) return weight
@@ -228,6 +232,7 @@ function calculateEstimated1RM(weight: number, reps: number): number {
 ```
 
 **Example**:
+
 ```
 Set: 100kg × 5 reps
 1RM = 100 × (1 + 5 / 30)
@@ -243,11 +248,13 @@ Set: 100kg × 5 reps
 ### Adherence Rate
 
 **Formula**:
+
 ```
 Adherence = (Completed Sessions / Assigned Workouts) × 100
 ```
 
 **Implementation**:
+
 ```typescript
 async function calculateWorkoutAdherence(
   clientId: string,
@@ -265,9 +272,9 @@ async function calculateWorkoutAdherence(
       copiedFromId: { not: null }, // Only count assigned (not self-created)
       createdAt: {
         gte: startDate,
-        lte: endDate
-      }
-    }
+        lte: endDate,
+      },
+    },
   })
 
   // Count completed sessions for assigned workouts
@@ -277,28 +284,26 @@ async function calculateWorkoutAdherence(
       status: 'COMPLETED',
       completedAt: {
         gte: startDate,
-        lte: endDate
+        lte: endDate,
       },
       workout: {
-        copiedFromId: { not: null }
-      }
-    }
+        copiedFromId: { not: null },
+      },
+    },
   })
 
-  const adherenceRate =
-    assignedWorkouts > 0
-      ? (completedSessions / assignedWorkouts) * 100
-      : 0
+  const adherenceRate = assignedWorkouts > 0 ? (completedSessions / assignedWorkouts) * 100 : 0
 
   return {
     adherenceRate: Math.round(adherenceRate * 10) / 10, // Round to 1 decimal
     completedSessions,
-    assignedWorkouts
+    assignedWorkouts,
   }
 }
 ```
 
 **Example**:
+
 ```
 Assigned Workouts: 12 (3 per week, 4 weeks)
 Completed Sessions: 10
@@ -311,6 +316,7 @@ Adherence = (10 / 12) × 100 = 83.3%
 ### Weekly Adherence Breakdown
 
 **Implementation**:
+
 ```typescript
 function calculateWeeklyAdherence(
   sessions: TrainingSession[],
@@ -319,7 +325,7 @@ function calculateWeeklyAdherence(
   const weeklyData = new Map<string, { completed: number; assigned: number }>()
 
   // Group assignments by week
-  assignments.forEach(assignment => {
+  assignments.forEach((assignment) => {
     const week = getWeekKey(assignment.createdAt)
     const current = weeklyData.get(week) || { completed: 0, assigned: 0 }
     weeklyData.set(week, { ...current, assigned: current.assigned + 1 })
@@ -327,8 +333,8 @@ function calculateWeeklyAdherence(
 
   // Count completed sessions by week
   sessions
-    .filter(s => s.status === 'COMPLETED')
-    .forEach(session => {
+    .filter((s) => s.status === 'COMPLETED')
+    .forEach((session) => {
       const week = getWeekKey(session.completedAt!)
       const current = weeklyData.get(week) || { completed: 0, assigned: 0 }
       weeklyData.set(week, { ...current, completed: current.completed + 1 })
@@ -338,7 +344,7 @@ function calculateWeeklyAdherence(
   return Array.from(weeklyData.entries())
     .map(([week, data]) => ({
       week,
-      rate: data.assigned > 0 ? (data.completed / data.assigned) * 100 : 0
+      rate: data.assigned > 0 ? (data.completed / data.assigned) * 100 : 0,
     }))
     .sort((a, b) => a.week.localeCompare(b.week))
 }
@@ -351,11 +357,13 @@ function calculateWeeklyAdherence(
 ### Sessions Per Week
 
 **Formula**:
+
 ```
 Frequency = Total Sessions / Number of Weeks
 ```
 
 **Implementation**:
+
 ```typescript
 function calculateSessionFrequency(
   userId: string,
@@ -372,22 +380,20 @@ function calculateSessionFrequency(
       status: 'COMPLETED',
       completedAt: {
         gte: startDate,
-        lte: endDate
-      }
-    }
+        lte: endDate,
+      },
+    },
   })
 
   // Calculate number of weeks
-  const weeks = Math.ceil(
-    (endDate.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000)
-  )
+  const weeks = Math.ceil((endDate.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000))
 
   const sessionsPerWeek = weeks > 0 ? sessions / weeks : 0
 
   return {
     sessionsPerWeek: Math.round(sessionsPerWeek * 10) / 10,
     totalSessions: sessions,
-    weeks
+    weeks,
   }
 }
 ```
@@ -397,11 +403,13 @@ function calculateSessionFrequency(
 ### Consistency Score
 
 **Formula**:
+
 ```
 Consistency = (Weeks with ≥1 session / Total Weeks) × 100
 ```
 
 **Implementation**:
+
 ```typescript
 function calculateConsistencyScore(
   sessions: TrainingSession[],
@@ -410,7 +418,7 @@ function calculateConsistencyScore(
 ): number {
   const weeksWithSessions = new Set<string>()
 
-  sessions.forEach(session => {
+  sessions.forEach((session) => {
     if (session.status === 'COMPLETED' && session.completedAt) {
       weeksWithSessions.add(getWeekKey(session.completedAt))
     }
@@ -427,6 +435,7 @@ function calculateConsistencyScore(
 ```
 
 **Example**:
+
 ```
 Total Weeks: 12
 Weeks with ≥1 session: 10
@@ -441,15 +450,16 @@ Consistency = (10 / 12) × 100 = 83%
 ### Muscle Group Coverage
 
 **Implementation**:
+
 ```typescript
 function calculateMuscleGroupDistribution(
   sessions: TrainingSession[]
 ): Record<MuscleGroup, number> {
   const distribution: Record<MuscleGroup, number> = {}
 
-  sessions.forEach(session => {
-    session.workout.exercises.forEach(we => {
-      we.exercise.muscleGroups.forEach(muscleGroup => {
+  sessions.forEach((session) => {
+    session.workout.exercises.forEach((we) => {
+      we.exercise.muscleGroups.forEach((muscleGroup) => {
         distribution[muscleGroup] = (distribution[muscleGroup] || 0) + 1
       })
     })
@@ -464,20 +474,18 @@ function calculateMuscleGroupDistribution(
 ### Volume by Muscle Group
 
 **Implementation**:
+
 ```typescript
-function calculateVolumeByMuscleGroup(
-  sessions: TrainingSession[]
-): Record<MuscleGroup, number> {
+function calculateVolumeByMuscleGroup(sessions: TrainingSession[]): Record<MuscleGroup, number> {
   const volumeByMuscle: Record<MuscleGroup, number> = {}
 
-  sessions.forEach(session => {
-    session.sets.forEach(set => {
+  sessions.forEach((session) => {
+    session.sets.forEach((set) => {
       if (set.weight && set.reps) {
         const volume = set.weight * set.reps
 
-        set.exercise.muscleGroups.forEach(muscleGroup => {
-          volumeByMuscle[muscleGroup] =
-            (volumeByMuscle[muscleGroup] || 0) + volume
+        set.exercise.muscleGroups.forEach((muscleGroup) => {
+          volumeByMuscle[muscleGroup] = (volumeByMuscle[muscleGroup] || 0) + volume
         })
       }
     })
@@ -494,11 +502,13 @@ function calculateVolumeByMuscleGroup(
 ### Aggregate Client Adherence
 
 **Formula**:
+
 ```
 OrgAdherence = Σ (Client Adherence) / Number of Clients
 ```
 
 **Implementation**:
+
 ```typescript
 async function calculateOrgAdherence(
   orgId: string,
@@ -514,9 +524,9 @@ async function calculateOrgAdherence(
     include: {
       clients: {
         where: { status: 'ACTIVE' },
-        include: { client: true }
-      }
-    }
+        include: { client: true },
+      },
+    },
   })
 
   // Calculate adherence for each client
@@ -532,20 +542,19 @@ async function calculateOrgAdherence(
 
       clientAdherence.push({
         clientId: relationship.clientId,
-        adherence: adherenceRate
+        adherence: adherenceRate,
       })
     }
   }
 
   const averageAdherence =
     clientAdherence.length > 0
-      ? clientAdherence.reduce((sum, c) => sum + c.adherence, 0) /
-        clientAdherence.length
+      ? clientAdherence.reduce((sum, c) => sum + c.adherence, 0) / clientAdherence.length
       : 0
 
   return {
     averageAdherence: Math.round(averageAdherence * 10) / 10,
-    clientBreakdown: clientAdherence
+    clientBreakdown: clientAdherence,
   }
 }
 ```
@@ -555,6 +564,7 @@ async function calculateOrgAdherence(
 ### Aggregate Volume
 
 **Implementation**:
+
 ```typescript
 async function calculateOrgTotalVolume(
   orgId: string,
@@ -570,33 +580,29 @@ async function calculateOrgTotalVolume(
         trainers: {
           some: {
             pt: { orgId },
-            status: 'ACTIVE'
-          }
-        }
+            status: 'ACTIVE',
+          },
+        },
       },
       status: 'COMPLETED',
       completedAt: {
         gte: startDate,
-        lte: endDate
-      }
+        lte: endDate,
+      },
     },
     select: {
       totalVolume: true,
-      userId: true
-    }
+      userId: true,
+    },
   })
 
-  const totalVolume = sessions.reduce(
-    (sum, s) => sum + (s.totalVolume || 0),
-    0
-  )
+  const totalVolume = sessions.reduce((sum, s) => sum + (s.totalVolume || 0), 0)
 
-  const uniqueClients = new Set(sessions.map(s => s.userId)).size
+  const uniqueClients = new Set(sessions.map((s) => s.userId)).size
 
   return {
     totalVolume,
-    averageVolumePerClient:
-      uniqueClients > 0 ? totalVolume / uniqueClients : 0
+    averageVolumePerClient: uniqueClients > 0 ? totalVolume / uniqueClients : 0,
   }
 }
 ```
@@ -608,6 +614,7 @@ async function calculateOrgTotalVolume(
 ### Relative Strength (Wilks Score)
 
 **Formula** (Simplified):
+
 ```
 Wilks = (Weight Lifted) / (Body Weight Factor)
 ```
@@ -619,18 +626,18 @@ Wilks = (Weight Lifted) / (Body Weight Factor)
 ### Strength Progress Rate
 
 **Formula**:
+
 ```
 Progress Rate = (Current 1RM - Starting 1RM) / Starting 1RM × 100
 ```
 
 **Implementation**:
+
 ```typescript
-function calculateStrengthProgress(
-  exerciseId: string,
-  history: ExerciseHistory
-): number {
-  const records = Object.values(history.personalRecords || {})
-    .sort((a, b) => new Date(a.achievedAt).getTime() - new Date(b.achievedAt).getTime())
+function calculateStrengthProgress(exerciseId: string, history: ExerciseHistory): number {
+  const records = Object.values(history.personalRecords || {}).sort(
+    (a, b) => new Date(a.achievedAt).getTime() - new Date(b.achievedAt).getTime()
+  )
 
   if (records.length < 2) return 0
 
@@ -640,14 +647,14 @@ function calculateStrengthProgress(
   const firstEstimated1RM = calculateEstimated1RM(first.weight, first.reps)
   const latestEstimated1RM = calculateEstimated1RM(latest.weight, latest.reps)
 
-  const progressRate =
-    ((latestEstimated1RM - firstEstimated1RM) / firstEstimated1RM) * 100
+  const progressRate = ((latestEstimated1RM - firstEstimated1RM) / firstEstimated1RM) * 100
 
   return Math.round(progressRate * 10) / 10
 }
 ```
 
 **Example**:
+
 ```
 Starting: 100kg × 5 reps → Estimated 1RM: 116.5kg
 Current: 110kg × 5 reps → Estimated 1RM: 128kg
@@ -664,18 +671,16 @@ Progress = (128 - 116.5) / 116.5 × 100 = 9.9%
 **Trigger**: On session completion
 
 **Process**:
+
 ```typescript
-async function updateExerciseHistory(
-  userId: string,
-  sessionId: string
-) {
+async function updateExerciseHistory(userId: string, sessionId: string) {
   const session = await prisma.trainingSession.findUnique({
     where: { id: sessionId },
     include: {
       sets: {
-        include: { exercise: true }
-      }
-    }
+        include: { exercise: true },
+      },
+    },
   })
 
   // Group sets by exercise
@@ -694,24 +699,31 @@ async function updateExerciseHistory(
       where: {
         userId_exerciseId: {
           userId,
-          exerciseId
-        }
+          exerciseId,
+        },
       },
       create: {
         userId,
         exerciseId,
-        personalRecords: prs.reduce((acc, pr) => ({
-          ...acc,
-          [pr.repRange]: pr.newRecord
-        }), {}),
+        personalRecords: prs.reduce(
+          (acc, pr) => ({
+            ...acc,
+            [pr.repRange]: pr.newRecord,
+          }),
+          {}
+        ),
         volumeHistory: [{ week: weekKey, volume: volumeThisSession }],
-        lastPerformed: session.completedAt
+        lastPerformed: session.completedAt,
       },
       update: {
-        personalRecords: { /* merge new PRs */ },
-        volumeHistory: { /* append week volume */ },
-        lastPerformed: session.completedAt
-      }
+        personalRecords: {
+          /* merge new PRs */
+        },
+        volumeHistory: {
+          /* append week volume */
+        },
+        lastPerformed: session.completedAt,
+      },
     })
   }
 }
@@ -726,14 +738,11 @@ async function updateExerciseHistory(
 ```typescript
 // Cache expensive calculations
 const cacheKeys = {
-  adherence: (userId: string, start: string, end: string) =>
-    `adherence:${userId}:${start}:${end}`,
+  adherence: (userId: string, start: string, end: string) => `adherence:${userId}:${start}:${end}`,
 
-  volume: (userId: string, start: string, end: string) =>
-    `volume:${userId}:${start}:${end}`,
+  volume: (userId: string, start: string, end: string) => `volume:${userId}:${start}:${end}`,
 
-  prs: (userId: string, exerciseId: string) =>
-    `prs:${userId}:${exerciseId}`
+  prs: (userId: string, exerciseId: string) => `prs:${userId}:${exerciseId}`,
 }
 ```
 
@@ -749,7 +758,7 @@ async function onSessionComplete(sessionId: string) {
   await cache.del(`volume:${session.userId}:*`)
 
   // Invalidate exercise PR cache
-  const exerciseIds = session.sets.map(s => s.exerciseId)
+  const exerciseIds = session.sets.map((s) => s.exerciseId)
   for (const exerciseId of exerciseIds) {
     await cache.del(`prs:${session.userId}:${exerciseId}`)
   }

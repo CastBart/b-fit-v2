@@ -20,17 +20,20 @@ B-Fit follows a testing pyramid approach with emphasis on fast, reliable tests t
 ## Test Stack
 
 ### Unit & Integration Testing
+
 - **Framework**: Vitest
 - **React Testing**: React Testing Library
 - **Mocking**: vi.mock(), MSW (Mock Service Worker)
 - **Coverage**: Istanbul (built into Vitest)
 
 ### E2E Testing
+
 - **Framework**: Playwright
 - **Browsers**: Chromium, Firefox, WebKit
 - **Parallel**: Yes
 
 ### Additional Tools
+
 - **Type Checking**: TypeScript strict mode
 - **Linting**: ESLint with strict rules
 - **Code Quality**: Prettier, Husky pre-commit hooks
@@ -39,13 +42,13 @@ B-Fit follows a testing pyramid approach with emphasis on fast, reliable tests t
 
 ## Coverage Goals
 
-| Category | Minimum Coverage | Target Coverage |
-|----------|-----------------|----------------|
-| Overall | 80% | 85% |
-| Business Logic (actions, calculations) | 95% | 100% |
-| UI Components | 60% | 70% |
-| Utilities | 90% | 95% |
-| API Routes/Actions | 85% | 90% |
+| Category                               | Minimum Coverage | Target Coverage |
+| -------------------------------------- | ---------------- | --------------- |
+| Overall                                | 80%              | 85%             |
+| Business Logic (actions, calculations) | 95%              | 100%            |
+| UI Components                          | 60%              | 70%             |
+| Utilities                              | 90%              | 95%             |
+| API Routes/Actions                     | 85%              | 90%             |
 
 ---
 
@@ -64,7 +67,7 @@ import { mockSession } from '@/lib/auth/auth.mock'
 
 // Mock auth
 vi.mock('@/lib/auth/next-auth.config', () => ({
-  auth: vi.fn(() => Promise.resolve(mockSession({ role: 'PERSONAL' })))
+  auth: vi.fn(() => Promise.resolve(mockSession({ role: 'PERSONAL' }))),
 }))
 
 describe('createWorkout', () => {
@@ -82,9 +85,9 @@ describe('createWorkout', () => {
           exerciseId: 'ex-1',
           sets: 3,
           reps: 10,
-          order: 0
-        }
-      ]
+          order: 0,
+        },
+      ],
     }
 
     prismaMock.workout.create.mockResolvedValue(mockWorkout)
@@ -96,9 +99,9 @@ describe('createWorkout', () => {
           exerciseId: 'ex-1',
           sets: 3,
           reps: 10,
-          order: 0
-        }
-      ]
+          order: 0,
+        },
+      ],
     })
 
     expect(result.success).toBe(true)
@@ -106,8 +109,8 @@ describe('createWorkout', () => {
     expect(prismaMock.workout.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          name: 'Push Day'
-        })
+          name: 'Push Day',
+        }),
       })
     )
   })
@@ -115,7 +118,7 @@ describe('createWorkout', () => {
   it('rejects workout with no exercises', async () => {
     const result = await createWorkout({
       name: 'Empty Workout',
-      exercises: []
+      exercises: [],
     })
 
     expect(result.success).toBe(false)
@@ -127,7 +130,7 @@ describe('createWorkout', () => {
 
     const result = await createWorkout({
       name: 'Test',
-      exercises: [{ exerciseId: 'ex-1', sets: 3, reps: 10, order: 0 }]
+      exercises: [{ exerciseId: 'ex-1', sets: 3, reps: 10, order: 0 }],
     })
 
     expect(result.success).toBe(false)
@@ -135,13 +138,11 @@ describe('createWorkout', () => {
   })
 
   it('enforces role-based permissions', async () => {
-    vi.mocked(auth).mockResolvedValueOnce(
-      mockSession({ role: 'CLIENT' })
-    )
+    vi.mocked(auth).mockResolvedValueOnce(mockSession({ role: 'CLIENT' }))
 
     const result = await createWorkout({
       name: 'Test',
-      exercises: [{ exerciseId: 'ex-1', sets: 3, reps: 10, order: 0 }]
+      exercises: [{ exerciseId: 'ex-1', sets: 3, reps: 10, order: 0 }],
     })
 
     expect(result.success).toBe(false)
@@ -164,7 +165,7 @@ describe('calculateVolume', () => {
     const sets = [
       { weight: 100, reps: 10 },
       { weight: 100, reps: 8 },
-      { weight: 100, reps: 6 }
+      { weight: 100, reps: 6 },
     ]
 
     const volume = calculateVolume(sets)
@@ -175,7 +176,7 @@ describe('calculateVolume', () => {
   it('handles missing weight', () => {
     const sets = [
       { weight: null, reps: 10 },
-      { weight: 100, reps: 10 }
+      { weight: 100, reps: 10 },
     ]
 
     const volume = calculateVolume(sets)
@@ -579,9 +580,9 @@ import { PrismaClient } from '@prisma/client'
 export const testDb = new PrismaClient({
   datasources: {
     db: {
-      url: process.env.TEST_DATABASE_URL
-    }
-  }
+      url: process.env.TEST_DATABASE_URL,
+    },
+  },
 })
 
 export async function resetTestDatabase() {
@@ -611,7 +612,7 @@ export function createUser(overrides?: Partial<User>): User {
     role: 'PERSONAL',
     createdAt: new Date(),
     updatedAt: new Date(),
-    ...overrides
+    ...overrides,
   }
 }
 
@@ -624,7 +625,7 @@ export function createWorkout(overrides?: Partial<Workout>): Workout {
     isTemplate: true,
     createdAt: new Date(),
     updatedAt: new Date(),
-    ...overrides
+    ...overrides,
   }
 }
 

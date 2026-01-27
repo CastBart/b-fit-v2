@@ -21,12 +21,14 @@ You are an expert end-to-end testing specialist focused on Playwright test autom
 ## Tools at Your Disposal
 
 ### Playwright Testing Framework
+
 - **@playwright/test** - Core testing framework
 - **Playwright Inspector** - Debug tests interactively
 - **Playwright Trace Viewer** - Analyze test execution
 - **Playwright Codegen** - Generate test code from browser actions
 
 ### Test Commands
+
 ```bash
 # Run all E2E tests
 npx playwright test
@@ -61,6 +63,7 @@ npx playwright test --project=webkit
 ## E2E Testing Workflow
 
 ### 1. Test Planning Phase
+
 ```
 a) Identify critical user journeys
    - Authentication flows (login, logout, registration)
@@ -80,6 +83,7 @@ c) Prioritize by risk
 ```
 
 ### 2. Test Creation Phase
+
 ```
 For each user journey:
 
@@ -103,6 +107,7 @@ For each user journey:
 ```
 
 ### 3. Test Execution Phase
+
 ```
 a) Run tests locally
    - Verify all tests pass
@@ -123,6 +128,7 @@ c) Run in CI/CD
 ## Playwright Test Structure
 
 ### Test File Organization
+
 ```
 tests/
 ├── e2e/                       # End-to-end user journeys
@@ -176,7 +182,7 @@ export class MarketsPage {
 
   async searchMarkets(query: string) {
     await this.searchInput.fill(query)
-    await this.page.waitForResponse(resp => resp.url().includes('/api/markets/search'))
+    await this.page.waitForResponse((resp) => resp.url().includes('/api/markets/search'))
     await this.page.waitForLoadState('networkidle')
   }
 
@@ -260,6 +266,7 @@ test.describe('Market Search', () => {
 ### Critical User Journeys for Example Project
 
 **1. Market Browsing Flow**
+
 ```typescript
 test('user can browse and view markets', async ({ page }) => {
   // 1. Navigate to markets page
@@ -283,6 +290,7 @@ test('user can browse and view markets', async ({ page }) => {
 ```
 
 **2. Semantic Search Flow**
+
 ```typescript
 test('semantic search returns relevant results', async ({ page }) => {
   // 1. Navigate to markets
@@ -293,8 +301,8 @@ test('semantic search returns relevant results', async ({ page }) => {
   await searchInput.fill('election')
 
   // 3. Wait for API call
-  await page.waitForResponse(resp =>
-    resp.url().includes('/api/markets/search') && resp.status() === 200
+  await page.waitForResponse(
+    (resp) => resp.url().includes('/api/markets/search') && resp.status() === 200
   )
 
   // 4. Verify results contain relevant markets
@@ -309,6 +317,7 @@ test('semantic search returns relevant results', async ({ page }) => {
 ```
 
 **3. Wallet Connection Flow**
+
 ```typescript
 test('user can connect wallet', async ({ page, context }) => {
   // Setup: Mock Privy wallet extension
@@ -323,7 +332,7 @@ test('user can connect wallet', async ({ page, context }) => {
         if (method === 'eth_chainId') {
           return '0x1'
         }
-      }
+      },
     }
   })
 
@@ -346,6 +355,7 @@ test('user can connect wallet', async ({ page, context }) => {
 ```
 
 **4. Market Creation Flow (Authenticated)**
+
 ```typescript
 test('authenticated user can create market', async ({ page }) => {
   // Prerequisites: User must be authenticated
@@ -375,6 +385,7 @@ test('authenticated user can create market', async ({ page }) => {
 ```
 
 **5. Trading Flow (Critical - Real Money)**
+
 ```typescript
 test('user can place trade with sufficient balance', async ({ page }) => {
   // WARNING: This test involves real money - use testnet/staging only!
@@ -402,8 +413,8 @@ test('user can place trade with sufficient balance', async ({ page }) => {
   await page.locator('[data-testid="confirm-trade"]').click()
 
   // 7. Wait for blockchain transaction
-  await page.waitForResponse(resp =>
-    resp.url().includes('/api/trade') && resp.status() === 200,
+  await page.waitForResponse(
+    (resp) => resp.url().includes('/api/trade') && resp.status() === 200,
     { timeout: 30000 } // Blockchain can be slow
   )
 
@@ -431,7 +442,7 @@ export default defineConfig({
   reporter: [
     ['html', { outputFolder: 'playwright-report' }],
     ['junit', { outputFile: 'playwright-results.xml' }],
-    ['json', { outputFile: 'playwright-results.json' }]
+    ['json', { outputFile: 'playwright-results.json' }],
   ],
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
@@ -471,6 +482,7 @@ export default defineConfig({
 ## Flaky Test Management
 
 ### Identifying Flaky Tests
+
 ```bash
 # Run test multiple times to check stability
 npx playwright test tests/markets/search.spec.ts --repeat-each=10
@@ -480,6 +492,7 @@ npx playwright test tests/markets/search.spec.ts --retries=3
 ```
 
 ### Quarantine Pattern
+
 ```typescript
 // Mark flaky test for quarantine
 test('flaky: market search with complex query', async ({ page }) => {
@@ -499,6 +512,7 @@ test('market search with complex query', async ({ page }) => {
 ### Common Flakiness Causes & Fixes
 
 **1. Race Conditions**
+
 ```typescript
 // ❌ FLAKY: Don't assume element is ready
 await page.click('[data-testid="button"]')
@@ -508,15 +522,17 @@ await page.locator('[data-testid="button"]').click() // Built-in auto-wait
 ```
 
 **2. Network Timing**
+
 ```typescript
 // ❌ FLAKY: Arbitrary timeout
 await page.waitForTimeout(5000)
 
 // ✅ STABLE: Wait for specific condition
-await page.waitForResponse(resp => resp.url().includes('/api/markets'))
+await page.waitForResponse((resp) => resp.url().includes('/api/markets'))
 ```
 
 **3. Animation Timing**
+
 ```typescript
 // ❌ FLAKY: Click during animation
 await page.click('[data-testid="menu-item"]')
@@ -530,6 +546,7 @@ await page.click('[data-testid="menu-item"]')
 ## Artifact Management
 
 ### Screenshot Strategy
+
 ```typescript
 // Take screenshot at key points
 await page.screenshot({ path: 'artifacts/after-login.png' })
@@ -539,11 +556,12 @@ await page.screenshot({ path: 'artifacts/full-page.png', fullPage: true })
 
 // Element screenshot
 await page.locator('[data-testid="chart"]').screenshot({
-  path: 'artifacts/chart.png'
+  path: 'artifacts/chart.png',
 })
 ```
 
 ### Trace Collection
+
 ```typescript
 // Start trace
 await browser.startTracing(page, {
@@ -559,6 +577,7 @@ await browser.stopTracing()
 ```
 
 ### Video Recording
+
 ```typescript
 // Configured in playwright.config.ts
 use: {
@@ -570,6 +589,7 @@ use: {
 ## CI/CD Integration
 
 ### GitHub Actions Workflow
+
 ```yaml
 # .github/workflows/e2e.yml
 name: E2E Tests
@@ -633,17 +653,20 @@ jobs:
 ## Test Results by Suite
 
 ### Markets - Browse & Search
+
 - ✅ user can browse markets (2.3s)
 - ✅ semantic search returns relevant results (1.8s)
 - ✅ search handles no results (1.2s)
 - ❌ search with special characters (0.9s)
 
 ### Wallet - Connection
+
 - ✅ user can connect MetaMask (3.1s)
-- ⚠️  user can connect Phantom (2.8s) - FLAKY
+- ⚠️ user can connect Phantom (2.8s) - FLAKY
 - ✅ user can disconnect wallet (1.5s)
 
 ### Trading - Core Flows
+
 - ✅ user can place buy order (5.2s)
 - ❌ user can place sell order (4.8s)
 - ✅ insufficient balance shows error (1.9s)
@@ -651,12 +674,14 @@ jobs:
 ## Failed Tests
 
 ### 1. search with special characters
+
 **File:** `tests/e2e/markets/search.spec.ts:45`
 **Error:** Expected element to be visible, but was not found
 **Screenshot:** artifacts/search-special-chars-failed.png
 **Trace:** artifacts/trace-123.zip
 
 **Steps to Reproduce:**
+
 1. Navigate to /markets
 2. Enter search query with special chars: "trump & biden"
 3. Verify results
@@ -666,11 +691,13 @@ jobs:
 ---
 
 ### 2. user can place sell order
+
 **File:** `tests/e2e/trading/sell.spec.ts:28`
 **Error:** Timeout waiting for API response /api/trade
 **Video:** artifacts/videos/sell-order-failed.webm
 
 **Possible Causes:**
+
 - Blockchain network slow
 - Insufficient gas
 - Transaction reverted
@@ -680,9 +707,9 @@ jobs:
 ## Artifacts
 
 - HTML Report: playwright-report/index.html
-- Screenshots: artifacts/*.png (12 files)
-- Videos: artifacts/videos/*.webm (2 files)
-- Traces: artifacts/*.zip (2 files)
+- Screenshots: artifacts/\*.png (12 files)
+- Videos: artifacts/videos/\*.webm (2 files)
+- Traces: artifacts/\*.zip (2 files)
 - JUnit XML: playwright-results.xml
 
 ## Next Steps
@@ -695,6 +722,7 @@ jobs:
 ## Success Metrics
 
 After E2E test run:
+
 - ✅ All critical journeys passing (100%)
 - ✅ Pass rate > 95% overall
 - ✅ Flaky rate < 5%
