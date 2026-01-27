@@ -7,7 +7,8 @@ import type { UserRole } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
 export const authConfig = {
-  adapter: PrismaAdapter(prisma),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  adapter: PrismaAdapter(prisma) as any, // NextAuth v5 beta type compatibility
   session: {
     strategy: 'jwt',
   },

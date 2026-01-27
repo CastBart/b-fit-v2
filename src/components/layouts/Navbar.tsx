@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
+import { useSession, signOut } from 'next-auth/react'
 import { Dumbbell, Moon, Sun, User, LogOut, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { toast } from 'sonner'
 
 interface NavbarProps {
   onMenuClick?: () => void
@@ -20,6 +22,28 @@ interface NavbarProps {
 
 export function Navbar({ onMenuClick }: NavbarProps) {
   const { theme, setTheme } = useTheme()
+  const { data: session } = useSession()
+
+  const handleLogout = async () => {
+    try {
+      await signOut({
+        callbackUrl: '/login',
+        redirect: true,
+      })
+      toast.success('Logged out successfully')
+    } catch (error) {
+      console.error('Logout error:', error)
+      toast.error('Failed to logout')
+    }
+  }
+
+  const userInitials = session?.user?.name
+    ? session.user.name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+    : 'U'
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -71,9 +95,9 @@ export function Navbar({ onMenuClick }: NavbarProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src="/placeholder-avatar.jpg" alt="User avatar" />
+                  <AvatarImage src={session?.user?.image || undefined} alt="User avatar" />
                   <AvatarFallback className="bg-primary text-primary-foreground">
-                    <User className="h-5 w-5" />
+                    {session ? userInitials : <User className="h-5 w-5" />}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -81,8 +105,17 @@ export function Navbar({ onMenuClick }: NavbarProps) {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">John Doe</p>
-                  <p className="text-xs leading-none text-muted-foreground">john@example.com</p>
+                  <p className="text-sm font-medium leading-none">
+                    {session?.user?.name || 'Guest'}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {session?.user?.email || 'Not logged in'}
+                  </p>
+                  {session?.user?.role && (
+                    <p className="text-xs leading-none text-muted-foreground">
+                      Role: {session.user.role}
+                    </p>
+                  )}
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -99,7 +132,10 @@ export function Navbar({ onMenuClick }: NavbarProps) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
+              <DropdownMenuItem
+                className="cursor-pointer text-destructive focus:text-destructive"
+                onClick={handleLogout}
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
               </DropdownMenuItem>

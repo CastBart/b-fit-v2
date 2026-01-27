@@ -96,6 +96,17 @@ export default function Home() {
                 </Button>
               </CardContent>
             </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Protected Routes</CardTitle>
+                <CardDescription>Test route protection middleware (requires login)</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button asChild className="w-full" variant="secondary">
+                  <Link href="/dashboard/test-protected">Test Protection</Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </section>
       </main>

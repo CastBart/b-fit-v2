@@ -1,7 +1,7 @@
 # Phase 1 - Current Progress
 
 **Last Updated**: 2026-01-27
-**Current Task**: Week 2 - Database & Auth Foundation (Task 2.5)
+**Current Task**: Week 2 - Database & Auth Foundation (Task 2.6)
 
 ---
 
@@ -346,7 +346,7 @@ src/app/
 ## Week 2: Database & Auth Foundation
 
 **Status**: In progress 🚧
-**Progress**: 4/6 tasks complete (67%)
+**Progress**: 5/6 tasks complete (83%)
 
 ### ✅ Task 2.1: Set Up Vercel Postgres (COMPLETED)
 
@@ -544,23 +544,114 @@ src/lib/auth/test-auth-flow.ts
 
 ---
 
-### Next Task: 2.5 - Protected Route Middleware
+### ✅ Task 2.5: Protected Route Middleware (COMPLETED)
 
-**Estimated Effort**: 3-4 hours
+**Completion Date**: 2026-01-27
+**Time Taken**: ~2 hours
 
-**Steps:**
+**What was completed:**
 
-1. Create Next.js middleware for route protection
-2. Configure route matchers for protected pages
-3. Create auth guard HOC for components
-4. Test redirect behavior for unauthenticated users
-5. Verify authenticated users can access protected routes
+- Created Next.js middleware at `src/middleware.ts`:
+  - Uses NextAuth v5's `auth()` function for session checking
+  - Protects routes: `/dashboard`, `/workouts`, `/exercises`, `/sessions`, `/plans`
+  - Redirects unauthenticated users to `/login` with callback URL
+  - Redirects authenticated users away from `/login` and `/signup` to `/dashboard`
+  - Preserves original URL for post-login redirect
+- Created Auth Guard HOC at `src/lib/auth/withAuth.tsx`:
+  - Client-side protection layer as fallback
+  - Uses `useSession` hook for auth checking
+  - Shows loading skeleton while verifying session
+  - Redirects to login if not authenticated with callback URL
+  - Can wrap any page component for additional protection
+- Created SessionProvider wrapper at `src/components/providers/SessionProvider.tsx`:
+  - Wraps app with NextAuth's SessionProvider
+  - Enables `useSession` hook throughout the application
+  - Added to root layout for global session access
+- Enhanced Navbar component:
+  - Displays actual user session data (name, email, role)
+  - Shows user initials in avatar
+  - Functional logout button with toast notifications
+  - Real-time session status
+- Created test page at `/dashboard/test-protected`:
+  - Displays full session information
+  - Shows user ID, email, name, role, and expiry
+  - Confirms middleware protection is working
+- Created comprehensive testing documentation:
+  - Step-by-step testing guide at `src/lib/auth/test-protected-routes.md`
+  - 6 test scenarios with expected results
+  - Common issues and solutions
+  - Implementation details and flow diagrams
+- Updated home page with test links for protected routes
 
-**Prerequisites:**
+**Files Created:**
 
-- ✅ NextAuth.js configured (completed in Task 2.3)
-- ✅ Login flow implemented (completed in Task 2.4)
+```
+src/middleware.ts
+src/lib/auth/withAuth.tsx
+src/components/providers/SessionProvider.tsx
+src/components/features/auth/LogoutButton.tsx
+src/app/(dashboard)/test-protected/page.tsx
+src/lib/auth/test-protected-routes.md
+```
+
+**Files Modified:**
+
+```
+src/app/layout.tsx (added SessionProvider)
+src/components/layouts/Navbar.tsx (added session data and logout)
+src/app/page.tsx (added test links)
+src/lib/auth/auth.config.ts (type assertion for adapter compatibility)
+```
+
+**Key Features:**
+
+- Middleware-level route protection (server-side)
+- Client-side HOC protection (fallback layer)
+- Callback URL support for post-login redirect
+- Loading states during auth checks
+- Session persistence across page refreshes
+- Real-time session data in navbar
+- Functional logout with redirect
+- Protected test page showing session details
+
+**Implementation Highlights:**
+
+1. **Middleware Flow:**
+   - User requests protected route → Middleware checks session → Redirects if not authenticated → Preserves callback URL
+
+2. **Auth Routes Flow:**
+   - Logged-in user tries `/login` → Middleware checks session → Redirects to `/dashboard`
+
+3. **withAuth HOC:**
+   - Component wrapped with `withAuth()` → Checks session client-side → Shows skeleton while loading → Redirects if not authenticated
+
+**Build Status:**
+
+- ✅ TypeScript compilation: PASSED
+- ✅ Production build: SUCCESSFUL
+- ✅ No errors (only NextAuth v5 deprecation warning about middleware naming)
 
 ---
 
-**Ready to proceed with Task 2.5!** 🚀
+### Next Task: 2.6 - Deploy to Vercel Development
+
+**Estimated Effort**: 2-3 hours
+
+**Steps:**
+
+1. Push code to GitHub
+2. Configure environment variables in Vercel dashboard
+3. Set up deployment branches (main for production)
+4. Trigger deployment and monitor build logs
+5. Test deployed app (signup, login, protected routes)
+6. Enable preview deployments for PRs
+
+**Prerequisites:**
+
+- ✅ All Phase 1 tasks complete (Tasks 1.1-2.5)
+- ✅ Environment variables documented
+- ✅ Database and auth configured
+
+---
+
+**Ready to proceed with Task 2.6!** 🚀
