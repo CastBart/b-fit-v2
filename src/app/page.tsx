@@ -17,7 +17,7 @@ export default function Home() {
 
       <main className="flex-1">
         <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
-          <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
+          <div className="container mx-auto flex max-w-[64rem] flex-col items-center gap-4 text-center px-4">
             <h1 className="text-3xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
               Welcome to B-Fit
             </h1>
@@ -28,16 +28,16 @@ export default function Home() {
             </p>
             <div className="flex gap-4">
               <Button asChild size="lg">
-                <Link href="/dashboard">Get Started</Link>
+                <Link href="/signup">Get Started</Link>
               </Button>
               <Button asChild variant="outline" size="lg">
-                <Link href="/layout-demo">View Demo</Link>
+                <Link href="/login">Log In</Link>
               </Button>
             </div>
           </div>
         </section>
 
-        <section className="container space-y-6 py-8 md:py-12 lg:py-24">
+        <section className="container mx-auto space-y-6 py-8 md:py-12 lg:py-24 px-4">
           <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
             <h2 className="text-3xl font-bold leading-[1.1] sm:text-3xl md:text-6xl">Demo Pages</h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
@@ -79,6 +79,20 @@ export default function Home() {
               <CardContent>
                 <Button asChild className="w-full">
                   <Link href="/test">View Components</Link>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Authentication</CardTitle>
+                <CardDescription>Test signup and login functionality</CardDescription>
+              </CardHeader>
+              <CardContent className="flex gap-2">
+                <Button asChild className="w-full">
+                  <Link href="/signup">Sign Up</Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/login">Log In</Link>
                 </Button>
               </CardContent>
             </Card>

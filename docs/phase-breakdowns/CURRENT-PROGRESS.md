@@ -1,7 +1,7 @@
 # Phase 1 - Current Progress
 
 **Last Updated**: 2026-01-27
-**Current Task**: Week 2 - Database & Auth Foundation (Task 2.3)
+**Current Task**: Week 2 - Database & Auth Foundation (Task 2.5)
 
 ---
 
@@ -303,6 +303,10 @@ src/app/
 - dotenv: ^17.2.3
 - prisma: ^5.22.0 (dev)
 - @prisma/client: ^5.22.0
+- next-auth: ^5.0.0-beta.30
+- @auth/prisma-adapter: ^2.11.1
+- bcryptjs: ^4.0.1
+- @types/bcryptjs: ^2.4.6 (dev)
 
 **Configuration Files:**
 
@@ -342,7 +346,7 @@ src/app/
 ## Week 2: Database & Auth Foundation
 
 **Status**: In progress 🚧
-**Progress**: 2/6 tasks complete (33%)
+**Progress**: 4/6 tasks complete (67%)
 
 ### ✅ Task 2.1: Set Up Vercel Postgres (COMPLETED)
 
@@ -423,25 +427,140 @@ src/lib/db/test-prisma.ts
 
 ---
 
-### Next Task: 2.3 - Configure NextAuth.js
+### ✅ Task 2.3: Configure NextAuth.js (COMPLETED)
 
-**Estimated Effort**: 4-5 hours
+**Completion Date**: 2026-01-27
+**Time Taken**: ~2 hours
 
-**Steps:**
+**What was completed:**
 
-1. Install NextAuth and required adapters
-2. Update Prisma schema with NextAuth models (Account, Session, VerificationToken)
-3. Run migration for auth tables
-4. Create auth configuration
-5. Create API route handler
-6. Create auth helper functions (hashPassword, verifyPassword, getServerSession)
-7. Add NEXTAUTH_URL and NEXTAUTH_SECRET to .env.local
+- Installed NextAuth v5 (beta) and @auth/prisma-adapter
+- Installed bcryptjs and type definitions
+- Updated Prisma schema with NextAuth models:
+  - Account (OAuth provider accounts)
+  - Session (user sessions)
+  - VerificationToken (email verification)
+- Ran migration: `20260127194649_add_auth_tables`
+- Created auth configuration at `src/lib/auth/auth.config.ts`:
+  - NextAuth v5 configuration with Credentials provider
+  - Prisma adapter for database integration
+  - JWT session strategy
+  - Custom callbacks for user role and id
+  - Login/error page configuration
+- Created API route handler at `src/app/api/auth/[...nextauth]/route.ts`
+- Created auth helper functions at `src/lib/auth/auth.ts`:
+  - `hashPassword()` - bcrypt with 12 salt rounds
+  - `verifyPassword()` - password verification
+  - `getServerSession()` - server-side session access
+- Created TypeScript type definitions at `src/types/next-auth.d.ts`
+- Added environment variables:
+  - NEXTAUTH_URL="http://localhost:3000"
+  - NEXTAUTH_SECRET (generated with openssl)
+- Created and ran test script to verify all functions work
+- Build completes successfully with no TypeScript errors
 
-**Prerequisites:**
+**Files Created:**
 
-- ✅ Prisma ORM initialized (completed in Task 2.2)
-- ✅ User model created (completed in Task 2.2)
+```
+src/lib/auth/auth.config.ts
+src/lib/auth/auth.ts
+src/lib/auth/test-auth.ts
+src/app/api/auth/[...nextauth]/route.ts
+src/types/next-auth.d.ts
+prisma/migrations/20260127194649_add_auth_tables/migration.sql
+```
+
+**Dependencies Installed:**
+
+- next-auth: ^5.0.0-beta.30
+- @auth/prisma-adapter: ^2.11.1
+- bcryptjs: ^4.0.1
+- @types/bcryptjs: ^2.4.6 (dev)
+
+**Key Decisions:**
+
+- Used NextAuth v5 (beta) for modern App Router support
+- Chose JWT session strategy for better serverless performance
+- Integrated Prisma adapter for seamless database integration
+- Extended NextAuth types to include custom user properties (role)
 
 ---
 
-**Ready to proceed with Task 2.3!** 🚀
+### ✅ Task 2.4: Implement Signup/Login Flow (COMPLETED)
+
+**Completion Date**: 2026-01-27
+**Time Taken**: ~2.5 hours
+
+**What was completed:**
+
+- Created Zod validation schemas for signup and login:
+  - Email validation
+  - Name validation (2-50 characters)
+  - Password strength requirements (8+ chars, uppercase, lowercase, number)
+- Created server actions at `src/server/actions/auth.ts`:
+  - `signup()` - Creates user, hashes password, auto-login
+  - `login()` - Authenticates with NextAuth credentials provider
+  - Comprehensive error handling with specific messages
+  - Duplicate email detection
+- Created auth form components:
+  - `SignupForm.tsx` - React Hook Form + Zod validation
+  - `LoginForm.tsx` - React Hook Form + Zod validation
+  - Loading states with spinner icons
+  - Toast notifications for success/error
+  - Auto-redirect to dashboard on success
+- Created auth pages:
+  - `/login` - Login page with card UI
+  - `/signup` - Signup page with card UI
+  - Auth layout with gradient background
+  - Links between login/signup pages
+- Updated home page with auth links for testing
+- Created comprehensive test script to verify:
+  - User creation and password hashing
+  - Duplicate email rejection
+  - Database storage verification
+
+**Files Created:**
+
+```
+src/lib/validations/auth.ts
+src/server/actions/auth.ts
+src/components/features/auth/SignupForm.tsx
+src/components/features/auth/LoginForm.tsx
+src/app/(auth)/layout.tsx
+src/app/(auth)/login/page.tsx
+src/app/(auth)/signup/page.tsx
+src/lib/auth/test-auth-flow.ts
+```
+
+**Key Features:**
+
+- Password strength validation (uppercase, lowercase, number required)
+- Real-time form validation with helpful error messages
+- Loading states prevent double submissions
+- Toast notifications for user feedback
+- Auto-redirect after successful authentication
+- Beautiful gradient auth layout
+- Accessible form components (Shadcn UI)
+
+---
+
+### Next Task: 2.5 - Protected Route Middleware
+
+**Estimated Effort**: 3-4 hours
+
+**Steps:**
+
+1. Create Next.js middleware for route protection
+2. Configure route matchers for protected pages
+3. Create auth guard HOC for components
+4. Test redirect behavior for unauthenticated users
+5. Verify authenticated users can access protected routes
+
+**Prerequisites:**
+
+- ✅ NextAuth.js configured (completed in Task 2.3)
+- ✅ Login flow implemented (completed in Task 2.4)
+
+---
+
+**Ready to proceed with Task 2.5!** 🚀

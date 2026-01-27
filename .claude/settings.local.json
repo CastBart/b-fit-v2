@@ -35,7 +35,10 @@
       "Bash(npx prisma migrate:*)",
       "Bash(npx prisma generate:*)",
       "Bash(rd /s /q \"node_modules\\\\@prisma\\\\client\")",
-      "Bash(npx prisma:*)"
+      "Bash(npx prisma:*)",
+      "Bash(echo:*)",
+      "Bash(openssl rand:*)",
+      "Bash(npm run lint:fix:*)"
     ]
   },
   "enabledPlugins": {
