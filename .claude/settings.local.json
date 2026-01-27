@@ -38,7 +38,8 @@
       "Bash(npx prisma:*)",
       "Bash(echo:*)",
       "Bash(openssl rand:*)",
-      "Bash(npm run lint:fix:*)"
+      "Bash(npm run lint:fix:*)",
+      "Bash(dir:*)"
     ]
   },
   "enabledPlugins": {
