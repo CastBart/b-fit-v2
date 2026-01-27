@@ -325,7 +325,8 @@
 
 ## Week 2: Database & Auth Foundation
 
-**Progress**: 6/7 tasks complete (86%) 🚧
+**Progress**: 6/6 critical tasks complete (100%) ✅
+**Note**: Task 2.7 (Environment Variables Management) deferred to TODO - non-critical
 
 ### Task 2.1: Set Up Vercel Postgres ✅ COMPLETED
 
@@ -796,11 +797,14 @@
 
 ---
 
-### Task 2.7: Environment Variables Management
+### Task 2.7: Environment Variables Management ⏸️ DEFERRED
 
-**Priority**: Medium
+**Priority**: Low (Developer Experience)
 **Estimated Effort**: 1-2 hours
 **Dependencies**: Task 2.6
+**Status**: Deferred to TODO list (Task #1)
+
+**Reason for Deferral**: Non-critical developer experience improvement. All core functionality is working. This can be completed later when polishing for team onboarding or open-source release.
 
 #### Sub-tasks:
 
@@ -811,6 +815,8 @@
      # Database
      POSTGRES_URL=""
      POSTGRES_PRISMA_URL=""
+     DATABASE_URL=""
+     DATABASE_URL_UNPOOLED=""
 
      # NextAuth
      NEXTAUTH_URL="http://localhost:3000"
@@ -837,10 +843,12 @@
 
 **Acceptance Criteria**:
 
-- ✅ `.env.example` created with all variables
-- ✅ Documentation updated
-- ✅ Setup script created and tested
-- ✅ New developers can set up environment easily
+- [ ] `.env.example` created with all variables
+- [ ] Documentation updated
+- [ ] Setup script created and tested
+- [ ] New developers can set up environment easily
+
+**Todo Reference**: Task #1 in project TODO list
 
 ---
 
