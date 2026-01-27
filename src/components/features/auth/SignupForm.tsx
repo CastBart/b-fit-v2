@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { signupSchema, type SignupInput } from '@/lib/validations/auth'
 import { signup } from '@/server/actions/auth'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,11 @@ import { toast } from 'sonner'
 
 export function SignupForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
+
+  // Get callback URL from query parameters
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
 
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
@@ -40,8 +44,8 @@ export function SignupForm() {
 
       if (result.success) {
         toast.success(result.message || 'Account created successfully!')
-        // Redirect to dashboard after successful signup
-        router.push('/dashboard')
+        // Redirect to callback URL or dashboard after successful signup
+        router.push(callbackUrl)
         router.refresh()
       } else {
         toast.error(result.error || 'Failed to create account')

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { loginSchema, type LoginInput } from '@/lib/validations/auth'
 import { login } from '@/server/actions/auth'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,11 @@ import { toast } from 'sonner'
 
 export function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
+
+  // Get callback URL from query parameters
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -39,8 +43,8 @@ export function LoginForm() {
 
       if (result.success) {
         toast.success(result.message || 'Logged in successfully!')
-        // Redirect to dashboard after successful login
-        router.push('/dashboard')
+        // Redirect to callback URL or dashboard after successful login
+        router.push(callbackUrl)
         router.refresh()
       } else {
         toast.error(result.error || 'Failed to log in')
