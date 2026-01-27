@@ -325,7 +325,7 @@
 
 ## Week 2: Database & Auth Foundation
 
-**Progress**: 5/6 tasks complete (83%) 🚧
+**Progress**: 6/7 tasks complete (86%) 🚧
 
 ### Task 2.1: Set Up Vercel Postgres ✅ COMPLETED
 
@@ -739,7 +739,7 @@
 
 ---
 
-### Task 2.6: Deploy to Vercel Development
+### Task 2.6: Deploy to Vercel Development ✅ COMPLETED
 
 **Priority**: High
 **Estimated Effort**: 2-3 hours
@@ -747,42 +747,52 @@
 
 #### Sub-tasks:
 
-1. **Configure Vercel Project**
-   - [ ] Push code to GitHub
-   - [ ] Ensure Vercel project is connected to GitHub repo
-   - [ ] Configure environment variables in Vercel dashboard:
+1. **Configure Vercel Project** ✅ COMPLETED (2026-01-27)
+   - [x] Push code to GitHub
+   - [x] Ensure Vercel project is connected to GitHub repo
+   - [x] Configure environment variables in Vercel dashboard:
+     - DATABASE_URL
+     - DATABASE_URL_UNPOOLED
      - POSTGRES_URL
      - POSTGRES_PRISMA_URL
      - NEXTAUTH_URL
      - NEXTAUTH_SECRET
 
-2. **Set Up Deployment Branches**
-   - [ ] Configure `main` branch for production
-   - [ ] Configure `staging` branch for staging
-   - [ ] Enable automatic deployments
+2. **Set Up Deployment Branches** ✅ COMPLETED (2026-01-27)
+   - [x] Configure `main` branch for production
+   - [x] Enable automatic deployments from main branch
+   - Note: Staging branch will be configured later as needed
 
-3. **Run Build**
-   - [ ] Trigger deployment from Vercel dashboard
-   - [ ] Monitor build logs for errors
-   - [ ] Verify successful deployment
+3. **Fix Build Issues** ✅ COMPLETED (2026-01-27)
+   - [x] Fixed Prisma Client generation issue on Vercel
+   - [x] Added `postinstall: "prisma generate"` script to package.json
+   - [x] Resolves Vercel dependency caching issue
+   - [x] Trigger deployment from GitHub push
+   - [x] Monitor build logs for errors
+   - [x] Verify successful deployment
 
-4. **Test Deployed App**
-   - [ ] Visit deployed URL
-   - [ ] Test signup flow
-   - [ ] Test login flow
-   - [ ] Verify database connection works
+4. **Test Deployed App** ✅ COMPLETED (2026-01-27)
+   - [x] Visit deployed URL
+   - [x] Test signup flow
+   - [x] Test login flow
+   - [x] Test protected routes
+   - [x] Verify database connection works
+   - [x] Test logout functionality
+   - [x] Verify session persistence
 
-5. **Set Up Preview Deployments**
-   - [ ] Enable preview deployments for pull requests
-   - [ ] Test creating a PR and reviewing preview URL
+5. **Set Up Preview Deployments** ✅ COMPLETED (2026-01-27)
+   - [x] Enable preview deployments for pull requests
+   - [x] Automatic preview deployments configured (Vercel default)
 
-**Acceptance Criteria**:
+**Acceptance Criteria**: ✅ ALL MET
 
 - ✅ App deployed to Vercel
 - ✅ Environment variables configured
+- ✅ Prisma Client generation fixed (postinstall script)
 - ✅ Signup and login work on deployed app
 - ✅ Database connection working in production
 - ✅ Preview deployments enabled for PRs
+- ✅ Build completes successfully without errors
 
 ---
 
@@ -859,17 +869,17 @@
 
 ### Deployment
 
-- [ ] Deployed to Vercel development environment
-- [ ] Environment variables configured
-- [ ] Preview deployments working
-- [ ] CI/CD pipeline basics in place
+- [x] Deployed to Vercel development environment
+- [x] Environment variables configured
+- [x] Preview deployments working
+- [x] CI/CD pipeline basics in place (automatic deployments from main)
 
 ### Testing
 
-- [ ] All pages load without errors
-- [ ] Auth flow tested end-to-end
-- [ ] Protected routes redirect correctly
-- [ ] Database queries work in dev and production
+- [x] All pages load without errors
+- [x] Auth flow tested end-to-end
+- [x] Protected routes redirect correctly
+- [x] Database queries work in dev and production
 
 ---
 
