@@ -7,13 +7,13 @@
 
 ## Week 1: Project Initialization
 
-**Progress**: 4/5 tasks complete (80%)
+**Progress**: 5/5 tasks complete (100%) ✅
 
 - ✅ Task 1.1: Initialize Next.js Project (COMPLETED 2026-01-26)
 - ✅ Task 1.2: Configure Tailwind CSS & Shadcn UI (COMPLETED 2026-01-26)
 - ✅ Task 1.3: Code Quality Tools Setup (COMPLETED 2026-01-26)
 - ✅ Task 1.4: Project Folder Structure (COMPLETED 2026-01-27)
-- 🔲 Task 1.5: Base Layout Components
+- ✅ Task 1.5: Base Layout Components (COMPLETED 2026-01-27)
 
 ---
 
@@ -272,7 +272,7 @@
 
 ---
 
-### Task 1.5: Base Layout Components
+### Task 1.5: Base Layout Components ✅ COMPLETED
 
 **Priority**: Medium
 **Estimated Effort**: 3-4 hours
@@ -280,49 +280,54 @@
 
 #### Sub-tasks:
 
-1. **Create Root Layout**
-   - [ ] Update `src/app/layout.tsx`:
+1. **Create Root Layout** ✅ COMPLETED (2026-01-27)
+   - [x] Update `src/app/layout.tsx`:
      - Add HTML structure
      - Include global styles
      - Add metadata
      - Configure fonts (Inter, Geist)
    - File: `src/app/layout.tsx`
 
-2. **Create Dashboard Layout**
-   - [ ] Create `src/components/layouts/DashboardLayout.tsx`:
+2. **Create Dashboard Layout** ✅ COMPLETED (2026-01-27)
+   - [x] Create `src/components/layouts/DashboardLayout.tsx`:
      - Top navigation bar
      - Sidebar (collapsible)
      - Main content area
      - Footer
    - File: `src/components/layouts/DashboardLayout.tsx`
 
-3. **Create Navigation Components**
-   - [ ] Create `src/components/layouts/Navbar.tsx`:
+3. **Create Navigation Components** ✅ COMPLETED (2026-01-27)
+   - [x] Create `src/components/layouts/Navbar.tsx`:
      - Logo
      - Navigation links
      - User menu dropdown
-   - [ ] Create `src/components/layouts/Sidebar.tsx`:
+   - [x] Create `src/components/layouts/Sidebar.tsx`:
      - Navigation items
      - Role-based visibility
    - Files: `src/components/layouts/Navbar.tsx`, `src/components/layouts/Sidebar.tsx`
 
-4. **Test Layouts**
-   - [ ] Create test pages using layouts
-   - [ ] Verify responsive behavior (mobile, tablet, desktop)
-   - [ ] Test navigation between pages
+4. **Test Layouts** ✅ COMPLETED (2026-01-27)
+   - [x] Create test pages using layouts
+   - [x] Verify responsive behavior (mobile, tablet, desktop)
+   - [x] Test navigation between pages
 
-**Acceptance Criteria**:
+**Acceptance Criteria**: ✅ ALL MET
 
-- ✅ Root layout configured with metadata
-- ✅ Dashboard layout with navbar and sidebar
+- ✅ Root layout configured with metadata and theme provider
+- ✅ Dashboard layout with navbar and collapsible sidebar
 - ✅ Responsive design works on all screen sizes
 - ✅ Navigation between pages works
+- ✅ Role-based navigation items display correctly
+- ✅ Dark mode toggle functional
+- ✅ Mobile menu works correctly
 
 ---
 
 ## Week 2: Database & Auth Foundation
 
-### Task 2.1: Set Up Vercel Postgres
+**Progress**: 2/6 tasks complete (33%) 🚧
+
+### Task 2.1: Set Up Vercel Postgres ✅ COMPLETED
 
 **Priority**: Critical
 **Estimated Effort**: 2-3 hours
@@ -330,48 +335,48 @@
 
 #### Sub-tasks:
 
-1. **Create Vercel Project**
-   - [ ] Sign in to Vercel dashboard
-   - [ ] Connect GitHub repository
-   - [ ] Create new project
-   - [ ] Note project ID and team ID
+1. **Create Vercel Project** ✅ COMPLETED (2026-01-27)
+   - [x] Sign in to Vercel dashboard
+   - [x] Connect GitHub repository
+   - [x] Create new project
+   - [x] Note project ID and team ID
 
-2. **Create Postgres Database**
-   - [ ] Navigate to Storage tab in Vercel
-   - [ ] Create new Postgres database
-   - [ ] Name: `b-fit-dev`
-   - [ ] Region: Choose closest to users
-   - [ ] Note connection string
+2. **Create Postgres Database** ✅ COMPLETED (2026-01-27)
+   - [x] Navigate to Storage tab in Vercel
+   - [x] Create new Postgres database (Neon)
+   - [x] Name: `neondb`
+   - [x] Region: eu-west-2 (Europe)
+   - [x] Note connection string
 
-3. **Configure Environment Variables Locally**
-   - [ ] Create `.env.local`:
-     ```env
-     # Database
-     POSTGRES_URL="postgres://..."
-     POSTGRES_PRISMA_URL="postgres://..."
-     POSTGRES_URL_NON_POOLING="postgres://..."
-     ```
-   - [ ] Add `.env.local` to `.gitignore`
+3. **Configure Environment Variables Locally** ✅ COMPLETED (2026-01-27)
+   - [x] Create `.env.local` with database credentials:
+     - DATABASE_URL (pooled connection)
+     - DATABASE_URL_UNPOOLED (direct connection)
+     - POSTGRES_URL, POSTGRES_PRISMA_URL, etc.
+   - [x] Verify `.env.local` in `.gitignore` (covered by `.env*.local` pattern)
    - File: `.env.local`
 
-4. **Test Database Connection**
-   - [ ] Install `@vercel/postgres`:
+4. **Test Database Connection** ✅ COMPLETED (2026-01-27)
+   - [x] Install `@vercel/postgres` and `dotenv`:
      ```bash
-     npm install @vercel/postgres
+     npm install @vercel/postgres dotenv
      ```
-   - [ ] Create test connection script in `src/lib/db/test.ts`
-   - [ ] Run script to verify connection
+   - [x] Create test connection script in `src/lib/db/test.ts`
+   - [x] Run script to verify connection (PostgreSQL 17.7 on Neon)
+   - File: `src/lib/db/test.ts`
 
-**Acceptance Criteria**:
+**Acceptance Criteria**: ✅ ALL MET
 
 - ✅ Vercel project created and connected
-- ✅ Postgres database created
+- ✅ Postgres database created (Neon)
 - ✅ Environment variables configured
 - ✅ Database connection verified
 
+**Note**: Neon database chosen (which Vercel Postgres uses). Auth toggle was correctly left OFF to use NextAuth instead of Neon's built-in auth.
+
 ---
 
-### Task 2.2: Initialize Prisma ORM
+### Task 2.2: Initialize Prisma ORM ✅ COMPLETED
 
 **Priority**: Critical
 **Estimated Effort**: 3-4 hours
@@ -379,22 +384,23 @@
 
 #### Sub-tasks:
 
-1. **Install Prisma**
-   - [ ] Install Prisma CLI and client:
+1. **Install Prisma** ✅ COMPLETED (2026-01-27)
+   - [x] Install Prisma CLI and client:
      ```bash
-     npm install -D prisma
-     npm install @prisma/client
+     npm install -D prisma@5
+     npm install @prisma/client@5
      ```
+   - Note: Using Prisma 5.x for stability (Prisma 7 has breaking changes)
 
-2. **Initialize Prisma**
-   - [ ] Run `npx prisma init`
-   - [ ] Configure `prisma/schema.prisma`:
+2. **Initialize Prisma** ✅ COMPLETED (2026-01-27)
+   - [x] Run `npx prisma init`
+   - [x] Configure `prisma/schema.prisma`:
      - Set datasource to PostgreSQL
-     - Configure URL from env variable
+     - Configure URL from env variable (DATABASE_URL)
    - File: `prisma/schema.prisma`
 
-3. **Create Initial Schema (User Table)**
-   - [ ] Add User model to `schema.prisma`:
+3. **Create Initial Schema (User Table)** ✅ COMPLETED (2026-01-27)
+   - [x] Add User model to `schema.prisma`:
 
      ```prisma
      model User {
@@ -411,50 +417,52 @@
      }
 
      enum UserRole {
-       PERSONAL
-       PT
-       CLIENT
-       ORG
+       PERSONAL  // Personal user (trains themselves)
+       PT        // Personal Trainer (trains themselves + manages clients)
+       CLIENT    // Client (assigned to a PT)
+       ORG       // Organisation (manages PTs)
      }
      ```
 
    - File: `prisma/schema.prisma`
 
-4. **Run First Migration**
-   - [ ] Run `npx prisma migrate dev --name init`
-   - [ ] Verify migration created in `prisma/migrations/`
-   - [ ] Check database for User table
+4. **Run First Migration** ✅ COMPLETED (2026-01-27)
+   - [x] Run `npx prisma migrate dev --name init`
+   - [x] Verify migration created in `prisma/migrations/20260127091814_init/`
+   - [x] Check database for User table (verified via test)
 
-5. **Generate Prisma Client**
-   - [ ] Run `npx prisma generate`
-   - [ ] Verify client generated in `node_modules/@prisma/client`
+5. **Generate Prisma Client** ✅ COMPLETED (2026-01-27)
+   - [x] Run `npx prisma generate`
+   - [x] Verify client generated in `node_modules/@prisma/client` (v5.22.0)
 
-6. **Create Prisma Client Singleton**
-   - [ ] Create `src/lib/db/prisma.ts`:
+6. **Create Prisma Client Singleton** ✅ COMPLETED (2026-01-27)
+   - [x] Create `src/lib/db/prisma.ts`:
 
      ```typescript
      import { PrismaClient } from '@prisma/client'
 
-     const globalForPrisma = global as unknown as { prisma: PrismaClient }
+     const globalForPrisma = global as unknown as { prisma: PrismaClient | undefined }
 
      export const prisma =
        globalForPrisma.prisma ||
        new PrismaClient({
-         log: ['query', 'error', 'warn'],
+         log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
        })
 
      if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
      ```
 
+   - [x] Create test script `src/lib/db/test-prisma.ts` to verify CRUD operations
+   - [x] All tests passed: create, read, update, delete operations verified
    - File: `src/lib/db/prisma.ts`
 
-**Acceptance Criteria**:
+**Acceptance Criteria**: ✅ ALL MET
 
-- ✅ Prisma installed and initialized
-- ✅ User model defined in schema
-- ✅ First migration run successfully
+- ✅ Prisma installed and initialized (v5.22.0)
+- ✅ User model defined in schema with UserRole enum
+- ✅ First migration run successfully (20260127091814_init)
 - ✅ Prisma client singleton created
-- ✅ Can query User table from code
+- ✅ Can query User table from code (verified via test-prisma.ts)
 
 ---
 
@@ -792,10 +800,10 @@
 
 ### Database & Auth
 
-- [ ] Vercel Postgres database created
-- [ ] Prisma ORM initialized
-- [ ] User model and auth tables created
-- [ ] First migration run successfully
+- [x] Vercel Postgres database created
+- [x] Prisma ORM initialized
+- [x] User model and auth tables created
+- [x] First migration run successfully
 - [ ] NextAuth.js configured with credentials provider
 - [ ] Signup and login flows working
 - [ ] Protected route middleware implemented

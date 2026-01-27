@@ -68,3 +68,5 @@ prisma/migrations/migration_lock.toml
 *.log
 .turbo
 .cache
+
+/src/generated/prisma

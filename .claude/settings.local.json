@@ -28,7 +28,14 @@
       "Bash(netstat:*)",
       "Bash(findstr:*)",
       "Bash(tree:*)",
-      "Bash(npm run format:*)"
+      "Bash(npm run format:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npx tsx:*)",
+      "Bash(npx prisma init)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(rd /s /q \"node_modules\\\\@prisma\\\\client\")",
+      "Bash(npx prisma:*)"
     ]
   },
   "enabledPlugins": {
