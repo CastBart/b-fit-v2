@@ -1,9 +1,17 @@
 # B-Fit User Testing Guide - Protected Routes & Authentication
 
-**Last Updated**: 2026-01-27
+**Last Updated**: 2026-01-27 (Updated: Fixed callback URL redirect)
 **Testing Task 2.5**: Protected Route Middleware & Authentication Flow
 
 This guide provides step-by-step testing scenarios to verify that authentication and route protection are working correctly.
+
+## Recent Fix (2026-01-27)
+
+✅ **Fixed**: Login and signup forms now properly redirect to callback URL
+
+- Previously always redirected to `/dashboard`
+- Now correctly redirects to the original page user was trying to access
+- Test Scenario 4 should now pass completely
 
 ---
 
@@ -438,10 +446,10 @@ Before you begin testing, ensure:
 
 Use this checklist to quickly verify all functionality:
 
-- [ ] **Test 1**: Unauthenticated access blocked → redirects to login
-- [ ] **Test 2**: Signup creates account and auto-logs in
-- [ ] **Test 3**: Duplicate email is rejected
-- [ ] **Test 4**: Login works and redirects to callback URL
+- [pass] **Test 1**: Unauthenticated access blocked → redirects to login - pass
+- [pass] **Test 2**: Signup creates account and auto-logs in - pass
+- [pass] **Test 3**: Duplicate email is rejected - pass
+- [fail] **Test 4**: Login works and redirects to callback URL
 - [ ] **Test 5**: Logged-in users redirected from auth pages
 - [ ] **Test 6**: Session persists across page refreshes
 - [ ] **Test 7**: Logout clears session and blocks access
