@@ -84,7 +84,7 @@ function ExercisesContent() {
       // ✅ Stop no-op navigations
       if (next === current) return
 
-      router.replace(`/dashboard/exercises?${next}`)
+      router.replace(`/exercises?${next}`)
     },
     [searchParams, router]
   )
@@ -161,7 +161,7 @@ function ExercisesContent() {
   )
 
   const handleClearFilters = useCallback(() => {
-    router.replace('/dashboard/exercises?page=1')
+    router.replace('/exercises?page=1')
   }, [router])
 
   // Pagination handlers
@@ -175,13 +175,13 @@ function ExercisesContent() {
 
   const handleExerciseClick = useCallback(
     (exerciseId: string) => {
-      router.push(`/dashboard/exercises/${exerciseId}`)
+      router.push(`/exercises/${exerciseId}`)
     },
     [router]
   )
 
   return (
-    <div className="container mx-auto space-y-6 py-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">Exercise Library</h1>

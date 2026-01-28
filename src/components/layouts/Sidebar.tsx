@@ -38,7 +38,7 @@ const navItems: NavItem[] = [
   },
   {
     title: 'Exercises',
-    href: '/dashboard/exercises',
+    href: '/exercises',
     icon: Dumbbell,
     roles: ['PERSONAL', 'PT'],
   },
