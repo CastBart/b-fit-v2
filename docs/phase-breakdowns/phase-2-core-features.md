@@ -7,21 +7,22 @@
 
 ## Week 3: Exercise Library
 
-### Task 3.1: Complete Exercise Schema
+### Task 3.1: Complete Exercise Schema ✅ COMPLETED
 
 **Priority**: Critical
 **Estimated Effort**: 2-3 hours
 **Dependencies**: Phase 1 complete
+**Completion Date**: 2026-01-28
 
 #### Sub-tasks:
 
 1. **Add Exercise Model to Prisma Schema**
-   - [ ] Add complete Exercise model with all enums
-   - [ ] Run migration: `npx prisma migrate dev --name add_exercise_model`
+   - [x] Add complete Exercise model with all enums
+   - [x] Run migration: `npx prisma migrate dev --name add_exercise_model`
    - File: `prisma/schema.prisma`
 
 2. **Create Exercise Types**
-   - [ ] Create `src/types/exercise.ts` with TypeScript types from Prisma
+   - [x] Create `src/types/exercise.ts` with TypeScript types from Prisma
    - File: `src/types/exercise.ts`
 
 **Acceptance Criteria**:
@@ -29,6 +30,14 @@
 - ✅ Exercise table created in database
 - ✅ All enums defined (MuscleGroup, EquipmentType, etc.)
 - ✅ Types exported for use in app
+
+**Implementation Notes**:
+
+- Migration: `20260128190145_add_exercise_model`
+- Created 6 enums: ExerciseType, MetricType, MuscleGroup, EquipmentType, MovementPattern, DifficultyLevel
+- Exercise model includes: categorization, ownership tracking, JSON instructions, secondary muscle groups array
+- Added performance indexes on: createdById, isDefault, equipmentType, exerciseType, primaryMuscleGroup
+- TypeScript types include display labels for all enums
 
 ---
 
@@ -566,7 +575,7 @@
 
 ### Exercise Library
 
-- [ ] Exercise schema complete
+- [x] Exercise schema complete
 - [ ] 50+ exercises seeded
 - [ ] CRUD operations working
 - [ ] Search/filter UI functional
@@ -590,5 +599,5 @@
 
 ---
 
-**Last Updated**: 2026-01-26
+**Last Updated**: 2026-01-28
 **Next Phase**: Phase 3 - Multi-Role Features
