@@ -46,6 +46,11 @@ export function ExerciseFilters({
 }: ExerciseFiltersProps) {
   const [searchValue, setSearchValue] = useState(search)
 
+  // Sync local state with prop when it changes (e.g., browser back/forward, clear filters)
+  useEffect(() => {
+    setSearchValue(search)
+  }, [search])
+
   // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ExerciseCard } from '@/components/features/exercises/ExerciseCard'
 import { ExerciseFilters } from '@/components/features/exercises/ExerciseFilters'
@@ -29,24 +29,27 @@ function ExercisesContent() {
   const difficultyLevel = (searchParams.get('difficultyLevel') as DifficultyLevel) || undefined
 
   // Update URL with new filters
-  const updateFilters = (updates: Record<string, string | undefined>) => {
-    const params = new URLSearchParams(searchParams.toString())
+  const updateFilters = useCallback(
+    (updates: Record<string, string | undefined>) => {
+      const params = new URLSearchParams(searchParams.toString())
 
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value) {
-        params.set(key, value)
-      } else {
-        params.delete(key)
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value) {
+          params.set(key, value)
+        } else {
+          params.delete(key)
+        }
+      })
+
+      // Reset to page 1 when filters change
+      if (!updates.page) {
+        params.set('page', '1')
       }
-    })
 
-    // Reset to page 1 when filters change
-    if (!updates.page) {
-      params.set('page', '1')
-    }
-
-    router.push(`/exercises?${params.toString()}`)
-  }
+      router.push(`/exercises?${params.toString()}`)
+    },
+    [searchParams, router]
+  )
 
   // Fetch exercises
   useEffect(() => {
@@ -81,42 +84,57 @@ function ExercisesContent() {
   }, [search, muscleGroup, equipmentType, difficultyLevel, currentPage])
 
   // Filter handlers
-  const handleSearchChange = (value: string) => {
-    updateFilters({ search: value || undefined })
-  }
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      updateFilters({ search: value || undefined })
+    },
+    [updateFilters]
+  )
 
-  const handleMuscleGroupChange = (value: MuscleGroup | undefined) => {
-    updateFilters({ muscleGroup: value })
-  }
+  const handleMuscleGroupChange = useCallback(
+    (value: MuscleGroup | undefined) => {
+      updateFilters({ muscleGroup: value })
+    },
+    [updateFilters]
+  )
 
-  const handleEquipmentTypeChange = (value: EquipmentType | undefined) => {
-    updateFilters({ equipmentType: value })
-  }
+  const handleEquipmentTypeChange = useCallback(
+    (value: EquipmentType | undefined) => {
+      updateFilters({ equipmentType: value })
+    },
+    [updateFilters]
+  )
 
-  const handleDifficultyLevelChange = (value: DifficultyLevel | undefined) => {
-    updateFilters({ difficultyLevel: value })
-  }
+  const handleDifficultyLevelChange = useCallback(
+    (value: DifficultyLevel | undefined) => {
+      updateFilters({ difficultyLevel: value })
+    },
+    [updateFilters]
+  )
 
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     router.push('/exercises?page=1')
-  }
+  }, [router])
 
   // Pagination handlers
-  const handlePreviousPage = () => {
+  const handlePreviousPage = useCallback(() => {
     if (currentPage > 1) {
       updateFilters({ page: String(currentPage - 1) })
     }
-  }
+  }, [currentPage, updateFilters])
 
-  const handleNextPage = () => {
+  const handleNextPage = useCallback(() => {
     if (currentPage < totalPages) {
       updateFilters({ page: String(currentPage + 1) })
     }
-  }
+  }, [currentPage, totalPages, updateFilters])
 
-  const handleExerciseClick = (exerciseId: string) => {
-    router.push(`/exercises/${exerciseId}`)
-  }
+  const handleExerciseClick = useCallback(
+    (exerciseId: string) => {
+      router.push(`/exercises/${exerciseId}`)
+    },
+    [router]
+  )
 
   return (
     <div className="container mx-auto space-y-6 py-6">
