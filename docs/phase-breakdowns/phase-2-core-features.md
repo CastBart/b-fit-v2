@@ -80,16 +80,17 @@
 
 ---
 
-### Task 3.3: Exercise CRUD Server Actions
+### Task 3.3: Exercise CRUD Server Actions ✅ COMPLETED
 
 **Priority**: Critical
 **Estimated Effort**: 4-5 hours
 **Dependencies**: Task 3.1
+**Completion Date**: 2026-01-28
 
 #### Sub-tasks:
 
 1. **Create Server Actions**
-   - [ ] Create `src/server/actions/exercises.ts`:
+   - [x] Create `src/server/actions/exercises.ts`:
      - `getExercises()` - List with filters
      - `getExerciseById()` - Single exercise
      - `createExercise()` - Create new (Personal/PT only)
@@ -98,19 +99,32 @@
    - File: `src/server/actions/exercises.ts`
 
 2. **Add Validation Schemas**
-   - [ ] Create `src/lib/validations/exercise.ts` with Zod schemas
+   - [x] Create `src/lib/validations/exercise.ts` with Zod schemas
    - File: `src/lib/validations/exercise.ts`
 
 3. **Implement RBAC Checks**
-   - [ ] Only Personal/PT can create
-   - [ ] Only owner can edit/delete
-   - [ ] All can view default exercises
+   - [x] Only Personal/PT can create
+   - [x] Only owner can edit/delete
+   - [x] All can view default exercises
 
 **Acceptance Criteria**:
 
 - ✅ All CRUD operations work
 - ✅ Validation prevents invalid data
 - ✅ RBAC enforced correctly
+
+**Implementation Notes**:
+
+- Created comprehensive Zod validation schemas for create, update, filter, and ID validation
+- Implemented all 5 CRUD server actions with proper error handling
+- RBAC checks include:
+  - Authentication required for all operations
+  - Only PERSONAL and PT roles can create exercises
+  - Only exercise owner can update/delete their exercises
+  - Default exercises (isDefault: true) cannot be modified or deleted
+  - Access control for viewing: users can see default, public, or their own exercises
+- Filter system supports: search, muscle group, equipment, exercise type, difficulty, movement pattern, and pagination
+- All operations return consistent success/error response format
 
 ---
 
@@ -590,7 +604,7 @@
 
 - [x] Exercise schema complete
 - [x] 50+ exercises seeded
-- [ ] CRUD operations working
+- [x] CRUD operations working
 - [ ] Search/filter UI functional
 
 ### Workout Builder

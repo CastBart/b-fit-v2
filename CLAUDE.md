@@ -95,3 +95,10 @@ When implementing core features, consider these planned enhancements:
 - Messaging is async-only in v1 (no real-time chat)
 - Check-ins and media uploads are contextual to workouts/sessions/plans
 - Analytics visibility is role-dependent (Personal = self only, PT = self + clients, Org = aggregated)
+
+## Documentation importance
+
+When finishing a task from each phase, document your work:
+
+- Make sure to document current progress in docs/phase-breakdowns/CURRENT-PROGRESS.md
+- Ensure to document completed task of the working phase in docs/phase-breakdowns/phase-[phasenumber]-[phasename].md
