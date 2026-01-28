@@ -740,3 +740,82 @@ This task has been deferred and added to the TODO list (Task #1). It will be com
 - ✅ Base layouts and UI components ready
 
 ---
+
+## Week 3: Exercise Library (Phase 2)
+
+**Status**: In progress 🚧
+**Progress**: 1/5 tasks complete (20%)
+
+### ✅ Task 3.1: Complete Exercise Schema (COMPLETED)
+
+**Completion Date**: 2026-01-28
+**Time Taken**: ~1 hour
+
+**What was completed:**
+
+- Added all exercise-related enums to Prisma schema:
+  - ExerciseType (SMALL, MEDIUM, LARGE, STABILITY, CARDIO)
+  - MetricType (8 types: WEIGHT_REPS, COUNTER_WEIGHT_REPS, REPS, etc.)
+  - MuscleGroup (11 muscle groups: CHEST, BACK, SHOULDERS, etc.)
+  - EquipmentType (9 types: BARBELL, DUMBBELL, KETTLEBELL, etc.)
+  - MovementPattern (8 patterns: PUSH, PULL, SQUAT, HINGE, etc.)
+  - DifficultyLevel (BEGINNER, INTERMEDIATE, ADVANCED)
+- Added Exercise model with all fields:
+  - Basic fields: id, name, description
+  - Categorization: primaryMuscleGroup, secondaryMuscleGroups[], equipmentType, movementPattern, difficultyLevel, exerciseType, metricType
+  - Instructions: JSON field for instruction steps
+  - Ownership: isDefault, isPublic, createdById, createdBy relation
+  - Timestamps: createdAt, updatedAt
+- Added indexes for performance:
+  - createdById, isDefault, equipmentType, exerciseType, primaryMuscleGroup
+- Updated User model with exercises relation
+- Added User table indexes (email, role, isActive)
+- Ran migration successfully: `20260128190145_add_exercise_model`
+- Generated Prisma Client with new types
+- Created comprehensive TypeScript types file at `src/types/exercise.ts`:
+  - Re-exported all enums from Prisma
+  - Created helper types (ExerciseEntity, ExerciseWithCreator, etc.)
+  - Created form/validation types (ExerciseFormData, ExerciseFilters)
+  - Created pagination types (ExerciseListResponse)
+  - Added human-readable label mappings for all enums
+- Verified all types compile and import correctly
+
+**Files Created:**
+
+```
+prisma/migrations/20260128190145_add_exercise_model/migration.sql
+src/types/exercise.ts
+```
+
+**Files Modified:**
+
+```
+prisma/schema.prisma
+```
+
+**Database Changes:**
+
+- Created 6 PostgreSQL enums (ExerciseType, MetricType, MuscleGroup, EquipmentType, MovementPattern, DifficultyLevel)
+- Created Exercise table with all columns and constraints
+- Created 5 indexes on Exercise table
+- Created 3 indexes on User table
+- Added foreign key: Exercise.createdById → User.id (ON DELETE SET NULL)
+
+**Key Features:**
+
+- Support for array of secondary muscle groups
+- JSON field for multi-step instructions
+- Distinction between default (seed) and user-created exercises
+- Public sharing capability for user exercises
+- Optional creator relationship (preserved on user deletion)
+- Comprehensive indexing for fast queries
+
+**Acceptance Criteria:**
+
+- ✅ Exercise table created in database
+- ✅ All enums defined (MuscleGroup, EquipmentType, MetricType, etc.)
+- ✅ Types exported for use in app
+- ✅ TypeScript compilation passes
+- ✅ Types can be imported and used
+
+---

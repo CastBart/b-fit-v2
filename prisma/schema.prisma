@@ -26,6 +26,13 @@ model User {
   // NextAuth relations
   accounts      Account[]
   sessions      Session[]
+
+  // Exercise relations
+  exercises     Exercise[]
+
+  @@index([email])
+  @@index([role])
+  @@index([isActive])
 }
 
 // NextAuth models for authentication
@@ -65,10 +72,115 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// ============================================================================
+// ENUMS
+// ============================================================================
+
 // User roles enum
 enum UserRole {
   PERSONAL  // Personal user (trains themselves)
   PT        // Personal Trainer (trains themselves + manages clients)
   CLIENT    // Client (assigned to a PT)
   ORG       // Organisation (manages PTs)
+}
+
+// Exercise enums
+enum ExerciseType {
+  SMALL      // Isolation exercises
+  MEDIUM     // Compound exercises
+  LARGE      // Major compounds
+  STABILITY  // Core and stabilization
+  CARDIO     // Cardio exercises
+}
+
+enum MetricType {
+  WEIGHT_REPS           // weight (kg/lbs) + reps
+  COUNTER_WEIGHT_REPS   // assisted exercises (pull-up machine)
+  REPS                  // bodyweight exercises (push-ups)
+  REPS_DURATION         // timed holds with rep count
+  DURATION              // planks, static holds
+  DISTANCE_DURATION     // running, rowing
+  WEIGHT_DISTANCE       // sled pushes, farmer carries
+  WEIGHT_DURATION       // weighted holds
+}
+
+enum MuscleGroup {
+  CHEST
+  BACK
+  SHOULDERS
+  BICEPS
+  TRICEPS
+  QUADS
+  HAMSTRINGS
+  GLUTES
+  CALVES
+  CORE
+  FULL_BODY
+}
+
+enum EquipmentType {
+  BARBELL
+  DUMBBELL
+  KETTLEBELL
+  MACHINE
+  CABLE
+  BODYWEIGHT
+  RESISTANCE_BAND
+  TRX
+  CARDIO_EQUIPMENT
+}
+
+enum MovementPattern {
+  PUSH
+  PULL
+  SQUAT
+  HINGE
+  CARRY
+  CORE
+  LUNGE
+  OLYMPIC
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+// ============================================================================
+// EXERCISES
+// ============================================================================
+
+model Exercise {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+
+  // Categorization
+  primaryMuscleGroup    MuscleGroup           // Single required value
+  secondaryMuscleGroups MuscleGroup[]         // Optional array
+  equipmentType         EquipmentType
+  movementPattern       MovementPattern
+  difficultyLevel       DifficultyLevel
+  exerciseType          ExerciseType
+  metricType            MetricType
+
+  // Instructions
+  instructions Json?  // Array of instruction strings
+
+  // Ownership
+  isDefault   Boolean @default(false)  // System seed exercises
+  isPublic    Boolean @default(false)  // User-created, shared to community
+  createdById String?
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdById])
+  @@index([isDefault])
+  @@index([equipmentType])
+  @@index([exerciseType])
+  @@index([primaryMuscleGroup])
 }
