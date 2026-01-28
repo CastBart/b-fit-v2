@@ -65,13 +65,14 @@ export type UpdateExerciseInput = z.infer<typeof updateExerciseSchema>
 
 /**
  * Validation schema for exercise filters
+ * Supports multi-select for muscle groups, equipment types, and difficulty levels
  */
 export const exerciseFiltersSchema = z.object({
   search: z.string().optional(),
-  primaryMuscleGroup: z.nativeEnum(MuscleGroup).optional(),
-  equipmentType: z.nativeEnum(EquipmentType).optional(),
+  primaryMuscleGroups: z.array(z.nativeEnum(MuscleGroup)).optional(),
+  equipmentTypes: z.array(z.nativeEnum(EquipmentType)).optional(),
   exerciseType: z.nativeEnum(ExerciseType).optional(),
-  difficultyLevel: z.nativeEnum(DifficultyLevel).optional(),
+  difficultyLevels: z.array(z.nativeEnum(DifficultyLevel)).optional(),
   movementPattern: z.nativeEnum(MovementPattern).optional(),
   isDefault: z.boolean().optional(),
   isPublic: z.boolean().optional(),

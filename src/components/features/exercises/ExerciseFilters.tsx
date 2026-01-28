@@ -2,14 +2,10 @@
 
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   MuscleGroup,
   EquipmentType,
@@ -18,49 +14,78 @@ import {
   EquipmentTypeLabels,
   DifficultyLevelLabels,
 } from '@/types/exercise'
-import { X, Search } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { X, Search, ChevronDown } from 'lucide-react'
+import { useEffect, useState, useRef } from 'react'
 
 interface ExerciseFiltersProps {
   search?: string
-  muscleGroup?: MuscleGroup
-  equipmentType?: EquipmentType
-  difficultyLevel?: DifficultyLevel
+  muscleGroups?: MuscleGroup[]
+  equipmentTypes?: EquipmentType[]
+  difficultyLevels?: DifficultyLevel[]
   onSearchChange: (value: string) => void
-  onMuscleGroupChange: (value: MuscleGroup | undefined) => void
-  onEquipmentTypeChange: (value: EquipmentType | undefined) => void
-  onDifficultyLevelChange: (value: DifficultyLevel | undefined) => void
+  onMuscleGroupsChange: (values: MuscleGroup[]) => void
+  onEquipmentTypesChange: (values: EquipmentType[]) => void
+  onDifficultyLevelsChange: (values: DifficultyLevel[]) => void
   onClearFilters: () => void
 }
 
 export function ExerciseFilters({
   search = '',
-  muscleGroup,
-  equipmentType,
-  difficultyLevel,
+  muscleGroups = [],
+  equipmentTypes = [],
+  difficultyLevels = [],
   onSearchChange,
-  onMuscleGroupChange,
-  onEquipmentTypeChange,
-  onDifficultyLevelChange,
+  onMuscleGroupsChange,
+  onEquipmentTypesChange,
+  onDifficultyLevelsChange,
   onClearFilters,
 }: ExerciseFiltersProps) {
   const [searchValue, setSearchValue] = useState(search)
 
-  // Sync local state with prop when it changes (e.g., browser back/forward, clear filters)
+  // keep latest handler without retriggering debounce effect
+  const onSearchChangeRef = useRef(onSearchChange)
+  useEffect(() => {
+    onSearchChangeRef.current = onSearchChange
+  }, [onSearchChange])
+
+  // Sync local state with prop when it changes
   useEffect(() => {
     setSearchValue(search)
   }, [search])
 
-  // Debounced search
+  // ✅ Debounce based ONLY on searchValue
   useEffect(() => {
     const timer = setTimeout(() => {
-      onSearchChange(searchValue)
+      onSearchChangeRef.current(searchValue)
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [searchValue, onSearchChange])
+  }, [searchValue])
 
-  const hasActiveFilters = Boolean(search || muscleGroup || equipmentType || difficultyLevel)
+  const hasActiveFilters = Boolean(
+    search || muscleGroups.length > 0 || equipmentTypes.length > 0 || difficultyLevels.length > 0
+  )
+
+  const toggleMuscleGroup = (value: MuscleGroup) => {
+    const newValues = muscleGroups.includes(value)
+      ? muscleGroups.filter((v) => v !== value)
+      : [...muscleGroups, value]
+    onMuscleGroupsChange(newValues)
+  }
+
+  const toggleEquipmentType = (value: EquipmentType) => {
+    const newValues = equipmentTypes.includes(value)
+      ? equipmentTypes.filter((v) => v !== value)
+      : [...equipmentTypes, value]
+    onEquipmentTypesChange(newValues)
+  }
+
+  const toggleDifficultyLevel = (value: DifficultyLevel) => {
+    const newValues = difficultyLevels.includes(value)
+      ? difficultyLevels.filter((v) => v !== value)
+      : [...difficultyLevels, value]
+    onDifficultyLevelsChange(newValues)
+  }
 
   return (
     <div className="space-y-4 rounded-lg border bg-card p-4">
@@ -81,73 +106,157 @@ export function ExerciseFilters({
 
       {/* Filter Dropdowns */}
       <div className="grid gap-4 sm:grid-cols-3">
-        {/* Muscle Group Filter */}
+        {/* Muscle Group Multi-Select */}
         <div className="space-y-2">
-          <Label htmlFor="muscle-group">Muscle Group</Label>
-          <Select
-            value={muscleGroup || 'all'}
-            onValueChange={(value) =>
-              onMuscleGroupChange(value === 'all' ? undefined : (value as MuscleGroup))
-            }
-          >
-            <SelectTrigger id="muscle-group">
-              <SelectValue placeholder="All Muscle Groups" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Muscle Groups</SelectItem>
-              {Object.entries(MuscleGroupLabels).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
-                </SelectItem>
+          <Label>Muscle Groups</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-between font-normal">
+                <span className="truncate">
+                  {muscleGroups.length === 0
+                    ? 'All Muscle Groups'
+                    : `${muscleGroups.length} selected`}
+                </span>
+                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-0" align="start">
+              <div className="max-h-64 overflow-y-auto p-2">
+                {Object.entries(MuscleGroupLabels).map(([key, label]) => (
+                  <div
+                    key={key}
+                    className="flex items-center space-x-2 rounded-sm p-2 hover:bg-accent"
+                  >
+                    <Checkbox
+                      id={`muscle-${key}`}
+                      checked={muscleGroups.includes(key as MuscleGroup)}
+                      onCheckedChange={() => toggleMuscleGroup(key as MuscleGroup)}
+                    />
+                    <label htmlFor={`muscle-${key}`} className="flex-1 cursor-pointer text-sm">
+                      {label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+          {muscleGroups.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {muscleGroups.map((mg) => (
+                <Badge key={mg} variant="secondary" className="text-xs">
+                  {MuscleGroupLabels[mg]}
+                  <button
+                    onClick={() => toggleMuscleGroup(mg)}
+                    className="ml-1 hover:text-destructive"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          )}
         </div>
 
-        {/* Equipment Type Filter */}
+        {/* Equipment Type Multi-Select */}
         <div className="space-y-2">
-          <Label htmlFor="equipment-type">Equipment</Label>
-          <Select
-            value={equipmentType || 'all'}
-            onValueChange={(value) =>
-              onEquipmentTypeChange(value === 'all' ? undefined : (value as EquipmentType))
-            }
-          >
-            <SelectTrigger id="equipment-type">
-              <SelectValue placeholder="All Equipment" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Equipment</SelectItem>
-              {Object.entries(EquipmentTypeLabels).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
-                </SelectItem>
+          <Label>Equipment</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-between font-normal">
+                <span className="truncate">
+                  {equipmentTypes.length === 0
+                    ? 'All Equipment'
+                    : `${equipmentTypes.length} selected`}
+                </span>
+                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-0" align="start">
+              <div className="max-h-64 overflow-y-auto p-2">
+                {Object.entries(EquipmentTypeLabels).map(([key, label]) => (
+                  <div
+                    key={key}
+                    className="flex items-center space-x-2 rounded-sm p-2 hover:bg-accent"
+                  >
+                    <Checkbox
+                      id={`equipment-${key}`}
+                      checked={equipmentTypes.includes(key as EquipmentType)}
+                      onCheckedChange={() => toggleEquipmentType(key as EquipmentType)}
+                    />
+                    <label htmlFor={`equipment-${key}`} className="flex-1 cursor-pointer text-sm">
+                      {label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+          {equipmentTypes.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {equipmentTypes.map((et) => (
+                <Badge key={et} variant="secondary" className="text-xs">
+                  {EquipmentTypeLabels[et]}
+                  <button
+                    onClick={() => toggleEquipmentType(et)}
+                    className="ml-1 hover:text-destructive"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          )}
         </div>
 
-        {/* Difficulty Level Filter */}
+        {/* Difficulty Level Multi-Select */}
         <div className="space-y-2">
-          <Label htmlFor="difficulty-level">Difficulty</Label>
-          <Select
-            value={difficultyLevel || 'all'}
-            onValueChange={(value) =>
-              onDifficultyLevelChange(value === 'all' ? undefined : (value as DifficultyLevel))
-            }
-          >
-            <SelectTrigger id="difficulty-level">
-              <SelectValue placeholder="All Levels" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Levels</SelectItem>
-              {Object.entries(DifficultyLevelLabels).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
-                </SelectItem>
+          <Label>Difficulty</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-between font-normal">
+                <span className="truncate">
+                  {difficultyLevels.length === 0
+                    ? 'All Levels'
+                    : `${difficultyLevels.length} selected`}
+                </span>
+                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-0" align="start">
+              <div className="max-h-64 overflow-y-auto p-2">
+                {Object.entries(DifficultyLevelLabels).map(([key, label]) => (
+                  <div
+                    key={key}
+                    className="flex items-center space-x-2 rounded-sm p-2 hover:bg-accent"
+                  >
+                    <Checkbox
+                      id={`difficulty-${key}`}
+                      checked={difficultyLevels.includes(key as DifficultyLevel)}
+                      onCheckedChange={() => toggleDifficultyLevel(key as DifficultyLevel)}
+                    />
+                    <label htmlFor={`difficulty-${key}`} className="flex-1 cursor-pointer text-sm">
+                      {label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+          {difficultyLevels.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {difficultyLevels.map((dl) => (
+                <Badge key={dl} variant="secondary" className="text-xs">
+                  {DifficultyLevelLabels[dl]}
+                  <button
+                    onClick={() => toggleDifficultyLevel(dl)}
+                    className="ml-1 hover:text-destructive"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          )}
         </div>
       </div>
 

@@ -21,32 +21,56 @@ function ExercisesContent() {
   const [totalPages, setTotalPages] = useState(0)
   const [total, setTotal] = useState(0)
 
-  // Get filters from URL
+  // Parse URL parameters for arrays
   const currentPage = Number(searchParams.get('page')) || 1
   const search = searchParams.get('search') || ''
-  const muscleGroup = (searchParams.get('muscleGroup') as MuscleGroup) || undefined
-  const equipmentType = (searchParams.get('equipmentType') as EquipmentType) || undefined
-  const difficultyLevel = (searchParams.get('difficultyLevel') as DifficultyLevel) || undefined
+
+  const muscleGroupsParam = searchParams.get('muscleGroups')
+  const muscleGroups: MuscleGroup[] = muscleGroupsParam
+    ? (muscleGroupsParam.split(',') as MuscleGroup[])
+    : []
+
+  const equipmentTypesParam = searchParams.get('equipmentTypes')
+  const equipmentTypes: EquipmentType[] = equipmentTypesParam
+    ? (equipmentTypesParam.split(',') as EquipmentType[])
+    : []
+
+  const difficultyLevelsParam = searchParams.get('difficultyLevels')
+  const difficultyLevels: DifficultyLevel[] = difficultyLevelsParam
+    ? (difficultyLevelsParam.split(',') as DifficultyLevel[])
+    : []
 
   // Update URL with new filters
   const updateFilters = useCallback(
-    (updates: Record<string, string | undefined>) => {
+    (updates: Record<string, string | string[] | undefined>) => {
       const params = new URLSearchParams(searchParams.toString())
 
       Object.entries(updates).forEach(([key, value]) => {
-        if (value) {
+        if (Array.isArray(value)) {
+          if (value.length > 0) {
+            params.set(key, value.join(','))
+          } else {
+            params.delete(key)
+          }
+        } else if (value) {
           params.set(key, value)
         } else {
           params.delete(key)
         }
       })
 
-      // Reset to page 1 when filters change
-      if (!updates.page) {
+      // Reset to page 1 when filters change (unless explicitly updating page)
+      if (!('page' in updates)) {
         params.set('page', '1')
       }
 
-      router.push(`/exercises?${params.toString()}`)
+      const next = params.toString()
+      const current = searchParams.toString()
+
+      // Stop no-op navigations
+      if (next === current) return
+
+      router.replace(`/exercises?${next}`)
     },
     [searchParams, router]
   )
@@ -58,9 +82,9 @@ function ExercisesContent() {
       try {
         const result = await getExercises({
           search: search || undefined,
-          primaryMuscleGroup: muscleGroup,
-          equipmentType,
-          difficultyLevel,
+          primaryMuscleGroups: muscleGroups.length > 0 ? muscleGroups : undefined,
+          equipmentTypes: equipmentTypes.length > 0 ? equipmentTypes : undefined,
+          difficultyLevels: difficultyLevels.length > 0 ? difficultyLevels : undefined,
           page: currentPage,
           limit: 20,
         })
@@ -81,7 +105,7 @@ function ExercisesContent() {
     }
 
     fetchExercises()
-  }, [search, muscleGroup, equipmentType, difficultyLevel, currentPage])
+  }, [search, muscleGroups, equipmentTypes, difficultyLevels, currentPage])
 
   // Filter handlers
   const handleSearchChange = useCallback(
@@ -91,29 +115,29 @@ function ExercisesContent() {
     [updateFilters]
   )
 
-  const handleMuscleGroupChange = useCallback(
-    (value: MuscleGroup | undefined) => {
-      updateFilters({ muscleGroup: value })
+  const handleMuscleGroupsChange = useCallback(
+    (values: MuscleGroup[]) => {
+      updateFilters({ muscleGroups: values })
     },
     [updateFilters]
   )
 
-  const handleEquipmentTypeChange = useCallback(
-    (value: EquipmentType | undefined) => {
-      updateFilters({ equipmentType: value })
+  const handleEquipmentTypesChange = useCallback(
+    (values: EquipmentType[]) => {
+      updateFilters({ equipmentTypes: values })
     },
     [updateFilters]
   )
 
-  const handleDifficultyLevelChange = useCallback(
-    (value: DifficultyLevel | undefined) => {
-      updateFilters({ difficultyLevel: value })
+  const handleDifficultyLevelsChange = useCallback(
+    (values: DifficultyLevel[]) => {
+      updateFilters({ difficultyLevels: values })
     },
     [updateFilters]
   )
 
   const handleClearFilters = useCallback(() => {
-    router.push('/exercises?page=1')
+    router.replace('/exercises?page=1')
   }, [router])
 
   // Pagination handlers
@@ -149,13 +173,13 @@ function ExercisesContent() {
       {/* Filters */}
       <ExerciseFilters
         search={search}
-        muscleGroup={muscleGroup}
-        equipmentType={equipmentType}
-        difficultyLevel={difficultyLevel}
+        muscleGroups={muscleGroups}
+        equipmentTypes={equipmentTypes}
+        difficultyLevels={difficultyLevels}
         onSearchChange={handleSearchChange}
-        onMuscleGroupChange={handleMuscleGroupChange}
-        onEquipmentTypeChange={handleEquipmentTypeChange}
-        onDifficultyLevelChange={handleDifficultyLevelChange}
+        onMuscleGroupsChange={handleMuscleGroupsChange}
+        onEquipmentTypesChange={handleEquipmentTypesChange}
+        onDifficultyLevelsChange={handleDifficultyLevelsChange}
         onClearFilters={handleClearFilters}
       />
 

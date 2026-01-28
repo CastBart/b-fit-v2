@@ -32,10 +32,10 @@ export async function getExercises(filters?: ExerciseFiltersInput) {
 
     const {
       search,
-      primaryMuscleGroup,
-      equipmentType,
+      primaryMuscleGroups,
+      equipmentTypes,
       exerciseType,
-      difficultyLevel,
+      difficultyLevels,
       movementPattern,
       isDefault,
       isPublic,
@@ -69,20 +69,42 @@ export async function getExercises(filters?: ExerciseFiltersInput) {
       ]
     }
 
-    if (primaryMuscleGroup) {
-      where.AND = [...(where.AND || []), { primaryMuscleGroup }]
+    // Multi-select filters: If multiple values selected, match ANY of them (OR)
+    if (primaryMuscleGroups && primaryMuscleGroups.length > 0) {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          primaryMuscleGroup: {
+            in: primaryMuscleGroups,
+          },
+        },
+      ]
     }
 
-    if (equipmentType) {
-      where.AND = [...(where.AND || []), { equipmentType }]
+    if (equipmentTypes && equipmentTypes.length > 0) {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          equipmentType: {
+            in: equipmentTypes,
+          },
+        },
+      ]
     }
 
     if (exerciseType) {
       where.AND = [...(where.AND || []), { exerciseType }]
     }
 
-    if (difficultyLevel) {
-      where.AND = [...(where.AND || []), { difficultyLevel }]
+    if (difficultyLevels && difficultyLevels.length > 0) {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          difficultyLevel: {
+            in: difficultyLevels,
+          },
+        },
+      ]
     }
 
     if (movementPattern) {
