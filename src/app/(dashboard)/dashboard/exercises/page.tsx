@@ -1,6 +1,7 @@
+// app/dashboard/exercises/page.tsx (or wherever your page lives)
 'use client'
 
-import { Suspense, useCallback, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ExerciseCard } from '@/components/features/exercises/ExerciseCard'
 import { ExerciseFilters } from '@/components/features/exercises/ExerciseFilters'
@@ -10,6 +11,18 @@ import { getExercises } from '@/server/actions/exercises'
 import type { ExerciseEntity, MuscleGroup, EquipmentType, DifficultyLevel } from '@/types/exercise'
 import { ChevronLeft, ChevronRight, Dumbbell } from 'lucide-react'
 import { toast } from 'sonner'
+
+function normalizeArray<T extends string>(values: T[]): T[] {
+  return Array.from(new Set(values)).sort() as T[]
+}
+
+function parseCsvParam<T extends string>(param: string | null): T[] {
+  if (!param) return []
+  return param
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean) as T[]
+}
 
 function ExercisesContent() {
   const router = useRouter()
@@ -21,24 +34,27 @@ function ExercisesContent() {
   const [totalPages, setTotalPages] = useState(0)
   const [total, setTotal] = useState(0)
 
-  // Parse URL parameters for arrays
+  // Read URL params (strings as source of truth)
   const currentPage = Number(searchParams.get('page')) || 1
   const search = searchParams.get('search') || ''
 
   const muscleGroupsParam = searchParams.get('muscleGroups')
-  const muscleGroups: MuscleGroup[] = muscleGroupsParam
-    ? (muscleGroupsParam.split(',') as MuscleGroup[])
-    : []
-
   const equipmentTypesParam = searchParams.get('equipmentTypes')
-  const equipmentTypes: EquipmentType[] = equipmentTypesParam
-    ? (equipmentTypesParam.split(',') as EquipmentType[])
-    : []
-
   const difficultyLevelsParam = searchParams.get('difficultyLevels')
-  const difficultyLevels: DifficultyLevel[] = difficultyLevelsParam
-    ? (difficultyLevelsParam.split(',') as DifficultyLevel[])
-    : []
+
+  // ✅ Memoize parsed arrays so deps are stable
+  const muscleGroups = useMemo(
+    () => normalizeArray(parseCsvParam<MuscleGroup>(muscleGroupsParam)),
+    [muscleGroupsParam]
+  )
+  const equipmentTypes = useMemo(
+    () => normalizeArray(parseCsvParam<EquipmentType>(equipmentTypesParam)),
+    [equipmentTypesParam]
+  )
+  const difficultyLevels = useMemo(
+    () => normalizeArray(parseCsvParam<DifficultyLevel>(difficultyLevelsParam)),
+    [difficultyLevelsParam]
+  )
 
   // Update URL with new filters
   const updateFilters = useCallback(
@@ -47,16 +63,14 @@ function ExercisesContent() {
 
       Object.entries(updates).forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          if (value.length > 0) {
-            params.set(key, value.join(','))
-          } else {
-            params.delete(key)
-          }
-        } else if (value) {
-          params.set(key, value)
-        } else {
-          params.delete(key)
+          const normalized = normalizeArray(value.map(String))
+          if (normalized.length > 0) params.set(key, normalized.join(','))
+          else params.delete(key)
+          return
         }
+
+        if (value && String(value).length > 0) params.set(key, String(value))
+        else params.delete(key)
       })
 
       // Reset to page 1 when filters change (unless explicitly updating page)
@@ -67,7 +81,7 @@ function ExercisesContent() {
       const next = params.toString()
       const current = searchParams.toString()
 
-      // Stop no-op navigations
+      // ✅ Stop no-op navigations
       if (next === current) return
 
       router.replace(`/dashboard/exercises?${next}`)
@@ -77,17 +91,21 @@ function ExercisesContent() {
 
   // Fetch exercises
   useEffect(() => {
+    let cancelled = false
+
     const fetchExercises = async () => {
       setLoading(true)
       try {
         const result = await getExercises({
           search: search || undefined,
-          primaryMuscleGroups: muscleGroups.length > 0 ? muscleGroups : undefined,
-          equipmentTypes: equipmentTypes.length > 0 ? equipmentTypes : undefined,
-          difficultyLevels: difficultyLevels.length > 0 ? difficultyLevels : undefined,
+          primaryMuscleGroups: muscleGroups.length ? muscleGroups : undefined,
+          equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
+          difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
           page: currentPage,
           limit: 20,
         })
+
+        if (cancelled) return
 
         if (result.success && result.data) {
           setExercises(result.data.exercises)
@@ -97,14 +115,20 @@ function ExercisesContent() {
           toast.error(result.error || 'Failed to load exercises')
         }
       } catch (error) {
-        console.error('Error fetching exercises:', error)
-        toast.error('An unexpected error occurred')
+        if (!cancelled) {
+          console.error('Error fetching exercises:', error)
+          toast.error('An unexpected error occurred')
+        }
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
     }
 
     fetchExercises()
+    return () => {
+      cancelled = true
+    }
+    // ✅ deps are stable thanks to useMemo above
   }, [search, muscleGroups, equipmentTypes, difficultyLevels, currentPage])
 
   // Filter handlers
@@ -142,15 +166,11 @@ function ExercisesContent() {
 
   // Pagination handlers
   const handlePreviousPage = useCallback(() => {
-    if (currentPage > 1) {
-      updateFilters({ page: String(currentPage - 1) })
-    }
+    if (currentPage > 1) updateFilters({ page: String(currentPage - 1) })
   }, [currentPage, updateFilters])
 
   const handleNextPage = useCallback(() => {
-    if (currentPage < totalPages) {
-      updateFilters({ page: String(currentPage + 1) })
-    }
+    if (currentPage < totalPages) updateFilters({ page: String(currentPage + 1) })
   }, [currentPage, totalPages, updateFilters])
 
   const handleExerciseClick = useCallback(
@@ -247,15 +267,10 @@ function ExercisesContent() {
           <div className="flex items-center gap-1">
             {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
               let pageNum: number
-              if (totalPages <= 5) {
-                pageNum = i + 1
-              } else if (currentPage <= 3) {
-                pageNum = i + 1
-              } else if (currentPage >= totalPages - 2) {
-                pageNum = totalPages - 4 + i
-              } else {
-                pageNum = currentPage - 2 + i
-              }
+              if (totalPages <= 5) pageNum = i + 1
+              else if (currentPage <= 3) pageNum = i + 1
+              else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i
+              else pageNum = currentPage - 2 + i
 
               return (
                 <Button
