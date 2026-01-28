@@ -15,7 +15,7 @@ import {
   DifficultyLevelLabels,
 } from '@/types/exercise'
 import { X, Search, ChevronDown } from 'lucide-react'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface ExerciseFiltersProps {
   search?: string
@@ -42,18 +42,18 @@ export function ExerciseFilters({
 }: ExerciseFiltersProps) {
   const [searchValue, setSearchValue] = useState(search)
 
-  // keep latest handler without retriggering debounce effect
+  // Keep latest handler without retriggering debounce effect
   const onSearchChangeRef = useRef(onSearchChange)
   useEffect(() => {
     onSearchChangeRef.current = onSearchChange
   }, [onSearchChange])
 
-  // Sync local state with prop when it changes
+  // Sync local state with prop when it changes (back/forward, clear filters, etc.)
   useEffect(() => {
     setSearchValue(search)
   }, [search])
 
-  // ✅ Debounce based ONLY on searchValue
+  // Debounce based ONLY on searchValue
   useEffect(() => {
     const timer = setTimeout(() => {
       onSearchChangeRef.current(searchValue)
@@ -63,7 +63,10 @@ export function ExerciseFilters({
   }, [searchValue])
 
   const hasActiveFilters = Boolean(
-    search || muscleGroups.length > 0 || equipmentTypes.length > 0 || difficultyLevels.length > 0
+    search ||
+    (muscleGroups && muscleGroups.length > 0) ||
+    (equipmentTypes && equipmentTypes.length > 0) ||
+    (difficultyLevels && difficultyLevels.length > 0)
   )
 
   const toggleMuscleGroup = (value: MuscleGroup) => {
@@ -140,12 +143,14 @@ export function ExerciseFilters({
               </div>
             </PopoverContent>
           </Popover>
+
           {muscleGroups.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {muscleGroups.map((mg) => (
                 <Badge key={mg} variant="secondary" className="text-xs">
                   {MuscleGroupLabels[mg]}
                   <button
+                    type="button"
                     onClick={() => toggleMuscleGroup(mg)}
                     className="ml-1 hover:text-destructive"
                   >
@@ -191,12 +196,14 @@ export function ExerciseFilters({
               </div>
             </PopoverContent>
           </Popover>
+
           {equipmentTypes.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {equipmentTypes.map((et) => (
                 <Badge key={et} variant="secondary" className="text-xs">
                   {EquipmentTypeLabels[et]}
                   <button
+                    type="button"
                     onClick={() => toggleEquipmentType(et)}
                     className="ml-1 hover:text-destructive"
                   >
@@ -242,12 +249,14 @@ export function ExerciseFilters({
               </div>
             </PopoverContent>
           </Popover>
+
           {difficultyLevels.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {difficultyLevels.map((dl) => (
                 <Badge key={dl} variant="secondary" className="text-xs">
                   {DifficultyLevelLabels[dl]}
                   <button
+                    type="button"
                     onClick={() => toggleDifficultyLevel(dl)}
                     className="ml-1 hover:text-destructive"
                   >

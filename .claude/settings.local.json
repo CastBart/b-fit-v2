@@ -39,7 +39,9 @@
       "Bash(echo:*)",
       "Bash(openssl rand:*)",
       "Bash(npm run lint:fix:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(npx eslint:*)",
+      "Bash(git restore:*)"
     ]
   },
   "enabledPlugins": {
