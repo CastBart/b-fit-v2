@@ -102,3 +102,4 @@ When finishing a task from each phase, document your work:
 
 - Make sure to document current progress in docs/phase-breakdowns/CURRENT-PROGRESS.md
 - Ensure to document completed task of the working phase in docs/phase-breakdowns/phase-[phasenumber]-[phasename].md
+- Also ensure to make few lines of notes for which task is next in the CURRENT-PROGRESS.md file

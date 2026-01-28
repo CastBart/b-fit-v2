@@ -128,30 +128,31 @@
 
 ---
 
-### Task 3.4: Exercise Search/Filter UI
+### Task 3.4: Exercise Search/Filter UI ✅ COMPLETED
 
 **Priority**: High
 **Estimated Effort**: 5-6 hours
 **Dependencies**: Task 3.3
+**Completion Date**: 2026-01-28
 
 #### Sub-tasks:
 
 1. **Create Exercise List Page**
-   - [ ] Create `src/app/exercises/page.tsx`
-   - [ ] Display grid of exercise cards
-   - [ ] Pagination (20 per page)
+   - [x] Create `src/app/exercises/page.tsx`
+   - [x] Display grid of exercise cards
+   - [x] Pagination (20 per page)
    - File: `src/app/exercises/page.tsx`
 
 2. **Create Filter Components**
-   - [ ] Search by name
-   - [ ] Filter by muscle group
-   - [ ] Filter by equipment type
-   - [ ] Filter by difficulty level
+   - [x] Search by name
+   - [x] Filter by muscle group
+   - [x] Filter by equipment type
+   - [x] Filter by difficulty level
    - File: `src/components/features/exercises/ExerciseFilters.tsx`
 
 3. **Create Exercise Card**
-   - [ ] Display exercise name, image placeholder, muscle group
-   - [ ] Click to view details
+   - [x] Display exercise name, image placeholder, muscle group
+   - [x] Click to view details
    - File: `src/components/features/exercises/ExerciseCard.tsx`
 
 **Acceptance Criteria**:
@@ -160,6 +161,34 @@
 - ✅ Filters work correctly
 - ✅ Search finds exercises by name
 - ✅ Responsive grid layout
+
+**Implementation Notes**:
+
+- Created ExerciseCard component with:
+  - Exercise name, muscle group, equipment type, difficulty level
+  - Dumbbell icon placeholder for exercise image
+  - Color-coded difficulty badges (Beginner: default, Intermediate: secondary, Advanced: destructive)
+  - Custom exercise badge for user-created exercises
+  - Hover effects and click handler for navigation
+- Created ExerciseFilters component with:
+  - Search input with 300ms debouncing for performance
+  - Three filter dropdowns: Muscle Group, Equipment Type, Difficulty Level
+  - Clear filters button (only shown when filters are active)
+  - Responsive layout (stacked on mobile, row on desktop)
+  - All filter options populated from enum labels
+- Created Exercise List page with:
+  - Responsive grid layout (1-2-3-4 columns based on screen size)
+  - URL-based filter state using Next.js searchParams
+  - Server-side data fetching with getExercises() action
+  - Pagination with page numbers and prev/next buttons
+  - Loading skeleton cards during data fetch
+  - Empty state with clear filters button
+  - Results count display
+  - Wrapped in Suspense boundary for Next.js App Router compatibility
+- Added Select component from Shadcn UI for dropdowns
+- Navigation link already exists in Sidebar (Exercises, for PERSONAL and PT roles)
+- All filters update URL parameters and reset to page 1
+- Click on exercise card navigates to `/exercises/{id}` (detail page - to be implemented in Task 3.5)
 
 ---
 
@@ -605,7 +634,7 @@
 - [x] Exercise schema complete
 - [x] 50+ exercises seeded
 - [x] CRUD operations working
-- [ ] Search/filter UI functional
+- [x] Search/filter UI functional
 
 ### Workout Builder
 

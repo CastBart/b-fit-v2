@@ -745,7 +745,7 @@ This task has been deferred and added to the TODO list (Task #1). It will be com
 ## Week 3: Exercise Library (Phase 2)
 
 **Status**: In progress 🚧
-**Progress**: 3/5 tasks complete (60%)
+**Progress**: 4/5 tasks complete (80%)
 
 ### ✅ Task 3.1: Complete Exercise Schema (COMPLETED)
 
@@ -979,44 +979,135 @@ src/server/actions/exercises.ts
 
 ---
 
-## Next Task: Task 3.4 - Exercise Search/Filter UI
+### ✅ Task 3.4: Exercise Search/Filter UI (COMPLETED)
 
-**Priority**: High
-**Estimated Effort**: 5-6 hours
+**Completion Date**: 2026-01-28
+**Time Taken**: ~2 hours
+
+**What was completed:**
+
+- Created ExerciseCard component (`src/components/features/exercises/ExerciseCard.tsx`):
+  - Displays exercise name, primary muscle group, equipment type, and difficulty level
+  - Dumbbell icon placeholder for exercise image
+  - Color-coded difficulty badges (Beginner: blue, Intermediate: gray, Advanced: red)
+  - Custom exercise badge for user-created exercises (non-default)
+  - Hover effects with scale animation and shadow
+  - Click handler for navigation to exercise detail page
+  - Responsive card layout with proper spacing
+- Created ExerciseFilters component (`src/components/features/exercises/ExerciseFilters.tsx`):
+  - Search input with 300ms debouncing for optimal performance
+  - Three filter dropdowns using Shadcn Select component:
+    - Muscle Group (11 options + "All Muscle Groups")
+    - Equipment Type (9 options + "All Equipment")
+    - Difficulty Level (3 options + "All Levels")
+  - Clear filters button (only shown when filters are active)
+  - Responsive layout (stacked on mobile, 3-column grid on desktop)
+  - All filter options populated from enum label mappings
+  - Search icon in input field
+- Created Exercise List page (`src/app/exercises/page.tsx`):
+  - Client-side page with URL-based filter state (Next.js useSearchParams)
+  - Responsive grid layout: 1 column (mobile), 2 (sm), 3 (lg), 4 (xl) columns
+  - Server-side data fetching with getExercises() server action
+  - Pagination system:
+    - Shows up to 5 page numbers with smart positioning
+    - Previous/Next buttons with disabled states
+    - Page count display (e.g., "Page 1 of 5")
+  - Loading states with skeleton cards (8 cards during load)
+  - Empty state with clear filters button when no results
+  - Results count display ("Showing X of Y exercises")
+  - Toast notifications for errors
+  - Wrapped in Suspense boundary for Next.js App Router compatibility
+  - All filters update URL parameters and reset to page 1 on filter change
+  - Click on exercise card navigates to `/exercises/{id}` (detail page)
+- Installed Shadcn Select component for filter dropdowns
+- Navigation link already exists in Sidebar component (Exercises menu item)
+
+**Files Created:**
+
+```
+src/components/features/exercises/ExerciseCard.tsx
+src/components/features/exercises/ExerciseFilters.tsx
+src/app/exercises/page.tsx
+src/components/ui/select.tsx (via Shadcn CLI)
+```
+
+**Key Features:**
+
+- URL-based filter state for shareable filtered views
+- Debounced search input (300ms delay) for performance
+- Responsive design across all screen sizes
+- Loading skeletons for better perceived performance
+- Empty state handling with user guidance
+- Pagination with smart page number display
+- Color-coded UI elements for better UX
+- All filters work independently and in combination
+- Filter state preserved in URL for browser back/forward navigation
+
+**Testing Results:**
+
+- ✅ TypeScript compilation: PASSED
+- ✅ Production build: SUCCESSFUL
+- ✅ All filters working correctly
+- ✅ Search with debouncing functional
+- ✅ Pagination working as expected
+- ✅ Responsive grid layout tested
+
+**Acceptance Criteria:**
+
+- ✅ Exercise list displays all exercises
+- ✅ Filters work correctly (muscle group, equipment, difficulty)
+- ✅ Search finds exercises by name and description
+- ✅ Responsive grid layout (1-2-3-4 columns)
+- ✅ Pagination with page numbers and prev/next buttons
+- ✅ Loading states implemented
+- ✅ Empty state handling
+
+---
+
+## Next Task: Task 3.5 - Exercise Detail View
+
+**Priority**: Medium
+**Estimated Effort**: 3-4 hours
 
 **What needs to be done:**
 
-1. Create Exercise List Page (`src/app/exercises/page.tsx`):
-   - Display grid of exercise cards
-   - Integrate with `getExercises()` server action
-   - Implement pagination UI (showing 20 per page)
-   - Loading states and error handling
+1. Create Exercise Detail Page (`src/app/exercises/[id]/page.tsx`):
+   - Display all exercise details (name, description, categorization)
+   - Show muscle groups (primary and secondary)
+   - Display equipment type, difficulty level, movement pattern, exercise type, metric type
+   - Render step-by-step instructions if available
+   - Show "Custom Exercise" badge for user-created exercises
+   - Add "Edit" button (only for exercise owner)
+   - Add "Delete" button (only for exercise owner) with confirmation dialog
+   - Responsive layout with proper spacing
 
-2. Create Filter Components (`src/components/features/exercises/ExerciseFilters.tsx`):
-   - Search input with debouncing
-   - Filter dropdowns for muscle group, equipment, difficulty
-   - Clear filters button
-   - Filter state management
+2. Handle Owner-Only Actions:
+   - Check if current user is the exercise creator
+   - Show Edit/Delete buttons only to owners
+   - Default exercises cannot be edited or deleted
+   - Integrate with updateExercise() and deleteExercise() server actions
 
-3. Create Exercise Card (`src/components/features/exercises/ExerciseCard.tsx`):
-   - Display exercise name, muscle group, equipment type
-   - Image placeholder for exercise thumbnails
-   - Difficulty badge
-   - Click to view details
-   - Owner badge for custom exercises
+3. Create Confirmation Dialog:
+   - Confirm before deleting an exercise
+   - Show warning message about permanent deletion
+   - Cancel and Delete buttons
 
 **Dependencies:**
 
-- Task 3.3 complete ✅
-- Server actions ready for integration
-- Shadcn UI components available (Card, Badge, Input, Select)
+- Task 3.4 complete ✅
+- Exercise detail route already links from card clicks
+- Server actions (getExerciseById, updateExercise, deleteExercise) ready
+- Shadcn UI Dialog component available
 
 **Notes for implementation:**
 
-- Use React Query (TanStack Query) for data fetching and caching
-- Implement URL-based filter state for shareable filtered views
-- Consider using `useSearchParams` for filter state management
-- Add loading skeleton cards for better UX
-- Implement responsive grid layout (1-2-3-4 columns based on screen size)
+- Use getExerciseById() server action for fetching data
+- Display enum values using label mappings from `src/types/exercise.ts`
+- Show loading skeleton while fetching exercise data
+- Handle "not found" case if exercise doesn't exist
+- Handle "no permission" case if user can't view the exercise
+- Add breadcrumb navigation (Exercises > Exercise Name)
+- Consider adding "Back to Exercises" button
+- Exercise edit form can be added later (Task 3.6 or deferred)
 
 ---
