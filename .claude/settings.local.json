@@ -41,7 +41,10 @@
       "Bash(npm run lint:fix:*)",
       "Bash(dir:*)",
       "Bash(npx eslint:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(npm run dev)",
+      "Bash(timeout 15 tail:*)",
+      "Bash(taskkill:*)"
     ]
   },
   "enabledPlugins": {

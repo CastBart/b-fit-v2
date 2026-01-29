@@ -5,10 +5,11 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ExerciseCard } from '@/components/features/exercises/ExerciseCard'
 import { ExerciseFilters } from '@/components/features/exercises/ExerciseFilters'
+import { ExerciseDrawer } from '@/components/features/exercises/ExerciseDrawer'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getExercises } from '@/server/actions/exercises'
-import type { ExerciseEntity, MuscleGroup, EquipmentType, DifficultyLevel } from '@/types/exercise'
+import { useExercises } from '@/hooks/queries/useExercises'
+import type { MuscleGroup, EquipmentType, DifficultyLevel } from '@/types/exercise'
 import { ChevronLeft, ChevronRight, Dumbbell } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -29,10 +30,8 @@ function ExercisesContent() {
   const searchParams = useSearchParams()
 
   // State
-  const [exercises, setExercises] = useState<ExerciseEntity[]>([])
-  const [loading, setLoading] = useState(true)
-  const [totalPages, setTotalPages] = useState(0)
-  const [total, setTotal] = useState(0)
+  const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   // Read URL params (strings as source of truth)
   const currentPage = Number(searchParams.get('page')) || 1
@@ -55,6 +54,27 @@ function ExercisesContent() {
     () => normalizeArray(parseCsvParam<DifficultyLevel>(difficultyLevelsParam)),
     [difficultyLevelsParam]
   )
+
+  // Fetch exercises with React Query
+  const { data, isLoading, error } = useExercises({
+    search: search || undefined,
+    primaryMuscleGroups: muscleGroups.length ? muscleGroups : undefined,
+    equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
+    difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
+    page: currentPage,
+    limit: 20,
+  })
+
+  const exercises = data?.exercises || []
+  const totalPages = data?.totalPages || 0
+  const total = data?.total || 0
+
+  // Show error toast when query fails
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message || 'Failed to load exercises')
+    }
+  }, [error])
 
   // Update URL with new filters
   const updateFilters = useCallback(
@@ -88,48 +108,6 @@ function ExercisesContent() {
     },
     [searchParams, router]
   )
-
-  // Fetch exercises
-  useEffect(() => {
-    let cancelled = false
-
-    const fetchExercises = async () => {
-      setLoading(true)
-      try {
-        const result = await getExercises({
-          search: search || undefined,
-          primaryMuscleGroups: muscleGroups.length ? muscleGroups : undefined,
-          equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
-          difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
-          page: currentPage,
-          limit: 20,
-        })
-
-        if (cancelled) return
-
-        if (result.success && result.data) {
-          setExercises(result.data.exercises)
-          setTotalPages(result.data.totalPages)
-          setTotal(result.data.total)
-        } else {
-          toast.error(result.error || 'Failed to load exercises')
-        }
-      } catch (error) {
-        if (!cancelled) {
-          console.error('Error fetching exercises:', error)
-          toast.error('An unexpected error occurred')
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    fetchExercises()
-    return () => {
-      cancelled = true
-    }
-    // ✅ deps are stable thanks to useMemo above
-  }, [search, muscleGroups, equipmentTypes, difficultyLevels, currentPage])
 
   // Filter handlers
   const handleSearchChange = useCallback(
@@ -173,12 +151,18 @@ function ExercisesContent() {
     if (currentPage < totalPages) updateFilters({ page: String(currentPage + 1) })
   }, [currentPage, totalPages, updateFilters])
 
-  const handleExerciseClick = useCallback(
-    (exerciseId: string) => {
-      router.push(`/exercises/${exerciseId}`)
-    },
-    [router]
-  )
+  const handleExerciseClick = useCallback((exerciseId: string) => {
+    setSelectedExerciseId(exerciseId)
+    setDrawerOpen(true)
+  }, [])
+
+  const handleDrawerClose = useCallback((open: boolean) => {
+    setDrawerOpen(open)
+    if (!open) {
+      // Small delay before clearing ID to allow close animation
+      setTimeout(() => setSelectedExerciseId(null), 300)
+    }
+  }, [])
 
   return (
     <div className="space-y-6">
@@ -204,7 +188,7 @@ function ExercisesContent() {
       />
 
       {/* Results Count */}
-      {!loading && (
+      {!isLoading && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
             Showing {exercises.length} of {total} exercises
@@ -218,7 +202,7 @@ function ExercisesContent() {
       )}
 
       {/* Exercise Grid */}
-      {loading ? (
+      {isLoading ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="space-y-3">
@@ -252,7 +236,7 @@ function ExercisesContent() {
       )}
 
       {/* Pagination */}
-      {!loading && totalPages > 1 && (
+      {!isLoading && totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
           <Button
             variant="outline"
@@ -297,6 +281,13 @@ function ExercisesContent() {
           </Button>
         </div>
       )}
+
+      {/* Exercise Detail Drawer */}
+      <ExerciseDrawer
+        exerciseId={selectedExerciseId}
+        open={drawerOpen}
+        onOpenChange={handleDrawerClose}
+      />
     </div>
   )
 }

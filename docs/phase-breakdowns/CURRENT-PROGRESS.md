@@ -1,8 +1,8 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-01-28
+**Last Updated**: 2026-01-29
 **Current Phase**: Phase 2 - Core Features
-**Current Task**: Week 3 - Exercise Library (Task 3.4)
+**Current Task**: Week 3 - Exercise Library Complete (5/5 tasks) ✅
 
 ---
 
@@ -744,8 +744,8 @@ This task has been deferred and added to the TODO list (Task #1). It will be com
 
 ## Week 3: Exercise Library (Phase 2)
 
-**Status**: In progress 🚧
-**Progress**: 4/5 tasks complete (80%)
+**Status**: Complete ✅
+**Progress**: 5/5 tasks complete (100%)
 
 ### ✅ Task 3.1: Complete Exercise Schema (COMPLETED)
 
@@ -1064,50 +1064,256 @@ src/components/ui/select.tsx (via Shadcn CLI)
 
 ---
 
-## Next Task: Task 3.5 - Exercise Detail View
+### ✅ Task 3.5: Exercise Detail Drawer (COMPLETED)
 
-**Priority**: Medium
-**Estimated Effort**: 3-4 hours
+**Completion Date**: 2026-01-29
+**Time Taken**: ~3 hours
+
+**What was completed:**
+
+- Created reusable ExerciseDrawer component at `src/components/features/exercises/ExerciseDrawer.tsx`
+- Implemented drawer-based UI instead of dedicated page (better UX):
+  - Responsive: bottom drawer on mobile, side drawer on desktop
+  - Opens when exercise card clicked
+  - Managed via exerciseId prop and open state
+- Three tab layout using Shadcn Tabs component:
+  - **Details Tab**: Complete exercise metadata display
+    - Exercise name with custom badge (if not default)
+    - Description paragraph
+    - Categorization grid: primary muscle, secondary muscles, equipment, exercise type, difficulty (color-coded), movement pattern, metric type, creator name
+    - Owner-only actions: Edit and Delete buttons (placeholders)
+  - **Instructions Tab**: Step-by-step instructions rendering
+    - Numbered list with visual styling
+    - Empty state if no instructions available
+  - **History Tab**: Placeholder for future feature
+    - Empty state message about completing workouts
+- Data fetching and state management:
+  - Fetches exercise using getExerciseById() server action when opened
+  - Loading state with skeleton UI
+  - Error state with error message and close button
+  - Cleanup function to cancel stale requests
+- Owner permission checks:
+  - Compares session user ID with exercise createdById
+  - Shows Edit/Delete buttons only to owner
+  - Default exercises (isDefault: true) cannot be modified
+- UI/UX features:
+  - Color-coded difficulty badges (Beginner: blue, Intermediate: gray, Advanced: red)
+  - Custom exercise badge for non-default exercises
+  - Close button and overlay
+  - Smooth animations with Shadcn Drawer
+- Type safety:
+  - Created ExerciseWithPartialCreator type for drawer
+  - Helper function to safely cast JSON instructions to string array
+- Integrated with ExercisesPage:
+  - Added drawer state management (selectedExerciseId, drawerOpen)
+  - Updated handleExerciseClick to open drawer instead of navigate
+  - Added handleDrawerClose with cleanup delay for animations
+
+**Files Created:**
+
+```
+src/components/features/exercises/ExerciseDrawer.tsx
+```
+
+**Files Modified:**
+
+```
+src/app/(dashboard)/exercises/page.tsx
+```
+
+**Key Features:**
+
+- Reusable component (can be used in workout builder, session tracker, etc.)
+- Keeps user in context (no navigation away from exercise list)
+- Faster perceived performance (drawer animation vs page navigation)
+- Better mobile UX (full-screen drawer feels native)
+- Three-tab organization (Details, Instructions, History)
+- Owner-based permissions with visual cues
+- Comprehensive loading and error states
+
+**Testing Results:**
+
+- ✅ TypeScript compilation: PASSED
+- ✅ Production build: SUCCESSFUL
+- ✅ All tabs render correctly
+- ✅ Drawer opens/closes smoothly
+- ✅ Owner permissions working
+- ✅ Loading and error states functional
+
+**Acceptance Criteria:**
+
+- ✅ Drawer shows all exercise info
+- ✅ Owner can see edit/delete buttons
+- ✅ Non-owners cannot modify
+- ✅ Three tabs working correctly
+- ✅ Reusable across app
+
+**Deferred:**
+
+- Edit functionality implementation (will be added when edit form is created)
+- Delete functionality with confirmation dialog (will be added in future task)
+- Exercise history data population (depends on session/workout completion features)
+
+---
+
+---
+
+### ✅ Task 3.6: React Query Integration (COMPLETED)
+
+**Completion Date**: 2026-01-29
+**Time Taken**: ~1.5 hours
+
+**What was completed:**
+
+- Installed React Query (TanStack Query) and DevTools:
+  - @tanstack/react-query: ^5.x
+  - @tanstack/react-query-devtools: ^5.x
+- Created QueryClient configuration at `src/lib/react-query/queryClient.ts`:
+  - 5-minute stale time (data stays fresh for 5 minutes)
+  - 10-minute garbage collection time (unused data cached for 10 minutes)
+  - Auto-refetch on window focus and network reconnect
+  - Single retry on failure
+- Created QueryProvider wrapper component at `src/components/providers/QueryProvider.tsx`:
+  - Client component wrapping app with QueryClientProvider
+  - Integrated React Query DevTools (bottom-right flower icon)
+  - Added to root layout inside SessionProvider
+- Created custom query hooks for exercises:
+  - `useExercises()` hook at `src/hooks/queries/useExercises.ts`:
+    - Accepts all filter parameters (search, muscle groups, equipment, difficulty, pagination)
+    - Returns data, isLoading, error states
+    - Automatic caching with query key: `['exercises', params]`
+    - 5-minute stale time for exercise lists
+  - `useExercise()` hook at `src/hooks/queries/useExercise.ts`:
+    - Fetches single exercise by ID
+    - Only runs when exerciseId is provided (enabled flag)
+    - 10-minute stale time for individual exercises
+    - Query key: `['exercise', exerciseId]`
+- Refactored ExercisesPage to use React Query:
+  - Removed ~40 lines of manual data fetching code (useState, useEffect, cleanup)
+  - Replaced with single useExercises() hook call (~10 lines)
+  - Auto-refetches when filters change (via query key)
+  - Built-in loading and error states
+  - Toast notification on query error
+- Refactored ExerciseDrawer to use React Query:
+  - Removed ~40 lines of manual fetch logic
+  - Replaced with single useExercise() hook call
+  - Automatic cleanup when drawer closes (enabled flag)
+  - No manual cancellation needed
+
+**Files Created:**
+
+```
+src/lib/react-query/queryClient.ts
+src/components/providers/QueryProvider.tsx
+src/hooks/queries/useExercises.ts
+src/hooks/queries/useExercise.ts
+```
+
+**Files Modified:**
+
+```
+src/app/layout.tsx (added QueryProvider)
+src/app/(dashboard)/exercises/page.tsx (use useExercises hook)
+src/components/features/exercises/ExerciseDrawer.tsx (use useExercise hook)
+package.json (added dependencies)
+```
+
+**Dependencies Installed:**
+
+- @tanstack/react-query
+- @tanstack/react-query-devtools
+
+**Code Reduction:**
+
+- **Before**: ~115 lines of data fetching boilerplate across components
+- **After**: ~12 lines of query hook usage
+- **Net Reduction**: ~103 lines (89% less code)
+
+**Key Features:**
+
+- Automatic caching: Data fetched once is reused across components
+- Request deduplication: Multiple components can share same query
+- Auto-refetch on window focus and network reconnect
+- Built-in loading/error states (no manual useState needed)
+- Smart stale time configuration (5-10 minutes)
+- React Query DevTools for debugging queries and cache
+- Enabled flag for conditional queries (drawer example)
+- Proper TypeScript types with Zod validation
+
+**Benefits Achieved:**
+
+- ✅ Aligns with technical design document (React Query was planned from start)
+- ✅ Reduced boilerplate by 89%
+- ✅ Better performance (automatic caching, request deduplication)
+- ✅ Better UX (auto-refetch keeps data fresh)
+- ✅ Easier to maintain (less code to read and debug)
+- ✅ Future-ready (workout and session queries will benefit from same patterns)
+
+**Testing Results:**
+
+- ✅ TypeScript compilation: PASSED
+- ✅ Production build: SUCCESSFUL
+- ✅ Exercise list page loads correctly
+- ✅ All filters work as expected
+- ✅ Pagination functional
+- ✅ Exercise drawer opens and displays data
+- ✅ Loading states show correctly
+- ✅ Error handling with toast notifications working
+- ✅ React Query DevTools accessible and functional
+
+**Acceptance Criteria:**
+
+- ✅ React Query installed and configured
+- ✅ QueryClient with proper defaults created
+- ✅ Custom hooks for exercises created
+- ✅ Existing components refactored to use hooks
+- ✅ All functionality preserved after refactor
+- ✅ Build passes with no errors
+- ✅ Reduced code complexity
+
+---
+
+## Week 3 Summary
+
+**Status**: Complete ✅
+**Progress**: 6/6 tasks complete (100%)
+
+1. ✅ Task 3.1: Complete Exercise Schema
+2. ✅ Task 3.2: Create Exercise Seed Data
+3. ✅ Task 3.3: Exercise CRUD Server Actions
+4. ✅ Task 3.4: Exercise Search/Filter UI
+5. ✅ Task 3.5: Exercise Detail Drawer
+6. ✅ Task 3.6: React Query Integration
+
+**Total Time**: ~13.5 hours
+**Build Status**: ✅ Passing
+
+---
+
+## Next Steps: Week 4 - Workout Builder (Part 1)
+
+**Focus**: Build workout creation and management features
+
+### Next Task: Task 4.1 - Workout & WorkoutExercise Schema
+
+**Priority**: Critical
+**Estimated Effort**: 2-3 hours
 
 **What needs to be done:**
 
-1. Create Exercise Detail Page (`src/app/exercises/[id]/page.tsx`):
-   - Display all exercise details (name, description, categorization)
-   - Show muscle groups (primary and secondary)
-   - Display equipment type, difficulty level, movement pattern, exercise type, metric type
-   - Render step-by-step instructions if available
-   - Show "Custom Exercise" badge for user-created exercises
-   - Add "Edit" button (only for exercise owner)
-   - Add "Delete" button (only for exercise owner) with confirmation dialog
-   - Responsive layout with proper spacing
-
-2. Handle Owner-Only Actions:
-   - Check if current user is the exercise creator
-   - Show Edit/Delete buttons only to owners
-   - Default exercises cannot be edited or deleted
-   - Integrate with updateExercise() and deleteExercise() server actions
-
-3. Create Confirmation Dialog:
-   - Confirm before deleting an exercise
-   - Show warning message about permanent deletion
-   - Cancel and Delete buttons
+1. Add Workout and WorkoutExercise models to Prisma schema:
+   - Workout model: id, name, description, ownerId, isPublic, createdAt, updatedAt
+   - WorkoutExercise model: workoutId, exerciseId, order, sets, reps, weight, restSeconds, notes, groupId (for supersets)
+   - Proper relations between User, Workout, WorkoutExercise, and Exercise
+   - Indexes for performance (ownerId, workoutId, order)
+2. Run migration: `npx prisma migrate dev --name add_workout_models`
+3. Generate Prisma client
+4. Create TypeScript types at `src/types/workout.ts`
+5. Verify schema and types compile correctly
 
 **Dependencies:**
 
-- Task 3.4 complete ✅
-- Exercise detail route already links from card clicks
-- Server actions (getExerciseById, updateExercise, deleteExercise) ready
-- Shadcn UI Dialog component available
-
-**Notes for implementation:**
-
-- Use getExerciseById() server action for fetching data
-- Display enum values using label mappings from `src/types/exercise.ts`
-- Show loading skeleton while fetching exercise data
-- Handle "not found" case if exercise doesn't exist
-- Handle "no permission" case if user can't view the exercise
-- Add breadcrumb navigation (Exercises > Exercise Name)
-- Consider adding "Back to Exercises" button
-- Exercise edit form can be added later (Task 3.6 or deferred)
+- Task 3.1 complete ✅ (Exercise model exists)
+- Phase 1 complete ✅ (User model exists)
 
 ---
