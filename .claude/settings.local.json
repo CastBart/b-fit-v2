@@ -44,7 +44,8 @@
       "Bash(git restore:*)",
       "Bash(npm run dev)",
       "Bash(timeout 15 tail:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(node:*)"
     ]
   },
   "enabledPlugins": {

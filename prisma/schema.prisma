@@ -30,6 +30,9 @@ model User {
   // Exercise relations
   exercises     Exercise[]
 
+  // Workout relations
+  workouts      Workout[]
+
   @@index([email])
   @@index([role])
   @@index([isActive])
@@ -178,9 +181,72 @@ model Exercise {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Relations
+  workoutExercises WorkoutExercise[]
+
   @@index([createdById])
   @@index([isDefault])
   @@index([equipmentType])
   @@index([exerciseType])
   @@index([primaryMuscleGroup])
+}
+
+// ============================================================================
+// WORKOUTS
+// ============================================================================
+
+model Workout {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+
+  // Ownership
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  // Template vs Copy (for PT-to-Client assignment pattern)
+  isTemplate   Boolean @default(true)
+  copiedFromId String?  // Reference to original workout for client assignments
+  copiedFrom   Workout? @relation("WorkoutCopies", fields: [copiedFromId], references: [id], onDelete: SetNull)
+  copies       Workout[] @relation("WorkoutCopies")
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  exercises WorkoutExercise[]
+
+  @@index([createdById])
+  @@index([copiedFromId])
+  @@index([createdAt])
+}
+
+model WorkoutExercise {
+  id String @id @default(cuid())
+
+  // Relations
+  workoutId  String
+  workout    Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  // Ordering & Grouping
+  order   Int     // 0-indexed position in workout
+  groupId String? // For supersets - exercises with same groupId form a superset
+
+  // Target parameters
+  sets        Int
+  reps        Int?
+  weight      Float?
+  restSeconds Int     @default(60)
+  notes       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workoutId])
+  @@index([exerciseId])
+  @@index([groupId])
+  @@unique([workoutId, order])  // Ensure unique ordering within workout
 }

@@ -334,17 +334,18 @@
 
 ## Week 4: Workout Builder (Part 1)
 
-### Task 4.1: Workout & WorkoutExercise Schema
+### Task 4.1: Workout & WorkoutExercise Schema ✅ COMPLETED
 
 **Priority**: Critical
 **Estimated Effort**: 2-3 hours
 **Dependencies**: Task 3.1
+**Completion Date**: 2026-01-29
 
 #### Sub-tasks:
 
 1. **Add Workout Models**
-   - [ ] Add Workout and WorkoutExercise models to Prisma
-   - [ ] Run migration
+   - [x] Add Workout and WorkoutExercise models to Prisma
+   - [x] Run migration
    - Files: `prisma/schema.prisma`
 
 **Acceptance Criteria**:
@@ -352,18 +353,31 @@
 - ✅ Workout and WorkoutExercise tables created
 - ✅ Relations configured correctly
 
+**Implementation Notes**:
+
+- Migration: `20260129191328_add_workout_models`
+- Created Workout model with: id, name, description, createdById, isTemplate, copiedFromId, timestamps
+- Created WorkoutExercise model with: id, workoutId, exerciseId, order, groupId, sets, reps, weight, restSeconds, notes, timestamps
+- Implemented copy-on-assign pattern with copiedFromId (for PT-to-client workflow)
+- Implemented superset support with groupId
+- Unique constraint on workoutId + order ensures proper ordering
+- Created comprehensive TypeScript types at `src/types/workout.ts`
+- Includes types for relations, forms, filters, supersets, and copy workflow
+- TypeScript compilation and production build: ✅ PASSING
+
 ---
 
-### Task 4.2: Workout CRUD Server Actions
+### Task 4.2: Workout CRUD Server Actions ✅ COMPLETED
 
 **Priority**: Critical
 **Estimated Effort**: 4-5 hours
 **Dependencies**: Task 4.1
+**Completion Date**: 2026-01-29
 
 #### Sub-tasks:
 
 1. **Create Server Actions**
-   - [ ] Create `src/server/actions/workouts.ts`:
+   - [x] Create `src/server/actions/workouts.ts`:
      - `getWorkouts()` - List user's workouts
      - `getWorkoutById()` - Single workout with exercises
      - `createWorkout()` - Create workout
@@ -373,39 +387,61 @@
      - `updateWorkoutExercise()` - Update sets/reps
      - `removeExerciseFromWorkout()` - Remove exercise
      - `reorderExercises()` - Update order
+     - `copyWorkout()` - Copy workout (PT assigns to client)
    - File: `src/server/actions/workouts.ts`
 
 2. **Add Validation**
-   - [ ] Create `src/lib/validations/workout.ts`
+   - [x] Create `src/lib/validations/workout.ts`
    - File: `src/lib/validations/workout.ts`
+
+3. **React Query Integration**
+   - [x] Create query hooks: `useWorkouts()`, `useWorkout()`
+   - [x] Create mutation hooks: All CRUD operations
+   - Files: `src/hooks/queries/useWorkouts.ts`, `src/hooks/queries/useWorkout.ts`, `src/hooks/mutations/useWorkoutMutations.ts`
 
 **Acceptance Criteria**:
 
 - ✅ All workout CRUD operations work
 - ✅ Exercises can be added/removed/reordered
+- ✅ RBAC enforced correctly
+- ✅ React Query hooks created and working
+
+**Implementation Notes**:
+
+- Created 8 validation schemas (create, update, filters, add exercise, update exercise, remove, reorder, copy)
+- Implemented 10 server actions with full RBAC enforcement
+- Created 2 query hooks (list and single) with proper stale times
+- Created 8 mutation hooks with automatic cache invalidation and toast notifications
+- All operations return consistent `{ success, data?, error? }` format
+- Transaction-based reordering for atomic updates
+- Full workout copy with exercises for PT-to-client workflow
+- TypeScript compilation and production build: ✅ PASSING
 
 ---
 
-### Task 4.3: Workout Builder Page Skeleton
+### Task 4.3: Workout Builder Page Skeleton ✅ COMPLETED
 
 **Priority**: High
 **Estimated Effort**: 4-5 hours
 **Dependencies**: Task 4.2
+**Completion Date**: 2026-01-29
 
 #### Sub-tasks:
 
 1. **Create Workout Builder Page**
-   - [ ] Create `src/app/workouts/builder/page.tsx`
-   - [ ] Three-column layout:
+   - [x] Create `src/app/workouts/builder/page.tsx`
+   - [x] Three-column layout:
      - Left: Exercise library
      - Center: Workout exercises
      - Right: Exercise configuration
    - File: `src/app/workouts/builder/page.tsx`
 
 2. **Create Layout Components**
-   - [ ] Exercise selector panel
-   - [ ] Workout exercises list
-   - [ ] Configuration panel
+   - [x] Exercise selector panel
+   - [x] Workout exercises list
+   - [x] Configuration panel
+   - [x] Create workout dialog
+   - [x] Workout list page
    - Files: `src/components/features/workouts/`
 
 **Acceptance Criteria**:
@@ -413,6 +449,27 @@
 - ✅ Layout renders correctly
 - ✅ Responsive on mobile/desktop
 - ✅ Panels can be toggled
+- ✅ Exercise search and filters working
+- ✅ Configuration panel updates exercises
+
+**Implementation Notes**:
+
+- Created complete workout builder with three-column responsive layout
+- Left panel: Searchable exercise library with muscle group and equipment filters
+- Center panel: Workout exercises list with order numbers, parameters display, delete buttons
+- Right panel: Configuration form with real-time updates (hidden on mobile)
+- Created workout list page with search, pagination, and workout cards
+- Implemented CreateWorkoutDialog for workflow initiation
+- State managed locally (exercises array in React state)
+- Integrated with React Query hooks (useWorkouts, useExercises, useCreateWorkout)
+- **Batch save operation**: All exercises saved in single database transaction
+- Created `addMultipleExercisesToWorkout()` server action with transaction support
+- Created `useAddMultipleExercisesToWorkout()` mutation hook
+- Performance optimized: 1 transaction vs N, 1 cache invalidation vs N
+- Atomic operation: all exercises succeed or all fail (no partial saves)
+- Complete save workflow: create workout → add exercises → batch save → redirect
+- Installed shadcn components: ScrollArea, Textarea
+- TypeScript compilation and production build: ✅ PASSING
 
 ---
 
