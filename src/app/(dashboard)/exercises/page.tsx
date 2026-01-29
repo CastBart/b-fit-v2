@@ -55,15 +55,21 @@ function ExercisesContent() {
     [difficultyLevelsParam]
   )
 
+  // ✅ Memoize filter params for stable React Query key (prevents unnecessary refetches)
+  const filterParams = useMemo(
+    () => ({
+      search: search || undefined,
+      primaryMuscleGroups: muscleGroups.length ? muscleGroups : undefined,
+      equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
+      difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
+      page: currentPage,
+      limit: 20,
+    }),
+    [search, muscleGroups, equipmentTypes, difficultyLevels, currentPage]
+  )
+
   // Fetch exercises with React Query
-  const { data, isLoading, error } = useExercises({
-    search: search || undefined,
-    primaryMuscleGroups: muscleGroups.length ? muscleGroups : undefined,
-    equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
-    difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
-    page: currentPage,
-    limit: 20,
-  })
+  const { data, isLoading, error } = useExercises(filterParams)
 
   const exercises = data?.exercises || []
   const totalPages = data?.totalPages || 0
