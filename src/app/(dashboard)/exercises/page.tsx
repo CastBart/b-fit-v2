@@ -1,17 +1,16 @@
-// app/dashboard/exercises/page.tsx (or wherever your page lives)
 'use client'
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { Suspense, useCallback, useMemo, useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ExerciseCard } from '@/components/features/exercises/ExerciseCard'
 import { ExerciseFilters } from '@/components/features/exercises/ExerciseFilters'
 import { ExerciseDrawer } from '@/components/features/exercises/ExerciseDrawer'
-import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useExercises } from '@/hooks/queries/useExercises'
 import type { MuscleGroup, EquipmentType, DifficultyLevel } from '@/types/exercise'
-import { ChevronLeft, ChevronRight, Dumbbell } from 'lucide-react'
 import { toast } from 'sonner'
+
+/* ---------------- helpers ---------------- */
 
 function normalizeArray<T extends string>(values: T[]): T[] {
   return Array.from(new Set(values)).sort() as T[]
@@ -21,19 +20,21 @@ function parseCsvParam<T extends string>(param: string | null): T[] {
   if (!param) return []
   return param
     .split(',')
-    .map((s) => s.trim())
+    .map((v) => v.trim())
     .filter(Boolean) as T[]
 }
+
+/* ---------------- component ---------------- */
 
 function ExercisesContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // State
+  /* ---------- drawer state (LOCAL ONLY) ---------- */
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  // Read URL params (strings as source of truth)
+  /* ---------- URL params ---------- */
   const currentPage = Number(searchParams.get('page')) || 1
   const search = searchParams.get('search') || ''
 
@@ -41,21 +42,23 @@ function ExercisesContent() {
   const equipmentTypesParam = searchParams.get('equipmentTypes')
   const difficultyLevelsParam = searchParams.get('difficultyLevels')
 
-  // ✅ Memoize parsed arrays so deps are stable
+  /* ---------- parsed & memoized filters ---------- */
   const muscleGroups = useMemo(
     () => normalizeArray(parseCsvParam<MuscleGroup>(muscleGroupsParam)),
     [muscleGroupsParam]
   )
+
   const equipmentTypes = useMemo(
     () => normalizeArray(parseCsvParam<EquipmentType>(equipmentTypesParam)),
     [equipmentTypesParam]
   )
+
   const difficultyLevels = useMemo(
     () => normalizeArray(parseCsvParam<DifficultyLevel>(difficultyLevelsParam)),
     [difficultyLevelsParam]
   )
 
-  // ✅ Memoize filter params for stable React Query key (prevents unnecessary refetches)
+  /* ---------- params passed to server ---------- */
   const filterParams = useMemo(
     () => ({
       search: search || undefined,
@@ -68,21 +71,34 @@ function ExercisesContent() {
     [search, muscleGroups, equipmentTypes, difficultyLevels, currentPage]
   )
 
-  // Fetch exercises with React Query
-  const { data, isLoading, error } = useExercises(filterParams)
+  /* ---------- STABLE QUERY KEY ---------- */
+  const queryKeyParams = useMemo(
+    () =>
+      JSON.stringify({
+        search,
+        muscleGroups,
+        equipmentTypes,
+        difficultyLevels,
+        page: currentPage,
+        limit: 20,
+      }),
+    [search, muscleGroups, equipmentTypes, difficultyLevels, currentPage]
+  )
 
-  const exercises = data?.exercises || []
-  const totalPages = data?.totalPages || 0
-  const total = data?.total || 0
+  /* ---------- fetch exercises ---------- */
+  const { data, isLoading, error } = useExercises(filterParams, queryKeyParams)
 
-  // Show error toast when query fails
+  const exercises = data?.exercises ?? []
+  const total = data?.total ?? 0
+
+  /* ---------- error handling ---------- */
   useEffect(() => {
     if (error) {
       toast.error(error.message || 'Failed to load exercises')
     }
   }, [error])
 
-  // Update URL with new filters
+  /* ---------- URL updates ---------- */
   const updateFilters = useCallback(
     (updates: Record<string, string | string[] | undefined>) => {
       const params = new URLSearchParams(searchParams.toString())
@@ -90,145 +106,71 @@ function ExercisesContent() {
       Object.entries(updates).forEach(([key, value]) => {
         if (Array.isArray(value)) {
           const normalized = normalizeArray(value.map(String))
-          if (normalized.length > 0) params.set(key, normalized.join(','))
-          else params.delete(key)
+          if (normalized.length) {
+            params.set(key, normalized.join(','))
+          } else {
+            params.delete(key)
+          }
           return
         }
 
-        if (value && String(value).length > 0) params.set(key, String(value))
-        else params.delete(key)
+        if (value) {
+          params.set(key, value)
+        } else {
+          params.delete(key)
+        }
       })
 
-      // Reset to page 1 when filters change (unless explicitly updating page)
-      if (!('page' in updates)) {
-        params.set('page', '1')
-      }
+      if (!('page' in updates)) params.set('page', '1')
 
       const next = params.toString()
-      const current = searchParams.toString()
-
-      // ✅ Stop no-op navigations
-      if (next === current) return
+      if (next === searchParams.toString()) return
 
       router.replace(`/exercises?${next}`)
     },
-    [searchParams, router]
+    [router, searchParams]
   )
 
-  // Filter handlers
-  const handleSearchChange = useCallback(
-    (value: string) => {
-      updateFilters({ search: value || undefined })
-    },
-    [updateFilters]
-  )
-
-  const handleMuscleGroupsChange = useCallback(
-    (values: MuscleGroup[]) => {
-      updateFilters({ muscleGroups: values })
-    },
-    [updateFilters]
-  )
-
-  const handleEquipmentTypesChange = useCallback(
-    (values: EquipmentType[]) => {
-      updateFilters({ equipmentTypes: values })
-    },
-    [updateFilters]
-  )
-
-  const handleDifficultyLevelsChange = useCallback(
-    (values: DifficultyLevel[]) => {
-      updateFilters({ difficultyLevels: values })
-    },
-    [updateFilters]
-  )
-
-  const handleClearFilters = useCallback(() => {
-    router.replace('/exercises?page=1')
-  }, [router])
-
-  // Pagination handlers
-  const handlePreviousPage = useCallback(() => {
-    if (currentPage > 1) updateFilters({ page: String(currentPage - 1) })
-  }, [currentPage, updateFilters])
-
-  const handleNextPage = useCallback(() => {
-    if (currentPage < totalPages) updateFilters({ page: String(currentPage + 1) })
-  }, [currentPage, totalPages, updateFilters])
-
-  const handleExerciseClick = useCallback((exerciseId: string) => {
-    setSelectedExerciseId(exerciseId)
+  /* ---------- handlers ---------- */
+  const handleExerciseClick = useCallback((id: string) => {
+    setSelectedExerciseId(id)
     setDrawerOpen(true)
   }, [])
 
   const handleDrawerClose = useCallback((open: boolean) => {
     setDrawerOpen(open)
     if (!open) {
-      // Small delay before clearing ID to allow close animation
       setTimeout(() => setSelectedExerciseId(null), 300)
     }
   }, [])
 
+  const handleClearFilters = useCallback(() => {
+    router.replace('/exercises?page=1')
+  }, [router])
+
+  /* ---------- render ---------- */
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Exercise Library</h1>
-        <p className="text-muted-foreground">
-          Browse and search through our comprehensive exercise database
-        </p>
-      </div>
-
-      {/* Filters */}
       <ExerciseFilters
         search={search}
         muscleGroups={muscleGroups}
         equipmentTypes={equipmentTypes}
         difficultyLevels={difficultyLevels}
-        onSearchChange={handleSearchChange}
-        onMuscleGroupsChange={handleMuscleGroupsChange}
-        onEquipmentTypesChange={handleEquipmentTypesChange}
-        onDifficultyLevelsChange={handleDifficultyLevelsChange}
+        onSearchChange={(v) => updateFilters({ search: v || undefined })}
+        onMuscleGroupsChange={(v) => updateFilters({ muscleGroups: v })}
+        onEquipmentTypesChange={(v) => updateFilters({ equipmentTypes: v })}
+        onDifficultyLevelsChange={(v) => updateFilters({ difficultyLevels: v })}
         onClearFilters={handleClearFilters}
       />
 
-      {/* Results Count */}
       {!isLoading && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Showing {exercises.length} of {total} exercises
-          </p>
-          {totalPages > 1 && (
-            <p className="text-sm text-muted-foreground">
-              Page {currentPage} of {totalPages}
-            </p>
-          )}
-        </div>
+        <p className="text-sm text-muted-foreground">
+          Showing {exercises.length} of {total}
+        </p>
       )}
 
-      {/* Exercise Grid */}
       {isLoading ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="space-y-3">
-              <Skeleton className="h-48 w-full rounded-lg" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-            </div>
-          ))}
-        </div>
-      ) : exercises.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
-          <Dumbbell className="mb-4 h-12 w-12 text-muted-foreground" />
-          <h3 className="mb-2 text-lg font-semibold">No exercises found</h3>
-          <p className="mb-4 text-sm text-muted-foreground">
-            Try adjusting your filters or search terms
-          </p>
-          <Button variant="outline" onClick={handleClearFilters}>
-            Clear Filters
-          </Button>
-        </div>
+        <Skeleton className="h-48 w-full" />
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {exercises.map((exercise) => (
@@ -241,54 +183,6 @@ function ExercisesContent() {
         </div>
       )}
 
-      {/* Pagination */}
-      {!isLoading && totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Previous
-          </Button>
-
-          <div className="flex items-center gap-1">
-            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-              let pageNum: number
-              if (totalPages <= 5) pageNum = i + 1
-              else if (currentPage <= 3) pageNum = i + 1
-              else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i
-              else pageNum = currentPage - 2 + i
-
-              return (
-                <Button
-                  key={pageNum}
-                  variant={currentPage === pageNum ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => updateFilters({ page: String(pageNum) })}
-                  className="h-8 w-8 p-0"
-                >
-                  {pageNum}
-                </Button>
-              )
-            })}
-          </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-          >
-            Next
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
-
-      {/* Exercise Detail Drawer */}
       <ExerciseDrawer
         exerciseId={selectedExerciseId}
         open={drawerOpen}
@@ -300,22 +194,7 @@ function ExercisesContent() {
 
 export default function ExercisesPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="container mx-auto space-y-6 py-6">
-          <div className="space-y-2">
-            <Skeleton className="h-10 w-64" />
-            <Skeleton className="h-4 w-96" />
-          </div>
-          <Skeleton className="h-48 w-full" />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="h-64 w-full" />
-            ))}
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<Skeleton className="h-64 w-full" />}>
       <ExercisesContent />
     </Suspense>
   )

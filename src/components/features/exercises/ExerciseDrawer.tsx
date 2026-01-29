@@ -80,6 +80,10 @@ export function ExerciseDrawer({ exerciseId, open, onOpenChange }: ExerciseDrawe
       <DrawerContent className="max-h-[90vh]">
         <div className="mx-auto w-full max-w-2xl overflow-y-auto">
           <DrawerHeader className="relative">
+            <DrawerTitle className="hidden">Exercise Details</DrawerTitle>
+            <DrawerDescription className="hidden">
+              See full details of the exercise
+            </DrawerDescription>
             <DrawerClose asChild>
               <Button
                 variant="ghost"
