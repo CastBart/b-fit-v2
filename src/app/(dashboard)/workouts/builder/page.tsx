@@ -71,6 +71,10 @@ export default function WorkoutBuilderPage() {
           setShowCreateDialog(false)
           toast.success('Workout created! Now add exercises.')
         },
+        onError: (err) => {
+          console.log('Failed to create workout. Please try again.', err)
+          toast.error('Failed to create workout. Please try again.')
+        },
       }
     )
   }
@@ -242,7 +246,7 @@ export default function WorkoutBuilderPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col">
+    <div className="flex h-[calc(100vh-8rem)] flex-col">
       {/* Header */}
       <div className="border-b bg-background px-6 py-4">
         <div className="flex items-center justify-between">
@@ -337,7 +341,14 @@ export default function WorkoutBuilderPage() {
       {/* Create Workout Dialog */}
       <CreateWorkoutDialog
         open={showCreateDialog}
-        onOpenChange={setShowCreateDialog}
+        onOpenChange={(nextOpen) => {
+          // If user closes the dialog before creating a workout, leave the builder.
+          if (!nextOpen && !workoutId) {
+            router.push('/workouts')
+            return
+          }
+          setShowCreateDialog(nextOpen)
+        }}
         onSubmit={handleCreateWorkout}
         isLoading={createWorkout.isPending}
       />
