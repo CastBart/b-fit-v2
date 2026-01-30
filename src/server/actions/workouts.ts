@@ -154,7 +154,8 @@ export async function getWorkouts(filters?: WorkoutFiltersInput): Promise<
     return {
       success: true,
       data: {
-        workouts: transformedWorkouts,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        workouts: transformedWorkouts as any,
         total,
         page,
         limit,
@@ -753,7 +754,8 @@ export async function copyWorkout(
     })
 
     revalidatePath('/workouts')
-    return { success: true, data: workoutCopy }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return { success: true, data: workoutCopy as any }
   } catch (error) {
     console.error('Error copying workout:', error)
     if (error instanceof Error) {

@@ -47,7 +47,10 @@ export function WorkoutExercisesList({
           <Dumbbell className="mx-auto mb-4 h-16 w-16 text-muted-foreground" />
           <h3 className="mb-2 text-lg font-semibold">No Exercises Yet</h3>
           <p className="text-sm text-muted-foreground">
-            Select exercises from the library on the left to add them to your workout.
+            <span className="hidden lg:inline">
+              Select exercises from the library on the left to add them to your workout.
+            </span>
+            <span className="lg:hidden">Tap the + button to add exercises to your workout.</span>
           </p>
         </div>
       </div>

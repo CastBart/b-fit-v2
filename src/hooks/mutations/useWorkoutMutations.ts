@@ -67,7 +67,9 @@ export function useUpdateWorkout() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] })
-      queryClient.invalidateQueries({ queryKey: ['workout', data.id] })
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: ['workout', data.id] })
+      }
       toast.success('Workout updated successfully')
     },
     onError: (error: Error) => {
@@ -118,7 +120,9 @@ export function useAddExerciseToWorkout() {
       return result.data
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['workout', data.workoutId] })
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: ['workout', data.workoutId] })
+      }
       queryClient.invalidateQueries({ queryKey: ['workouts'] })
       toast.success('Exercise added to workout')
     },
@@ -171,7 +175,9 @@ export function useUpdateWorkoutExercise() {
       return result.data
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['workout', data.workoutId] })
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: ['workout', data.workoutId] })
+      }
       toast.success('Exercise updated')
     },
     onError: (error: Error) => {

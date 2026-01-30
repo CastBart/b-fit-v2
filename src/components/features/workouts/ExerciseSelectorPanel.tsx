@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useExercises } from '@/hooks/queries/useExercises'
 import {
   MuscleGroup,
@@ -31,9 +32,19 @@ import type { Exercise } from '@prisma/client'
 interface ExerciseSelectorPanelProps {
   onExerciseSelect: (exercise: Exercise) => void
   disabled?: boolean
+  // Optional multi-select props
+  mode?: 'single' | 'multi'
+  selectedIds?: Set<string>
+  onSelectionChange?: (ids: Set<string>) => void
 }
 
-export function ExerciseSelectorPanel({ onExerciseSelect, disabled }: ExerciseSelectorPanelProps) {
+export function ExerciseSelectorPanel({
+  onExerciseSelect,
+  disabled,
+  mode = 'single',
+  selectedIds = new Set(),
+  onSelectionChange,
+}: ExerciseSelectorPanelProps) {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [muscleGroup, setMuscleGroup] = useState<MuscleGroup | undefined>(undefined)
@@ -59,12 +70,32 @@ export function ExerciseSelectorPanel({ onExerciseSelect, disabled }: ExerciseSe
 
   const exercises = data?.exercises || []
 
+  const handleExerciseClick = (exercise: Exercise) => {
+    if (disabled) return
+
+    if (mode === 'multi' && onSelectionChange) {
+      // Multi-select mode: toggle selection
+      const newSelectedIds = new Set(selectedIds)
+      if (newSelectedIds.has(exercise.id)) {
+        newSelectedIds.delete(exercise.id)
+      } else {
+        newSelectedIds.add(exercise.id)
+      }
+      onSelectionChange(newSelectedIds)
+    } else {
+      // Single-select mode: immediately call onExerciseSelect
+      onExerciseSelect(exercise)
+    }
+  }
+
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
       <div className="border-b p-4">
         <h3 className="font-semibold">Exercise Library</h3>
-        <p className="text-xs text-muted-foreground">Click an exercise to add it</p>
+        <p className="text-xs text-muted-foreground">
+          {mode === 'multi' ? 'Select exercises to add' : 'Click an exercise to add it'}
+        </p>
       </div>
 
       {/* Filters */}
@@ -144,21 +175,37 @@ export function ExerciseSelectorPanel({ onExerciseSelect, disabled }: ExerciseSe
           )}
 
           {!isLoading &&
-            exercises.map((exercise: Exercise) => (
-              <button
-                key={exercise.id}
-                onClick={() => !disabled && onExerciseSelect(exercise)}
-                disabled={disabled}
-                className="w-full rounded-lg border bg-card p-3 text-left transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <div className="font-medium">{exercise.name}</div>
-                <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{MuscleGroupLabels[exercise.primaryMuscleGroup as MuscleGroup]}</span>
-                  <span>•</span>
-                  <span>{EquipmentTypeLabels[exercise.equipmentType as EquipmentType]}</span>
-                </div>
-              </button>
-            ))}
+            exercises.map((exercise: Exercise) => {
+              const isSelected = mode === 'multi' && selectedIds.has(exercise.id)
+
+              return (
+                <button
+                  key={exercise.id}
+                  onClick={() => handleExerciseClick(exercise)}
+                  disabled={disabled}
+                  className="w-full rounded-lg border bg-card p-3 text-left transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <div className="flex items-start gap-3">
+                    {mode === 'multi' && (
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={() => handleExerciseClick(exercise)}
+                        className="mt-0.5"
+                        aria-label={`Select ${exercise.name}`}
+                      />
+                    )}
+                    <div className="flex-1">
+                      <div className="font-medium">{exercise.name}</div>
+                      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>{MuscleGroupLabels[exercise.primaryMuscleGroup as MuscleGroup]}</span>
+                        <span>•</span>
+                        <span>{EquipmentTypeLabels[exercise.equipmentType as EquipmentType]}</span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              )
+            })}
         </div>
       </ScrollArea>
     </div>

@@ -33,26 +33,42 @@ interface ExerciseConfigPanelProps {
 }
 
 export function ExerciseConfigPanel({ exercise, onUpdate }: ExerciseConfigPanelProps) {
-  const [localSets, setLocalSets] = useState(exercise?.sets || 3)
-  const [localReps, setLocalReps] = useState(exercise?.reps || 10)
-  const [localWeight, setLocalWeight] = useState(exercise?.weight || 0)
-  const [localRest, setLocalRest] = useState(exercise?.restSeconds || 60)
+  // Store as strings to allow blank state while typing
+  const [localSets, setLocalSets] = useState(String(exercise?.sets || 3))
+  const [localReps, setLocalReps] = useState(String(exercise?.reps || 10))
+  const [localWeight, setLocalWeight] = useState(String(exercise?.weight || 0))
+  const [localRest, setLocalRest] = useState(String(exercise?.restSeconds || 60))
   const [localNotes, setLocalNotes] = useState(exercise?.notes || '')
 
   // Update local state when exercise changes
   useEffect(() => {
     if (exercise) {
-      setLocalSets(exercise.sets)
-      setLocalReps(exercise.reps || 10)
-      setLocalWeight(exercise.weight || 0)
-      setLocalRest(exercise.restSeconds)
+      setLocalSets(String(exercise.sets))
+      setLocalReps(String(exercise.reps || 10))
+      setLocalWeight(String(exercise.weight || 0))
+      setLocalRest(String(exercise.restSeconds))
       setLocalNotes(exercise.notes || '')
     }
   }, [exercise])
 
-  // Handle updates with debouncing
-  const handleUpdate = (field: string, value: string | number | undefined) => {
-    onUpdate({ [field]: value })
+  // Validate and update on blur
+  const handleBlur = (field: string, value: string, defaultValue: number, minValue: number = 0) => {
+    const numValue = field === 'weight' ? parseFloat(value) : parseInt(value)
+
+    // If blank or invalid, use default
+    if (value === '' || isNaN(numValue) || numValue < minValue) {
+      const finalValue = defaultValue
+      // Update local state with default
+      if (field === 'sets') setLocalSets(String(finalValue))
+      else if (field === 'reps') setLocalReps(String(finalValue))
+      else if (field === 'weight') setLocalWeight(String(finalValue))
+      else if (field === 'restSeconds') setLocalRest(String(finalValue))
+      // Update parent
+      onUpdate({ [field]: finalValue })
+    } else {
+      // Valid number, update parent
+      onUpdate({ [field]: numValue })
+    }
   }
 
   if (!exercise) {
@@ -86,11 +102,8 @@ export function ExerciseConfigPanel({ exercise, onUpdate }: ExerciseConfigPanelP
               min={1}
               max={20}
               value={localSets}
-              onChange={(e) => {
-                const value = parseInt(e.target.value) || 1
-                setLocalSets(value)
-                handleUpdate('sets', value)
-              }}
+              onChange={(e) => setLocalSets(e.target.value)}
+              onBlur={(e) => handleBlur('sets', e.target.value, 1, 1)}
             />
             <p className="text-xs text-muted-foreground">Number of sets (1-20)</p>
           </div>
@@ -104,11 +117,8 @@ export function ExerciseConfigPanel({ exercise, onUpdate }: ExerciseConfigPanelP
               min={1}
               max={999}
               value={localReps}
-              onChange={(e) => {
-                const value = parseInt(e.target.value) || 1
-                setLocalReps(value)
-                handleUpdate('reps', value)
-              }}
+              onChange={(e) => setLocalReps(e.target.value)}
+              onBlur={(e) => handleBlur('reps', e.target.value, 1, 1)}
             />
             <p className="text-xs text-muted-foreground">Target reps per set</p>
           </div>
@@ -123,11 +133,8 @@ export function ExerciseConfigPanel({ exercise, onUpdate }: ExerciseConfigPanelP
               max={9999}
               step={0.5}
               value={localWeight}
-              onChange={(e) => {
-                const value = parseFloat(e.target.value) || 0
-                setLocalWeight(value)
-                handleUpdate('weight', value)
-              }}
+              onChange={(e) => setLocalWeight(e.target.value)}
+              onBlur={(e) => handleBlur('weight', e.target.value, 0, 0)}
             />
             <p className="text-xs text-muted-foreground">Target weight in kg</p>
           </div>
@@ -142,11 +149,8 @@ export function ExerciseConfigPanel({ exercise, onUpdate }: ExerciseConfigPanelP
               max={600}
               step={5}
               value={localRest}
-              onChange={(e) => {
-                const value = parseInt(e.target.value) || 0
-                setLocalRest(value)
-                handleUpdate('restSeconds', value)
-              }}
+              onChange={(e) => setLocalRest(e.target.value)}
+              onBlur={(e) => handleBlur('restSeconds', e.target.value, 0, 0)}
             />
             <p className="text-xs text-muted-foreground">Rest between sets (0-600s)</p>
           </div>
@@ -162,7 +166,7 @@ export function ExerciseConfigPanel({ exercise, onUpdate }: ExerciseConfigPanelP
               value={localNotes}
               onChange={(e) => {
                 setLocalNotes(e.target.value)
-                handleUpdate('notes', e.target.value)
+                onUpdate({ notes: e.target.value })
               }}
             />
             <p className="text-xs text-muted-foreground">Form cues, tips, or reminders</p>

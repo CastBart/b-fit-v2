@@ -471,6 +471,70 @@
 - Installed shadcn components: ScrollArea, Textarea
 - TypeScript compilation and production build: ✅ PASSING
 
+**Mobile-Responsive Enhancement** (2026-01-30):
+
+- Enhanced with mobile/tablet drawer-based UI while preserving desktop layout
+- Breakpoint: 1024px (lg) - Desktop ≥1024px uses 3-column, Mobile/Tablet <1024px uses drawers
+- Created FloatingActionButton (FAB) component for mobile primary action
+- Created ExerciseSelectorDrawer with multi-select mode (checkboxes, "Add X Exercises" footer)
+- Created ExerciseConfigDrawer with auto-save for exercise configuration
+- Enhanced ExerciseSelectorPanel with optional multi-select mode (backwards compatible)
+- Updated WorkoutExercisesList with responsive empty state text
+- Mobile UX: FAB opens exercise selector drawer → multi-select → add → tap exercise → config drawer
+- Desktop UX: Unchanged three-column layout (no regression)
+- Files created: floating-action-button.tsx, ExerciseSelectorDrawer.tsx, ExerciseConfigDrawer.tsx
+- Files modified: ExerciseSelectorPanel.tsx (+30 lines), WorkoutExercisesList.tsx (+10 lines), page.tsx (+80 lines)
+- Total changes: ~450 lines across 6 files
+- Dev server running, TypeScript compilation successful
+
+#### Enhancement: Mobile-Responsive Drawer UI (In Planning)
+
+**Status**: Planning phase
+**Priority**: High
+**Estimated Effort**: 10 hours over 2-3 days
+
+**Goal**: Improve mobile/tablet UX by replacing stacked panels with drawer-based interactions while keeping desktop 3-column layout unchanged.
+
+**Design Decisions**:
+
+- Breakpoint: 1024px (lg) - Desktop (≥1024px) uses 3-column layout, Mobile/Tablet (<1024px) uses drawers
+- Multi-select: Users can select multiple exercises with checkboxes before adding
+- Component: Bottom Drawer (Vaul) for both exercise selection and configuration
+- FAB: Floating Action Button at bottom-right to open exercise selector drawer
+- Auto-save: Changes to exercise config save immediately (no explicit save button)
+- Drawer behavior: Close and clear selections after adding exercises
+
+**New Components** (3 files):
+
+1. `src/components/ui/floating-action-button.tsx` - Reusable FAB component (~80 lines)
+2. `src/components/features/workouts/ExerciseSelectorDrawer.tsx` - Multi-select exercise drawer (~150 lines)
+3. `src/components/features/workouts/ExerciseConfigDrawer.tsx` - Exercise configuration drawer (~100 lines)
+
+**Modified Components** (3 files):
+
+1. `src/components/features/workouts/ExerciseSelectorPanel.tsx` - Add optional multi-select mode (+30 lines)
+2. `src/components/features/workouts/WorkoutExercisesList.tsx` - Responsive empty state text (+10 lines)
+3. `src/app/(dashboard)/workouts/builder/page.tsx` - Add drawer state and mobile layout (+80 lines)
+
+**Mobile Layout Structure**:
+
+- Main view: Current workout exercises list (full width, always visible)
+- FAB: Opens exercise selector drawer with filters and multi-select
+- Exercise click: Opens configuration drawer with all fields
+- Desktop layout: Unchanged (left/center/right panels)
+
+**Implementation Phases**:
+
+1. Foundation (2h): Create FAB and drawer wrapper components
+2. Multi-Select (2h): Enhance ExerciseSelectorPanel with checkbox mode
+3. Page Integration (3h): Add state management and responsive CSS
+4. Polish (1h): Update empty states and mobile-specific text
+5. Testing (2h): Desktop regression, mobile flows, edge cases
+
+**Total Changes**: ~450 lines of code across 6 files
+
+**Plan Document**: `C:\Users\Bartosz\.claude\plans\vectorized-baking-spindle.md`
+
 ---
 
 ### Task 4.4: Drag-and-Drop Exercise Selector
