@@ -21,6 +21,7 @@ import {
   reorderExercisesSchema,
   copyWorkoutSchema,
   addMultipleExercisesToWorkoutSchema,
+  syncWorkoutExercisesSchema,
   type CreateWorkoutInput,
   type UpdateWorkoutInput,
   type WorkoutFiltersInput,
@@ -29,6 +30,7 @@ import {
   type ReorderExercisesInput,
   type CopyWorkoutInput,
   type AddMultipleExercisesToWorkoutInput,
+  type SyncWorkoutExercisesInput,
 } from '@/lib/validations/workout'
 
 // ============================================================================
@@ -764,5 +766,122 @@ export async function copyWorkout(
       return { success: false, error: error.message }
     }
     return { success: false, error: 'Failed to copy workout' }
+  }
+}
+
+// ============================================================================
+// Sync Workout Exercises (Edit Mode)
+// ============================================================================
+
+/**
+ * Sync workout exercises - handles add, update, delete in one transaction
+ * Used when editing an existing workout
+ */
+export async function syncWorkoutExercises(
+  input: SyncWorkoutExercisesInput
+): Promise<ActionResponse<{ addedCount: number; updatedCount: number; deletedCount: number }>> {
+  try {
+    const session = await getServerSession()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Authentication required' }
+    }
+
+    // Validate input
+    const validatedInput = syncWorkoutExercisesSchema.parse(input)
+
+    // Verify workout ownership
+    const workout = await prisma.workout.findUnique({
+      where: { id: validatedInput.workoutId },
+      include: {
+        exercises: true,
+      },
+    })
+
+    if (!workout) {
+      return { success: false, error: 'Workout not found' }
+    }
+
+    if (workout.createdById !== session.user.id) {
+      return { success: false, error: 'You can only edit your own workouts' }
+    }
+
+    // Execute all operations in a transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Step 1: Identify exercises to delete (in DB but not in new list)
+      const newExerciseIds = new Set(
+        validatedInput.exercises.filter((e) => e.workoutExerciseId).map((e) => e.workoutExerciseId)
+      )
+      const exercisesToDelete = workout.exercises.filter((e) => !newExerciseIds.has(e.id))
+
+      // Step 2: Delete removed exercises
+      if (exercisesToDelete.length > 0) {
+        await tx.workoutExercise.deleteMany({
+          where: {
+            id: { in: exercisesToDelete.map((e) => e.id) },
+          },
+        })
+      }
+
+      // Step 3: Separate new exercises and existing exercises
+      const newExercises = validatedInput.exercises.filter((e) => !e.workoutExerciseId)
+      const existingExercises = validatedInput.exercises.filter((e) => e.workoutExerciseId)
+
+      // Step 4: Add new exercises
+      if (newExercises.length > 0) {
+        await tx.workoutExercise.createMany({
+          data: newExercises.map((e) => ({
+            workoutId: validatedInput.workoutId,
+            exerciseId: e.exerciseId,
+            order: e.order,
+            sets: e.sets,
+            reps: e.reps,
+            weight: e.weight,
+            restSeconds: e.restSeconds,
+            notes: e.notes,
+            groupId: e.groupId,
+          })),
+        })
+      }
+
+      // Step 5: Update existing exercises (parameters and order)
+      if (existingExercises.length > 0) {
+        await Promise.all(
+          existingExercises.map((e) =>
+            tx.workoutExercise.update({
+              where: { id: e.workoutExerciseId },
+              data: {
+                exerciseId: e.exerciseId,
+                order: e.order,
+                sets: e.sets,
+                reps: e.reps,
+                weight: e.weight,
+                restSeconds: e.restSeconds,
+                notes: e.notes,
+                groupId: e.groupId,
+              },
+            })
+          )
+        )
+      }
+
+      return {
+        addedCount: newExercises.length,
+        updatedCount: existingExercises.length,
+        deletedCount: exercisesToDelete.length,
+      }
+    })
+
+    revalidatePath('/workouts')
+    revalidatePath(`/workouts/${validatedInput.workoutId}`)
+    return {
+      success: true,
+      data: result,
+    }
+  } catch (error) {
+    console.error('Error syncing workout exercises:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to sync workout exercises' }
   }
 }

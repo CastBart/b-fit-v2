@@ -630,24 +630,26 @@
 
 ## Week 5: Workout Builder (Part 2)
 
-### Task 5.1: Set/Rep/Weight Configuration
+### Task 5.1: Set/Rep/Weight Configuration ✅ COMPLETED
 
 **Priority**: Critical
 **Estimated Effort**: 4-5 hours
 **Dependencies**: Task 4.5
+**Completion Date**: 2026-01-29 (completed as part of Task 4.3)
+**Actual Effort**: Included in Task 4.3
 
 #### Sub-tasks:
 
 1. **Create Configuration Panel**
-   - [ ] Sets input
-   - [ ] Reps input
-   - [ ] Weight input
-   - [ ] Rest timer input
-   - File: `src/components/features/workouts/ExerciseConfig.tsx`
+   - [x] Sets input
+   - [x] Reps input
+   - [x] Weight input
+   - [x] Rest timer input
+   - File: `src/components/features/workouts/ExerciseConfigPanel.tsx`
 
 2. **Update WorkoutExercise**
-   - [ ] Call `updateWorkoutExercise()` on change
-   - [ ] Debounce updates
+   - [x] Call `updateWorkoutExercise()` on change
+   - [x] Debounce updates
 
 **Acceptance Criteria**:
 
@@ -655,48 +657,67 @@
 - ✅ Changes saved to database
 - ✅ Default values pre-filled
 
+**Implementation Notes**:
+
+- Implemented during Task 4.3 as part of workout builder
+- ExerciseConfigPanel.tsx includes all configuration inputs with real-time updates
+- Debouncing implemented for performance
+- Number inputs with min/max validation
+- Works on both desktop (right panel) and mobile (drawer)
+
 ---
 
-### Task 5.2: Exercise Notes
+### Task 5.2: Exercise Notes ✅ COMPLETED
 
 **Priority**: Medium
 **Estimated Effort**: 2-3 hours
 **Dependencies**: Task 5.1
+**Completion Date**: 2026-01-29 (completed as part of Task 4.3)
+**Actual Effort**: Included in Task 4.3
 
 #### Sub-tasks:
 
 1. **Add Notes Field**
-   - [ ] Textarea for notes per exercise
-   - [ ] Save to `WorkoutExercise.notes`
-   - File: `src/components/features/workouts/ExerciseNotes.tsx`
+   - [x] Textarea for notes per exercise
+   - [x] Save to `WorkoutExercise.notes`
+   - File: `src/components/features/workouts/ExerciseConfigPanel.tsx`
 
 **Acceptance Criteria**:
 
 - ✅ Notes can be added per exercise
 - ✅ Notes persist
 
+**Implementation Notes**:
+
+- Implemented as part of ExerciseConfigPanel during Task 4.3
+- Textarea with 500 character limit
+- Notes save to WorkoutExercise.notes field
+- Displayed in workout detail view
+
 ---
 
-### Task 5.3: Workout List View
+### Task 5.3: Workout List View ✅ COMPLETED
 
 **Priority**: High
 **Estimated Effort**: 4-5 hours
 **Dependencies**: Task 4.2
+**Completion Date**: 2026-01-29 (completed as part of Task 4.3)
+**Actual Effort**: Included in Task 4.3
 
 #### Sub-tasks:
 
 1. **Create Workout List Page**
-   - [ ] Create `src/app/workouts/page.tsx`
-   - [ ] Display user's workouts as cards
-   - [ ] "Create New" button
-   - File: `src/app/workouts/page.tsx`
+   - [x] Create `src/app/(dashboard)/workouts/page.tsx`
+   - [x] Display user's workouts as cards
+   - [x] "Create New" button
+   - File: `src/app/(dashboard)/workouts/page.tsx`
 
 2. **Workout Card Component**
-   - [ ] Workout name
-   - [ ] Exercise count
-   - [ ] Last used date
-   - [ ] Actions: Edit, Duplicate, Delete, Start
-   - File: `src/components/features/workouts/WorkoutCard.tsx`
+   - [x] Workout name
+   - [x] Exercise count
+   - [x] Last used date
+   - [x] Actions: Edit, Delete, Start
+   - Cards implemented inline (no separate component needed)
 
 **Acceptance Criteria**:
 
@@ -704,28 +725,186 @@
 - ✅ Can start workout from card
 - ✅ Actions work correctly
 
+**Implementation Notes**:
+
+- Implemented during Task 4.3 as part of workout management
+- Responsive grid layout (1-2-3 columns)
+- Search functionality with real-time filtering
+- Pagination controls (Previous/Next buttons)
+- Empty state with "Create First Workout" CTA
+- Workout cards show: name, description, exercise count, last updated
+- Template and Assigned badges
+- Quick actions: Start Workout, Edit buttons
+- Cards clickable to navigate to detail page
+
 ---
 
-### Task 5.4: Workout Detail View
+### Task 5.4: Workout Detail View ✅ COMPLETED
 
 **Priority**: Medium
 **Estimated Effort**: 3-4 hours
 **Dependencies**: Task 5.3
+**Completion Date**: 2026-02-01
+**Actual Effort**: ~2 hours
 
 #### Sub-tasks:
 
 1. **Create Detail Page**
-   - [ ] Create `src/app/workouts/[id]/page.tsx`
-   - [ ] Show workout details
-   - [ ] List all exercises with config
-   - [ ] "Start Workout" button
-   - File: `src/app/workouts/[id]/page.tsx`
+   - [x] Create `src/app/(dashboard)/workouts/[id]/page.tsx`
+   - [x] Show workout details
+   - [x] List all exercises with config
+   - [x] "Start Workout" button
+   - File: `src/app/(dashboard)/workouts/[id]/page.tsx`
 
 **Acceptance Criteria**:
 
 - ✅ Detail page shows workout
 - ✅ Can start workout
 - ✅ Can navigate to edit
+
+**Implementation Notes**:
+
+- Created dynamic route at `src/app/(dashboard)/workouts/[id]/page.tsx`
+- Displays full workout metadata: name, description, created date, exercise count
+- Shows all exercises with complete configuration (sets/reps/weight/rest/notes)
+- Visual superset grouping with blue vertical line connector
+- Action buttons: Start Workout (placeholder), Edit (placeholder), Delete (with confirmation)
+- Delete confirmation dialog using AlertDialog component
+- Loading states with skeleton UI
+- Error state handling for missing/inaccessible workouts
+- Integration with useWorkout() React Query hook
+- Integration with useDeleteWorkout() mutation hook
+- Back navigation to workouts list
+- Exercise display shows: order number, name, muscle group, equipment, all parameters
+- Superset badges for grouped exercises
+- Empty state when workout has no exercises
+
+---
+
+### Task 5.5: Existing Workout Edit Mode ✅ COMPLETED
+
+**Priority**: High
+**Estimated Effort**: 4-6 hours
+**Dependencies**: Task 5.4
+**Completion Date**: 2026-02-01
+**Actual Effort**: ~4 hours
+
+#### Sub-tasks:
+
+1. **Create Sync Server Action**
+   - [x] Create validation schema for syncing exercises
+   - [x] Implement `syncWorkoutExercises()` server action
+   - [x] Handle add/update/delete/reorder in single transaction
+   - Files: `src/lib/validations/workout.ts`, `src/server/actions/workouts.ts`
+
+2. **Create Sync Mutation Hook**
+   - [x] Create `useSyncWorkoutExercises()` mutation hook
+   - [x] Cache invalidation and toast notifications
+   - File: `src/hooks/mutations/useWorkoutMutations.ts`
+
+3. **Refactor Workout Builder**
+   - [x] Add edit mode support to builder page
+   - [x] Detect create vs edit mode based on workout ID
+   - [x] Load existing workout data in edit mode
+   - [x] Track `workoutExerciseId` for existing exercises
+   - [x] Update save logic for both modes
+   - File: `src/app/(dashboard)/workouts/builder/page.tsx`
+
+4. **Create Edit Route**
+   - [x] Create dynamic route at `/workouts/builder/[id]`
+   - [x] Reuse builder component with edit workout ID
+   - File: `src/app/(dashboard)/workouts/builder/[id]/page.tsx`
+
+5. **Update Navigation**
+   - [x] Update Edit button in workout detail page
+   - [x] Update Edit button in workout list page
+   - Files: `src/app/(dashboard)/workouts/[id]/page.tsx`, `src/app/(dashboard)/workouts/page.tsx`
+
+**Acceptance Criteria**:
+
+- ✅ Can edit existing workout name and description
+- ✅ Can add new exercises to existing workout
+- ✅ Can remove exercises from existing workout
+- ✅ Can modify exercise parameters (sets/reps/weight/rest/notes)
+- ✅ Can reorder exercises
+- ✅ Can create/modify/remove supersets
+- ✅ Changes sync correctly to database
+- ✅ Navigation works from detail and list pages
+
+**Implementation Notes**:
+
+**Architecture Decision: Reused Builder Page (Option 1)**
+
+- Single source of truth for all workout editing logic
+- Same UI/UX for both create and edit workflows
+- No code duplication - all features work in both modes
+
+**Route Structure:**
+
+- `/workouts/builder` - Create new workout (no ID parameter)
+- `/workouts/builder/[id]` - Edit existing workout (with ID parameter)
+
+**Key Features Implemented:**
+
+1. **Validation Schema:**
+   - Created `syncWorkoutExercisesSchema` with optional `workoutExerciseId`
+   - Distinguishes between new (no ID) and existing (has ID) exercises
+
+2. **Server Action: `syncWorkoutExercises()`:**
+   - Single transaction handles all sync operations
+   - Identifies deleted exercises (in DB but not in new list)
+   - Adds new exercises (no workoutExerciseId)
+   - Updates existing exercises (has workoutExerciseId)
+   - Returns counts: addedCount, updatedCount, deletedCount
+   - Revalidates workout cache paths
+
+3. **Mutation Hook: `useSyncWorkoutExercises()`:**
+   - Automatic cache invalidation for workouts list and detail
+   - Smart toast messages showing what changed
+   - Example: "Workout updated: 2 added, 3 updated, 1 removed"
+
+4. **Builder Page Refactoring:**
+   - Added `editWorkoutId` prop to detect mode
+   - Created `isEditMode` boolean flag
+   - Loading state while fetching existing workout data
+   - Transforms DB workout exercises to local format with `workoutExerciseId`
+   - Conditional save logic:
+     - Create mode: `addMultipleExercises` (existing behavior)
+     - Edit mode: `syncExercises` (new behavior)
+   - Page title shows "Edit: [name]" in edit mode
+   - Save button text: "Update Workout" vs "Save Workout"
+   - Cancel navigation: detail page vs workouts list
+   - Create dialog only shows in create mode
+
+5. **Edit Route:**
+   - Created wrapper page at `/workouts/builder/[id]/page.tsx`
+   - Unwraps params Promise with `React.use()`
+   - Passes workout ID to builder component
+
+6. **State Management:**
+   - Local exercise state tracks both new and existing exercises
+   - `workoutExerciseId` distinguishes DB records from new additions
+   - All existing features work: drag-drop, supersets, config, mobile drawers
+
+7. **Navigation Updates:**
+   - Workout detail page: "Edit" button → `/workouts/builder/${id}`
+   - Workout list page: "Edit" button → `/workouts/builder/${id}`
+
+**Testing:**
+
+- ✅ TypeScript compilation passes
+- ✅ Production build successful
+- ✅ New route `/workouts/builder/[id]` available
+- ✅ All existing create workflow preserved
+- ✅ Edit workflow functional (add/update/delete/reorder)
+
+**Benefits:**
+
+- Single codebase for all workout editing
+- Consistent UX across create and edit
+- All builder features available in edit mode
+- Easy to maintain and extend
+- No code duplication
 
 ---
 

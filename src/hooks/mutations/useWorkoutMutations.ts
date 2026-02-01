@@ -14,6 +14,7 @@ import {
   reorderExercises,
   copyWorkout,
   addMultipleExercisesToWorkout,
+  syncWorkoutExercises,
 } from '@/server/actions/workouts'
 import type {
   CreateWorkoutInput,
@@ -23,6 +24,7 @@ import type {
   ReorderExercisesInput,
   CopyWorkoutInput,
   AddMultipleExercisesToWorkoutInput,
+  SyncWorkoutExercisesInput,
 } from '@/lib/validations/workout'
 
 // ============================================================================
@@ -261,6 +263,43 @@ export function useCopyWorkout() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] })
       toast.success('Workout assigned successfully')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+// ============================================================================
+// Sync Workout Exercises
+// ============================================================================
+
+export function useSyncWorkoutExercises() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (input: SyncWorkoutExercisesInput) => {
+      const result = await syncWorkoutExercises(input)
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to sync workout exercises')
+      }
+      return result.data
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['workouts'] })
+      queryClient.invalidateQueries({ queryKey: ['workout', variables.workoutId] })
+
+      const { addedCount, updatedCount, deletedCount } = data || {
+        addedCount: 0,
+        updatedCount: 0,
+        deletedCount: 0,
+      }
+      const changes = []
+      if (addedCount > 0) changes.push(`${addedCount} added`)
+      if (updatedCount > 0) changes.push(`${updatedCount} updated`)
+      if (deletedCount > 0) changes.push(`${deletedCount} removed`)
+
+      toast.success(`Workout updated: ${changes.join(', ')}`)
     },
     onError: (error: Error) => {
       toast.error(error.message)

@@ -1,15 +1,19 @@
 /**
  * Workout Builder Page
  *
- * Three-column layout for building workouts:
+ * Three-column layout for building/editing workouts:
  * - Left: Exercise library selector
  * - Center: Current workout exercises
  * - Right: Exercise configuration panel
+ *
+ * Supports both create and edit modes:
+ * - Create: /workouts/builder (no ID)
+ * - Edit: /workouts/builder/[id] (with workout ID)
  */
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Save, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -24,14 +28,18 @@ import { SupersetManagerDrawer } from '@/components/features/workouts/SupersetMa
 import {
   useCreateWorkout,
   useAddMultipleExercisesToWorkout,
+  useSyncWorkoutExercises,
 } from '@/hooks/mutations/useWorkoutMutations'
+import { useWorkout } from '@/hooks/queries/useWorkout'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { Exercise } from '@prisma/client'
 import { SupersetManager } from '@/lib/superset-manager'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface WorkoutExercise {
-  instanceId: string
+  workoutExerciseId?: string // Present if editing existing exercise
+  instanceId: string // Local instance ID for React keys
   exerciseId: string
   order: number
   sets: number
@@ -44,28 +52,75 @@ interface WorkoutExercise {
   exercise?: Exercise
 }
 
-export default function WorkoutBuilderPage() {
+interface WorkoutBuilderPageProps {
+  editWorkoutId?: string // If provided, edit mode; otherwise create mode
+}
+
+export default function WorkoutBuilderPage({ editWorkoutId }: WorkoutBuilderPageProps) {
   const router = useRouter()
+  // const searchParams = useSearchParams()
   const queryClient = useQueryClient()
-  const [workoutId, setWorkoutId] = useState<string | null>(null)
+
+  // Determine mode
+  const isEditMode = !!editWorkoutId
+  // const mode = isEditMode ? 'edit' : 'create'
+
+  // Workout state
+  const [workoutId, setWorkoutId] = useState<string | null>(editWorkoutId || null)
   const [workoutName, setWorkoutName] = useState('')
   const [workoutDescription, setWorkoutDescription] = useState('')
   const [exercises, setExercises] = useState<WorkoutExercise[]>([])
   const [selectedExerciseIndex, setSelectedExerciseIndex] = useState<number | null>(null)
-  const [showCreateDialog, setShowCreateDialog] = useState(true)
+  const [showCreateDialog, setShowCreateDialog] = useState(!isEditMode) // Only show in create mode
+  const [isLoadingWorkout, setIsLoadingWorkout] = useState(isEditMode)
 
   // Mobile drawer state
   const [exerciseSelectorOpen, setExerciseSelectorOpen] = useState(false)
   const [exerciseConfigOpen, setExerciseConfigOpen] = useState(false)
   const [supersetManagerOpen, setSupersetManagerOpen] = useState(false)
 
+  // Mutations
   const createWorkout = useCreateWorkout()
+  // const updateWorkout = useUpdateWorkout()
   const addMultipleExercises = useAddMultipleExercisesToWorkout()
+  const syncExercises = useSyncWorkoutExercises()
+
+  // Fetch existing workout if in edit mode
+  const { data: existingWorkout, isLoading: isLoadingExistingWorkout } = useWorkout(
+    isEditMode ? editWorkoutId : undefined
+  )
 
   // Instantiate SupersetManager
   const supersetManager = new SupersetManager<WorkoutExercise>()
 
-  // Handle workout creation
+  // Load existing workout data in edit mode
+  useEffect(() => {
+    if (isEditMode && existingWorkout && !isLoadingExistingWorkout) {
+      setWorkoutId(existingWorkout.id)
+      setWorkoutName(existingWorkout.name)
+      setWorkoutDescription(existingWorkout.description || '')
+
+      // Transform existing exercises to local format
+      const loadedExercises: WorkoutExercise[] = existingWorkout.exercises.map((we) => ({
+        workoutExerciseId: we.id, // Important: track DB ID for updates
+        instanceId: we.id, // Use DB ID as instance ID for React keys
+        exerciseId: we.exerciseId,
+        order: we.order,
+        sets: we.sets,
+        reps: we.reps || undefined,
+        weight: we.weight || undefined,
+        restSeconds: we.restSeconds,
+        notes: we.notes || undefined,
+        groupId: we.groupId || undefined,
+        exercise: we.exercise,
+      }))
+
+      setExercises(loadedExercises)
+      setIsLoadingWorkout(false)
+    }
+  }, [isEditMode, existingWorkout, isLoadingExistingWorkout])
+
+  // Handle workout creation (create mode only)
   const handleCreateWorkout = async (name: string, description?: string) => {
     createWorkout.mutate(
       { name, description },
@@ -234,6 +289,7 @@ export default function WorkoutBuilderPage() {
     setExercises((prev) => supersetManager.supersetWithPrev(prev, selectedExerciseIndex))
     toast.success('Exercises grouped into superset')
   }
+
   // Handle remove superset with from exercise
   const handleRemoveSupersetFromNext = () => {
     if (selectedExerciseIndex === null) return
@@ -260,29 +316,76 @@ export default function WorkoutBuilderPage() {
       return
     }
 
-    // Use batch mutation to add all exercises in one transaction
-    addMultipleExercises.mutate(
-      {
-        workoutId,
-        exercises: exercises.map((ex) => ({
-          exerciseId: ex.exerciseId,
-          order: ex.order,
-          sets: ex.sets,
-          reps: ex.reps,
-          weight: ex.weight,
-          restSeconds: ex.restSeconds,
-          notes: ex.notes,
-          groupId: ex.groupId,
-        })),
-      },
-      {
-        onSuccess: () => {
-          // Navigate to the workouts list page
-          router.push('/workouts')
+    if (isEditMode) {
+      // Edit mode: Sync exercises (add new, update existing, delete removed)
+      syncExercises.mutate(
+        {
+          workoutId,
+          exercises: exercises.map((ex) => ({
+            workoutExerciseId: ex.workoutExerciseId, // Present for existing, undefined for new
+            exerciseId: ex.exerciseId,
+            order: ex.order,
+            sets: ex.sets,
+            reps: ex.reps,
+            weight: ex.weight,
+            restSeconds: ex.restSeconds,
+            notes: ex.notes,
+            groupId: ex.groupId,
+          })),
         },
-      }
+        {
+          onSuccess: () => {
+            // Navigate to workout detail page
+            router.push(`/workouts/${workoutId}`)
+          },
+        }
+      )
+    } else {
+      // Create mode: Use batch mutation to add all exercises
+      addMultipleExercises.mutate(
+        {
+          workoutId,
+          exercises: exercises.map((ex) => ({
+            exerciseId: ex.exerciseId,
+            order: ex.order,
+            sets: ex.sets,
+            reps: ex.reps,
+            weight: ex.weight,
+            restSeconds: ex.restSeconds,
+            notes: ex.notes,
+            groupId: ex.groupId,
+          })),
+        },
+        {
+          onSuccess: () => {
+            // Navigate to the workouts list page
+            router.push('/workouts')
+          },
+        }
+      )
+    }
+  }
+
+  // Loading state for edit mode
+  if (isEditMode && isLoadingWorkout) {
+    return (
+      <div className="flex h-[calc(100vh-8rem)] flex-col">
+        <div className="border-b bg-background px-6 py-4">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
+        <div className="flex flex-1 gap-4 p-6">
+          <Skeleton className="h-full w-80" />
+          <Skeleton className="h-full flex-1" />
+          <Skeleton className="h-full w-80" />
+        </div>
+      </div>
     )
   }
+
+  const isSaving = isEditMode ? syncExercises.isPending : addMultipleExercises.isPending
 
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col">
@@ -290,11 +393,17 @@ export default function WorkoutBuilderPage() {
       <div className="border-b bg-background px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => router.push('/workouts')}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.push(isEditMode ? `/workouts/${workoutId}` : '/workouts')}
+            >
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">{workoutName || 'New Workout'}</h1>
+              <h1 className="text-2xl font-bold">
+                {isEditMode ? `Edit: ${workoutName}` : workoutName || 'New Workout'}
+              </h1>
               {workoutDescription && (
                 <p className="text-sm text-muted-foreground">{workoutDescription}</p>
               )}
@@ -302,10 +411,10 @@ export default function WorkoutBuilderPage() {
           </div>
           <Button
             onClick={handleSaveWorkout}
-            disabled={!workoutId || exercises.length === 0 || addMultipleExercises.isPending}
+            disabled={!workoutId || exercises.length === 0 || isSaving}
           >
             <Save className="mr-2 h-4 w-4" />
-            {addMultipleExercises.isPending ? 'Saving...' : 'Save Workout'}
+            {isSaving ? 'Saving...' : isEditMode ? 'Update Workout' : 'Save Workout'}
           </Button>
         </div>
       </div>
@@ -394,23 +503,24 @@ export default function WorkoutBuilderPage() {
         onSupersetWithPrevious={handleSupersetWithPrevious}
         onRemoveFromNext={handleRemoveSupersetFromNext}
         onRemoveFromPrev={handleRemoveSupersetWithPrevious}
-        // onRemoveFromSuperset={handleRemoveFromSuperset}
       />
 
-      {/* Create Workout Dialog */}
-      <CreateWorkoutDialog
-        open={showCreateDialog}
-        onOpenChange={(nextOpen) => {
-          // If user closes the dialog before creating a workout, leave the builder.
-          if (!nextOpen && !workoutId) {
-            router.push('/workouts')
-            return
-          }
-          setShowCreateDialog(nextOpen)
-        }}
-        onSubmit={handleCreateWorkout}
-        isLoading={createWorkout.isPending}
-      />
+      {/* Create Workout Dialog (create mode only) */}
+      {!isEditMode && (
+        <CreateWorkoutDialog
+          open={showCreateDialog}
+          onOpenChange={(nextOpen) => {
+            // If user closes the dialog before creating a workout, leave the builder.
+            if (!nextOpen && !workoutId) {
+              router.push('/workouts')
+              return
+            }
+            setShowCreateDialog(nextOpen)
+          }}
+          onSubmit={handleCreateWorkout}
+          isLoading={createWorkout.isPending}
+        />
+      )}
     </div>
   )
 }

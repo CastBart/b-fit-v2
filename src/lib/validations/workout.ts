@@ -141,6 +141,27 @@ export const addMultipleExercisesToWorkoutSchema = z.object({
   ),
 })
 
+/**
+ * Schema for syncing workout exercises (used in edit mode)
+ * Handles add, update, delete, and reorder in one transaction
+ */
+export const syncWorkoutExercisesSchema = z.object({
+  workoutId: z.string().cuid('Invalid workout ID format'),
+  exercises: z.array(
+    z.object({
+      workoutExerciseId: z.string().cuid().optional(), // If present, update existing; if not, create new
+      exerciseId: z.string().cuid('Invalid exercise ID format'),
+      order: z.number().int().min(0, 'Order must be 0 or greater'),
+      sets: z.number().int().min(1, 'Sets must be at least 1').max(20, 'Sets cannot exceed 20'),
+      reps: z.number().int().min(1).max(999).optional(),
+      weight: z.number().min(0).max(9999).optional(),
+      restSeconds: z.number().int().min(0).max(600).default(60),
+      notes: z.string().max(500, 'Notes must be 500 characters or less').optional(),
+      groupId: z.string().optional(),
+    })
+  ),
+})
+
 // ============================================================================
 // Type Inference
 // ============================================================================
@@ -155,3 +176,4 @@ export type RemoveExerciseFromWorkoutInput = z.infer<typeof removeExerciseFromWo
 export type ReorderExercisesInput = z.infer<typeof reorderExercisesSchema>
 export type CopyWorkoutInput = z.infer<typeof copyWorkoutSchema>
 export type AddMultipleExercisesToWorkoutInput = z.infer<typeof addMultipleExercisesToWorkoutSchema>
+export type SyncWorkoutExercisesInput = z.infer<typeof syncWorkoutExercisesSchema>

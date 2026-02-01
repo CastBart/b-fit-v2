@@ -177,7 +177,7 @@ export default function WorkoutsPage() {
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation()
-                      router.push(`/workouts/${workout.id}/edit`)
+                      router.push(`/workouts/builder/${workout.id}`)
                     }}
                   >
                     Edit
