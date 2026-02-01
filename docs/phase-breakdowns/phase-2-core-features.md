@@ -537,13 +537,16 @@
 
 ---
 
-### Task 4.4: Drag-and-Drop Exercise Selector
+### Task 4.4: Drag-and-Drop Exercise Selector (DEFERRED)
 
-**Priority**: High
-**Estimated Effort**: 6-7 hours
+**Priority**: Low (deferred)
+**Estimated Effort**: N/A
 **Dependencies**: Task 4.3
+**Status**: ❌ DEFERRED
 
-#### Sub-tasks:
+**Reason for Deferral**: Not needed given current UX patterns. Desktop has click-to-add functionality, mobile has multi-select drawer. Drag-from-library-to-workout doesn't add significant value.
+
+#### Sub-tasks (Deferred):
 
 1. **Install DnD Kit**
    - [ ] Install: `npm install @dnd-kit/core @dnd-kit/sortable`
@@ -552,44 +555,76 @@
    - [ ] Create draggable exercise items
    - [ ] Create drop zone for workout
    - [ ] Handle drag events
-   - File: `src/components/features/workouts/WorkoutBuilder.tsx`
 
 3. **Update State on Drop**
    - [ ] Call `addExerciseToWorkout()` server action
    - [ ] Optimistic update
 
-**Acceptance Criteria**:
-
-- ✅ Can drag exercises from library to workout
-- ✅ Visual feedback during drag
-- ✅ Exercises added to workout
+**Note**: Task 4.5 includes drag-and-drop **reordering** within the workout list, which is a higher priority feature.
 
 ---
 
-### Task 4.5: Exercise Ordering & Supersets
+### Task 4.5: Exercise Ordering & Supersets ✅ COMPLETED
 
 **Priority**: High
 **Estimated Effort**: 5-6 hours
-**Dependencies**: Task 4.4
+**Dependencies**: Task 4.3 (Task 4.4 deferred)
+**Completion Date**: 2026-01-30
+**Actual Effort**: ~3 hours
 
 #### Sub-tasks:
 
 1. **Implement Sortable List**
-   - [ ] Make workout exercises sortable
-   - [ ] Update order on drag end
-   - [ ] Call `reorderExercises()` server action
+   - [x] Installed DnD Kit (@dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities)
+   - [x] Made workout exercises sortable with DnD integration
+   - [x] Update order on drag end
+   - [x] Connected to `handleExerciseReorder()` function (updates state array)
+   - File: `src/components/features/workouts/WorkoutExercisesList.tsx`
 
 2. **Add Superset Grouping**
-   - [ ] Group button to create superset
-   - [ ] Visual indication of grouped exercises
-   - [ ] Assign same `groupId` to grouped exercises
-   - File: `src/components/features/workouts/SupersetGroup.tsx`
+   - [x] Created SupersetManagerDrawer component with context-aware buttons
+   - [x] Superset with Next/Previous buttons
+   - [x] Remove from Superset button
+   - [x] Visual indication of grouped exercises (blue vertical line connector)
+   - [x] Assign same `groupId` to grouped exercises (crypto.randomUUID())
+   - Files: `src/components/features/workouts/SupersetManagerDrawer.tsx`, `src/app/(dashboard)/workouts/builder/page.tsx`
 
 **Acceptance Criteria**:
 
-- ✅ Exercises can be reordered
-- ✅ Supersets can be created
-- ✅ Supersets visually distinct
+- ✅ Exercises can be reordered via drag-and-drop
+- ✅ Supersets can be created with adjacent exercises
+- ✅ Supersets visually distinct with blue vertical connector
+- ✅ Context-aware superset manager UI
+- ✅ Automatic group dissolution when size < 2
+- ✅ Toast notifications for all actions
+
+**Implementation Notes**:
+
+- DnD Kit provides smooth drag-and-drop with keyboard accessibility
+- Superset logic uses simple groupId-based approach with UUID generation
+- Blue vertical line visually connects exercises in same superset (rounded ends for first/last)
+- SupersetManagerDrawer shows context-appropriate buttons based on exercise position and current grouping
+- Integrated into ExerciseConfigPanel with "Superset" button
+- Mobile and desktop support (touch and mouse)
+- TypeScript compilation and production build: ✅ PASSING
+
+**Files Created**:
+
+- `src/components/features/workouts/SupersetManagerDrawer.tsx` (~140 lines)
+
+**Files Modified**:
+
+- `src/components/features/workouts/WorkoutExercisesList.tsx` (+180 lines)
+- `src/components/features/workouts/ExerciseConfigPanel.tsx` (+20 lines)
+- `src/components/features/workouts/ExerciseConfigDrawer.tsx` (+5 lines)
+- `src/app/(dashboard)/workouts/builder/page.tsx` (+90 lines)
+
+**Known Limitations (To Be Addressed)**:
+
+- Current superset logic is procedural and scattered
+- No validation of superset integrity before save
+- Not reusable across workout editing and sessions
+- **Next**: Implement reusable SupersetManager class (see planning notes)
 
 ---
 

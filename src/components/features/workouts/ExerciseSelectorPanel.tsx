@@ -188,6 +188,7 @@ export function ExerciseSelectorPanel({
                   <div className="flex items-start gap-3">
                     {mode === 'multi' && (
                       <Checkbox
+                        asChild
                         checked={isSelected}
                         onCheckedChange={() => handleExerciseClick(exercise)}
                         className="mt-0.5"

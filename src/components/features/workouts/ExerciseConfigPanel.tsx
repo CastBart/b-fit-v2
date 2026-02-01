@@ -8,10 +8,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Dumbbell } from 'lucide-react'
+import { Dumbbell, Link2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { Exercise } from '@prisma/client'
 
@@ -30,9 +31,14 @@ interface WorkoutExercise {
 interface ExerciseConfigPanelProps {
   exercise: WorkoutExercise | null
   onUpdate: (updates: Partial<WorkoutExercise>) => void
+  onOpenSupersetManager?: () => void
 }
 
-export function ExerciseConfigPanel({ exercise, onUpdate }: ExerciseConfigPanelProps) {
+export function ExerciseConfigPanel({
+  exercise,
+  onUpdate,
+  onOpenSupersetManager,
+}: ExerciseConfigPanelProps) {
   // Store as strings to allow blank state while typing
   const [localSets, setLocalSets] = useState(String(exercise?.sets || 3))
   const [localReps, setLocalReps] = useState(String(exercise?.reps || 10))
@@ -93,6 +99,26 @@ export function ExerciseConfigPanel({ exercise, onUpdate }: ExerciseConfigPanelP
       {/* Configuration Form */}
       <ScrollArea className="flex-1">
         <div className="space-y-6 p-4">
+          {/* Superset Manager Button */}
+          {onOpenSupersetManager && (
+            <div className="space-y-2">
+              <Label>Superset</Label>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={onOpenSupersetManager}
+              >
+                <Link2 className="mr-2 h-4 w-4" />
+                {exercise.groupId ? 'Manage Superset' : 'Create Superset'}
+              </Button>
+              {exercise.groupId && (
+                <p className="text-xs text-blue-600 dark:text-blue-400">
+                  This exercise is in a superset
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Sets */}
           <div className="space-y-2">
             <Label htmlFor="sets">Sets</Label>

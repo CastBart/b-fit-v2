@@ -100,3 +100,56 @@
       sans-serif;
   }
 }
+
+@media (min-width: 1024px) {
+  /* Desktop */
+  .custom-drawer {
+    height: 65vh;
+    width: 600px;
+  }
+  .custom-dialog {
+    width: 600px;
+    height: auto;
+  }
+  .add-exercise-drawer {
+    height: 100dvh;
+    width: 600px;
+  }
+}
+
+@media (max-width: 640px) and (orientation: portrait) {
+  /* Mobile Portrait */
+  .custom-drawer {
+    height: 65vh;
+    width: 100vw;
+  }
+  .custom-dialog {
+    width: 100vw;
+    max-height: 90vh;
+  }
+  .add-exercise-drawer {
+    height: 100dvh;
+    width: 100dvw;
+  }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+  /* Mobile Landscape */
+  .custom-drawer {
+    height: 100vh;
+    width: 100vw;
+  }
+  .custom-dialog {
+    width: 100vw;
+    height: 100vh;
+  }
+  .add-exercise-drawer {
+    height: 100dvh;
+    width: 100dvw;
+  }
+
+  .custom-dialog .grid-container {
+    max-height: 70vh; /* Prevent excessive height */
+    overflow-y: auto; /* Ensure scrolling */
+  }
+}

@@ -20,6 +20,7 @@ import { ExerciseConfigPanel } from '@/components/features/workouts/ExerciseConf
 import { ExerciseSelectorDrawer } from '@/components/features/workouts/ExerciseSelectorDrawer'
 import { ExerciseConfigDrawer } from '@/components/features/workouts/ExerciseConfigDrawer'
 import { CreateWorkoutDialog } from '@/components/features/workouts/CreateWorkoutDialog'
+import { SupersetManagerDrawer } from '@/components/features/workouts/SupersetManagerDrawer'
 import {
   useCreateWorkout,
   useAddMultipleExercisesToWorkout,
@@ -27,8 +28,10 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { Exercise } from '@prisma/client'
+import { SupersetManager } from '@/lib/superset-manager'
 
 interface WorkoutExercise {
+  instanceId: string
   exerciseId: string
   order: number
   sets: number
@@ -54,9 +57,13 @@ export default function WorkoutBuilderPage() {
   // Mobile drawer state
   const [exerciseSelectorOpen, setExerciseSelectorOpen] = useState(false)
   const [exerciseConfigOpen, setExerciseConfigOpen] = useState(false)
+  const [supersetManagerOpen, setSupersetManagerOpen] = useState(false)
 
   const createWorkout = useCreateWorkout()
   const addMultipleExercises = useAddMultipleExercisesToWorkout()
+
+  // Instantiate SupersetManager
+  const supersetManager = new SupersetManager<WorkoutExercise>()
 
   // Handle workout creation
   const handleCreateWorkout = async (name: string, description?: string) => {
@@ -71,8 +78,7 @@ export default function WorkoutBuilderPage() {
           setShowCreateDialog(false)
           toast.success('Workout created! Now add exercises.')
         },
-        onError: (err) => {
-          console.log('Failed to create workout. Please try again.', err)
+        onError: (_) => {
           toast.error('Failed to create workout. Please try again.')
         },
       }
@@ -88,6 +94,7 @@ export default function WorkoutBuilderPage() {
 
     // Add exercise to the list with default parameters
     const newExercise: WorkoutExercise = {
+      instanceId: crypto.randomUUID(),
       exerciseId: exercise.id,
       order: exercises.length,
       sets: 3,
@@ -133,6 +140,7 @@ export default function WorkoutBuilderPage() {
 
     // Create WorkoutExercise objects with default values
     const newExercises: WorkoutExercise[] = selectedExercises.map((exercise, idx) => ({
+      instanceId: crypto.randomUUID(),
       exerciseId: exercise.id,
       order: exercises.length + idx,
       sets: 3,
@@ -200,13 +208,44 @@ export default function WorkoutBuilderPage() {
   // Handle exercise reordering
   const handleExerciseReorder = (fromIndex: number, toIndex: number) => {
     setExercises((prev) => {
+      // First reorder the array
       const updated = [...prev]
       const [removed] = updated.splice(fromIndex, 1)
       if (!removed) return prev
       updated.splice(toIndex, 0, removed)
-      // Update order values
-      return updated.map((ex, i) => ({ ...ex, order: i }))
+
+      // Reassign superset groups based on new positions
+      return supersetManager
+        .reassignAfterReorder(updated, fromIndex, toIndex)
+        .map((ex, i) => ({ ...ex, order: i }))
     })
+  }
+
+  // Handle superset with next exercise
+  const handleSupersetWithNext = () => {
+    if (selectedExerciseIndex === null) return
+    setExercises((prev) => supersetManager.supersetWithNext(prev, selectedExerciseIndex))
+    toast.success('Exercises grouped into superset')
+  }
+
+  // Handle superset with previous exercise
+  const handleSupersetWithPrevious = () => {
+    if (selectedExerciseIndex === null) return
+    setExercises((prev) => supersetManager.supersetWithPrev(prev, selectedExerciseIndex))
+    toast.success('Exercises grouped into superset')
+  }
+  // Handle remove superset with from exercise
+  const handleRemoveSupersetFromNext = () => {
+    if (selectedExerciseIndex === null) return
+    setExercises((prev) => supersetManager.removeSupersetWithNext(prev, selectedExerciseIndex))
+    toast.success('Exercise removed from superset')
+  }
+
+  // Handle remove superset from previous exercise
+  const handleRemoveSupersetWithPrevious = () => {
+    if (selectedExerciseIndex === null) return
+    setExercises((prev) => supersetManager.removeSupersetWithPrev(prev, selectedExerciseIndex))
+    toast.success('Exercise removed from superset')
   }
 
   // Handle save workout
@@ -303,6 +342,7 @@ export default function WorkoutBuilderPage() {
                 handleExerciseUpdate(selectedExerciseIndex, updates)
               }
             }}
+            onOpenSupersetManager={() => setSupersetManagerOpen(true)}
           />
         </div>
       </div>
@@ -335,8 +375,27 @@ export default function WorkoutBuilderPage() {
               handleExerciseUpdate(selectedExerciseIndex, updates)
             }
           }}
+          onOpenSupersetManager={() => {
+            setExerciseConfigOpen(false)
+            setSupersetManagerOpen(true)
+          }}
         />
       </div>
+
+      {/* Superset Manager Drawer */}
+      <SupersetManagerDrawer
+        open={supersetManagerOpen}
+        onOpenChange={setSupersetManagerOpen}
+        exercise={selectedExercise}
+        exerciseIndex={selectedExerciseIndex ?? 0}
+        totalExercises={exercises.length}
+        exercises={exercises}
+        onSupersetWithNext={handleSupersetWithNext}
+        onSupersetWithPrevious={handleSupersetWithPrevious}
+        onRemoveFromNext={handleRemoveSupersetFromNext}
+        onRemoveFromPrev={handleRemoveSupersetWithPrevious}
+        // onRemoveFromSuperset={handleRemoveFromSuperset}
+      />
 
       {/* Create Workout Dialog */}
       <CreateWorkoutDialog

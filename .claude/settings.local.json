@@ -46,7 +46,8 @@
       "Bash(timeout 15 tail:*)",
       "Bash(taskkill:*)",
       "Bash(node:*)",
-      "Bash(npx prettier:*)"
+      "Bash(npx prettier:*)",
+      "Bash(npm test:*)"
     ]
   },
   "enabledPlugins": {

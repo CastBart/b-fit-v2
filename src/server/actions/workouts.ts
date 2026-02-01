@@ -449,6 +449,7 @@ export async function addExerciseToWorkout(
   }
 }
 
+//TODO: Re-write fuction to work with updating exercises multiple times, currently it will create exercises on database with each save.
 /**
  * Add multiple exercises to a workout in one transaction (batch operation)
  */
@@ -479,11 +480,12 @@ export async function addMultipleExercisesToWorkout(
 
     // Verify all exercises exist
     const exerciseIds = validatedInput.exercises.map((e) => e.exerciseId)
+    const uniqueExerciseIds = [...new Set(exerciseIds)]
     const exercises = await prisma.exercise.findMany({
-      where: { id: { in: exerciseIds } },
+      where: { id: { in: uniqueExerciseIds } },
     })
 
-    if (exercises.length !== exerciseIds.length) {
+    if (exercises.length !== uniqueExerciseIds.length) {
       return { success: false, error: 'One or more exercises not found' }
     }
 

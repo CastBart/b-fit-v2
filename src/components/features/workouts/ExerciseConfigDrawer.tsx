@@ -37,6 +37,7 @@ interface ExerciseConfigDrawerProps {
   onOpenChange: (open: boolean) => void
   exercise: WorkoutExercise | null
   onUpdate: (updates: Partial<WorkoutExercise>) => void
+  onOpenSupersetManager?: () => void
 }
 
 export function ExerciseConfigDrawer({
@@ -44,6 +45,7 @@ export function ExerciseConfigDrawer({
   onOpenChange,
   exercise,
   onUpdate,
+  onOpenSupersetManager,
 }: ExerciseConfigDrawerProps) {
   // Track draft changes (buffered updates)
   const [draftChanges, setDraftChanges] = useState<Partial<WorkoutExercise>>({})
@@ -85,7 +87,11 @@ export function ExerciseConfigDrawer({
         </DrawerHeader>
 
         <ScrollArea className="flex-1 overflow-auto">
-          <ExerciseConfigPanel exercise={draftExercise} onUpdate={handleDraftUpdate} />
+          <ExerciseConfigPanel
+            exercise={draftExercise}
+            onUpdate={handleDraftUpdate}
+            onOpenSupersetManager={onOpenSupersetManager}
+          />
         </ScrollArea>
 
         <DrawerFooter className="flex-row gap-2">
