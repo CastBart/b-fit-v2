@@ -26,6 +26,8 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useWorkout } from '@/hooks/queries/useWorkout'
 import { useDeleteWorkout } from '@/hooks/mutations/useWorkoutMutations'
+import { useAppDispatch } from '@/store/hooks'
+import { startWorkoutSession } from '@/lib/utils/session-navigation'
 import { toast } from 'sonner'
 import { SupersetManager } from '@/lib/superset-manager'
 import type { WorkoutExerciseWithExercise } from '@/types/workout'
@@ -39,6 +41,7 @@ interface WorkoutDetailPageProps {
 
 export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const router = useRouter()
+  const dispatch = useAppDispatch()
   const { id } = use(params)
   const { data: workout, isLoading, error } = useWorkout(id)
   const deleteWorkout = useDeleteWorkout()
@@ -59,8 +62,8 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
 
   // Handle start workout
   const handleStartWorkout = () => {
-    // TODO: Implement session start when session system is ready
-    toast.info('Session tracking coming soon!')
+    if (!workout) return
+    startWorkoutSession(workout, dispatch, router)
   }
 
   // Handle edit

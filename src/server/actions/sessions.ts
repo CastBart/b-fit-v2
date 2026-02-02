@@ -1,0 +1,325 @@
+'use server'
+
+import { auth } from '@/lib/auth/auth.config'
+import { prisma } from '@/lib/db/prisma'
+import {
+  saveSessionSchema,
+  getSessionByIdSchema,
+  sessionFiltersSchema,
+  type SaveSessionInput,
+  type GetSessionByIdInput,
+  type SessionFiltersInput,
+} from '@/lib/validations/session'
+import {
+  SessionStatus,
+  type TrainingSessionWithDetails,
+  type SaveSessionPayload,
+} from '@/types/session'
+import { revalidatePath } from 'next/cache'
+
+// ============================================================================
+// RESPONSE TYPES
+// ============================================================================
+
+type ActionResponse<T = void> = {
+  success: boolean
+  data?: T
+  error?: string
+}
+
+// ============================================================================
+// SAVE COMPLETED SESSION (The Single Critical Action)
+// ============================================================================
+
+/**
+ * Save a completed or abandoned session to the database.
+ * This is the ONLY write operation during a session lifecycle.
+ * Creates TrainingSession + SessionExercises + SessionSets in one transaction.
+ *
+ * @param payload - Complete session data from Redux
+ * @returns ActionResponse with session ID
+ */
+export async function saveCompletedSession(
+  payload: SaveSessionPayload
+): Promise<ActionResponse<string>> {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    const validated = saveSessionSchema.parse(payload)
+
+    // Calculate duration in minutes
+    const durationMs = validated.completeTime - validated.startTime
+    const durationMinutes = Math.floor(durationMs / 60000)
+
+    // Create session with all exercises and sets in one transaction
+    const trainingSession = await prisma.$transaction(async (tx) => {
+      // 1. Create TrainingSession
+      const newSession = await tx.trainingSession.create({
+        data: {
+          id: validated.sessionId,
+          userId: session.user.id,
+          workoutId: validated.workoutId,
+          name: validated.workoutName,
+          notes: validated.sessionNotes,
+          status: validated.status,
+          startedAt: new Date(validated.startTime),
+          completedAt: new Date(validated.completeTime),
+        },
+      })
+
+      // 2. Create SessionExercises and SessionSets
+      for (const exercise of validated.exercises) {
+        const sessionExercise = await tx.sessionExercise.create({
+          data: {
+            sessionId: newSession.id,
+            exerciseId: exercise.exerciseId,
+            instanceId: exercise.instanceId,
+            order: exercise.order,
+            groupId: exercise.groupId,
+            targetSets: exercise.targetSets,
+            targetReps: exercise.targetReps,
+            targetWeight: exercise.targetWeight,
+            targetRestSeconds: exercise.targetRestSeconds,
+            notes: exercise.notes,
+          },
+        })
+
+        // 3. Create SessionSets for this exercise
+        for (const set of exercise.sets) {
+          if (set.isCompleted) {
+            await tx.sessionSet.create({
+              data: {
+                sessionId: newSession.id,
+                sessionExerciseId: sessionExercise.id,
+                setNumber: set.setNumber,
+                weight: set.weight,
+                reps: set.reps,
+                duration: set.duration,
+                distance: set.distance,
+                counterWeight: set.counterWeight,
+                isCompleted: set.isCompleted,
+                completedAt: set.completedAt ? new Date(set.completedAt) : null,
+              },
+            })
+          }
+        }
+      }
+
+      return newSession
+    })
+
+    // Revalidate sessions list
+    revalidatePath('/sessions')
+    revalidatePath(`/sessions/${trainingSession.id}`)
+
+    return {
+      success: true,
+      data: trainingSession.id,
+    }
+  } catch (error) {
+    console.error('Failed to save completed session:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to save session',
+    }
+  }
+}
+
+/**
+ * Complete a session (wrapper that calls saveCompletedSession with COMPLETED status)
+ *
+ * @param payload - Complete session data
+ * @returns ActionResponse
+ */
+export async function completeSession(payload: SaveSessionPayload): Promise<ActionResponse> {
+  const result = await saveCompletedSession({
+    ...payload,
+    status: SessionStatus.COMPLETED,
+  })
+
+  return {
+    success: result.success,
+    error: result.error,
+  }
+}
+
+/**
+ * Abandon a session (wrapper that calls saveCompletedSession with ABANDONED status)
+ * Saves partial progress for later review.
+ *
+ * @param payload - Complete session data
+ * @returns ActionResponse
+ */
+export async function abandonSession(payload: SaveSessionPayload): Promise<ActionResponse> {
+  const result = await saveCompletedSession({
+    ...payload,
+    status: SessionStatus.ABANDONED,
+  })
+
+  return {
+    success: result.success,
+    error: result.error,
+  }
+}
+
+// ============================================================================
+// GET SESSION BY ID (For viewing completed sessions)
+// ============================================================================
+
+/**
+ * Get a single session by ID with all exercises and sets
+ *
+ * @param input - Session ID
+ * @returns ActionResponse with session data
+ */
+export async function getSessionById(
+  input: GetSessionByIdInput
+): Promise<ActionResponse<TrainingSessionWithDetails>> {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    const validated = getSessionByIdSchema.parse(input)
+
+    const trainingSession = await prisma.trainingSession.findUnique({
+      where: {
+        id: validated.sessionId,
+        userId: session.user.id,
+      },
+      include: {
+        exercises: {
+          include: {
+            exercise: true,
+            sets: true,
+          },
+          orderBy: {
+            order: 'asc',
+          },
+        },
+        sets: true,
+      },
+    })
+
+    if (!trainingSession) {
+      return { success: false, error: 'Session not found' }
+    }
+
+    return {
+      success: true,
+      data: trainingSession,
+    }
+  } catch (error) {
+    console.error('Failed to get session:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get session',
+    }
+  }
+}
+
+// ============================================================================
+// GET USER SESSIONS (For session history list)
+// ============================================================================
+
+/**
+ * Get all sessions for the current user with optional filters
+ *
+ * @param filters - Optional filters for status, workout, date range, etc.
+ * @returns ActionResponse with sessions array and pagination
+ */
+export async function getUserSessions(filters?: SessionFiltersInput): Promise<
+  ActionResponse<{
+    sessions: TrainingSessionWithDetails[]
+    total: number
+    page: number
+    totalPages: number
+  }>
+> {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    const validated = filters ? sessionFiltersSchema.parse(filters) : {}
+    const { status, workoutId, startDate, endDate, search, page = 1, limit = 20 } = validated
+
+    // Build where clause
+    const where: any = {
+      userId: session.user.id,
+    }
+
+    if (status) {
+      where.status = status
+    }
+
+    if (workoutId) {
+      where.workoutId = workoutId
+    }
+
+    if (startDate || endDate) {
+      where.startedAt = {}
+      if (startDate) {
+        where.startedAt.gte = startDate
+      }
+      if (endDate) {
+        where.startedAt.lte = endDate
+      }
+    }
+
+    if (search) {
+      where.name = {
+        contains: search,
+        mode: 'insensitive',
+      }
+    }
+
+    // Get total count
+    const total = await prisma.trainingSession.count({ where })
+
+    // Get paginated sessions
+    const sessions = await prisma.trainingSession.findMany({
+      where,
+      include: {
+        exercises: {
+          include: {
+            exercise: true,
+            sets: true,
+          },
+          orderBy: {
+            order: 'asc',
+          },
+        },
+        sets: true,
+      },
+      orderBy: {
+        startedAt: 'desc',
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    })
+
+    const totalPages = Math.ceil(total / limit)
+
+    return {
+      success: true,
+      data: {
+        sessions,
+        total,
+        page,
+        totalPages,
+      },
+    }
+  } catch (error) {
+    console.error('Failed to get user sessions:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get sessions',
+    }
+  }
+}

@@ -48,7 +48,8 @@
       "Bash(node:*)",
       "Bash(npx prettier:*)",
       "Bash(npm test:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(printf:*)"
     ]
   },
   "enabledPlugins": {

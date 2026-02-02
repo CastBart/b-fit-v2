@@ -7,7 +7,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
@@ -18,31 +18,49 @@ import {
 } from '@/components/ui/drawer'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ExerciseSelectorPanel } from './ExerciseSelectorPanel'
+import type { Exercise } from '@prisma/client'
 
 interface ExerciseSelectorDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onExercisesAdd: (exerciseIds: string[]) => void
+  onExerciseSelect: (exercises: Exercise[]) => void
+  multiSelect?: boolean
   disabled?: boolean
 }
 
 export function ExerciseSelectorDrawer({
   open,
   onOpenChange,
-  onExercisesAdd,
+  onExerciseSelect,
+  multiSelect = false,
   disabled,
 }: ExerciseSelectorDrawerProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [selectedExercises, setSelectedExercises] = useState<Map<string, Exercise>>(new Map())
+
+  const handleSelectionChange = useCallback((newSelectedIds: Set<string>, exerciseMap?: Map<string, Exercise>) => {
+    setSelectedIds(newSelectedIds)
+    if (exerciseMap) {
+      setSelectedExercises(exerciseMap)
+    }
+  }, [])
+
+  const handleExerciseClick = useCallback((exercise: Exercise) => {
+    // Single select mode - immediately call handler
+    onExerciseSelect([exercise])
+    onOpenChange(false)
+  }, [onExerciseSelect, onOpenChange])
 
   const handleAddExercises = () => {
     if (selectedIds.size === 0) return
 
-    // Convert Set to array and call the handler
-    onExercisesAdd(Array.from(selectedIds))
+    // Convert Map values to array and call the handler
+    onExerciseSelect(Array.from(selectedExercises.values()))
 
     // Close drawer and clear selections
     onOpenChange(false)
     setSelectedIds(new Set())
+    setSelectedExercises(new Map())
   }
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -50,6 +68,7 @@ export function ExerciseSelectorDrawer({
     // Clear selections when drawer closes
     if (!newOpen) {
       setSelectedIds(new Set())
+      setSelectedExercises(new Map())
     }
   }
 
@@ -62,23 +81,25 @@ export function ExerciseSelectorDrawer({
 
         <ScrollArea className="flex-1 overflow-auto">
           <ExerciseSelectorPanel
-            mode="multi"
+            mode={multiSelect ? 'multi' : 'single'}
             selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
-            onExerciseSelect={() => {}} // Not used in multi mode
+            onSelectionChange={handleSelectionChange}
+            onExerciseSelect={handleExerciseClick}
             disabled={disabled}
           />
         </ScrollArea>
 
-        <DrawerFooter>
-          <Button
-            onClick={handleAddExercises}
-            disabled={disabled || selectedIds.size === 0}
-            className="w-full"
-          >
-            Add {selectedIds.size} {selectedIds.size === 1 ? 'Exercise' : 'Exercises'}
-          </Button>
-        </DrawerFooter>
+        {multiSelect && (
+          <DrawerFooter>
+            <Button
+              onClick={handleAddExercises}
+              disabled={disabled || selectedIds.size === 0}
+              className="w-full"
+            >
+              Add {selectedIds.size} {selectedIds.size === 1 ? 'Exercise' : 'Exercises'}
+            </Button>
+          </DrawerFooter>
+        )}
       </DrawerContent>
     </Drawer>
   )

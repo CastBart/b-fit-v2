@@ -182,7 +182,8 @@ model Exercise {
   updatedAt DateTime @updatedAt
 
   // Relations
-  workoutExercises WorkoutExercise[]
+  workoutExercises  WorkoutExercise[]
+  sessionExercises  SessionExercise[]
 
   @@index([createdById])
   @@index([isDefault])
@@ -249,4 +250,120 @@ model WorkoutExercise {
   @@index([exerciseId])
   @@index([groupId])
   @@unique([workoutId, order])  // Ensure unique ordering within workout
+}
+
+// ============================================================================
+// TRAINING SESSIONS
+// ============================================================================
+
+enum SessionStatus {
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+}
+
+model TrainingSession {
+  id     String        @id @default(cuid())
+  status SessionStatus @default(IN_PROGRESS)
+
+  // Optional workout reference (null for free sessions)
+  workoutId String?
+  // Note: No direct relation to Workout since workoutId might reference a deleted workout
+  // We keep workoutId for historical reference only
+
+  // Ownership
+  userId String
+  // Note: No direct relation to User to avoid complex cascade rules
+  // Session cleanup should be handled by application logic
+
+  // Session metadata
+  name        String? // User-defined session name (especially for free sessions)
+  notes       String?
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  exercises SessionExercise[]
+  sets      SessionSet[]
+
+  @@index([userId])
+  @@index([workoutId])
+  @@index([status])
+  @@index([startedAt])
+}
+
+model SessionExercise {
+  id String @id @default(cuid())
+
+  // Relations
+  sessionId  String
+  session    TrainingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise        @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  // Instance tracking (for multiple instances of same exercise in session)
+  instanceId String // UUID to uniquely identify this exercise instance
+
+  // Ordering & Grouping (copied from WorkoutExercise or set manually for free sessions)
+  order   Int     // 0-indexed position in session
+  groupId String? // For supersets
+
+  // Target parameters (copied from WorkoutExercise or set manually)
+  targetSets        Int
+  targetReps        Int?
+  targetWeight      Float?
+  targetRestSeconds Int     @default(60)
+  notes             String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  sets SessionSet[]
+
+  @@index([sessionId])
+  @@index([exerciseId])
+  @@index([instanceId])
+  @@index([groupId])
+  @@unique([sessionId, order]) // Ensure unique ordering within session
+}
+
+model SessionSet {
+  id String @id @default(cuid())
+
+  // Relations
+  sessionId         String
+  session           TrainingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionExerciseId String
+  sessionExercise   SessionExercise @relation(fields: [sessionExerciseId], references: [id], onDelete: Cascade)
+
+  // Set number (1-indexed)
+  setNumber Int
+
+  // Metrics (based on exercise's MetricType)
+  // Only relevant fields will be populated based on metricType
+  weight        Float?
+  reps          Int?
+  duration      Int? // seconds
+  distance      Int? // meters
+  counterWeight Float? // for assisted exercises (e.g., pull-up machine)
+
+  // Set metadata
+  isCompleted Boolean  @default(false)
+  completedAt DateTime?
+  notes       String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sessionId])
+  @@index([sessionExerciseId])
+  @@index([isCompleted])
+  @@unique([sessionExerciseId, setNumber]) // Ensure unique set numbers per exercise
 }

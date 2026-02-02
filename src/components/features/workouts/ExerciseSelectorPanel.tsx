@@ -35,7 +35,7 @@ interface ExerciseSelectorPanelProps {
   // Optional multi-select props
   mode?: 'single' | 'multi'
   selectedIds?: Set<string>
-  onSelectionChange?: (ids: Set<string>) => void
+  onSelectionChange?: (ids: Set<string>, exercises?: Map<string, Exercise>) => void
 }
 
 export function ExerciseSelectorPanel({
@@ -49,6 +49,12 @@ export function ExerciseSelectorPanel({
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [muscleGroup, setMuscleGroup] = useState<MuscleGroup | undefined>(undefined)
   const [equipment, setEquipment] = useState<EquipmentType | undefined>(undefined)
+  const [exerciseMap, setExerciseMap] = useState<Map<string, Exercise>>(new Map())
+
+  // Clear exercise map when filters change (exercises list changes)
+  useEffect(() => {
+    setExerciseMap(new Map())
+  }, [debouncedSearch, muscleGroup, equipment])
 
   // Debounce search
   useEffect(() => {
@@ -76,12 +82,18 @@ export function ExerciseSelectorPanel({
     if (mode === 'multi' && onSelectionChange) {
       // Multi-select mode: toggle selection
       const newSelectedIds = new Set(selectedIds)
+      const newExerciseMap = new Map(exerciseMap)
+
       if (newSelectedIds.has(exercise.id)) {
         newSelectedIds.delete(exercise.id)
+        newExerciseMap.delete(exercise.id)
       } else {
         newSelectedIds.add(exercise.id)
+        newExerciseMap.set(exercise.id, exercise)
       }
-      onSelectionChange(newSelectedIds)
+
+      setExerciseMap(newExerciseMap)
+      onSelectionChange(newSelectedIds, newExerciseMap)
     } else {
       // Single-select mode: immediately call onExerciseSelect
       onExerciseSelect(exercise)
@@ -188,10 +200,8 @@ export function ExerciseSelectorPanel({
                   <div className="flex items-start gap-3">
                     {mode === 'multi' && (
                       <Checkbox
-                        asChild
                         checked={isSelected}
-                        onCheckedChange={() => handleExerciseClick(exercise)}
-                        className="mt-0.5"
+                        className="mt-0.5 pointer-events-none"
                         aria-label={`Select ${exercise.name}`}
                       />
                     )}
