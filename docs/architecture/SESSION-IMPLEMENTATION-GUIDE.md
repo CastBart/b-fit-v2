@@ -16,12 +16,14 @@ This guide consolidates the complete session implementation strategy, combining 
 ### ✅ Phase 1: Database Schema (Task 6.1) - COMPLETE
 
 **What we built**:
+
 - TrainingSession, SessionExercise, SessionSet models
 - Support for workout-based AND free sessions
 - Optional `workoutId` field enables both workflows
 - Comprehensive TypeScript types and validation schemas
 
 **Key Features**:
+
 - `instanceId` tracks multiple exercise instances
 - All metric types supported (weight/reps, duration, distance, etc.)
 - Proper indexing and constraints
@@ -34,6 +36,7 @@ This guide consolidates the complete session implementation strategy, combining 
 **What to build**:
 
 #### Core Actions (Required)
+
 ```typescript
 // 1. Start session from workout
 startSessionFromWorkout(workoutId: string): Promise<SessionResponse>
@@ -67,40 +70,44 @@ abandonSession(sessionId: string): Promise<SessionResponse>
 ```
 
 #### Sync Action (Critical for Persistence)
+
 ```typescript
 // Batch sync from Redux/LocalStorage to Database
 syncSessionState(payload: SyncPayload): Promise<SyncResponse>
 ```
 
 **Sync Payload Structure**:
+
 ```typescript
 type SyncPayload = {
-  sessionId: string;
-  timestamp: number; // Client timestamp
+  sessionId: string
+  timestamp: number // Client timestamp
   changes: {
     // Only include changed fields
     completedSets?: Array<{
-      sessionExerciseId: string;
-      setNumber: number;
-      metrics: SetMetrics;
-    }>;
+      sessionExerciseId: string
+      setNumber: number
+      metrics: SetMetrics
+    }>
     updatedSets?: Array<{
-      setId: string;
-      metrics: Partial<SetMetrics>;
-    }>;
-    currentExerciseIndex?: number;
-    sessionNotes?: string;
-    exerciseNotes?: Record<string, string>; // instanceId -> notes
-  };
-};
+      setId: string
+      metrics: Partial<SetMetrics>
+    }>
+    currentExerciseIndex?: number
+    sessionNotes?: string
+    exerciseNotes?: Record<string, string> // instanceId -> notes
+  }
+}
 ```
 
 **Implementation Priorities**:
+
 1. **Highest**: `startSessionFromWorkout()`, `getSession()`, `completeSet()`, `syncSessionState()`
 2. **High**: `startFreeSession()`, `addExerciseToSession()`, `completeSession()`
 3. **Medium**: `updateSet()`, `deleteSet()`, `removeExerciseFromSession()`, `abandonSession()`
 
 **Critical Requirements**:
+
 - All actions must validate user ownership (userId match)
 - `syncSessionState()` must be **idempotent** (safe to call multiple times)
 - Handle concurrent writes gracefully (compare timestamps)
@@ -113,6 +120,7 @@ type SyncPayload = {
 **What to build**:
 
 #### Redux Slice
+
 ```typescript
 // src/store/slices/sessionSlice.ts
 const sessionSlice = createSlice({
@@ -158,47 +166,49 @@ const sessionSlice = createSlice({
   extraReducers: (builder) => {
     // Handle async thunks for server actions
   },
-});
+})
 ```
 
 #### Redux Middleware (Auto-Persistence)
+
 ```typescript
 // src/store/middleware/localStorageMiddleware.ts
 export const localStorageMiddleware: Middleware = (store) => (next) => (action) => {
-  const result = next(action);
+  const result = next(action)
 
   if (action.type.startsWith('session/')) {
-    const state = store.getState().session;
-    debouncedSaveToLocalStorage(state); // 300ms debounce
+    const state = store.getState().session
+    debouncedSaveToLocalStorage(state) // 300ms debounce
   }
 
-  return result;
-};
+  return result
+}
 ```
 
 ```typescript
 // src/store/middleware/dbSyncMiddleware.ts
 export const dbSyncMiddleware: Middleware = (store) => (next) => (action) => {
-  const result = next(action);
+  const result = next(action)
 
   const syncActions = [
     'session/completeSetOptimistic',
     'session/updateSetOptimistic',
     'session/updateExerciseNotes',
     'session/navigateToExercise',
-  ];
+  ]
 
   if (syncActions.includes(action.type)) {
-    const state = store.getState().session;
-    store.dispatch(setPendingChanges(true));
-    debouncedSyncToDatabase(state); // 500ms debounce
+    const state = store.getState().session
+    store.dispatch(setPendingChanges(true))
+    debouncedSyncToDatabase(state) // 500ms debounce
   }
 
-  return result;
-};
+  return result
+}
 ```
 
 #### Store Configuration
+
 ```typescript
 // src/store/store.ts
 export const store = configureStore({
@@ -207,10 +217,8 @@ export const store = configureStore({
     // ... other reducers
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware()
-      .concat(localStorageMiddleware)
-      .concat(dbSyncMiddleware),
-});
+    getDefaultMiddleware().concat(localStorageMiddleware).concat(dbSyncMiddleware),
+})
 ```
 
 ---
@@ -220,16 +228,17 @@ export const store = configureStore({
 **What to build**:
 
 #### Storage Manager
+
 ```typescript
 // src/lib/session-storage/sessionStorage.ts
 
 export class SessionStorageManager {
-  private static SESSION_KEY_PREFIX = 'bfit_session_';
-  private static ACTIVE_SESSION_KEY = 'bfit_active_session_id';
+  private static SESSION_KEY_PREFIX = 'bfit_session_'
+  private static ACTIVE_SESSION_KEY = 'bfit_active_session_id'
 
   // Save session backup
   static save(state: SessionState): void {
-    if (!state.session) return;
+    if (!state.session) return
 
     const backup: SessionBackup = {
       version: '1.0',
@@ -241,51 +250,49 @@ export class SessionStorageManager {
         url: window.location.href,
         lastActiveAt: Date.now(),
       },
-    };
+    }
 
-    localStorage.setItem(
-      `${this.SESSION_KEY_PREFIX}${state.session.id}`,
-      JSON.stringify(backup)
-    );
+    localStorage.setItem(`${this.SESSION_KEY_PREFIX}${state.session.id}`, JSON.stringify(backup))
 
-    this.setActiveSession(state.session.id);
+    this.setActiveSession(state.session.id)
   }
 
   // Load session backup
   static load(sessionId: string): SessionBackup | null {
-    const key = `${this.SESSION_KEY_PREFIX}${sessionId}`;
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : null;
+    const key = `${this.SESSION_KEY_PREFIX}${sessionId}`
+    const data = localStorage.getItem(key)
+    return data ? JSON.parse(data) : null
   }
 
   // Get active session ID
   static getActiveSessionId(): string | null {
-    const data = localStorage.getItem(this.ACTIVE_SESSION_KEY);
-    if (!data) return null;
-    const { sessionId } = JSON.parse(data);
-    return sessionId;
+    const data = localStorage.getItem(this.ACTIVE_SESSION_KEY)
+    if (!data) return null
+    const { sessionId } = JSON.parse(data)
+    return sessionId
   }
 
   // Clear session
   static clear(sessionId: string): void {
-    localStorage.removeItem(`${this.SESSION_KEY_PREFIX}${sessionId}`);
-    localStorage.removeItem(this.ACTIVE_SESSION_KEY);
+    localStorage.removeItem(`${this.SESSION_KEY_PREFIX}${sessionId}`)
+    localStorage.removeItem(this.ACTIVE_SESSION_KEY)
   }
 
   // Cleanup old sessions
   static cleanupOldSessions(): void {
-    const allKeys = Object.keys(localStorage)
-      .filter(key => key.startsWith(this.SESSION_KEY_PREFIX));
+    const allKeys = Object.keys(localStorage).filter((key) =>
+      key.startsWith(this.SESSION_KEY_PREFIX)
+    )
 
-    const activeId = this.getActiveSessionId();
+    const activeId = this.getActiveSessionId()
 
     for (const key of allKeys) {
-      const sessionId = key.replace(this.SESSION_KEY_PREFIX, '');
-      if (sessionId === activeId) continue;
+      const sessionId = key.replace(this.SESSION_KEY_PREFIX, '')
+      if (sessionId === activeId) continue
 
-      const backup = this.load(sessionId);
+      const backup = this.load(sessionId)
       if (backup && Date.now() - backup.timestamp > 24 * 60 * 60 * 1000) {
-        localStorage.removeItem(key);
+        localStorage.removeItem(key)
       }
     }
   }
@@ -293,43 +300,44 @@ export class SessionStorageManager {
 ```
 
 #### Recovery Hook
+
 ```typescript
 // src/hooks/useSessionRecovery.ts
 
 export function useSessionRecovery(sessionId: string | undefined) {
-  const dispatch = useDispatch();
-  const [isRecovering, setIsRecovering] = useState(true);
+  const dispatch = useDispatch()
+  const [isRecovering, setIsRecovering] = useState(true)
 
   useEffect(() => {
     async function recover() {
       try {
         // Check for active session in LocalStorage
-        const activeSessionId = SessionStorageManager.getActiveSessionId();
+        const activeSessionId = SessionStorageManager.getActiveSessionId()
 
         if (!activeSessionId && !sessionId) {
           // No session to recover
-          setIsRecovering(false);
-          return;
+          setIsRecovering(false)
+          return
         }
 
-        const targetSessionId = sessionId || activeSessionId;
+        const targetSessionId = sessionId || activeSessionId
 
         // Parallel fetch: LocalStorage + Database
         const [localBackup, dbSession] = await Promise.all([
           SessionStorageManager.load(targetSessionId),
           getSession(targetSessionId),
-        ]);
+        ])
 
         // Decide which state to use
-        const recoveredState = recoverSessionState(localBackup, dbSession);
+        const recoveredState = recoverSessionState(localBackup, dbSession)
 
         // Load into Redux
-        dispatch(sessionActions.setSession(recoveredState));
+        dispatch(sessionActions.setSession(recoveredState))
 
         // If LocalStorage is newer, sync to DB
         if (localBackup && dbSession) {
-          const localTs = localBackup.timestamp;
-          const dbTs = new Date(dbSession.updatedAt).getTime();
+          const localTs = localBackup.timestamp
+          const dbTs = new Date(dbSession.updatedAt).getTime()
 
           if (localTs > dbTs) {
             // Background sync
@@ -337,27 +345,27 @@ export function useSessionRecovery(sessionId: string | undefined) {
               sessionId: targetSessionId,
               timestamp: localTs,
               changes: extractChanges(localBackup.state),
-            });
+            })
           }
         }
 
         // Show recovery toast
-        toast.success('Session recovered - All progress is safe!');
+        toast.success('Session recovered - All progress is safe!')
       } catch (error) {
-        console.error('Recovery failed:', error);
-        toast.error('Could not recover session');
+        console.error('Recovery failed:', error)
+        toast.error('Could not recover session')
       } finally {
-        setIsRecovering(false);
+        setIsRecovering(false)
       }
     }
 
-    recover();
+    recover()
 
     // Cleanup old sessions on mount
-    SessionStorageManager.cleanupOldSessions();
-  }, [sessionId, dispatch]);
+    SessionStorageManager.cleanupOldSessions()
+  }, [sessionId, dispatch])
 
-  return { isRecovering };
+  return { isRecovering }
 }
 ```
 
@@ -368,6 +376,7 @@ export function useSessionRecovery(sessionId: string | undefined) {
 **What to build**:
 
 #### Page Structure
+
 ```
 src/app/(dashboard)/sessions/[id]/
 ├── page.tsx                     # Main session page
@@ -376,6 +385,7 @@ src/app/(dashboard)/sessions/[id]/
 ```
 
 #### Component Structure
+
 ```
 src/components/features/sessions/
 ├── SessionHeader.tsx            # Workout name + sync indicator
@@ -397,18 +407,19 @@ src/components/features/sessions/
 #### Key Components
 
 **SessionPage** (Main container):
+
 ```tsx
-'use client';
+'use client'
 
 export default function SessionPage({ params }: { params: { id: string } }) {
-  const sessionId = params.id;
-  const { isRecovering } = useSessionRecovery(sessionId);
-  const session = useSelector(selectSession);
-  const currentExercise = useSelector(selectCurrentExercise);
-  const dispatch = useDispatch();
+  const sessionId = params.id
+  const { isRecovering } = useSessionRecovery(sessionId)
+  const session = useSelector(selectSession)
+  const currentExercise = useSelector(selectCurrentExercise)
+  const dispatch = useDispatch()
 
-  if (isRecovering) return <SessionLoadingSkeleton />;
-  if (!session) return <SessionNotFound />;
+  if (isRecovering) return <SessionLoadingSkeleton />
+  if (!session) return <SessionNotFound />
 
   return (
     <div className="session-page">
@@ -431,23 +442,24 @@ export default function SessionPage({ params }: { params: { id: string } }) {
       />
       <ExerciseHistory exerciseId={currentExercise.exerciseId} />
     </div>
-  );
+  )
 }
 ```
 
 **SetLogger** (Critical component):
+
 ```tsx
 export function SetLogger({ exercise, sets, onCompleteSet }) {
-  const [inputs, setInputs] = useState<Record<number, SetMetrics>>({});
+  const [inputs, setInputs] = useState<Record<number, SetMetrics>>({})
 
   return (
     <div className="set-logger">
       <SetLoggerHeader metricType={exercise.metricType} />
 
       {Array.from({ length: exercise.targetSets }).map((_, index) => {
-        const setNumber = index + 1;
-        const existingSet = sets.find(s => s.setNumber === setNumber);
-        const isCompleted = existingSet?.isCompleted || false;
+        const setNumber = index + 1
+        const existingSet = sets.find((s) => s.setNumber === setNumber)
+        const isCompleted = existingSet?.isCompleted || false
 
         return (
           <SetRow
@@ -461,16 +473,16 @@ export function SetLogger({ exercise, sets, onCompleteSet }) {
                 sessionExerciseId: exercise.id,
                 setNumber,
                 ...metrics,
-              });
+              })
             }}
             onUpdate={(metrics) => {
-              setInputs(prev => ({ ...prev, [setNumber]: metrics }));
+              setInputs((prev) => ({ ...prev, [setNumber]: metrics }))
             }}
           />
-        );
+        )
       })}
     </div>
-  );
+  )
 }
 ```
 
@@ -481,12 +493,14 @@ export function SetLogger({ exercise, sets, onCompleteSet }) {
 ### Week 6 Task Breakdown
 
 **Task 6.1: Schema** ✅ COMPLETE
+
 - [x] TrainingSession, SessionExercise, SessionSet models
 - [x] TypeScript types
 - [x] Validation schemas
 - [x] Migration applied
 
 **Task 6.2: Server Actions** (3-4 hours)
+
 - [ ] `startSessionFromWorkout()`
 - [ ] `startFreeSession()`
 - [ ] `getSession()`
@@ -499,6 +513,7 @@ export function SetLogger({ exercise, sets, onCompleteSet }) {
 - [ ] Test all actions
 
 **Task 6.3: Session Page UI** (6-7 hours)
+
 - [ ] Create `/sessions/[id]/page.tsx`
 - [ ] SessionHeader component
 - [ ] ExerciseNavigationTabs component
@@ -510,6 +525,7 @@ export function SetLogger({ exercise, sets, onCompleteSet }) {
 - [ ] Mobile-responsive layout
 
 **Task 6.4: Set Logger Component** (5-6 hours)
+
 - [ ] SetLoggerHeader
 - [ ] SetRow component
 - [ ] WeightInput, RepsInput, DurationInput components
@@ -521,6 +537,7 @@ export function SetLogger({ exercise, sets, onCompleteSet }) {
 - [ ] Input validation and error handling
 
 **Task 6.5: Redux State Management** (6-7 hours)
+
 - [ ] Install Redux Toolkit
 - [ ] Create sessionSlice with reducers
 - [ ] Create async thunks for server actions
@@ -532,6 +549,7 @@ export function SetLogger({ exercise, sets, onCompleteSet }) {
 - [ ] Test optimistic updates
 
 **Task 6.6: LocalStorage Persistence** (4-5 hours)
+
 - [ ] SessionStorageManager class
 - [ ] useSessionRecovery hook
 - [ ] Implement recovery logic (LS vs DB comparison)
@@ -548,18 +566,21 @@ export function SetLogger({ exercise, sets, onCompleteSet }) {
 ## Testing Strategy
 
 ### Unit Tests
+
 - [ ] Server actions (mock Prisma)
 - [ ] Redux reducers (pure functions)
 - [ ] SessionStorageManager
 - [ ] Recovery logic
 
 ### Integration Tests
+
 - [ ] Complete set flow (UI → Redux → LS → DB)
 - [ ] Session recovery (LS vs DB comparison)
 - [ ] Offline mode (network failure)
 - [ ] Concurrent tabs
 
 ### E2E Tests (Playwright)
+
 - [ ] Start session from workout
 - [ ] Complete sets and navigate
 - [ ] Reload page mid-session

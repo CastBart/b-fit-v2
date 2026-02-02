@@ -7,7 +7,7 @@
  * - Remove from superset
  */
 
-'use client';
+'use client'
 
 import {
   Drawer,
@@ -17,118 +17,99 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Link2, Unlink } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+} from '@/components/ui/drawer'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Link2, Unlink } from 'lucide-react'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
   supersetWithPrev,
   supersetWithNext,
   removeSupersetWithPrev,
   removeSupersetWithNext,
-} from '@/store/slices/sessionSlice';
-import { toast } from 'sonner';
-import type { SessionExerciseEntry } from '@/types/session';
+} from '@/store/slices/sessionSlice'
+import { toast } from 'sonner'
+import type { SessionExerciseEntry } from '@/types/session'
 
 interface SupersetDrawerProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  exercise: SessionExerciseEntry | null;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  exercise: SessionExerciseEntry | null
 }
 
-export function SupersetDrawer({
-  open,
-  onOpenChange,
-  exercise,
-}: SupersetDrawerProps) {
-  const dispatch = useAppDispatch();
-  const exercises = useAppSelector((state) => state.session.exercises);
+export function SupersetDrawer({ open, onOpenChange, exercise }: SupersetDrawerProps) {
+  const dispatch = useAppDispatch()
+  const exercises = useAppSelector((state) => state.session.exercises)
 
-  if (!exercise) return null;
+  if (!exercise) return null
 
   // Find current exercise index
-  const currentIndex = exercises.findIndex(
-    (ex) => ex.instanceId === exercise.instanceId
-  );
+  const currentIndex = exercises.findIndex((ex) => ex.instanceId === exercise.instanceId)
 
-  if (currentIndex < 0) return null;
+  if (currentIndex < 0) return null
 
-  const prevExercise = currentIndex > 0 ? exercises[currentIndex - 1] : null;
-  const nextExercise =
-    currentIndex < exercises.length - 1 ? exercises[currentIndex + 1] : null;
+  const prevExercise = currentIndex > 0 ? exercises[currentIndex - 1] : null
+  const nextExercise = currentIndex < exercises.length - 1 ? exercises[currentIndex + 1] : null
 
   // Helper functions to determine what actions are available
   const canSupersetWithPrev =
     prevExercise &&
-    (!prevExercise.groupId ||
-      !exercise.groupId ||
-      prevExercise.groupId !== exercise.groupId);
+    (!prevExercise.groupId || !exercise.groupId || prevExercise.groupId !== exercise.groupId)
 
   const canRemoveSupersetWithPrev =
-    prevExercise &&
-    exercise.groupId &&
-    prevExercise.groupId === exercise.groupId;
+    prevExercise && exercise.groupId && prevExercise.groupId === exercise.groupId
 
   const canSupersetWithNext =
     nextExercise &&
-    (!nextExercise.groupId ||
-      !exercise.groupId ||
-      nextExercise.groupId !== exercise.groupId);
+    (!nextExercise.groupId || !exercise.groupId || nextExercise.groupId !== exercise.groupId)
 
   const canRemoveSupersetWithNext =
-    nextExercise &&
-    exercise.groupId &&
-    nextExercise.groupId === exercise.groupId;
+    nextExercise && exercise.groupId && nextExercise.groupId === exercise.groupId
 
   // Action handlers
   const handleSupersetWithPrev = () => {
-    dispatch(supersetWithPrev({ instanceId: exercise.instanceId }));
-    toast.success(`Supersetted with ${prevExercise?.name}`);
-    onOpenChange(false);
-  };
+    dispatch(supersetWithPrev({ instanceId: exercise.instanceId }))
+    toast.success(`Supersetted with ${prevExercise?.name}`)
+    onOpenChange(false)
+  }
 
   const handleSupersetWithNext = () => {
-    dispatch(supersetWithNext({ instanceId: exercise.instanceId }));
-    toast.success(`Supersetted with ${nextExercise?.name}`);
-    onOpenChange(false);
-  };
+    dispatch(supersetWithNext({ instanceId: exercise.instanceId }))
+    toast.success(`Supersetted with ${nextExercise?.name}`)
+    onOpenChange(false)
+  }
 
   const handleRemoveSupersetWithPrev = () => {
-    dispatch(removeSupersetWithPrev({ instanceId: exercise.instanceId }));
-    toast.success('Removed from superset');
-    onOpenChange(false);
-  };
+    dispatch(removeSupersetWithPrev({ instanceId: exercise.instanceId }))
+    toast.success('Removed from superset')
+    onOpenChange(false)
+  }
 
   const handleRemoveSupersetWithNext = () => {
-    dispatch(removeSupersetWithNext({ instanceId: exercise.instanceId }));
-    toast.success('Removed from superset');
-    onOpenChange(false);
-  };
+    dispatch(removeSupersetWithNext({ instanceId: exercise.instanceId }))
+    toast.success('Removed from superset')
+    onOpenChange(false)
+  }
 
   // Check if there are any actions available
   const hasActions =
     canSupersetWithPrev ||
     canRemoveSupersetWithPrev ||
     canSupersetWithNext ||
-    canRemoveSupersetWithNext;
+    canRemoveSupersetWithNext
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-w-[600px] mx-auto">
+      <DrawerContent className="max-w-150 mx-auto">
         <DrawerHeader>
           <DrawerTitle className="text-center text-2xl">Superset</DrawerTitle>
-          <DrawerDescription className="hidden">
-            Manage superset configuration
-          </DrawerDescription>
+          <DrawerDescription className="hidden">Manage superset configuration</DrawerDescription>
           <Separator className="mt-2" />
         </DrawerHeader>
 
         <div className="px-6 py-4 space-y-3">
           {!hasActions && (
-            <p className="text-center text-muted-foreground py-4">
-              No superset actions available
-            </p>
+            <p className="text-center text-muted-foreground py-4">No superset actions available</p>
           )}
 
           {/* Superset with Previous */}
@@ -201,5 +182,5 @@ export function SupersetDrawer({
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  );
+  )
 }

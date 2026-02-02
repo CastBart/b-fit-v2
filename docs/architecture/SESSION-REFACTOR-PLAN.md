@@ -7,6 +7,7 @@ This refactor replaces the current server-first session system (where a DB recor
 ## User Requirements
 
 Based on your answers:
+
 - ✅ **Array-based exercise ordering** (adapt example's logic, NOT linked list)
 - ✅ **Keep multi-metric support** (WEIGHT_REPS, DURATION, DISTANCE_DURATION, COUNTER_WEIGHT_REPS, etc.)
 - ✅ **Client-first persistence** (Redux + LocalStorage during session, DB on complete only)
@@ -31,124 +32,125 @@ Based on your answers:
 ```typescript
 // Metric values for a single set (multi-metric support)
 export type SetMetrics = {
-  weight?: number | null;
-  reps?: number | null;
-  duration?: number | null;      // seconds
-  distance?: number | null;      // meters
-  counterWeight?: number | null;
-};
+  weight?: number | null
+  reps?: number | null
+  duration?: number | null // seconds
+  distance?: number | null // meters
+  counterWeight?: number | null
+}
 
 // A single set within an exercise's progress
 export type SessionSet = {
-  setNumber: number;            // 1-indexed
-  metrics: SetMetrics;
-  completed: boolean;
-  completedAt?: number | null;  // timestamp
-};
+  setNumber: number // 1-indexed
+  metrics: SetMetrics
+  completed: boolean
+  completedAt?: number | null // timestamp
+}
 
 // Exercise entry in session (combines definition + target params)
 export type SessionExerciseEntry = {
-  instanceId: string;           // crypto.randomUUID()
-  exerciseId: string;
-  name: string;
-  order: number;
-  groupId: string | null;       // for supersets
-  targetSets: number;
-  targetReps: number | null;
-  targetWeight: number | null;
-  targetRestSeconds: number;
-  exerciseType: ExerciseType;   // SMALL | MEDIUM | LARGE
-  metricType: MetricType;       // WEIGHT_REPS | DURATION | etc.
-  notes: string | null;
-};
+  instanceId: string // crypto.randomUUID()
+  exerciseId: string
+  name: string
+  order: number
+  groupId: string | null // for supersets
+  targetSets: number
+  targetReps: number | null
+  targetWeight: number | null
+  targetRestSeconds: number
+  exerciseType: ExerciseType // SMALL | MEDIUM | LARGE
+  metricType: MetricType // WEIGHT_REPS | DURATION | etc.
+  notes: string | null
+}
 
 // Progress tracking per exercise
 export type ExerciseProgress = {
-  instanceId: string;
-  sets: SessionSet[];
-  activeSetNumber: number;      // 1-indexed, next set to complete
-  notes: string | null;
-};
+  instanceId: string
+  sets: SessionSet[]
+  activeSetNumber: number // 1-indexed, next set to complete
+  notes: string | null
+}
 
 // Rest timer state
 export type TimerState = {
-  isRunning: boolean;
-  endTime: number | null;
-  duration: number;
-};
+  isRunning: boolean
+  endTime: number | null
+  duration: number
+}
 
 // Complete Redux session state
 export type SessionState = {
   // Identity
-  sessionId: string | null;
-  workoutId: string | null;
-  workoutName: string;
+  sessionId: string | null
+  workoutId: string | null
+  workoutName: string
 
   // Timing
-  startTime: number | null;
-  isPaused: boolean;
-  pauseTime: number | null;
-  accumulatedPauseDuration: number;
-  completeTime: number | null;
+  startTime: number | null
+  isPaused: boolean
+  pauseTime: number | null
+  accumulatedPauseDuration: number
+  completeTime: number | null
 
   // Lifecycle
-  isActive: boolean;
-  workoutCompleted: boolean;
-  isStarting: boolean;
+  isActive: boolean
+  workoutCompleted: boolean
+  isStarting: boolean
 
   // Exercise data (array-based)
-  exercises: SessionExerciseEntry[];
-  activeExerciseId: string | null;
-  progress: Record<string, ExerciseProgress>;
+  exercises: SessionExerciseEntry[]
+  activeExerciseId: string | null
+  progress: Record<string, ExerciseProgress>
 
   // Timer & notes
-  timer: TimerState | null;
-  sessionNotes: string | null;
-  error: string | null;
-};
+  timer: TimerState | null
+  sessionNotes: string | null
+  error: string | null
+}
 
 // LocalStorage backup structure
 export type SessionBackup = {
-  state: SessionState;
-  timestamp: number;
-  version: string;
-};
+  state: SessionState
+  timestamp: number
+  version: string
+}
 
 // Save-to-DB payload (used on complete only)
 export type SaveSessionPayload = {
-  sessionId: string;
-  workoutId: string | null;
-  workoutName: string;
-  startTime: number;
-  completeTime: number;
-  accumulatedPauseDuration: number;
-  status: SessionStatus;
-  sessionNotes: string | null;
+  sessionId: string
+  workoutId: string | null
+  workoutName: string
+  startTime: number
+  completeTime: number
+  accumulatedPauseDuration: number
+  status: SessionStatus
+  sessionNotes: string | null
   exercises: Array<{
-    instanceId: string;
-    exerciseId: string;
-    order: number;
-    groupId: string | null;
-    targetSets: number;
-    targetReps: number | null;
-    targetWeight: number | null;
-    targetRestSeconds: number;
-    notes: string | null;
+    instanceId: string
+    exerciseId: string
+    order: number
+    groupId: string | null
+    targetSets: number
+    targetReps: number | null
+    targetWeight: number | null
+    targetRestSeconds: number
+    notes: string | null
     sets: Array<{
-      setNumber: number;
-      weight: number | null;
-      reps: number | null;
-      duration: number | null;
-      distance: number | null;
-      counterWeight: number | null;
-      isCompleted: boolean;
-      completedAt: number | null;
-    }>;
-  }>;
-};
+      setNumber: number
+      weight: number | null
+      reps: number | null
+      duration: number | null
+      distance: number | null
+      counterWeight: number | null
+      isCompleted: boolean
+      completedAt: number | null
+    }>
+  }>
+}
 ```
 
 **Key changes:**
+
 - No more Prisma types in Redux state
 - `SessionExerciseEntry` combines exercise definition + target params
 - `SetMetrics` type for multi-metric support
@@ -183,21 +185,24 @@ const initialState: SessionState = {
   timer: { isRunning: false, endTime: null, duration: 0 },
   sessionNotes: null,
   error: null,
-};
+}
 ```
 
 ### Key Reducers
 
 **1. `startSession`**
+
 - Input: `{ workoutId, workoutName, exercises: SessionExerciseEntry[] }`
 - Generates sessionId, sets startTime, builds progress map
 - Sets first exercise as active
 
 **2. `startFreeSession`**
+
 - Input: `{ name: string }`
 - Same as startSession but with empty exercises array
 
 **3. `completeSet` (MOST COMPLEX)**
+
 - Input: `{ metrics: SetMetrics }`
 - Marks current set as completed
 - Handles superset rotation:
@@ -212,44 +217,56 @@ const initialState: SessionState = {
 - Detects workout completion
 
 **4. `updateSet`**
+
 - Input: `{ instanceId, setNumber, metrics: Partial<SetMetrics> }`
 - Updates set values without completing it
 
 **5. `addSet` / `removeLastSet`**
+
 - Dynamically add or remove sets from exercise
 
 **6. `undoLastCompletedSet`**
+
 - Input: `{ instanceId }`
 - Finds last completed set, marks as uncompleted, resets activeSetNumber
 
 **7. `goToExercise`**
+
 - Input: `instanceId`
 - Changes activeExerciseId (for manual navigation)
 
 **8. `addExercises` / `removeExercise`**
+
 - Add or remove exercises during session
 
 **9. `reorderExercises`**
+
 - Input: `{ fromIndex, toIndex }`
 - Reorders exercises array, uses SupersetManager for cleanup
 
 **10. Timer reducers**
+
 - `startTimer`, `stopTimer`, `resetTimer`, `addTimeToTimer`
 
 **11. `pauseSession` / `resumeSession`**
+
 - Tracks pause time and accumulated pause duration
 
 **12. `endSession`**
+
 - Sets completeTime, stops timer
 
 **13. `rehydrateSession`**
+
 - Input: `SessionState`
 - Restores state from LocalStorage
 
 **14. `updateSessionNotes` / `updateExerciseNotes`**
+
 - Updates notes
 
 **15. `sessionViewLoaded`**
+
 - Sets `isStarting = false`
 
 **Complexity:** HIGH - The `completeSet` reducer has 80-100 lines with complex branching for superset logic.
@@ -315,15 +332,18 @@ const initialState: SessionState = {
 ### `src/hooks/mutations/useSessionMutations.ts` - Major reduction
 
 **Keep only:**
+
 - `useSaveCompletedSession()` - calls saveCompletedSession
 - `useAbandonSession()` - calls abandonSession
 
 **Remove:**
+
 - All other mutation hooks (9 hooks deleted)
 
 ### `src/hooks/useSessionRecovery.ts` - Simplify
 
 Simple LocalStorage-only recovery:
+
 1. On mount, check `loadSessionBackup()`
 2. If backup exists with `isActive = true`, dispatch `rehydrateSession`
 3. No DB fetching
@@ -357,28 +377,28 @@ export function startWorkoutSession(
     exerciseType: we.exercise.exerciseType,
     metricType: we.exercise.metricType,
     notes: we.notes,
-  }));
+  }))
 
-  dispatch(startSession({
-    workoutId: workout.id,
-    workoutName: workout.name,
-    exercises,
-  }));
+  dispatch(
+    startSession({
+      workoutId: workout.id,
+      workoutName: workout.name,
+      exercises,
+    })
+  )
 
-  router.push('/session');
+  router.push('/session')
 }
 
 // Start free session
-export function startStandaloneSession(
-  dispatch: AppDispatch,
-  router: AppRouterInstance
-): void {
-  dispatch(startFreeSession({ name: 'Standalone Workout' }));
-  router.push('/session');
+export function startStandaloneSession(dispatch: AppDispatch, router: AppRouterInstance): void {
+  dispatch(startFreeSession({ name: 'Standalone Workout' }))
+  router.push('/session')
 }
 ```
 
 **Impact on workout detail page:**
+
 - Change `handleStartWorkout` to call `startWorkoutSession(workout, dispatch, router)`
 - Pass full workout object instead of just ID
 
@@ -494,35 +514,35 @@ export function useRestTimer(): { remaining: number; isRunning: boolean } {
 ### Utility: `src/lib/utils/format-time.ts`
 
 ```typescript
-export function formatTime(seconds: number): string;
-export function formatStartTime(timestamp: number | null): string;
+export function formatTime(seconds: number): string
+export function formatStartTime(timestamp: number | null): string
 ```
 
 ---
 
 ## Implementation Order
 
-| Step | File | Action | Time |
-|------|------|--------|------|
-| 1 | `src/types/session.ts` | Complete rewrite | 1h |
-| 2 | `src/store/slices/sessionSlice.ts` | Complete rewrite | 4-5h |
-| 3 | `src/store/store.ts` + `persistence.ts` | Simplify | 30m |
-| 4 | `src/hooks/useSessionRecovery.ts` | Simplify | 30m |
-| 5 | `src/lib/utils/format-time.ts` | New file | 15m |
-| 6 | `src/hooks/useElapsedSessionTime.ts` | New file | 30m |
-| 7 | `src/hooks/useRestTimer.ts` | New file | 30m |
-| 8 | `src/lib/utils/session-navigation.ts` | Rewrite | 30m |
-| 9 | `src/server/actions/sessions.ts` | Major reduction | 2h |
-| 10 | `src/lib/validations/session.ts` | Simplify | 30m |
-| 11 | `src/hooks/mutations/useSessionMutations.ts` | Major reduction | 30m |
-| 12 | `src/app/(dashboard)/session/page.tsx` | Complete rewrite | 2-3h |
-| 13 | `src/components/features/sessions/ExerciseCarousel.tsx` | Rewrite | 1-2h |
-| 14 | `src/components/features/sessions/SetLogger.tsx` | Complete rewrite | 3-4h |
-| 15 | `src/components/features/sessions/SetLoggerCarousel.tsx` | Update | 30m |
-| 16 | `src/components/features/sessions/RestTimerDrawer.tsx` | New file | 1h |
-| 17 | `src/components/features/sessions/SessionSettingsDrawer.tsx` | Rewrite | 1-2h |
-| 18 | `src/app/(dashboard)/workouts/[id]/page.tsx` | Small update | 15m |
-| 19 | Cleanup | Remove unused code | 30m |
+| Step | File                                                         | Action             | Time |
+| ---- | ------------------------------------------------------------ | ------------------ | ---- |
+| 1    | `src/types/session.ts`                                       | Complete rewrite   | 1h   |
+| 2    | `src/store/slices/sessionSlice.ts`                           | Complete rewrite   | 4-5h |
+| 3    | `src/store/store.ts` + `persistence.ts`                      | Simplify           | 30m  |
+| 4    | `src/hooks/useSessionRecovery.ts`                            | Simplify           | 30m  |
+| 5    | `src/lib/utils/format-time.ts`                               | New file           | 15m  |
+| 6    | `src/hooks/useElapsedSessionTime.ts`                         | New file           | 30m  |
+| 7    | `src/hooks/useRestTimer.ts`                                  | New file           | 30m  |
+| 8    | `src/lib/utils/session-navigation.ts`                        | Rewrite            | 30m  |
+| 9    | `src/server/actions/sessions.ts`                             | Major reduction    | 2h   |
+| 10   | `src/lib/validations/session.ts`                             | Simplify           | 30m  |
+| 11   | `src/hooks/mutations/useSessionMutations.ts`                 | Major reduction    | 30m  |
+| 12   | `src/app/(dashboard)/session/page.tsx`                       | Complete rewrite   | 2-3h |
+| 13   | `src/components/features/sessions/ExerciseCarousel.tsx`      | Rewrite            | 1-2h |
+| 14   | `src/components/features/sessions/SetLogger.tsx`             | Complete rewrite   | 3-4h |
+| 15   | `src/components/features/sessions/SetLoggerCarousel.tsx`     | Update             | 30m  |
+| 16   | `src/components/features/sessions/RestTimerDrawer.tsx`       | New file           | 1h   |
+| 17   | `src/components/features/sessions/SessionSettingsDrawer.tsx` | Rewrite            | 1-2h |
+| 18   | `src/app/(dashboard)/workouts/[id]/page.tsx`                 | Small update       | 15m  |
+| 19   | Cleanup                                                      | Remove unused code | 30m  |
 
 **Total estimated time:** 20-25 hours
 
@@ -531,18 +551,23 @@ export function formatStartTime(timestamp: number | null): string;
 ## Risks & Mitigations
 
 ### Risk 1: Data Loss on Browser Crash
+
 - **Mitigation:** LocalStorage writes after every action (synchronous middleware)
 
 ### Risk 2: `completeSet` Superset Logic Bugs
+
 - **Mitigation:** Write unit tests for all branches (solo, superset mid-round, superset complete)
 
 ### Risk 3: LocalStorage Size Limits
+
 - **Mitigation:** Typical session < 100KB, limit is 5MB (not a concern)
 
 ### Risk 4: Stale Session in LocalStorage
+
 - **Mitigation:** Check backup timestamp, prompt if > 24 hours old
 
 ### Risk 5: Multiple Browser Tabs
+
 - **Mitigation:** Phase 1 doesn't handle multi-tab sync (can add later with storage event listener)
 
 ---
@@ -565,26 +590,26 @@ export function formatStartTime(timestamp: number | null): string;
 
 ## Files Summary
 
-| File | Complexity | Lines |
-|------|------------|-------|
-| `src/types/session.ts` | Medium | ~300 |
-| `src/store/slices/sessionSlice.ts` | **HIGH** | ~800 |
-| `src/store/store.ts` | Low | ~30 |
-| `src/store/middleware/persistence.ts` | Medium | ~150 |
-| `src/hooks/useSessionRecovery.ts` | Low | ~60 |
-| `src/lib/utils/format-time.ts` | Low | ~30 |
-| `src/hooks/useElapsedSessionTime.ts` | Low | ~40 |
-| `src/hooks/useRestTimer.ts` | Low | ~40 |
-| `src/lib/utils/session-navigation.ts` | Medium | ~80 |
-| `src/server/actions/sessions.ts` | Medium | ~200 |
-| `src/lib/validations/session.ts` | Low | ~100 |
-| `src/hooks/mutations/useSessionMutations.ts` | Low | ~80 |
-| `src/app/(dashboard)/session/page.tsx` | **HIGH** | ~400 |
-| `ExerciseCarousel.tsx` | Medium | ~250 |
-| `SetLogger.tsx` | **HIGH** | ~500 |
-| `SetLoggerCarousel.tsx` | Low | ~80 |
-| `RestTimerDrawer.tsx` | Medium | ~150 |
-| `SessionSettingsDrawer.tsx` | Medium | ~200 |
-| `workouts/[id]/page.tsx` | Low | ~10 |
+| File                                         | Complexity | Lines |
+| -------------------------------------------- | ---------- | ----- |
+| `src/types/session.ts`                       | Medium     | ~300  |
+| `src/store/slices/sessionSlice.ts`           | **HIGH**   | ~800  |
+| `src/store/store.ts`                         | Low        | ~30   |
+| `src/store/middleware/persistence.ts`        | Medium     | ~150  |
+| `src/hooks/useSessionRecovery.ts`            | Low        | ~60   |
+| `src/lib/utils/format-time.ts`               | Low        | ~30   |
+| `src/hooks/useElapsedSessionTime.ts`         | Low        | ~40   |
+| `src/hooks/useRestTimer.ts`                  | Low        | ~40   |
+| `src/lib/utils/session-navigation.ts`        | Medium     | ~80   |
+| `src/server/actions/sessions.ts`             | Medium     | ~200  |
+| `src/lib/validations/session.ts`             | Low        | ~100  |
+| `src/hooks/mutations/useSessionMutations.ts` | Low        | ~80   |
+| `src/app/(dashboard)/session/page.tsx`       | **HIGH**   | ~400  |
+| `ExerciseCarousel.tsx`                       | Medium     | ~250  |
+| `SetLogger.tsx`                              | **HIGH**   | ~500  |
+| `SetLoggerCarousel.tsx`                      | Low        | ~80   |
+| `RestTimerDrawer.tsx`                        | Medium     | ~150  |
+| `SessionSettingsDrawer.tsx`                  | Medium     | ~200  |
+| `workouts/[id]/page.tsx`                     | Low        | ~10   |
 
 **Total:** ~3,500 lines of code to write/modify

@@ -27,8 +27,11 @@ import { SetLoggerCarousel } from '@/components/features/sessions/SetLoggerCarou
 import { SessionSettingsDrawer } from '@/components/features/sessions/SessionSettingsDrawer'
 import { RestTimerDrawer } from '@/components/features/sessions/RestTimerDrawer'
 import { ExerciseSelectorDrawer } from '@/components/features/workouts/ExerciseSelectorDrawer'
+import { ExerciseOptionsDrawer } from '@/components/features/sessions/ExerciseOptionsDrawer'
+import { SupersetDrawer } from '@/components/features/sessions/SupersetDrawer'
 import { formatDuration } from '@/lib/utils/format-time'
 import type { Exercise } from '@prisma/client'
+import type { SessionExerciseEntry } from '@/types/session'
 
 export default function SessionPage() {
   const router = useRouter()
@@ -55,6 +58,16 @@ export default function SessionPage() {
 
   // Local UI state
   const [exerciseSelectorOpen, setExerciseSelectorOpen] = useState(false)
+  const [exerciseOptionsOpen, setExerciseOptionsOpen] = useState(false)
+  const [supersetDrawerOpen, setSupersetDrawerOpen] = useState(false)
+  const [selectedExercise, setSelectedExercise] = useState<SessionExerciseEntry | null>(null)
+
+  // Clear selected exercise when both drawers are closed
+  useEffect(() => {
+    if (!exerciseOptionsOpen && !supersetDrawerOpen) {
+      setSelectedExercise(null)
+    }
+  }, [exerciseOptionsOpen, supersetDrawerOpen])
 
   // ============================================================================
   // INITIALIZATION
@@ -70,6 +83,17 @@ export default function SessionPage() {
   // ============================================================================
   // EVENT HANDLERS
   // ============================================================================
+
+  // Handle opening exercise options
+  const handleOpenExerciseOptions = (exercise: SessionExerciseEntry) => {
+    setSelectedExercise(exercise)
+    setExerciseOptionsOpen(true)
+  }
+
+  // Handle opening superset drawer
+  const handleOpenSuperset = () => {
+    setSupersetDrawerOpen(true)
+  }
 
   // Handle adding exercises to the session
   const handleAddExercises = (selectedExercises: Exercise[]) => {
@@ -179,7 +203,7 @@ export default function SessionPage() {
               className="w-full justify-between text-xl font-bold"
             >
               <span className="truncate">Standalone Workout</span>
-              <Wrench className="h-5 w-5 flex-shrink-0 ml-2" />
+              <Wrench className="h-5 w-5 shrink-0 ml-2" />
             </Button>
           </SessionSettingsDrawer>
 
@@ -232,7 +256,7 @@ export default function SessionPage() {
               className="w-full justify-between text-xl font-bold"
             >
               <span className="truncate">{workoutName || 'Standalone Workout'}</span>
-              <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+              <div className="flex items-center gap-2 shrink-0 ml-2">
                 {elapsedSeconds !== null && (
                   <span className="text-sm font-normal text-muted-foreground">
                     {formatDuration(elapsedSeconds)}
@@ -286,7 +310,11 @@ export default function SessionPage() {
         />
 
         {/* Set Logger Carousel (swipeable between exercises) */}
-        <SetLoggerCarousel exercises={exercises} currentExerciseIndex={currentExerciseIndex} />
+        <SetLoggerCarousel
+          exercises={exercises}
+          currentExerciseIndex={currentExerciseIndex}
+          onOpenExerciseOptions={handleOpenExerciseOptions}
+        />
 
         {/* Exercise Selector Drawer */}
         <ExerciseSelectorDrawer
@@ -296,6 +324,21 @@ export default function SessionPage() {
           multiSelect
         />
       </div>
+
+      {/* Single Exercise Options Drawer Instance */}
+      <ExerciseOptionsDrawer
+        exercise={selectedExercise}
+        open={exerciseOptionsOpen}
+        onOpenChange={setExerciseOptionsOpen}
+        onOpenSuperset={handleOpenSuperset}
+      />
+
+      {/* Single Superset Drawer Instance */}
+      <SupersetDrawer
+        exercise={selectedExercise}
+        open={supersetDrawerOpen}
+        onOpenChange={setSupersetDrawerOpen}
+      />
 
       {/* Rest Timer (Floating Button) - Outside container for proper fixed positioning */}
       {restIsRunning && <RestTimerDrawer remaining={restRemaining} />}

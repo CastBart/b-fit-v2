@@ -5,9 +5,9 @@
  * Opens drawer with countdown and timer controls.
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Drawer,
   DrawerClose,
@@ -17,39 +17,39 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
-import { Timer, Plus, Minus, SkipForward } from 'lucide-react';
-import { useAppDispatch } from '@/store/hooks';
-import { stopTimer, addTimeToTimer } from '@/store/slices/sessionSlice';
-import { formatRestTimer } from '@/lib/utils/format-time';
+} from '@/components/ui/drawer'
+import { Button } from '@/components/ui/button'
+import { Timer, Plus, Minus, SkipForward } from 'lucide-react'
+import { useAppDispatch } from '@/store/hooks'
+import { stopTimer, addTimeToTimer } from '@/store/slices/sessionSlice'
+import { formatRestTimer } from '@/lib/utils/format-time'
 
 interface RestTimerDrawerProps {
-  remaining: number; // seconds remaining
+  remaining: number // seconds remaining
 }
 
 export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
-  const dispatch = useAppDispatch();
-  const [open, setOpen] = useState(false);
+  const dispatch = useAppDispatch()
+  const [open, setOpen] = useState(false)
 
   const handleAddTime = (seconds: number) => {
-    dispatch(addTimeToTimer(seconds));
-  };
+    dispatch(addTimeToTimer(seconds))
+  }
 
   const handleSkip = () => {
-    dispatch(stopTimer());
-    setOpen(false);
-  };
+    dispatch(stopTimer())
+    setOpen(false)
+  }
 
   // Determine color based on remaining time
   const getTimerColor = () => {
-    if (remaining < 0) return 'text-red-600'; // Overtime
-    if (remaining <= 10) return 'text-red-500';
-    if (remaining <= 30) return 'text-orange-500';
-    return 'text-primary';
-  };
+    if (remaining < 0) return 'text-red-600' // Overtime
+    if (remaining <= 10) return 'text-red-500'
+    if (remaining <= 30) return 'text-orange-500'
+    return 'text-primary'
+  }
 
-  const isOvertime = remaining < 0;
+  const isOvertime = remaining < 0
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -68,7 +68,7 @@ export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
       </DrawerTrigger>
 
       {/* Drawer Content */}
-      <DrawerContent className="max-w-[600px] mx-auto">
+      <DrawerContent className="max-w-150 mx-auto">
         <DrawerHeader>
           <DrawerTitle className="text-center text-2xl">Rest Timer</DrawerTitle>
           <DrawerDescription className="hidden">
@@ -79,14 +79,10 @@ export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
         <div className="px-6 py-8">
           {/* Large Countdown Display */}
           <div className="flex flex-col items-center justify-center space-y-4">
-            <div
-              className={`text-8xl font-bold tabular-nums ${getTimerColor()}`}
-            >
+            <div className={`text-8xl font-bold tabular-nums ${getTimerColor()}`}>
               {formatRestTimer(remaining)}
             </div>
-            <p className="text-muted-foreground">
-              {isOvertime ? 'Overtime' : 'Time remaining'}
-            </p>
+            <p className="text-muted-foreground">{isOvertime ? 'Overtime' : 'Time remaining'}</p>
           </div>
 
           {/* Timer Controls */}
@@ -127,25 +123,13 @@ export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
 
           {/* Quick Add Buttons */}
           <div className="mt-4 flex justify-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleAddTime(30)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => handleAddTime(30)}>
               +30s
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleAddTime(60)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => handleAddTime(60)}>
               +1m
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleAddTime(120)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => handleAddTime(120)}>
               +2m
             </Button>
           </div>
@@ -158,5 +142,5 @@ export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  );
+  )
 }

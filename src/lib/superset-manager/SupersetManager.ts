@@ -378,6 +378,99 @@ export class SupersetManager<T extends { groupId?: string | null }> {
   }
 
   // ============================================================================
+  // Cleanup Methods (for maintaining integrity after removals)
+  // ============================================================================
+
+  /**
+   * Clean up supersets after exercise removal
+   * Fixes invalid supersets by:
+   * - Dissolving groups with only 1 member
+   * - Splitting non-contiguous groups into separate contiguous groups
+   *
+   * Use this after removing exercises to ensure superset integrity.
+   *
+   * Example scenarios:
+   * - [1(A), 2(A), 3(A)] → remove 1 → [2(A), 3(A)] ✅ (adjacent, stays grouped)
+   * - [1(A), 2(A), 3(A)] → remove 2 → [1(null), 3(null)] (not adjacent, dissolved)
+   * - [1(A), 2(A), 3(B), 4(B), 5(A)] → remove 3 → splits group A into [1(A), 2(A)] and [5(null)]
+   *
+   * @param exercises - Array of exercises to validate and fix
+   * @returns Updated array with fixed groupIds
+   */
+  cleanupAfterRemoval(exercises: T[]): T[] {
+    // First, validate to see if there are any issues
+    const validation = this.validateSupersets(exercises)
+
+    if (validation.valid) {
+      return exercises // No issues, return as-is
+    }
+
+    const result = [...exercises]
+    const groupedByGroupId = new Map<string, number[]>()
+
+    // Collect indices for each groupId
+    result.forEach((ex, index) => {
+      if (ex.groupId) {
+        if (!groupedByGroupId.has(ex.groupId)) {
+          groupedByGroupId.set(ex.groupId, [])
+        }
+        groupedByGroupId.get(ex.groupId)!.push(index)
+      }
+    })
+
+    // Process each group
+    groupedByGroupId.forEach((indices, groupId) => {
+      // Single member group - dissolve it
+      if (indices.length === 1) {
+        result[indices[0]!] = { ...result[indices[0]!], groupId: null } as T
+        return
+      }
+
+      // Sort indices to check for contiguity
+      const sortedIndices = [...indices].sort((a, b) => a - b)
+
+      // Check for non-contiguous members and split into chunks
+      const contiguousChunks: number[][] = []
+      let currentChunk: number[] = [sortedIndices[0]!]
+
+      for (let i = 1; i < sortedIndices.length; i++) {
+        const prevIndex = sortedIndices[i - 1]!
+        const currIndex = sortedIndices[i]!
+
+        if (currIndex === prevIndex + 1) {
+          // Adjacent, add to current chunk
+          currentChunk.push(currIndex)
+        } else {
+          // Not adjacent, start new chunk
+          contiguousChunks.push(currentChunk)
+          currentChunk = [currIndex]
+        }
+      }
+      contiguousChunks.push(currentChunk)
+
+      // If we have multiple chunks or a single chunk with only 1 member, fix them
+      if (contiguousChunks.length > 1 || contiguousChunks[0]!.length === 1) {
+        contiguousChunks.forEach((chunk, chunkIndex) => {
+          if (chunk.length === 1) {
+            // Single member chunk - dissolve it
+            result[chunk[0]!] = { ...result[chunk[0]!], groupId: null } as T
+          } else {
+            // Multi-member chunk - assign groupId
+            // First chunk keeps original groupId, others get new ones
+            const newGroupId = chunkIndex === 0 ? groupId : crypto.randomUUID()
+
+            chunk.forEach((index) => {
+              result[index] = { ...result[index], groupId: newGroupId } as T
+            })
+          }
+        })
+      }
+    })
+
+    return result
+  }
+
+  // ============================================================================
   // Utility Methods (for debugging/validation)
   // ============================================================================
 

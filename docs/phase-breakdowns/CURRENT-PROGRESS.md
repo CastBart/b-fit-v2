@@ -2576,10 +2576,12 @@ prisma/schema.prisma (+120 lines)
 **React Query Hooks Created:**
 
 Query hooks:
+
 - `useSession(sessionId)` - Fetch single session
 - `useSessions(filters)` - Fetch sessions list with pagination
 
 Mutation hooks (9 hooks):
+
 - `useStartSessionFromWorkout()`
 - `useStartFreeSession()`
 - `useAddExerciseToSession()`
@@ -3005,10 +3007,12 @@ Major architectural refactor from server-first to client-first session system ba
 ### Key Changes
 
 **Architecture Shift:**
+
 - ❌ OLD: Server-first (DB record created on start, every set hits DB)
 - ✅ NEW: Client-first (Redux + LocalStorage during session, single DB write on complete)
 
 **Design Decisions:**
+
 - ✅ Array-based exercise ordering (NOT linked list)
 - ✅ Multi-metric support preserved (WEIGHT_REPS, DURATION, etc.)
 - ✅ Client-first persistence (Redux + LocalStorage only)
@@ -3017,11 +3021,13 @@ Major architectural refactor from server-first to client-first session system ba
 ### Completed (Phases 1-11)
 
 **✅ Phase 1: Type Definitions**
+
 - File: `src/types/session.ts` (complete rewrite)
 - New types: `SessionState`, `SessionExerciseEntry`, `ExerciseProgress`, `SetMetrics`, `TimerState`, `SaveSessionPayload`
 - Removed: Dependency on `TrainingSessionWithDetails` in Redux state
 
 **✅ Phase 2: Redux Session Slice**
+
 - File: `src/store/slices/sessionSlice.ts` (820 lines, complete rewrite)
 - 20 reducers implemented:
   - Session lifecycle: `startSession`, `startFreeSession`, `endSession`, `resetSessionState`, `rehydrateSession`
@@ -3035,17 +3041,20 @@ Major architectural refactor from server-first to client-first session system ba
 - Key feature: `completeSet` handles auto-advance and superset rotation
 
 **✅ Phase 3: Store Configuration**
+
 - File: `src/store/store.ts`
 - Removed: `dbSyncMiddleware`
 - Simplified: serialization check (now `false`)
 
 **✅ Phase 4: Persistence Middleware**
+
 - File: `src/store/middleware/persistence.ts` (reduced from 363 to 106 lines)
 - Removed: ALL DB sync logic (performSync, extractChanges, hasSetChanged, etc.)
 - Kept: LocalStorage-only persistence
 - Added: 24-hour backup age validation
 
 **✅ Phase 5-7: Utility Files & Hooks**
+
 - File: `src/lib/utils/format-time.ts` (NEW)
   - Functions: `formatTime`, `formatStartTime`, `formatDuration`
 - File: `src/hooks/useElapsedSessionTime.ts` (NEW)
@@ -3063,6 +3072,7 @@ Major architectural refactor from server-first to client-first session system ba
   - Session starts immediately in Redux
 
 **✅ Phase 8: Workout Pages Update**
+
 - File: `src/app/(dashboard)/workouts/[id]/page.tsx`
   - Changed: `handleStartWorkout` now calls `startWorkoutSession(workout, ...)`
   - Passes full workout object instead of just ID
@@ -3070,6 +3080,7 @@ Major architectural refactor from server-first to client-first session system ba
   - Changed: "Start Workout" button navigates to detail page (no inline start)
 
 **✅ Phase 9: Server Actions**
+
 - File: `src/server/actions/sessions.ts` (reduced from 1061 to 330 lines)
 - **Removed Actions** (9 deleted):
   - `startSessionFromWorkout`, `startFreeSession`
@@ -3085,12 +3096,14 @@ Major architectural refactor from server-first to client-first session system ba
   - `getSessionById` - For viewing completed sessions
 
 **✅ Phase 10: Validation Schemas**
+
 - File: `src/lib/validations/session.ts` (complete rewrite)
 - Removed: 9 schemas for deleted actions
 - Added: `saveSessionSchema` - Validates `SaveSessionPayload`
 - Kept: `getSessionByIdSchema`, `sessionFiltersSchema`
 
 **✅ Phase 11: Mutation Hooks**
+
 - File: `src/hooks/mutations/useSessionMutations.ts` (reduced from 338 to 95 lines)
 - Removed: 9 hooks (matching deleted server actions)
 - Kept: 3 hooks
@@ -3102,18 +3115,21 @@ Major architectural refactor from server-first to client-first session system ba
 ### Remaining Work (Phases 12-18)
 
 **⏳ Phase 12: Session Page** (Next)
+
 - File: `src/app/(dashboard)/session/page.tsx` (complete rewrite needed)
 - Remove: All `useMutation` hooks, `pendingWorkoutId` logic
 - Add: Timer display, Complete button, Recovery UI
 - Implement: `useSessionRecovery` on mount
 
 **⏳ Phase 13: ExerciseCarousel**
+
 - File: `src/components/features/sessions/ExerciseCarousel.tsx`
 - Update: Props to `SessionExerciseEntry[]`
 - Change: Completion status from `progress` map
 - Fix: DnD to dispatch `reorderExercises`
 
 **⏳ Phase 14: SetLogger** (Complex)
+
 - File: `src/components/features/sessions/SetLogger.tsx` (major rewrite)
 - Change: Read from Redux `progress[instanceId]`
 - Update: `handleCompleteSet` to dispatch `completeSet({ metrics })`
@@ -3121,21 +3137,25 @@ Major architectural refactor from server-first to client-first session system ba
 - Add: Add/remove set buttons, undo button
 
 **⏳ Phase 15: SetLoggerCarousel**
+
 - File: `src/components/features/sessions/SetLoggerCarousel.tsx`
 - Update: Sync with `activeExerciseId` instead of index
 
 **⏳ Phase 16: RestTimerDrawer** (New Component)
+
 - File: `src/components/features/sessions/RestTimerDrawer.tsx`
 - Floating button showing countdown
 - +15s / -15s / Skip buttons
 
 **⏳ Phase 17: SessionSettingsDrawer** (Rewrite)
+
 - File: `src/components/features/sessions/SessionSettingsDrawer.tsx`
 - Show: Start time, elapsed duration (live)
 - Add: Pause/Resume button
 - Update: Complete button to call `useSaveCompletedSession`
 
 **⏳ Phase 18: Final Testing & Cleanup**
+
 - Remove unused imports
 - Test session flow end-to-end
 - Verify LocalStorage recovery
@@ -3162,6 +3182,7 @@ Major architectural refactor from server-first to client-first session system ba
 ### ✅ Phases 12, 16, 17 Complete (2026-02-02)
 
 **✅ Phase 12: Session Page**
+
 - File: `src/app/(dashboard)/session/page.tsx` (complete rewrite, 284 lines)
 - Features:
   - Session recovery on mount using `useSessionRecovery`
@@ -3176,6 +3197,7 @@ Major architectural refactor from server-first to client-first session system ba
 - Added: Client-first recovery flow
 
 **✅ Phase 16: RestTimerDrawer**
+
 - File: `src/components/features/sessions/RestTimerDrawer.tsx` (NEW, 145 lines)
 - Features:
   - Floating button in bottom-right (shows countdown)
@@ -3187,6 +3209,7 @@ Major architectural refactor from server-first to client-first session system ba
 - Dispatches: `stopTimer`, `addTimeToTimer`
 
 **✅ Phase 17: SessionSettingsDrawer**
+
 - File: `src/components/features/sessions/SessionSettingsDrawer.tsx` (rewrite, 333 lines)
 - Features:
   - Start time display (formatted)
@@ -3204,6 +3227,7 @@ Major architectural refactor from server-first to client-first session system ba
 ### Remaining Work (Phases 13-15, 18)
 
 **⏳ Phase 13: ExerciseCarousel** (Next)
+
 - File: `src/components/features/sessions/ExerciseCarousel.tsx`
 - Update props to accept `SessionExerciseEntry[]`
 - Read completion status from Redux `progress` map
@@ -3212,6 +3236,7 @@ Major architectural refactor from server-first to client-first session system ba
 - Show superset connector bars
 
 **⏳ Phase 14: SetLogger** (Most Complex)
+
 - File: `src/components/features/sessions/SetLogger.tsx`
 - Read from Redux `progress[instanceId]` instead of props
 - Dispatch `completeSet({ metrics })` instead of server mutation
@@ -3222,12 +3247,14 @@ Major architectural refactor from server-first to client-first session system ba
 - Exercise notes with auto-save
 
 **⏳ Phase 15: SetLoggerCarousel**
+
 - File: `src/components/features/sessions/SetLoggerCarousel.tsx`
 - Update to sync with `activeExerciseId` instead of `currentExerciseIndex`
 - Dispatch `goToExercise(instanceId)` on swipe
 - Remove `sessionId` prop (read from Redux)
 
 **⏳ Phase 18: Testing & Polish**
+
 - Test full session flow (start → track → complete)
 - Test LocalStorage recovery (refresh mid-session)
 - Test superset rotation
@@ -3245,6 +3272,7 @@ Major architectural refactor from server-first to client-first session system ba
 **Net Change:** +2,300 lines (but much simpler architecture)
 
 **Key Improvements:**
+
 - ✅ No more DB sync during session (instant UI)
 - ✅ Single source of truth (Redux)
 - ✅ Automatic LocalStorage backup
@@ -3258,6 +3286,7 @@ Major architectural refactor from server-first to client-first session system ba
 ### ✅ Phases 13-15 Complete - All Components Done! (2026-02-02)
 
 **✅ Phase 13: ExerciseCarousel**
+
 - File: `src/components/features/sessions/ExerciseCarousel.tsx` (rewrite, 245 lines)
 - Features:
   - Uses `SessionExerciseEntry[]` from Redux
@@ -3270,6 +3299,7 @@ Major architectural refactor from server-first to client-first session system ba
   - Active exercise highlighted with primary color
 
 **✅ Phase 14: SetLogger** (Most Complex Component)
+
 - File: `src/components/features/sessions/SetLogger.tsx` (complete rewrite, 587 lines)
 - Features:
   - Reads from Redux `progress[instanceId]`
@@ -3294,6 +3324,7 @@ Major architectural refactor from server-first to client-first session system ba
   - Updates Redux state on input change (for persistence)
 
 **✅ Phase 15: SetLoggerCarousel**
+
 - File: `src/components/features/sessions/SetLoggerCarousel.tsx` (rewrite, 75 lines)
 - Features:
   - Syncs with `activeExerciseId` (not index)
@@ -3312,29 +3343,29 @@ Major architectural refactor from server-first to client-first session system ba
 
 ### Files Changed
 
-| # | File | Lines | Action | Status |
-|---|------|-------|--------|--------|
-| 1 | `src/types/session.ts` | ~350 | Rewrite | ✅ |
-| 2 | `src/store/slices/sessionSlice.ts` | 820 | Rewrite | ✅ |
-| 3 | `src/store/store.ts` | 40 | Simplify | ✅ |
-| 4 | `src/store/middleware/persistence.ts` | 106 | Reduce | ✅ |
-| 5 | `src/hooks/useSessionRecovery.ts` | 45 | Rewrite | ✅ |
-| 6 | `src/lib/utils/format-time.ts` | 35 | New | ✅ |
-| 7 | `src/hooks/useElapsedSessionTime.ts` | 45 | New | ✅ |
-| 8 | `src/hooks/useRestTimer.ts` | 50 | New | ✅ |
-| 9 | `src/lib/utils/session-navigation.ts` | 125 | Rewrite | ✅ |
-| 10 | `src/server/actions/sessions.ts` | 330 | Reduce | ✅ |
-| 11 | `src/lib/validations/session.ts` | 68 | Simplify | ✅ |
-| 12 | `src/hooks/mutations/useSessionMutations.ts` | 95 | Reduce | ✅ |
-| 13 | `src/hooks/queries/useSession.ts` | 28 | Update | ✅ |
-| 14 | `src/app/(dashboard)/workouts/[id]/page.tsx` | 358 | Update | ✅ |
-| 15 | `src/app/(dashboard)/workouts/page.tsx` | 217 | Update | ✅ |
-| 16 | `src/app/(dashboard)/session/page.tsx` | 284 | Rewrite | ✅ |
-| 17 | `src/components/features/sessions/ExerciseCarousel.tsx` | 245 | Rewrite | ✅ |
-| 18 | `src/components/features/sessions/SetLogger.tsx` | 587 | Rewrite | ✅ |
-| 19 | `src/components/features/sessions/SetLoggerCarousel.tsx` | 75 | Rewrite | ✅ |
-| 20 | `src/components/features/sessions/RestTimerDrawer.tsx` | 145 | New | ✅ |
-| 21 | `src/components/features/sessions/SessionSettingsDrawer.tsx` | 333 | Rewrite | ✅ |
+| #   | File                                                         | Lines | Action   | Status |
+| --- | ------------------------------------------------------------ | ----- | -------- | ------ |
+| 1   | `src/types/session.ts`                                       | ~350  | Rewrite  | ✅     |
+| 2   | `src/store/slices/sessionSlice.ts`                           | 820   | Rewrite  | ✅     |
+| 3   | `src/store/store.ts`                                         | 40    | Simplify | ✅     |
+| 4   | `src/store/middleware/persistence.ts`                        | 106   | Reduce   | ✅     |
+| 5   | `src/hooks/useSessionRecovery.ts`                            | 45    | Rewrite  | ✅     |
+| 6   | `src/lib/utils/format-time.ts`                               | 35    | New      | ✅     |
+| 7   | `src/hooks/useElapsedSessionTime.ts`                         | 45    | New      | ✅     |
+| 8   | `src/hooks/useRestTimer.ts`                                  | 50    | New      | ✅     |
+| 9   | `src/lib/utils/session-navigation.ts`                        | 125   | Rewrite  | ✅     |
+| 10  | `src/server/actions/sessions.ts`                             | 330   | Reduce   | ✅     |
+| 11  | `src/lib/validations/session.ts`                             | 68    | Simplify | ✅     |
+| 12  | `src/hooks/mutations/useSessionMutations.ts`                 | 95    | Reduce   | ✅     |
+| 13  | `src/hooks/queries/useSession.ts`                            | 28    | Update   | ✅     |
+| 14  | `src/app/(dashboard)/workouts/[id]/page.tsx`                 | 358   | Update   | ✅     |
+| 15  | `src/app/(dashboard)/workouts/page.tsx`                      | 217   | Update   | ✅     |
+| 16  | `src/app/(dashboard)/session/page.tsx`                       | 284   | Rewrite  | ✅     |
+| 17  | `src/components/features/sessions/ExerciseCarousel.tsx`      | 245   | Rewrite  | ✅     |
+| 18  | `src/components/features/sessions/SetLogger.tsx`             | 587   | Rewrite  | ✅     |
+| 19  | `src/components/features/sessions/SetLoggerCarousel.tsx`     | 75    | Rewrite  | ✅     |
+| 20  | `src/components/features/sessions/RestTimerDrawer.tsx`       | 145   | New      | ✅     |
+| 21  | `src/components/features/sessions/SessionSettingsDrawer.tsx` | 333   | Rewrite  | ✅     |
 
 **Total:** 21 files modified/created
 
@@ -3347,6 +3378,7 @@ Major architectural refactor from server-first to client-first session system ba
 ### Architecture Changes
 
 **Before (Server-First):**
+
 - ❌ DB record created on session start
 - ❌ Every set completion hits DB
 - ❌ Optimistic updates with temp IDs
@@ -3355,6 +3387,7 @@ Major architectural refactor from server-first to client-first session system ba
 - ❌ ~10 server actions for session management
 
 **After (Client-First):**
+
 - ✅ Session starts instantly in Redux
 - ✅ All changes stay in Redux during session
 - ✅ LocalStorage auto-backup on every action
@@ -3443,6 +3476,7 @@ Major architectural refactor from server-first to client-first session system ba
 ### Next Steps (Phase 18 - Testing & Cleanup)
 
 **⏳ Testing Required:**
+
 1. Start session from workout detail page
 2. Complete all sets in order
 3. Test superset rotation
@@ -3457,12 +3491,14 @@ Major architectural refactor from server-first to client-first session system ba
 12. Test reorder exercises (DnD)
 
 **⏳ Known Issues to Fix:**
+
 - TypeScript errors (if any)
 - Missing imports
 - Component prop mismatches
 - Routing issues
 
 **⏳ Polish:**
+
 - Test on mobile (swipe gestures)
 - Test with large workouts (10+ exercises)
 - Test with supersets (2-3 exercise groups)
@@ -3473,6 +3509,7 @@ Major architectural refactor from server-first to client-first session system ba
 ## 🚀 Ready for Testing!
 
 The session refactor is complete! All code has been written. Now it's time to:
+
 1. Fix any TypeScript compilation errors
 2. Test the full session flow
 3. Fix bugs as they appear

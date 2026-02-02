@@ -12,7 +12,7 @@
 
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable, horizontalListSortingStrategy } from '@dnd-kit/sortable'
@@ -46,6 +46,13 @@ export function ExerciseCarousel({
     containScroll: 'trimSnaps',
     dragFree: true,
   })
+
+  // Re-initialize carousel when exercises array changes (add/remove)
+  useEffect(() => {
+    if (emblaApi) {
+      emblaApi.reInit()
+    }
+  }, [emblaApi, exercises.length])
 
   // Scroll to current exercise when it changes
   useEffect(() => {
@@ -87,14 +94,14 @@ export function ExerciseCarousel({
               ))}
 
               {/* Add Exercise Button */}
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <Button
                   variant="outline"
                   size="lg"
                   onClick={onAddExercise}
                   disabled={disabled}
                   className={cn(
-                    'h-[60px] w-[120px] rounded-xl border-2 border-dashed',
+                    'h-15 w-30 rounded-xl border-2 border-dashed',
                     'hover:border-primary hover:bg-primary/10',
                     'transition-all duration-200'
                   )}
@@ -127,8 +134,6 @@ function ExerciseCarouselCard({
   onClick,
   disabled,
 }: ExerciseCarouselCardProps) {
-  const dispatch = useAppDispatch()
-
   // Get progress from Redux
   const progress = useAppSelector((state) => state.session.progress[exercise.instanceId])
 
@@ -161,13 +166,13 @@ function ExerciseCarouselCard({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={cn('relative flex-shrink-0 cursor-pointer', isDragging && 'z-50 opacity-50')}
+      className={cn('relative shrink-0 cursor-pointer', isDragging && 'z-50 opacity-50')}
     >
       <button
         onClick={onClick}
         disabled={disabled}
         className={cn(
-          'flex h-[60px] min-w-[120px] max-w-[160px] flex-col items-start justify-center',
+          'flex h-15 min-w-30 max-w-40 flex-col items-start justify-center',
           'rounded-xl border-2 px-3 py-2',
           'transition-all duration-200',
           'hover:border-primary/50 relative',

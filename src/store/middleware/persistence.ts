@@ -1,12 +1,12 @@
-import { Middleware } from '@reduxjs/toolkit';
-import type { SessionBackup, SessionState } from '@/types/session';
+import { Middleware } from '@reduxjs/toolkit'
+import type { SessionBackup, SessionState } from '@/types/session'
 
 // ============================================================================
 // CONSTANTS
 // ============================================================================
 
-const STORAGE_KEY = 'b-fit-session-backup';
-const BACKUP_VERSION = '1.0.0';
+const STORAGE_KEY = 'b-fit-session-backup'
+const BACKUP_VERSION = '1.0.0'
 
 // ============================================================================
 // LOCALSTORAGE PERSISTENCE MIDDLEWARE
@@ -18,43 +18,47 @@ const BACKUP_VERSION = '1.0.0';
  *
  * This is the ONLY persistence layer during a session - no DB writes until completion.
  */
-export const localStoragePersistenceMiddleware: Middleware =
-  (storeAPI) => (next) => (action) => {
-    // Let the action go through first
-    const result = next(action);
+export const localStoragePersistenceMiddleware: Middleware = (storeAPI) => (next) => (action) => {
+  // Let the action go through first
+  const result = next(action)
 
-    // Get current state after action
-    const state = storeAPI.getState() as { session: SessionState };
-    const sessionState = state.session;
+  // Get current state after action
+  const state = storeAPI.getState() as { session: SessionState }
+  const sessionState = state.session
 
-    // Only handle session actions
-    if (typeof action.type === 'string' && action.type.startsWith('session/')) {
-      // Save to LocalStorage if session is active
-      if (sessionState.isActive && sessionState.sessionId) {
-        try {
-          const backup: SessionBackup = {
-            state: sessionState,
-            timestamp: Date.now(),
-            version: BACKUP_VERSION,
-          };
+  // Type guard for Redux actions
+  const isReduxAction = (act: unknown): act is { type: string } => {
+    return typeof act === 'object' && act !== null && 'type' in act && typeof (act as { type: unknown }).type === 'string'
+  }
 
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(backup));
-        } catch (error) {
-          console.error('Failed to save session to LocalStorage:', error);
+  // Only handle session actions
+  if (isReduxAction(action) && action.type.startsWith('session/')) {
+    // Save to LocalStorage if session is active
+    if (sessionState.isActive && sessionState.sessionId) {
+      try {
+        const backup: SessionBackup = {
+          state: sessionState,
+          timestamp: Date.now(),
+          version: BACKUP_VERSION,
         }
-      }
-      // Clear LocalStorage if session was reset
-      else if (action.type === 'session/resetSessionState') {
-        try {
-          localStorage.removeItem(STORAGE_KEY);
-        } catch (error) {
-          console.error('Failed to clear LocalStorage backup:', error);
-        }
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(backup))
+      } catch (error) {
+        console.error('Failed to save session to LocalStorage:', error)
       }
     }
+    // Clear LocalStorage if session was reset
+    else if (action.type === 'session/resetSessionState') {
+      try {
+        localStorage.removeItem(STORAGE_KEY)
+      } catch (error) {
+        console.error('Failed to clear LocalStorage backup:', error)
+      }
+    }
+  }
 
-    return result;
-  };
+  return result
+}
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -65,30 +69,30 @@ export const localStoragePersistenceMiddleware: Middleware =
  */
 export function loadSessionBackup(): SessionBackup | null {
   try {
-    const backupJson = localStorage.getItem(STORAGE_KEY);
-    if (!backupJson) return null;
+    const backupJson = localStorage.getItem(STORAGE_KEY)
+    if (!backupJson) return null
 
-    const backup: SessionBackup = JSON.parse(backupJson);
+    const backup: SessionBackup = JSON.parse(backupJson)
 
     // Validate version compatibility
     if (backup.version !== BACKUP_VERSION) {
-      console.warn('Session backup version mismatch, clearing backup');
-      localStorage.removeItem(STORAGE_KEY);
-      return null;
+      console.warn('Session backup version mismatch, clearing backup')
+      localStorage.removeItem(STORAGE_KEY)
+      return null
     }
 
     // Validate backup age (don't restore if > 24 hours old)
-    const hoursSinceBackup = (Date.now() - backup.timestamp) / (1000 * 60 * 60);
+    const hoursSinceBackup = (Date.now() - backup.timestamp) / (1000 * 60 * 60)
     if (hoursSinceBackup > 24) {
-      console.warn('Session backup is too old (>24h), clearing backup');
-      localStorage.removeItem(STORAGE_KEY);
-      return null;
+      console.warn('Session backup is too old (>24h), clearing backup')
+      localStorage.removeItem(STORAGE_KEY)
+      return null
     }
 
-    return backup;
+    return backup
   } catch (error) {
-    console.error('Failed to load session backup:', error);
-    return null;
+    console.error('Failed to load session backup:', error)
+    return null
   }
 }
 
@@ -97,9 +101,9 @@ export function loadSessionBackup(): SessionBackup | null {
  */
 export function clearSessionBackup(): void {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY)
   } catch (error) {
-    console.error('Failed to clear session backup:', error);
+    console.error('Failed to clear session backup:', error)
   }
 }
 
@@ -107,6 +111,6 @@ export function clearSessionBackup(): void {
  * Check if a backup exists for a given session ID
  */
 export function hasBackupForSession(sessionId: string): boolean {
-  const backup = loadSessionBackup();
-  return backup?.state.sessionId === sessionId;
+  const backup = loadSessionBackup()
+  return backup?.state.sessionId === sessionId
 }

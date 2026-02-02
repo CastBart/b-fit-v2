@@ -6,9 +6,9 @@
  * - Undo last set
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Drawer,
   DrawerClose,
@@ -18,19 +18,19 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Settings, Plus, Minus, Undo2 } from 'lucide-react';
-import { useAppDispatch } from '@/store/hooks';
-import { addSet, removeLastSet, undoLastCompletedSet } from '@/store/slices/sessionSlice';
-import { toast } from 'sonner';
+} from '@/components/ui/drawer'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Settings, Plus, Minus, Undo2 } from 'lucide-react'
+import { useAppDispatch } from '@/store/hooks'
+import { addSet, removeLastSet, undoLastCompletedSet } from '@/store/slices/sessionSlice'
+import { toast } from 'sonner'
 
 interface SetSettingsDrawerProps {
-  instanceId: string;
-  currentSetCount: number;
-  hasCompletedSets: boolean;
-  disabled?: boolean;
+  instanceId: string
+  currentSetCount: number
+  hasCompletedSets: boolean
+  disabled?: boolean
 }
 
 export function SetSettingsDrawer({
@@ -39,35 +39,30 @@ export function SetSettingsDrawer({
   hasCompletedSets,
   disabled,
 }: SetSettingsDrawerProps) {
-  const dispatch = useAppDispatch();
-  const [open, setOpen] = useState(false);
+  const dispatch = useAppDispatch()
+  const [open, setOpen] = useState(false)
 
   const handleAddSet = () => {
-    dispatch(addSet({ instanceId }));
-    toast.success('Set added');
-  };
+    dispatch(addSet({ instanceId }))
+    toast.success('Set added')
+  }
 
   const handleRemoveSet = () => {
-    if (currentSetCount === 0) return;
-    dispatch(removeLastSet({ instanceId }));
-    toast.success('Set removed');
-  };
+    if (currentSetCount === 0) return
+    dispatch(removeLastSet({ instanceId }))
+    toast.success('Set removed')
+  }
 
   const handleUndoLastSet = () => {
-    dispatch(undoLastCompletedSet({ instanceId }));
-    toast.success('Set undone');
-    setOpen(false);
-  };
+    dispatch(undoLastCompletedSet({ instanceId }))
+    toast.success('Set undone')
+    setOpen(false)
+  }
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={disabled}
-          className="h-8 w-8"
-        >
+        <Button variant="ghost" size="icon" disabled={disabled} className="h-8 w-8">
           <Settings className="h-4 w-4" />
         </Button>
       </DrawerTrigger>
@@ -75,9 +70,7 @@ export function SetSettingsDrawer({
       <DrawerContent className="max-w-[600px] mx-auto">
         <DrawerHeader>
           <DrawerTitle className="text-center text-2xl">Set Settings</DrawerTitle>
-          <DrawerDescription className="hidden">
-            Manage sets for this exercise
-          </DrawerDescription>
+          <DrawerDescription className="hidden">Manage sets for this exercise</DrawerDescription>
           <Separator className="mt-2" />
         </DrawerHeader>
 
@@ -95,9 +88,7 @@ export function SetSettingsDrawer({
             </Button>
 
             <div className="flex flex-col items-center min-w-[120px]">
-              <div className="text-5xl font-bold tabular-nums">
-                {currentSetCount}
-              </div>
+              <div className="text-5xl font-bold tabular-nums">{currentSetCount}</div>
               <p className="text-sm text-muted-foreground mt-1">
                 {currentSetCount === 1 ? 'Set' : 'Sets'}
               </p>
@@ -134,5 +125,5 @@ export function SetSettingsDrawer({
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  );
+  )
 }

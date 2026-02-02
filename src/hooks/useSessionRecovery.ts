@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { rehydrateSession } from '@/store/slices/sessionSlice';
-import { loadSessionBackup } from '@/store/middleware/persistence';
+import { useEffect, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { rehydrateSession } from '@/store/slices/sessionSlice'
+import { loadSessionBackup } from '@/store/middleware/persistence'
 
 /**
  * Hook that handles session recovery from LocalStorage.
@@ -10,37 +10,37 @@ import { loadSessionBackup } from '@/store/middleware/persistence';
  * @returns Recovery status
  */
 export function useSessionRecovery(): {
-  isRecovering: boolean;
-  hasActiveSession: boolean;
+  isRecovering: boolean
+  hasActiveSession: boolean
 } {
-  const dispatch = useAppDispatch();
-  const isActive = useAppSelector((state) => state.session.isActive);
-  const [isRecovering, setIsRecovering] = useState(true);
+  const dispatch = useAppDispatch()
+  const isActive = useAppSelector((state) => state.session.isActive)
+  const [isRecovering, setIsRecovering] = useState(true)
 
   useEffect(() => {
     // Only attempt recovery if no active session in Redux
     if (isActive) {
-      setIsRecovering(false);
-      return;
+      setIsRecovering(false)
+      return
     }
 
     try {
-      const backup = loadSessionBackup();
+      const backup = loadSessionBackup()
 
       if (backup && backup.state.isActive) {
         // Rehydrate session from backup
-        dispatch(rehydrateSession(backup.state));
-        console.log('✅ Session recovered from LocalStorage');
+        dispatch(rehydrateSession(backup.state))
+        console.log('✅ Session recovered from LocalStorage')
       }
     } catch (error) {
-      console.error('Failed to recover session:', error);
+      console.error('Failed to recover session:', error)
     } finally {
-      setIsRecovering(false);
+      setIsRecovering(false)
     }
-  }, []); // Only run once on mount
+  }, []) // Only run once on mount
 
   return {
     isRecovering,
     hasActiveSession: isActive,
-  };
+  }
 }

@@ -4,10 +4,11 @@
  * Helper functions for navigating to session page from other parts of the app.
  */
 
-import type { AppDispatch } from '@/store/store';
-import { startSession, startFreeSession } from '@/store/slices/sessionSlice';
-import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
-import type { SessionExerciseEntry } from '@/types/session';
+import type { AppDispatch } from '@/store/store'
+import { startSession, startFreeSession } from '@/store/slices/sessionSlice'
+import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import type { SessionExerciseEntry } from '@/types/session'
+import type { ExerciseType, MetricType } from '@prisma/client'
 
 /**
  * Start a workout session from a workout object.
@@ -41,24 +42,24 @@ import type { SessionExerciseEntry } from '@/types/session';
  */
 export function startWorkoutSession(
   workout: {
-    id: string;
-    name: string;
+    id: string
+    name: string
     exercises: Array<{
-      id: string;
-      exerciseId: string;
+      id: string
+      exerciseId: string
       exercise: {
-        name: string;
-        exerciseType: string;
-        metricType: string;
-      };
-      order: number;
-      groupId: string | null;
-      sets: number;
-      reps: number | null;
-      weight: number | null;
-      restSeconds: number;
-      notes: string | null;
-    }>;
+        name: string
+        exerciseType: string
+        metricType: string
+      }
+      order: number
+      groupId: string | null
+      sets: number
+      reps: number | null
+      weight: number | null
+      restSeconds: number
+      notes: string | null
+    }>
   },
   dispatch: AppDispatch,
   router: AppRouterInstance
@@ -76,10 +77,10 @@ export function startWorkoutSession(
       targetReps: we.reps,
       targetWeight: we.weight,
       targetRestSeconds: we.restSeconds,
-      exerciseType: we.exercise.exerciseType as any, // Type assertion for Prisma enum
-      metricType: we.exercise.metricType as any,
+      exerciseType: we.exercise.exerciseType as ExerciseType,
+      metricType: we.exercise.metricType as MetricType,
       notes: we.notes,
-    }));
+    }))
 
   // Dispatch session start
   dispatch(
@@ -88,10 +89,10 @@ export function startWorkoutSession(
       workoutName: workout.name,
       exercises,
     })
-  );
+  )
 
   // Navigate to session page
-  router.push('/session');
+  router.push('/session')
 }
 
 /**
@@ -122,10 +123,7 @@ export function startWorkoutSession(
  * }
  * ```
  */
-export function startStandaloneSession(
-  dispatch: AppDispatch,
-  router: AppRouterInstance
-): void {
-  dispatch(startFreeSession({ name: 'Standalone Workout' }));
-  router.push('/session');
+export function startStandaloneSession(dispatch: AppDispatch, router: AppRouterInstance): void {
+  dispatch(startFreeSession({ name: 'Standalone Workout' }))
+  router.push('/session')
 }

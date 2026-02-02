@@ -2,11 +2,11 @@
 
 import { auth } from '@/lib/auth/auth.config'
 import { prisma } from '@/lib/db/prisma'
+import type { Prisma } from '@prisma/client'
 import {
   saveSessionSchema,
   getSessionByIdSchema,
   sessionFiltersSchema,
-  type SaveSessionInput,
   type GetSessionByIdInput,
   type SessionFiltersInput,
 } from '@/lib/validations/session'
@@ -49,10 +49,6 @@ export async function saveCompletedSession(
     }
 
     const validated = saveSessionSchema.parse(payload)
-
-    // Calculate duration in minutes
-    const durationMs = validated.completeTime - validated.startTime
-    const durationMinutes = Math.floor(durationMs / 60000)
 
     // Create session with all exercises and sets in one transaction
     const trainingSession = await prisma.$transaction(async (tx) => {
@@ -246,11 +242,11 @@ export async function getUserSessions(filters?: SessionFiltersInput): Promise<
       return { success: false, error: 'Unauthorized' }
     }
 
-    const validated = filters ? sessionFiltersSchema.parse(filters) : {}
+    const validated = filters ? sessionFiltersSchema.parse(filters) : ({} as SessionFiltersInput)
     const { status, workoutId, startDate, endDate, search, page = 1, limit = 20 } = validated
 
     // Build where clause
-    const where: any = {
+    const where: Prisma.TrainingSessionWhereInput = {
       userId: session.user.id,
     }
 

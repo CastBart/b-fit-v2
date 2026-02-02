@@ -1,11 +1,7 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import {
-  saveCompletedSession,
-  completeSession,
-  abandonSession,
-} from '@/server/actions/sessions';
-import type { SaveSessionPayload } from '@/types/session';
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { saveCompletedSession, completeSession, abandonSession } from '@/server/actions/sessions'
+import type { SaveSessionPayload } from '@/types/session'
 
 // ============================================================================
 // SAVE COMPLETED SESSION
@@ -16,28 +12,28 @@ import type { SaveSessionPayload } from '@/types/session';
  * This is called when the user completes a workout session.
  */
 export function useSaveCompletedSession() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (payload: SaveSessionPayload) => {
-      const result = await saveCompletedSession(payload);
+      const result = await saveCompletedSession(payload)
 
       if (!result.success || !result.data) {
-        throw new Error(result.error || 'Failed to save session');
+        throw new Error(result.error || 'Failed to save session')
       }
 
-      return result.data; // Returns session ID
+      return result.data // Returns session ID
     },
     onSuccess: (sessionId) => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] });
-      queryClient.invalidateQueries({ queryKey: ['session', sessionId] });
-      toast.success('🎉 Workout saved!');
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['session', sessionId] })
+      toast.success('🎉 Workout saved!')
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to save workout');
-      console.error('Save session error:', error);
+      toast.error(error.message || 'Failed to save workout')
+      console.error('Save session error:', error)
     },
-  });
+  })
 }
 
 // ============================================================================
@@ -49,28 +45,28 @@ export function useSaveCompletedSession() {
  * This is the primary way users finish a workout.
  */
 export function useCompleteSession() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (payload: SaveSessionPayload) => {
-      const result = await completeSession(payload);
+      const result = await completeSession(payload)
 
       if (!result.success) {
-        throw new Error(result.error || 'Failed to complete session');
+        throw new Error(result.error || 'Failed to complete session')
       }
 
-      return payload.sessionId;
+      return payload.sessionId
     },
     onSuccess: (sessionId) => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] });
-      queryClient.invalidateQueries({ queryKey: ['session', sessionId] });
-      toast.success('🎉 Workout completed!');
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['session', sessionId] })
+      toast.success('🎉 Workout completed!')
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to complete workout');
-      console.error('Complete session error:', error);
+      toast.error(error.message || 'Failed to complete workout')
+      console.error('Complete session error:', error)
     },
-  });
+  })
 }
 
 // ============================================================================
@@ -82,26 +78,26 @@ export function useCompleteSession() {
  * Saves partial progress for later review.
  */
 export function useAbandonSession() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (payload: SaveSessionPayload) => {
-      const result = await abandonSession(payload);
+      const result = await abandonSession(payload)
 
       if (!result.success) {
-        throw new Error(result.error || 'Failed to abandon session');
+        throw new Error(result.error || 'Failed to abandon session')
       }
 
-      return payload.sessionId;
+      return payload.sessionId
     },
     onSuccess: (sessionId) => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] });
-      queryClient.invalidateQueries({ queryKey: ['session', sessionId] });
-      toast.success('Session saved as abandoned');
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['session', sessionId] })
+      toast.success('Session saved as abandoned')
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to abandon session');
-      console.error('Abandon session error:', error);
+      toast.error(error.message || 'Failed to abandon session')
+      console.error('Abandon session error:', error)
     },
-  });
+  })
 }

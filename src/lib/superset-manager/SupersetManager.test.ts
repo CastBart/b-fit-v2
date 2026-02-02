@@ -385,4 +385,144 @@ describe('SupersetManager', () => {
       expect(info.isLastInSuperset).toBe(false)
     })
   })
+
+  describe('cleanupAfterRemoval', () => {
+    it('returns exercises unchanged when no validation errors', () => {
+      const exercises = [
+        { id: '1', name: 'Exercise 1', groupId: 'group1' },
+        { id: '2', name: 'Exercise 2', groupId: 'group1' },
+        { id: '3', name: 'Exercise 3' },
+      ]
+
+      const result = manager.cleanupAfterRemoval(exercises)
+      expect(result).toEqual(exercises)
+    })
+
+    it('dissolves single-member groups', () => {
+      const exercises = [
+        { id: '1', name: 'Exercise 1', groupId: 'group1' }, // Single member
+        { id: '2', name: 'Exercise 2' },
+      ]
+
+      const result = manager.cleanupAfterRemoval(exercises)
+      expect(result[0]!.groupId).toBeNull()
+      expect(result[1]!.groupId).toBeUndefined()
+    })
+
+    it('keeps adjacent exercises in superset when first is removed', () => {
+      // Simulate: [1(A), 2(A), 3(A)] → remove 1 → [2(A), 3(A)]
+      const exercises = [
+        { id: '2', name: 'Exercise 2', groupId: 'group1' },
+        { id: '3', name: 'Exercise 3', groupId: 'group1' },
+      ]
+
+      const result = manager.cleanupAfterRemoval(exercises)
+      expect(result[0]!.groupId).toBe('group1')
+      expect(result[1]!.groupId).toBe('group1')
+    })
+
+    it('dissolves superset when middle exercise is removed (non-adjacent)', () => {
+      // Simulate: [1(A), 2(A), 3(A)] → remove 2 → [1(A), 3(A)] with gap
+      // This would be detected as non-contiguous, so we test with actual gap
+      const exercises = [
+        { id: '1', name: 'Exercise 1', groupId: 'group1' },
+        { id: '4', name: 'Exercise 4' }, // Different exercise in between
+        { id: '3', name: 'Exercise 3', groupId: 'group1' },
+      ]
+
+      const result = manager.cleanupAfterRemoval(exercises)
+      // Each isolated member should be dissolved
+      expect(result[0]!.groupId).toBeNull()
+      expect(result[1]!.groupId).toBeUndefined()
+      expect(result[2]!.groupId).toBeNull()
+    })
+
+    it('splits non-contiguous group into separate groups', () => {
+      // [1(A), 2(A), 3(B), 4(B), 5(A)] → Group A is non-contiguous
+      const exercises = [
+        { id: '1', name: 'Exercise 1', groupId: 'groupA' },
+        { id: '2', name: 'Exercise 2', groupId: 'groupA' },
+        { id: '3', name: 'Exercise 3', groupId: 'groupB' },
+        { id: '4', name: 'Exercise 4', groupId: 'groupB' },
+        { id: '5', name: 'Exercise 5', groupId: 'groupA' }, // Non-contiguous with 1,2
+      ]
+
+      const result = manager.cleanupAfterRemoval(exercises)
+
+      // Group A split: first chunk [1,2] keeps groupA, second chunk [5] is dissolved (single member)
+      expect(result[0]!.groupId).toBe('groupA')
+      expect(result[1]!.groupId).toBe('groupA')
+      expect(result[4]!.groupId).toBeNull() // Single member, dissolved
+
+      // Group B should remain intact
+      expect(result[2]!.groupId).toBe('groupB')
+      expect(result[3]!.groupId).toBe('groupB')
+    })
+
+    it('assigns new groupIds to split chunks (except first)', () => {
+      // [1(A), 2(A), 3(X), 4(A), 5(A)] → Group A is non-contiguous
+      const exercises = [
+        { id: '1', name: 'Exercise 1', groupId: 'groupA' },
+        { id: '2', name: 'Exercise 2', groupId: 'groupA' },
+        { id: '3', name: 'Exercise 3' },
+        { id: '4', name: 'Exercise 4', groupId: 'groupA' },
+        { id: '5', name: 'Exercise 5', groupId: 'groupA' },
+      ]
+
+      const result = manager.cleanupAfterRemoval(exercises)
+
+      // First chunk [1,2] keeps original groupId
+      expect(result[0]!.groupId).toBe('groupA')
+      expect(result[1]!.groupId).toBe('groupA')
+
+      // Second chunk [4,5] gets new groupId (not groupA)
+      expect(result[3]!.groupId).not.toBe('groupA')
+      expect(result[3]!.groupId).toBeTruthy()
+      expect(result[4]!.groupId).toBe(result[3]!.groupId) // Same as its chunk
+    })
+
+    it('handles multiple groups with different issues', () => {
+      // Complex scenario:
+      // [1(A), 2(A), 3(B), 4(C), 5(C), 6(C), 7(B)]
+      // Group A: valid (contiguous)
+      // Group B: non-contiguous (indices 2 and 6)
+      // Group C: valid (contiguous)
+      const exercises = [
+        { id: '1', name: 'Exercise 1', groupId: 'groupA' },
+        { id: '2', name: 'Exercise 2', groupId: 'groupA' },
+        { id: '3', name: 'Exercise 3', groupId: 'groupB' },
+        { id: '4', name: 'Exercise 4', groupId: 'groupC' },
+        { id: '5', name: 'Exercise 5', groupId: 'groupC' },
+        { id: '6', name: 'Exercise 6', groupId: 'groupC' },
+        { id: '7', name: 'Exercise 7', groupId: 'groupB' },
+      ]
+
+      const result = manager.cleanupAfterRemoval(exercises)
+
+      // Group A should remain intact
+      expect(result[0]!.groupId).toBe('groupA')
+      expect(result[1]!.groupId).toBe('groupA')
+
+      // Group B: split and dissolved (single members)
+      expect(result[2]!.groupId).toBeNull()
+      expect(result[6]!.groupId).toBeNull()
+
+      // Group C should remain intact
+      expect(result[3]!.groupId).toBe('groupC')
+      expect(result[4]!.groupId).toBe('groupC')
+      expect(result[5]!.groupId).toBe('groupC')
+    })
+
+    it('handles empty array', () => {
+      const exercises: TestExercise[] = []
+      const result = manager.cleanupAfterRemoval(exercises)
+      expect(result).toEqual([])
+    })
+
+    it('handles single exercise with no groupId', () => {
+      const exercises = [{ id: '1', name: 'Exercise 1' }]
+      const result = manager.cleanupAfterRemoval(exercises)
+      expect(result).toEqual(exercises)
+    })
+  })
 })

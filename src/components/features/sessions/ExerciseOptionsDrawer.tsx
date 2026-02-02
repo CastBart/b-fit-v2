@@ -6,9 +6,8 @@
  * - Remove exercise
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
 import {
   Drawer,
   DrawerClose,
@@ -17,57 +16,73 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { MoreVertical, Link2, Trash2 } from 'lucide-react';
-import { useAppDispatch } from '@/store/hooks';
-import { removeExercise } from '@/store/slices/sessionSlice';
-import { toast } from 'sonner';
-import { SupersetDrawer } from './SupersetDrawer';
-import type { SessionExerciseEntry } from '@/types/session';
+} from '@/components/ui/drawer'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Link2, Trash2 } from 'lucide-react'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { removeExerciseWithCleanup } from '@/store/slices/sessionSlice'
+import { toast } from 'sonner'
+import type { SessionExerciseEntry } from '@/types/session'
+import { SupersetManager } from '@/lib/superset-manager'
 
 interface ExerciseOptionsDrawerProps {
-  exercise: SessionExerciseEntry;
-  disabled?: boolean;
+  exercise: SessionExerciseEntry | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onOpenSuperset?: () => void
+  disabled?: boolean
 }
+
+const supersetManager = new SupersetManager<SessionExerciseEntry>()
 
 export function ExerciseOptionsDrawer({
   exercise,
+  open,
+  onOpenChange,
+  onOpenSuperset,
   disabled,
 }: ExerciseOptionsDrawerProps) {
-  const dispatch = useAppDispatch();
-  const [open, setOpen] = useState(false);
-  const [supersetDrawerOpen, setSupersetDrawerOpen] = useState(false);
+  const dispatch = useAppDispatch()
+  const exercises = useAppSelector((state) => state.session.exercises)
 
   const handleRemoveExercise = () => {
-    dispatch(removeExercise({ instanceId: exercise.instanceId }));
-    toast.success(`${exercise.name} removed`);
-    setOpen(false);
-  };
+    if (!exercise) return
+
+    // Filter out the exercise to remove
+    const filtered = exercises.filter((e) => e.instanceId !== exercise.instanceId)
+
+    // Clean up supersets after removal (fix non-adjacent groups)
+    const cleaned = supersetManager.cleanupAfterRemoval(filtered)
+
+    // Dispatch single action with cleaned exercises
+    dispatch(
+      removeExerciseWithCleanup({
+        instanceId: exercise.instanceId,
+        cleanedExercises: cleaned,
+      })
+    )
+
+    toast.success(`${exercise.name} removed`)
+    onOpenChange(false)
+  }
 
   const handleOpenSuperset = () => {
-    setOpen(false);
-    setSupersetDrawerOpen(true);
-  };
+    onOpenChange(false)
+    onOpenSuperset?.()
+  }
+
+  // Don't render if no exercise selected
+  if (!exercise) {
+    return null
+  }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
-        <Button variant="ghost" size="icon" disabled={disabled}>
-          <MoreVertical className="h-5 w-5" />
-        </Button>
-      </DrawerTrigger>
-
-      <DrawerContent className="max-w-[600px] mx-auto">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="max-w-150 mx-auto">
         <DrawerHeader>
-          <DrawerTitle className="text-center text-2xl">
-            {exercise.name}
-          </DrawerTitle>
-          <DrawerDescription className="hidden">
-            Exercise options
-          </DrawerDescription>
+          <DrawerTitle className="text-center text-2xl">{exercise.name}</DrawerTitle>
+          <DrawerDescription className="hidden">Exercise options</DrawerDescription>
           <Separator className="mt-2" />
         </DrawerHeader>
 
@@ -103,13 +118,6 @@ export function ExerciseOptionsDrawer({
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
-
-      {/* Superset Drawer */}
-      <SupersetDrawer
-        open={supersetDrawerOpen}
-        onOpenChange={setSupersetDrawerOpen}
-        exercise={exercise}
-      />
     </Drawer>
-  );
+  )
 }

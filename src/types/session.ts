@@ -1,4 +1,8 @@
-import type { MetricType, ExerciseType, SessionStatus as PrismaSessionStatus } from '@prisma/client'
+import type {
+  MetricType,
+  ExerciseType,
+  SessionStatus as _PrismaSessionStatus,
+} from '@prisma/client'
 
 // ============================================================================
 // ENUMS

@@ -38,18 +38,24 @@ export function ExerciseSelectorDrawer({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [selectedExercises, setSelectedExercises] = useState<Map<string, Exercise>>(new Map())
 
-  const handleSelectionChange = useCallback((newSelectedIds: Set<string>, exerciseMap?: Map<string, Exercise>) => {
-    setSelectedIds(newSelectedIds)
-    if (exerciseMap) {
-      setSelectedExercises(exerciseMap)
-    }
-  }, [])
+  const handleSelectionChange = useCallback(
+    (newSelectedIds: Set<string>, exerciseMap?: Map<string, Exercise>) => {
+      setSelectedIds(newSelectedIds)
+      if (exerciseMap) {
+        setSelectedExercises(exerciseMap)
+      }
+    },
+    []
+  )
 
-  const handleExerciseClick = useCallback((exercise: Exercise) => {
-    // Single select mode - immediately call handler
-    onExerciseSelect([exercise])
-    onOpenChange(false)
-  }, [onExerciseSelect, onOpenChange])
+  const handleExerciseClick = useCallback(
+    (exercise: Exercise) => {
+      // Single select mode - immediately call handler
+      onExerciseSelect([exercise])
+      onOpenChange(false)
+    },
+    [onExerciseSelect, onOpenChange]
+  )
 
   const handleAddExercises = () => {
     if (selectedIds.size === 0) return

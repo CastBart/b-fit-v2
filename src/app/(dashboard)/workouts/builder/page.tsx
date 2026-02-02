@@ -253,9 +253,11 @@ export default function WorkoutBuilderPage({ editWorkoutId }: WorkoutBuilderPage
   // Handle exercise removal
   const handleExerciseRemove = (index: number) => {
     setExercises((prev) => {
-      const updated = prev.filter((_, i) => i !== index)
+      const filtered = prev.filter((_, i) => i !== index)
+      // Clean up supersets after removal (fix non-adjacent groups)
+      const cleaned = supersetManager.cleanupAfterRemoval(filtered)
       // Reorder remaining exercises
-      return updated.map((ex, i) => ({ ...ex, order: i }))
+      return cleaned.map((ex, i) => ({ ...ex, order: i }))
     })
     setSelectedExerciseIndex(null)
   }
@@ -468,7 +470,7 @@ export default function WorkoutBuilderPage({ editWorkoutId }: WorkoutBuilderPage
         <ExerciseSelectorDrawer
           open={exerciseSelectorOpen}
           onOpenChange={setExerciseSelectorOpen}
-          onExercisesAdd={handleAddExercises}
+          onExerciseSelect={(exercises) => handleAddExercises(exercises.map((ex) => ex.id))}
           disabled={!workoutId}
         />
       </div>

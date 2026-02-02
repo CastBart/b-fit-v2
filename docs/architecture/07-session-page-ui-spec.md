@@ -11,6 +11,7 @@ This document defines the UI/UX specifications for the live training session pag
 ## Layout Structure
 
 ### Overall Layout
+
 - **Theme**: Dark background (#0A0E1A or similar)
 - **Layout**: Single-page, mobile-first design
 - **Navigation**: Horizontal exercise tabs, single exercise view at a time
@@ -58,12 +59,14 @@ This document defines the UI/UX specifications for the live training session pag
 ```
 
 **Features**:
+
 - Display session name (workout name or custom free session name)
 - Edit icon opens dialog to rename session or add session notes
 - Sticky positioning (remains visible on scroll)
 - **Sync indicator** (right side): Shows sync status (✓ Synced, ⟳ Saving, ⚠ Offline)
 
 **Styling**:
+
 - Font: Large, bold (24-28px)
 - Icon: Right-aligned, medium size
 - Background: Slightly lighter than page background
@@ -89,6 +92,7 @@ This document defines the UI/UX specifications for the live training session pag
 ```
 
 **Features**:
+
 - **Horizontal scrollable** container (overflow-x: scroll)
 - Active tab: Highlighted with white/bright text, bottom border
 - Inactive tabs: Gray/muted text
@@ -97,6 +101,7 @@ This document defines the UI/UX specifications for the live training session pag
 - Touch-friendly tap targets (min 44px height)
 
 **Styling**:
+
 - Tab padding: 12px 16px
 - Active tab: White text, blue underline (2px)
 - Inactive tab: Gray text (#6B7280)
@@ -104,6 +109,7 @@ This document defines the UI/UX specifications for the live training session pag
 - Gap between tabs: 8px
 
 **Behavior**:
+
 - Clicking tab navigates to that exercise
 - Current exercise position auto-scrolls into view
 - Supports keyboard navigation (arrow keys)
@@ -123,6 +129,7 @@ This document defines the UI/UX specifications for the live training session pag
 ```
 
 **Features**:
+
 - Display current exercise name
 - Menu button (⋯) opens exercise options:
   - View exercise details
@@ -131,6 +138,7 @@ This document defines the UI/UX specifications for the live training session pag
   - View previous history
 
 **Styling**:
+
 - Font: Medium-large, semi-bold (20-24px)
 - Menu: Right-aligned, subtle gray icon
 - Padding: 16px 0
@@ -143,20 +151,18 @@ This document defines the UI/UX specifications for the live training session pag
 **Location**: Below exercise title
 
 ```tsx
-<ExerciseNotes
-  value={notes}
-  onChange={handleNotesChange}
-  placeholder="Add notes..."
-/>
+<ExerciseNotes value={notes} onChange={handleNotesChange} placeholder="Add notes..." />
 ```
 
 **Features**:
+
 - Expandable textarea (grows with content)
 - Placeholder: "Add notes..."
 - Auto-saves on blur or after 1s debounce
 - Supports multiline (max 500 chars)
 
 **Styling**:
+
 - Background: Slightly lighter than page (#0F1621)
 - Border: Subtle, rounded corners
 - Padding: 12px 16px
@@ -165,6 +171,7 @@ This document defines the UI/UX specifications for the live training session pag
 - Max height: 200px (then scrollable)
 
 **Behavior**:
+
 - Click to focus and expand
 - Debounced auto-save (1 second after typing stops)
 - Visual indicator when saving (subtle spinner or checkmark)
@@ -204,6 +211,7 @@ This document defines the UI/UX specifications for the live training session pag
 ```
 
 **Features**:
+
 - **Table-like layout** with columns: Set | Weight | Reps | Complete
 - **Completed sets**: Checkmark button filled, inputs become read-only
 - **Incomplete sets**: Empty checkmark, editable inputs
@@ -213,6 +221,7 @@ This document defines the UI/UX specifications for the live training session pag
 - **Dynamic metric fields**: Show weight/reps for WEIGHT_REPS exercises, duration for DURATION exercises, etc.
 
 **Styling**:
+
 - Header: Semi-bold, gray text, uppercase, smaller font
 - Set number: Circle or badge, white text on dark background
 - Inputs: Dark background (#1E293B), white text, rounded, large (48px height)
@@ -221,6 +230,7 @@ This document defines the UI/UX specifications for the live training session pag
 - Row spacing: 12px gap between rows
 
 **Behavior**:
+
 - **Tap input**: Opens numeric keyboard (mobile) or focuses input
 - **Complete button**: Marks set as complete, saves to DB + LS
 - **Optimistic UI**: Checkmark fills immediately, syncs in background
@@ -229,12 +239,14 @@ This document defines the UI/UX specifications for the live training session pag
 - **Remove set button**: Swipe left to delete (free sessions or before completion)
 
 **Input Validation**:
+
 - Weight: 0-9999 (kg or lbs)
 - Reps: 1-999
 - Duration: 1-86400 seconds (format: MM:SS)
 - Distance: 1-999999 meters (format: 1000m or 1km)
 
 **Advanced Metrics** (via edit icon):
+
 ```tsx
 <AdvancedMetrics>
   <DurationInput /> // For DURATION or REPS_DURATION
@@ -289,6 +301,7 @@ This document defines the UI/UX specifications for the live training session pag
 ```
 
 **Features**:
+
 - **Collapsible section**: Tap "Exercise History" to expand/collapse
 - Shows **previous workout sessions** for current exercise
 - Display: Session name, date, set data (weight/reps)
@@ -296,6 +309,7 @@ This document defines the UI/UX specifications for the live training session pag
 - Limit: Show last 3 sessions (button to "See more history")
 
 **Styling**:
+
 - Header: Semi-bold, centered, gray text
 - Chevron: Rotates on expand/collapse
 - Session card: Dark background, rounded corners, padding
@@ -304,6 +318,7 @@ This document defines the UI/UX specifications for the live training session pag
 - Background: Slightly darker than main page
 
 **Behavior**:
+
 - Collapsed by default (to save space)
 - Expands with smooth animation
 - Long-press set row → "Copy to current set" action
@@ -315,6 +330,7 @@ This document defines the UI/UX specifications for the live training session pag
 ### 1. Auto-Save & Sync
 
 **Visual Indicators**:
+
 - **Sync status badge** (top-right corner):
   - ✓ Synced (green)
   - ⟳ Saving (blue, spinning)
@@ -323,6 +339,7 @@ This document defines the UI/UX specifications for the live training session pag
   - ✕ Error (red)
 
 **Behavior**:
+
 - All changes auto-save to LocalStorage immediately (< 50ms)
 - Database sync debounced (500ms)
 - Show toast on sync errors
@@ -341,6 +358,7 @@ This document defines the UI/UX specifications for the live training session pag
 ```
 
 **Features**:
+
 - Countdown timer after completing set
 - Vibration/sound notification when complete
 - Skip or extend rest period
@@ -352,6 +370,7 @@ This document defines the UI/UX specifications for the live training session pag
 **Location**: Bottom of page or overflow menu
 
 **Actions**:
+
 - **Pause Session**: Temporarily pause (future enhancement)
 - **Add Exercise**: Open exercise picker, add to current session
 - **Finish Session**: Complete session, navigate to summary
@@ -361,6 +380,7 @@ This document defines the UI/UX specifications for the live training session pag
 
 **Trigger**: Tap "+" button in exercise tabs
 **Flow**:
+
 1. Open **Exercise Picker Drawer** (similar to workout builder)
 2. Search/filter exercises
 3. Tap exercise → Add to session
@@ -377,6 +397,7 @@ This document defines the UI/UX specifications for the live training session pag
 ### 6. Superset Indicator
 
 **For exercises in a superset**:
+
 - Show visual connector (blue vertical line on left side)
 - Badge: "Superset A", "Superset B", etc.
 - Alternate between superset exercises (A1 → B1 → A2 → B2)
@@ -386,6 +407,7 @@ This document defines the UI/UX specifications for the live training session pag
 ## Responsive Design
 
 ### Mobile (< 768px)
+
 - **Full-width layout**: No side padding
 - **Large touch targets**: 48px minimum
 - **Sticky header**: Always visible
@@ -393,12 +415,14 @@ This document defines the UI/UX specifications for the live training session pag
 - **Numeric keyboard**: Auto-open for weight/reps inputs
 
 ### Tablet (768px - 1024px)
+
 - **Centered layout**: Max width 768px
 - **Side padding**: 24px
 - **Larger font sizes**: More readable
 - **Optional sidebar**: Quick exercise list (collapsed by default)
 
 ### Desktop (> 1024px)
+
 - **Two-column layout** (optional):
   - Left: Exercise list (sticky sidebar)
   - Right: Current exercise + set logger
@@ -432,6 +456,7 @@ This document defines the UI/UX specifications for the live training session pag
 ## Error States
 
 ### Network Error
+
 ```
 ⚠ Connection lost
 Changes saved locally. Will sync when online.
@@ -439,6 +464,7 @@ Changes saved locally. Will sync when online.
 ```
 
 ### Sync Error
+
 ```
 ✕ Sync failed
 Some changes couldn't be saved. Please check your connection.
@@ -446,6 +472,7 @@ Some changes couldn't be saved. Please check your connection.
 ```
 
 ### Session Not Found
+
 ```
 Session not found or expired.
 [Return to Workouts]
@@ -456,12 +483,14 @@ Session not found or expired.
 ## Success States
 
 ### Set Completed
+
 ```
 ✓ Set 1 completed
 12 kg × 10 reps
 ```
 
 ### Session Completed
+
 ```
 🎉 Workout Complete!
 Arms and Shoulders - 45 minutes

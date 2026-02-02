@@ -119,8 +119,8 @@
 //                     name="Weight"
 //                     type="number"
 //                     step="any"
-//                     className={`text-center rounded-full transition 
-//                       ${currentIsActive ? "bg-muted" : ""} 
+//                     className={`text-center rounded-full transition
+//                       ${currentIsActive ? "bg-muted" : ""}
 //                       ${
 //                         !currentIsActive && !set.completed
 //          /                 ? "opacity-40"

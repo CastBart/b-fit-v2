@@ -1,5 +1,5 @@
-import { useDispatch, useSelector, useStore } from 'react-redux';
-import type { AppDispatch, AppStore, RootState } from './store';
+import { useDispatch, useSelector, useStore } from 'react-redux'
+import type { AppDispatch, AppStore, RootState } from './store'
 
 // ============================================================================
 // TYPED REDUX HOOKS
@@ -9,16 +9,16 @@ import type { AppDispatch, AppStore, RootState } from './store';
  * Typed version of useDispatch hook
  * Use throughout your app instead of plain `useDispatch`
  */
-export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>()
 
 /**
  * Typed version of useSelector hook
  * Use throughout your app instead of plain `useSelector`
  */
-export const useAppSelector = useSelector.withTypes<RootState>();
+export const useAppSelector = useSelector.withTypes<RootState>()
 
 /**
  * Typed version of useStore hook
  * Use throughout your app instead of plain `useStore`
  */
-export const useAppStore = useStore.withTypes<AppStore>();
+export const useAppStore = useStore.withTypes<AppStore>()

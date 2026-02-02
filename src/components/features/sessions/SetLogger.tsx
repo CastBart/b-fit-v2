@@ -25,22 +25,22 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Check, CheckCircle2 } from 'lucide-react'
+import { Check, CheckCircle2, MoreVertical } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { completeSet, updateSet, updateExerciseNotes } from '@/store/slices/sessionSlice'
 import { toast } from 'sonner'
 import { SetSettingsDrawer } from './SetSettingsDrawer'
-import { ExerciseOptionsDrawer } from './ExerciseOptionsDrawer'
-import type { SessionExerciseEntry, SetMetrics } from '@/types/session'
+import type { SessionExerciseEntry, SetMetrics, SessionSet } from '@/types/session'
 import type { MetricType } from '@prisma/client'
 
 interface SetLoggerProps {
   exercise: SessionExerciseEntry
   disabled?: boolean
+  onOpenOptions?: () => void
 }
 
-export function SetLogger({ exercise, disabled }: SetLoggerProps) {
+export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps) {
   const dispatch = useAppDispatch()
 
   // Get progress from Redux
@@ -134,8 +134,10 @@ export function SetLogger({ exercise, disabled }: SetLoggerProps) {
           </p>
         </div>
 
-        {/* Exercise Options Menu */}
-        <ExerciseOptionsDrawer exercise={exercise} disabled={disabled} />
+        {/* Exercise Options Menu Button */}
+        <Button variant="ghost" size="icon" disabled={disabled} onClick={onOpenOptions}>
+          <MoreVertical className="h-5 w-5" />
+        </Button>
       </div>
 
       {/* Set Logging Table */}
@@ -156,7 +158,7 @@ export function SetLogger({ exercise, disabled }: SetLoggerProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sets.map((set, index) => {
+            {sets.map((set) => {
               const isActive = set.setNumber === activeSetNumber
               const isCompleted = set.completed
 
@@ -293,7 +295,7 @@ function renderTableHeaders(metricType: MetricType): React.ReactNode {
 function renderSetInputs(
   setNumber: number,
   metricType: MetricType,
-  set: any,
+  set: SessionSet,
   isActive: boolean,
   isCompleted: boolean,
   currentInputs: SetMetrics,

@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { SessionStatus } from '@/types/session';
+import { z } from 'zod'
+import { SessionStatus } from '@/types/session'
 
 // ============================================================================
 // SESSION VALIDATION SCHEMAS
@@ -42,14 +42,14 @@ export const saveSessionSchema = z.object({
       ),
     })
   ),
-});
+})
 
 /**
  * Schema for getting a session by ID
  */
 export const getSessionByIdSchema = z.object({
   sessionId: z.string().cuid('Invalid session ID'),
-});
+})
 
 /**
  * Schema for filtering sessions list
@@ -62,12 +62,12 @@ export const sessionFiltersSchema = z.object({
   search: z.string().max(100).optional(),
   page: z.number().int().min(1).default(1),
   limit: z.number().int().min(1).max(100).default(20),
-});
+})
 
 // ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
-export type SaveSessionInput = z.infer<typeof saveSessionSchema>;
-export type GetSessionByIdInput = z.infer<typeof getSessionByIdSchema>;
-export type SessionFiltersInput = z.infer<typeof sessionFiltersSchema>;
+export type SaveSessionInput = z.infer<typeof saveSessionSchema>
+export type GetSessionByIdInput = z.infer<typeof getSessionByIdSchema>
+export type SessionFiltersInput = z.infer<typeof sessionFiltersSchema>

@@ -9,10 +9,10 @@
  * - Session notes
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Drawer,
   DrawerClose,
@@ -22,11 +22,11 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
+} from '@/components/ui/drawer'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,38 +36,30 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import {
-  CalendarDays,
-  Hourglass,
-  Pause,
-  Play,
-  CheckCircle,
-  XCircle,
-  Loader2,
-} from 'lucide-react';
-import { useAppSelector, useAppDispatch } from '@/store/hooks';
+} from '@/components/ui/alert-dialog'
+import { CalendarDays, Hourglass, Pause, Play, CheckCircle, XCircle, Loader2 } from 'lucide-react'
+import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import {
   pauseSession,
   resumeSession,
   updateSessionNotes,
   resetSessionState,
   endSession,
-} from '@/store/slices/sessionSlice';
-import { clearSessionBackup } from '@/store/middleware/persistence';
-import { useCompleteSession, useAbandonSession } from '@/hooks/mutations/useSessionMutations';
-import { useElapsedSessionTime } from '@/hooks/useElapsedSessionTime';
-import { formatStartTime, formatDuration } from '@/lib/utils/format-time';
-import { SessionStatus, type SaveSessionPayload } from '@/types/session';
-import { toast } from 'sonner';
+} from '@/store/slices/sessionSlice'
+import { clearSessionBackup } from '@/store/middleware/persistence'
+import { useCompleteSession, useAbandonSession } from '@/hooks/mutations/useSessionMutations'
+import { useElapsedSessionTime } from '@/hooks/useElapsedSessionTime'
+import { formatStartTime, formatDuration } from '@/lib/utils/format-time'
+import { SessionStatus, type SaveSessionPayload } from '@/types/session'
+import { toast } from 'sonner'
 
 interface SessionSettingsDrawerProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) {
-  const router = useRouter();
-  const dispatch = useAppDispatch();
+  const router = useRouter()
+  const dispatch = useAppDispatch()
 
   // Redux state
   const {
@@ -80,27 +72,27 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
     progress,
     sessionNotes,
     accumulatedPauseDuration,
-  } = useAppSelector((state) => state.session);
+  } = useAppSelector((state) => state.session)
 
   // Live elapsed time
-  const elapsedSeconds = useElapsedSessionTime();
+  const elapsedSeconds = useElapsedSessionTime()
 
   // Mutations
-  const completeSessionMutation = useCompleteSession();
-  const abandonSessionMutation = useAbandonSession();
+  const completeSessionMutation = useCompleteSession()
+  const abandonSessionMutation = useAbandonSession()
 
   // Local state
-  const [open, setOpen] = useState(false);
-  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
-  const [abandonDialogOpen, setAbandonDialogOpen] = useState(false);
-  const [notes, setNotes] = useState(sessionNotes || '');
+  const [open, setOpen] = useState(false)
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false)
+  const [abandonDialogOpen, setAbandonDialogOpen] = useState(false)
+  const [notes, setNotes] = useState(sessionNotes || '')
 
   // Update notes in Redux on blur
   const handleNotesBlur = () => {
     if (notes !== sessionNotes) {
-      dispatch(updateSessionNotes(notes));
+      dispatch(updateSessionNotes(notes))
     }
-  };
+  }
 
   // Build save payload from Redux state
   const buildSavePayload = (status: SessionStatus): SaveSessionPayload => {
@@ -114,7 +106,7 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
       status,
       sessionNotes: notes || null,
       exercises: exercises.map((exercise) => {
-        const exerciseProgress = progress[exercise.instanceId];
+        const exerciseProgress = progress[exercise.instanceId]
         return {
           instanceId: exercise.instanceId,
           exerciseId: exercise.exerciseId,
@@ -125,83 +117,84 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
           targetWeight: exercise.targetWeight,
           targetRestSeconds: exercise.targetRestSeconds,
           notes: exerciseProgress?.notes || null,
-          sets: exerciseProgress?.sets.map((set) => ({
-            setNumber: set.setNumber,
-            weight: set.metrics.weight || null,
-            reps: set.metrics.reps || null,
-            duration: set.metrics.duration || null,
-            distance: set.metrics.distance || null,
-            counterWeight: set.metrics.counterWeight || null,
-            isCompleted: set.completed,
-            completedAt: set.completedAt || null,
-          })) || [],
-        };
+          sets:
+            exerciseProgress?.sets.map((set) => ({
+              setNumber: set.setNumber,
+              weight: set.metrics.weight || null,
+              reps: set.metrics.reps || null,
+              duration: set.metrics.duration || null,
+              distance: set.metrics.distance || null,
+              counterWeight: set.metrics.counterWeight || null,
+              isCompleted: set.completed,
+              completedAt: set.completedAt || null,
+            })) || [],
+        }
       }),
-    };
-  };
+    }
+  }
 
   // Handle complete session
   const handleComplete = async () => {
     try {
-      const payload = buildSavePayload(SessionStatus.COMPLETED);
+      const payload = buildSavePayload(SessionStatus.COMPLETED)
 
       // End session (sets completeTime, stops timer)
-      dispatch(endSession());
+      dispatch(endSession())
 
       // Save to database
-      await completeSessionMutation.mutateAsync(payload);
+      await completeSessionMutation.mutateAsync(payload)
 
       // Clear Redux state and LocalStorage
-      dispatch(resetSessionState());
-      clearSessionBackup();
+      dispatch(resetSessionState())
+      clearSessionBackup()
 
       // Navigate to sessions list
-      router.push('/sessions');
+      router.push('/sessions')
     } catch (error) {
-      console.error('Failed to complete session:', error);
-      toast.error('Failed to save session. Please try again.');
+      console.error('Failed to complete session:', error)
+      toast.error('Failed to save session. Please try again.')
     } finally {
-      setCompleteDialogOpen(false);
-      setOpen(false);
+      setCompleteDialogOpen(false)
+      setOpen(false)
     }
-  };
+  }
 
   // Handle abandon session
   const handleAbandon = async () => {
     try {
-      const payload = buildSavePayload(SessionStatus.ABANDONED);
+      const payload = buildSavePayload(SessionStatus.ABANDONED)
 
       // End session
-      dispatch(endSession());
+      dispatch(endSession())
 
       // Save to database
-      await abandonSessionMutation.mutateAsync(payload);
+      await abandonSessionMutation.mutateAsync(payload)
 
       // Clear Redux state and LocalStorage
-      dispatch(resetSessionState());
-      clearSessionBackup();
+      dispatch(resetSessionState())
+      clearSessionBackup()
 
       // Navigate to sessions list
-      router.push('/sessions');
+      router.push('/sessions')
     } catch (error) {
-      console.error('Failed to abandon session:', error);
-      toast.error('Failed to save session. Please try again.');
+      console.error('Failed to abandon session:', error)
+      toast.error('Failed to save session. Please try again.')
     } finally {
-      setAbandonDialogOpen(false);
-      setOpen(false);
+      setAbandonDialogOpen(false)
+      setOpen(false)
     }
-  };
+  }
 
   // Handle pause/resume
   const handlePauseResume = () => {
     if (isPaused) {
-      dispatch(resumeSession());
-      toast.success('Session resumed');
+      dispatch(resumeSession())
+      toast.success('Session resumed')
     } else {
-      dispatch(pauseSession());
-      toast.success('Session paused');
+      dispatch(pauseSession())
+      toast.success('Session paused')
     }
-  };
+  }
 
   return (
     <>
@@ -210,12 +203,8 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
 
         <DrawerContent className="max-w-[600px] mx-auto">
           <DrawerHeader>
-            <DrawerTitle className="text-center text-2xl">
-              {workoutName}
-            </DrawerTitle>
-            <DrawerDescription className="hidden">
-              Session settings and controls
-            </DrawerDescription>
+            <DrawerTitle className="text-center text-2xl">{workoutName}</DrawerTitle>
+            <DrawerDescription className="hidden">Session settings and controls</DrawerDescription>
             <Separator className="mt-2" />
           </DrawerHeader>
 
@@ -226,9 +215,7 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
                 <CalendarDays className="h-5 w-5 text-muted-foreground" />
                 <span className="font-medium">Started</span>
               </div>
-              <span className="text-sm text-muted-foreground">
-                {formatStartTime(startTime)}
-              </span>
+              <span className="text-sm text-muted-foreground">{formatStartTime(startTime)}</span>
             </div>
 
             {/* Duration */}
@@ -238,9 +225,7 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
                 <span className="font-medium">Duration</span>
               </div>
               <span className="text-sm text-muted-foreground">
-                {elapsedSeconds !== null
-                  ? formatDuration(elapsedSeconds)
-                  : '--:--'}
+                {elapsedSeconds !== null ? formatDuration(elapsedSeconds) : '--:--'}
               </span>
             </div>
 
@@ -283,12 +268,7 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
               </Button>
 
               {/* Pause/Resume */}
-              <Button
-                variant="outline"
-                onClick={handlePauseResume}
-                className="w-full"
-                size="lg"
-              >
+              <Button variant="outline" onClick={handlePauseResume} className="w-full" size="lg">
                 {isPaused ? (
                   <>
                     <Play className="mr-2 h-5 w-5" />
@@ -344,9 +324,7 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleComplete}>
-              Complete
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleComplete}>Complete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -372,5 +350,5 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
         </AlertDialogContent>
       </AlertDialog>
     </>
-  );
+  )
 }

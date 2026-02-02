@@ -50,7 +50,6 @@
 //   setIsNavigating: (navigate: boolean) => void;
 // }
 
-
 // export default function SessionSettingsDrawer({setIsNavigating}: SessionSettingDrawerProps) {
 //   const { workoutName, startTime, isPaused } = useSelector(
 //     (state: RootState) => state.session
@@ -91,7 +90,7 @@
 //             </div>
 //             <div>{formatStartTime(startTime)}</div>
 //           </div>
-          
+
 //           {/* Duration */}
 //           <div className="flex border rounded-lg  justify-between px-2 py-4">
 //             <div className="flex justify-center gap-2">

@@ -11,6 +11,7 @@ Comprehensive architectural refactor transforming the session system from **serv
 ## Architecture Transformation
 
 **BEFORE (Server-First):**
+
 - ❌ DB record created on session start
 - ❌ Every set completion → server call (200-500ms)
 - ❌ Background sync every 500ms
@@ -18,6 +19,7 @@ Comprehensive architectural refactor transforming the session system from **serv
 - ❌ State reconciliation (LocalStorage vs DB)
 
 **AFTER (Client-First):**
+
 - ✅ Session starts instantly in Redux (< 50ms)
 - ✅ All changes in Redux + LocalStorage
 - ✅ Single DB write on complete (atomic)
@@ -27,11 +29,13 @@ Comprehensive architectural refactor transforming the session system from **serv
 ## Files Changed: 21 files
 
 **Backend (11 files):**
+
 1. Types, Redux slice, Store config, Persistence middleware
 2. Utility hooks, Session navigation, Server actions
 3. Validation schemas, Mutation hooks
 
 **UI (10 files):**
+
 1. Session page, Exercise carousel, Set logger
 2. Set logger carousel, Rest timer drawer
 3. Session settings drawer, Workout pages
@@ -53,12 +57,12 @@ Comprehensive architectural refactor transforming the session system from **serv
 
 ## Performance Improvements
 
-| Metric | Before | After | Gain |
-|--------|--------|-------|------|
-| Set completion | 200-500ms | < 100ms | 2-5x |
-| Session start | 1-2s | < 50ms | 20-40x |
-| Recovery | 1-3s | < 500ms | 2-6x |
-| DB writes | 100+ | 1 | 100x |
+| Metric         | Before    | After   | Gain   |
+| -------------- | --------- | ------- | ------ |
+| Set completion | 200-500ms | < 100ms | 2-5x   |
+| Session start  | 1-2s      | < 50ms  | 20-40x |
+| Recovery       | 1-3s      | < 500ms | 2-6x   |
+| DB writes      | 100+      | 1       | 100x   |
 
 ## Status
 

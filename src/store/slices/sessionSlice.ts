@@ -3,9 +3,7 @@ import type {
   SessionState,
   SessionExerciseEntry,
   ExerciseProgress,
-  SessionSet,
   SetMetrics,
-  TimerState,
 } from '@/types/session'
 import { ExerciseType } from '@prisma/client'
 
@@ -585,6 +583,57 @@ const sessionSlice = createSlice({
     },
 
     /**
+     * Update exercises array (used for batch updates like superset cleanup)
+     */
+    updateExercises: (state, action: PayloadAction<{ exercises: SessionExerciseEntry[] }>) => {
+      state.exercises = action.payload.exercises
+
+      // Reorder exercises
+      state.exercises.forEach((ex, index) => {
+        ex.order = index
+      })
+
+      // Check workout completion
+      const allComplete = state.exercises.every((ex) => {
+        const prog = state.progress[ex.instanceId]
+        return prog && prog.sets.length > 0 && prog.sets.every((s) => s.completed)
+      })
+      state.workoutCompleted = allComplete
+    },
+
+    /**
+     * Remove an exercise and update exercises array with cleaned supersets
+     * Used when removing exercises to ensure superset integrity
+     */
+    removeExerciseWithCleanup: (
+      state,
+      action: PayloadAction<{ instanceId: string; cleanedExercises: SessionExerciseEntry[] }>
+    ) => {
+      const { instanceId, cleanedExercises } = action.payload
+
+      // Remove from progress map first
+      delete state.progress[instanceId]
+
+      // Update exercises array with cleaned data and correct order
+      state.exercises = cleanedExercises.map((ex, index) => ({
+        ...ex,
+        order: index,
+      }))
+
+      // Update activeExerciseId if removed exercise was active
+      if (state.activeExerciseId === instanceId) {
+        state.activeExerciseId = state.exercises[0]?.instanceId || null
+      }
+
+      // Check workout completion
+      const allComplete = state.exercises.every((ex) => {
+        const prog = state.progress[ex.instanceId]
+        return prog && prog.sets.length > 0 && prog.sets.every((s) => s.completed)
+      })
+      state.workoutCompleted = allComplete
+    },
+
+    /**
      * Reorder exercises (for drag-and-drop)
      */
     reorderExercises: (state, action: PayloadAction<{ fromIndex: number; toIndex: number }>) => {
@@ -820,6 +869,8 @@ export const {
   undoLastCompletedSet,
   addExercises,
   removeExercise,
+  removeExerciseWithCleanup,
+  updateExercises,
   reorderExercises,
   updateSessionNotes,
   updateExerciseNotes,
