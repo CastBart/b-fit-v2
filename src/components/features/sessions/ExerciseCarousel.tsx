@@ -75,45 +75,43 @@ export function ExerciseCarousel({
   }
 
   return (
-    <div className="relative">
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <div ref={emblaRef} className="overflow-hidden">
-          <SortableContext
-            items={exercises.map((ex) => ex.instanceId)}
-            strategy={horizontalListSortingStrategy}
-          >
-            <div className="flex gap-2">
-              {exercises.map((exercise, index) => (
-                <ExerciseCarouselCard
-                  key={exercise.instanceId}
-                  exercise={exercise}
-                  isActive={index === currentExerciseIndex}
-                  onClick={() => onExerciseSelect(index)}
-                  disabled={disabled}
-                />
-              ))}
+    <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <div ref={emblaRef} className="flex flex-row items-center overflow-x-auto">
+        <SortableContext
+          items={exercises.map((ex) => ex.instanceId)}
+          strategy={horizontalListSortingStrategy}
+        >
+          <div className="flex gap-2">
+            {exercises.map((exercise, index) => (
+              <ExerciseCarouselCard
+                key={exercise.instanceId}
+                exercise={exercise}
+                isActive={index === currentExerciseIndex}
+                onClick={() => onExerciseSelect(index)}
+                disabled={disabled}
+              />
+            ))}
 
-              {/* Add Exercise Button */}
-              <div className="shrink-0">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={onAddExercise}
-                  disabled={disabled}
-                  className={cn(
-                    'h-15 w-30 rounded-xl border-2 border-dashed',
-                    'hover:border-primary hover:bg-primary/10',
-                    'transition-all duration-200'
-                  )}
-                >
-                  <Plus className="h-6 w-6" />
-                </Button>
-              </div>
+            {/* Add Exercise Button */}
+            <div className="shrink-0">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={onAddExercise}
+                disabled={disabled}
+                className={cn(
+                  'h-15 w-30 rounded-xl border-2 border-dashed',
+                  'hover:border-primary hover:bg-primary/10',
+                  'transition-all duration-200'
+                )}
+              >
+                <Plus className="h-6 w-6" />
+              </Button>
             </div>
-          </SortableContext>
-        </div>
-      </DndContext>
-    </div>
+          </div>
+        </SortableContext>
+      </div>
+    </DndContext>
   )
 }
 

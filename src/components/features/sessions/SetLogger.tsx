@@ -141,13 +141,13 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
       </div>
 
       {/* Set Logging Table */}
-      <div className="rounded-lg border">
+      <div className="overflow-x-auto -mx-4 px-4">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12">Set</TableHead>
+              <TableHead className="text-center">Set</TableHead>
               {renderTableHeaders(exercise.metricType)}
-              <TableHead className="w-20 text-center">
+              <TableHead className=" text-center">
                 <SetSettingsDrawer
                   instanceId={exercise.instanceId}
                   currentSetCount={sets.length}
@@ -165,10 +165,10 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
               return (
                 <TableRow
                   key={set.setNumber}
-                  className={cn(
-                    isActive && !isCompleted && 'bg-primary/5',
-                    isCompleted && 'bg-muted/50'
-                  )}
+                  // className={cn(
+                  //   isActive && !isCompleted && 'bg-primary/5',
+                  //   isCompleted && 'bg-muted/50'
+                  // )}
                 >
                   {/* Set Number */}
                   <TableCell className="font-medium">{set.setNumber}</TableCell>
@@ -181,8 +181,7 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
                     isActive,
                     isCompleted,
                     currentInputs,
-                    handleInputChange,
-                    disabled
+                    handleInputChange
                   )}
 
                   {/* Complete Button */}
@@ -237,55 +236,56 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
  * Render table headers based on metric type
  */
 function renderTableHeaders(metricType: MetricType): React.ReactNode {
+  const classInput = 'text-center'
   switch (metricType) {
     case 'WEIGHT_REPS':
       return (
         <>
-          <TableHead>Weight (kg)</TableHead>
-          <TableHead>Reps</TableHead>
+          <TableHead className={classInput}>Weight (kg)</TableHead>
+          <TableHead className={classInput}>Reps</TableHead>
         </>
       )
     case 'COUNTER_WEIGHT_REPS':
       return (
         <>
-          <TableHead>Assist (kg)</TableHead>
+          <TableHead className={classInput}>Assist (kg)</TableHead>
           <TableHead>Reps</TableHead>
         </>
       )
     case 'REPS':
-      return <TableHead>Reps</TableHead>
+      return <TableHead className={classInput}>Reps</TableHead>
     case 'REPS_DURATION':
       return (
         <>
-          <TableHead>Reps</TableHead>
-          <TableHead>Duration (s)</TableHead>
+          <TableHead className={classInput}>Reps</TableHead>
+          <TableHead className={classInput}>Duration (s)</TableHead>
         </>
       )
     case 'DURATION':
-      return <TableHead>Duration (s)</TableHead>
+      return <TableHead className={classInput}>Duration (s)</TableHead>
     case 'DISTANCE_DURATION':
       return (
         <>
-          <TableHead>Distance (m)</TableHead>
-          <TableHead>Duration (s)</TableHead>
+          <TableHead className={classInput}>Distance (m)</TableHead>
+          <TableHead className={classInput}>Duration (s)</TableHead>
         </>
       )
     case 'WEIGHT_DISTANCE':
       return (
         <>
-          <TableHead>Weight (kg)</TableHead>
-          <TableHead>Distance (m)</TableHead>
+          <TableHead className={classInput}>Weight (kg)</TableHead>
+          <TableHead className={classInput}>Distance (m)</TableHead>
         </>
       )
     case 'WEIGHT_DURATION':
       return (
         <>
-          <TableHead>Weight (kg)</TableHead>
-          <TableHead>Duration (s)</TableHead>
+          <TableHead className={classInput}>Weight (kg)</TableHead>
+          <TableHead className={classInput}>Duration (s)</TableHead>
         </>
       )
     default:
-      return <TableHead>Value</TableHead>
+      return <TableHead className={classInput}>Value</TableHead>
   }
 }
 
@@ -299,12 +299,14 @@ function renderSetInputs(
   isActive: boolean,
   isCompleted: boolean,
   currentInputs: SetMetrics,
-  handleInputChange: (field: keyof SetMetrics, value: string) => void,
-  disabled?: boolean
+  handleInputChange: (field: keyof SetMetrics, value: string) => void
 ): React.ReactNode {
   const inputProps = {
-    disabled: disabled || !isActive || isCompleted,
-    className: cn('h-8', isCompleted && 'bg-transparent border-transparent'),
+    className: cn(
+      'text-center rounded-full transition',
+      isActive && 'bg-muted',
+      !isActive && !isCompleted && 'opacity-40'
+    ),
   }
 
   switch (metricType) {

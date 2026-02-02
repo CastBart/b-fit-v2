@@ -76,13 +76,9 @@ export function SetLoggerCarousel({
 
   return (
     <div className="overflow-hidden" ref={emblaRef}>
-      <div className="flex">
+      <div className="flex space-x-4">
         {exercises.map((exercise) => (
-          <div
-            key={exercise.instanceId}
-            className="min-w-0 flex-[0_0_100%]"
-            style={{ flex: '0 0 100%' }}
-          >
+          <div key={exercise.instanceId} className="shrink-0 w-full">
             <SetLogger
               exercise={exercise}
               onOpenOptions={() => onOpenExerciseOptions?.(exercise)}

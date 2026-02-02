@@ -245,86 +245,79 @@ export default function SessionPage() {
   const currentExerciseIndex = exercises.findIndex((ex) => ex.instanceId === activeExerciseId)
 
   return (
-    <>
-      <div className="container mx-auto max-w-5xl space-y-6 py-6 px-4">
-        {/* Session Header with Settings */}
-        <div className="space-y-4">
-          <SessionSettingsDrawer>
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full justify-between text-xl font-bold"
-            >
-              <span className="truncate">{workoutName || 'Standalone Workout'}</span>
-              <div className="flex items-center gap-2 shrink-0 ml-2">
-                {elapsedSeconds !== null && (
-                  <span className="text-sm font-normal text-muted-foreground">
-                    {formatDuration(elapsedSeconds)}
-                  </span>
-                )}
-                <Wrench className="h-5 w-5" />
-              </div>
-            </Button>
-          </SessionSettingsDrawer>
-
-          {/* Paused Indicator */}
-          {isPaused && (
-            <div className="rounded-lg border border-orange-500 bg-orange-50 dark:bg-orange-950 p-3 text-center">
-              <p className="text-sm font-medium text-orange-900 dark:text-orange-100">
-                Session Paused
-              </p>
+    <div className="container mx-auto max-w-5xl space-y-6 py-6 px-4">
+      {/* Session Header with Settings */}
+      <div className="space-y-4">
+        <SessionSettingsDrawer>
+          <Button variant="outline" size="lg" className="w-full justify-between text-xl font-bold">
+            <span className="truncate">{workoutName || 'Standalone Workout'}</span>
+            <div className="flex items-center gap-2 shrink-0 ml-2">
+              {elapsedSeconds !== null && (
+                <span className="text-sm font-normal text-muted-foreground">
+                  {formatDuration(elapsedSeconds)}
+                </span>
+              )}
+              <Wrench className="h-5 w-5" />
             </div>
-          )}
+          </Button>
+        </SessionSettingsDrawer>
 
-          {/* Workout Complete Banner */}
-          {workoutCompleted && (
-            <div className="rounded-lg border-2 border-green-500 bg-green-50 dark:bg-green-950 p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
-                  <div>
-                    <p className="font-semibold text-green-900 dark:text-green-100">
-                      Workout Complete!
-                    </p>
-                    <p className="text-sm text-green-700 dark:text-green-300">
-                      All exercises finished. Complete your session to save.
-                    </p>
-                  </div>
+        {/* Paused Indicator */}
+        {isPaused && (
+          <div className="rounded-lg border border-orange-500 bg-orange-50 dark:bg-orange-950 p-3 text-center">
+            <p className="text-sm font-medium text-orange-900 dark:text-orange-100">
+              Session Paused
+            </p>
+          </div>
+        )}
+
+        {/* Workout Complete Banner */}
+        {workoutCompleted && (
+          <div className="rounded-lg border-2 border-green-500 bg-green-50 dark:bg-green-950 p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
+                <div>
+                  <p className="font-semibold text-green-900 dark:text-green-100">
+                    Workout Complete!
+                  </p>
+                  <p className="text-sm text-green-700 dark:text-green-300">
+                    All exercises finished. Complete your session to save.
+                  </p>
                 </div>
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Exercise Carousel */}
-        <ExerciseCarousel
-          exercises={exercises}
-          currentExerciseIndex={currentExerciseIndex}
-          onExerciseSelect={(index) => {
-            const exercise = exercises[index]
-            if (exercise) {
-              dispatch(goToExercise(exercise.instanceId))
-            }
-          }}
-          onAddExercise={() => setExerciseSelectorOpen(true)}
-        />
-
-        {/* Set Logger Carousel (swipeable between exercises) */}
-        <SetLoggerCarousel
-          exercises={exercises}
-          currentExerciseIndex={currentExerciseIndex}
-          onOpenExerciseOptions={handleOpenExerciseOptions}
-        />
-
-        {/* Exercise Selector Drawer */}
-        <ExerciseSelectorDrawer
-          open={exerciseSelectorOpen}
-          onOpenChange={setExerciseSelectorOpen}
-          onExerciseSelect={handleAddExercises}
-          multiSelect
-        />
+          </div>
+        )}
       </div>
 
+      {/* Exercise Carousel */}
+      <ExerciseCarousel
+        exercises={exercises}
+        currentExerciseIndex={currentExerciseIndex}
+        onExerciseSelect={(index) => {
+          const exercise = exercises[index]
+          if (exercise) {
+            dispatch(goToExercise(exercise.instanceId))
+          }
+        }}
+        onAddExercise={() => setExerciseSelectorOpen(true)}
+      />
+
+      {/* Set Logger Carousel (swipeable between exercises) */}
+      <SetLoggerCarousel
+        exercises={exercises}
+        currentExerciseIndex={currentExerciseIndex}
+        onOpenExerciseOptions={handleOpenExerciseOptions}
+      />
+
+      {/* Exercise Selector Drawer */}
+      <ExerciseSelectorDrawer
+        open={exerciseSelectorOpen}
+        onOpenChange={setExerciseSelectorOpen}
+        onExerciseSelect={handleAddExercises}
+        multiSelect
+      />
       {/* Single Exercise Options Drawer Instance */}
       <ExerciseOptionsDrawer
         exercise={selectedExercise}
@@ -342,6 +335,6 @@ export default function SessionPage() {
 
       {/* Rest Timer (Floating Button) - Outside container for proper fixed positioning */}
       {restIsRunning && <RestTimerDrawer remaining={restRemaining} />}
-    </>
+    </div>
   )
 }
