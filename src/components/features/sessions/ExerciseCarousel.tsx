@@ -12,17 +12,26 @@
 
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
-import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core'
+import {
+  DndContext,
+  closestCenter,
+  DragEndEvent,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  MouseSensor,
+} from '@dnd-kit/core'
 import { SortableContext, useSortable, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Button } from '@/components/ui/button'
-import { Plus, GripVertical, CheckCircle2 } from 'lucide-react'
+import { Plus, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { reorderExercises } from '@/store/slices/sessionSlice'
 import type { SessionExerciseEntry } from '@/types/session'
+import { restrictToHorizontalAxis, restrictToParentElement } from '@dnd-kit/modifiers'
 
 interface ExerciseCarouselProps {
   exercises: SessionExerciseEntry[]
@@ -41,11 +50,25 @@ export function ExerciseCarousel({
 }: ExerciseCarouselProps) {
   const dispatch = useAppDispatch()
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({
+  const [_emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     containScroll: 'trimSnaps',
     dragFree: true,
   })
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    })
+  )
 
   // Re-initialize carousel when exercises array changes (add/remove)
   useEffect(() => {
@@ -75,8 +98,13 @@ export function ExerciseCarousel({
   }
 
   return (
-    <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <div ref={emblaRef} className="flex flex-row items-center overflow-x-auto">
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+      modifiers={[restrictToHorizontalAxis, restrictToParentElement]}
+    >
+      <div className="flex flex-row items-center overflow-x-auto overflow-y-hidden">
         <SortableContext
           items={exercises.map((ex) => ex.instanceId)}
           strategy={horizontalListSortingStrategy}
@@ -142,51 +170,69 @@ function ExerciseCarouselCard({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    zIndex: isDragging ? 999 : undefined,
+    opacity: isDragging ? 0.7 : 1,
   }
+  const nodeRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (isActive && nodeRef.current) {
+      nodeRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      })
+    }
+  }, [isActive])
 
   // Calculate completed sets from progress
+  // Use actual sets from progress (not targetSets) since sets can be added/removed
   const completedSets = progress?.sets.filter((s) => s.completed).length || 0
-  const totalSets = exercise.targetSets
-  const isCompleted = completedSets > 0 && completedSets === totalSets
+  const totalSets = progress?.sets.length || exercise.targetSets
+  const isCompleted = totalSets > 0 && completedSets === totalSets
 
-  // Check if in superset
+  // Check if in superset - use current array index, not stale order prop
   const exercises = useAppSelector((state) => state.session.exercises)
-  const isInSuperset = !!exercise.groupId
-  const prevExercise = exercise.order > 0 ? exercises[exercise.order - 1] : null
-  const nextExercise = exercise.order < exercises.length - 1 ? exercises[exercise.order + 1] : null
+  const currentIndex = exercises.findIndex((ex) => ex.instanceId === exercise.instanceId)
+  const currentExercise = currentIndex >= 0 ? exercises[currentIndex] : null
+  const isInSuperset = !!currentExercise?.groupId
+  const prevExercise = currentIndex > 0 ? exercises[currentIndex - 1] : null
+  const nextExercise = currentIndex < exercises.length - 1 ? exercises[currentIndex + 1] : null
   const isFirstInSuperset =
-    isInSuperset && (!prevExercise || prevExercise.groupId !== exercise.groupId)
+    isInSuperset && (!prevExercise || prevExercise.groupId !== currentExercise?.groupId)
   const isLastInSuperset =
-    isInSuperset && (!nextExercise || nextExercise.groupId !== exercise.groupId)
+    isInSuperset && (!nextExercise || nextExercise.groupId !== currentExercise?.groupId)
 
   return (
     <div
-      ref={setNodeRef}
+      ref={(el) => {
+        setNodeRef(el)
+        nodeRef.current = el
+      }}
       style={style}
       {...attributes}
-      className={cn('relative shrink-0 cursor-pointer', isDragging && 'z-50 opacity-50')}
+      {...listeners}
+      className={cn('relative mb-1.5 shrink-0 cursor-pointer', isDragging && 'z-50 opacity-50')}
     >
-      <button
+      <div
         onClick={onClick}
-        disabled={disabled}
+        // disabled={disabled}
         className={cn(
-          'flex h-15 min-w-30 max-w-40 flex-col items-start justify-center',
-          'rounded-xl border-2 px-3 py-2',
+          'flex h-15 w-30 flex-col items-start justify-center',
+          'rounded-xl border-2 px-1 py-2',
           'transition-all duration-200',
           'hover:border-primary/50 relative',
-          isActive
-            ? 'border-primary bg-primary/10 text-primary'
-            : 'border-border bg-card text-muted-foreground',
+          isActive ? ' bg-primary/10 text-primary' : 'border-border bg-card text-muted-foreground',
           disabled && 'cursor-not-allowed opacity-50'
         )}
       >
         {/* Drag Handle */}
-        <div
-          {...listeners}
+        {/* <div
+          // {...listeners}
           className="absolute left-1 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing"
         >
           <GripVertical className="h-4 w-4 text-muted-foreground" />
-        </div>
+        </div> */}
 
         {/* Completion Badge */}
         {isCompleted && (
@@ -196,8 +242,8 @@ function ExerciseCarouselCard({
         )}
 
         {/* Exercise Name */}
-        <div className="ml-4 flex w-full flex-col items-start">
-          <span className="truncate text-sm font-medium">{exercise.name}</span>
+        <div className="lex w-full min-w-0 flex-col items-start">
+          <span className="block w-full truncate text-sm font-medium">{exercise.name}</span>
 
           {/* Progress */}
           <span className={cn('text-xs', isActive ? 'text-primary/70' : 'text-muted-foreground')}>
@@ -209,7 +255,7 @@ function ExerciseCarouselCard({
         {isInSuperset && (
           <div
             className={cn(
-              'absolute bottom-0 left-0 right-0 h-1 bg-primary',
+              'absolute -bottom-1.5 left-0 right-0 h-1 bg-primary',
               isFirstInSuperset && 'rounded-l-full',
               isLastInSuperset && 'rounded-r-full'
             )}
@@ -229,7 +275,7 @@ function ExerciseCarouselCard({
             )}
           </div>
         )}
-      </button>
+      </div>
     </div>
   )
 }

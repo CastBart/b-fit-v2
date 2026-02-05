@@ -44,10 +44,11 @@ import {
   resumeSession,
   updateSessionNotes,
   resetSessionState,
+  prepareSessionEnd,
   endSession,
 } from '@/store/slices/sessionSlice'
 import { clearSessionBackup } from '@/store/middleware/persistence'
-import { useCompleteSession, useAbandonSession } from '@/hooks/mutations/useSessionMutations'
+import { useCompleteSession } from '@/hooks/mutations/useSessionMutations'
 import { useElapsedSessionTime } from '@/hooks/useElapsedSessionTime'
 import { formatStartTime, formatDuration } from '@/lib/utils/format-time'
 import { SessionStatus, type SaveSessionPayload } from '@/types/session'
@@ -55,9 +56,10 @@ import { toast } from 'sonner'
 
 interface SessionSettingsDrawerProps {
   children: React.ReactNode
+  onSessionComplete?: () => void
 }
 
-export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) {
+export function SessionSettingsDrawer({ children, onSessionComplete }: SessionSettingsDrawerProps) {
   const router = useRouter()
   const dispatch = useAppDispatch()
 
@@ -79,7 +81,6 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
 
   // Mutations
   const completeSessionMutation = useCompleteSession()
-  const abandonSessionMutation = useAbandonSession()
 
   // Local state
   const [open, setOpen] = useState(false)
@@ -138,51 +139,49 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
     try {
       const payload = buildSavePayload(SessionStatus.COMPLETED)
 
-      // End session (sets completeTime, stops timer)
-      dispatch(endSession())
+      // Prepare session end (stops timer, sets completeTime, keeps isActive = true)
+      dispatch(prepareSessionEnd())
 
       // Save to database
       await completeSessionMutation.mutateAsync(payload)
 
-      // Clear Redux state and LocalStorage
-      dispatch(resetSessionState())
-      clearSessionBackup()
+      // Close the drawer first
+      setCompleteDialogOpen(false)
+      setOpen(false)
 
-      // Navigate to sessions list
-      router.push('/sessions')
+      // If callback provided, let parent handle the completion UI
+      if (onSessionComplete) {
+        onSessionComplete()
+      } else {
+        // Fallback: fully end session, clear state and navigate directly
+        dispatch(endSession())
+        dispatch(resetSessionState())
+        clearSessionBackup()
+        router.push('/dashboard')
+      }
     } catch (error) {
       console.error('Failed to complete session:', error)
       toast.error('Failed to save session. Please try again.')
-    } finally {
       setCompleteDialogOpen(false)
-      setOpen(false)
     }
   }
 
-  // Handle abandon session
-  const handleAbandon = async () => {
-    try {
-      const payload = buildSavePayload(SessionStatus.ABANDONED)
+  // Handle abandon session - does NOT save to database
+  const handleAbandon = () => {
+    // End session
+    dispatch(endSession())
 
-      // End session
-      dispatch(endSession())
+    // Clear Redux state and LocalStorage without saving
+    dispatch(resetSessionState())
+    clearSessionBackup()
 
-      // Save to database
-      await abandonSessionMutation.mutateAsync(payload)
+    toast.success('Session abandoned')
 
-      // Clear Redux state and LocalStorage
-      dispatch(resetSessionState())
-      clearSessionBackup()
+    // Navigate to dashboard
+    router.push('/dashboard')
 
-      // Navigate to sessions list
-      router.push('/sessions')
-    } catch (error) {
-      console.error('Failed to abandon session:', error)
-      toast.error('Failed to save session. Please try again.')
-    } finally {
-      setAbandonDialogOpen(false)
-      setOpen(false)
-    }
+    setAbandonDialogOpen(false)
+    setOpen(false)
   }
 
   // Handle pause/resume
@@ -288,19 +287,9 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
                 onClick={() => setAbandonDialogOpen(true)}
                 className="w-full"
                 size="lg"
-                disabled={abandonSessionMutation.isPending}
               >
-                {abandonSessionMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="mr-2 h-5 w-5" />
-                    Abandon Session
-                  </>
-                )}
+                <XCircle className="mr-2 h-5 w-5" />
+                Abandon Session
               </Button>
             </div>
           </div>
@@ -335,7 +324,7 @@ export function SessionSettingsDrawer({ children }: SessionSettingsDrawerProps) 
           <AlertDialogHeader>
             <AlertDialogTitle>Abandon Session?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will save your partial progress as an abandoned session. You won't lose any data.
+              This will discard your session without saving. All progress will be lost.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

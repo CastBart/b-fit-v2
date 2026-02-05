@@ -7,13 +7,16 @@ import {
   saveSessionSchema,
   getSessionByIdSchema,
   sessionFiltersSchema,
+  getExerciseHistorySchema,
   type GetSessionByIdInput,
   type SessionFiltersInput,
+  type GetExerciseHistoryInput,
 } from '@/lib/validations/session'
 import {
   SessionStatus,
   type TrainingSessionWithDetails,
   type SaveSessionPayload,
+  type ExerciseHistoryEntry,
 } from '@/types/session'
 import { revalidatePath } from 'next/cache'
 
@@ -316,6 +319,113 @@ export async function getUserSessions(filters?: SessionFiltersInput): Promise<
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to get sessions',
+    }
+  }
+}
+
+// ============================================================================
+// GET EXERCISE HISTORY (For viewing exercise performance over time)
+// ============================================================================
+
+/**
+ * Get history for a specific exercise across all completed sessions
+ *
+ * @param input - Exercise ID and optional limit
+ * @returns ActionResponse with exercise history entries
+ */
+export async function getExerciseHistory(
+  input: GetExerciseHistoryInput
+): Promise<ActionResponse<ExerciseHistoryEntry[]>> {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    const validated = getExerciseHistorySchema.parse(input)
+
+    // Find all session exercises for this exercise in completed sessions
+    const sessionExercises = await prisma.sessionExercise.findMany({
+      where: {
+        exerciseId: validated.exerciseId,
+        session: {
+          userId: session.user.id,
+          status: 'COMPLETED',
+        },
+      },
+      include: {
+        session: {
+          select: {
+            id: true,
+            name: true,
+            startedAt: true,
+          },
+        },
+        sets: {
+          where: {
+            isCompleted: true,
+          },
+          orderBy: {
+            setNumber: 'asc',
+          },
+        },
+      },
+      orderBy: {
+        session: {
+          startedAt: 'desc',
+        },
+      },
+      take: validated.limit,
+    })
+
+    // Transform to ExerciseHistoryEntry format
+    const history: ExerciseHistoryEntry[] = sessionExercises.map((se) => {
+      const sets = se.sets.map((set) => ({
+        setNumber: set.setNumber,
+        weight: set.weight,
+        reps: set.reps,
+        duration: set.duration,
+        distance: set.distance,
+        counterWeight: set.counterWeight,
+      }))
+
+      // Calculate metrics
+      const weights = sets.map((s) => s.weight).filter((w): w is number => w !== null)
+      const reps = sets.map((s) => s.reps).filter((r): r is number => r !== null)
+      const maxWeight = weights.length > 0 ? Math.max(...weights) : null
+      const maxReps = reps.length > 0 ? Math.max(...reps) : null
+
+      // Calculate total volume (weight * reps for each set)
+      let totalVolume: number | null = null
+      const volumeContributions = sets
+        .filter((s) => s.weight !== null && s.reps !== null)
+        .map((s) => (s.weight ?? 0) * (s.reps ?? 0))
+      if (volumeContributions.length > 0) {
+        totalVolume = volumeContributions.reduce((sum, v) => sum + v, 0)
+      }
+
+      return {
+        sessionId: se.session.id,
+        sessionName: se.session.name,
+        sessionDate: se.session.startedAt,
+        sets,
+        notes: se.notes,
+        totalSets: sets.length,
+        maxWeight,
+        maxReps,
+        totalVolume,
+      }
+    })
+
+    return {
+      success: true,
+      data: history,
+    }
+  } catch (error) {
+    console.error('Failed to get exercise history:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get exercise history',
     }
   }
 }

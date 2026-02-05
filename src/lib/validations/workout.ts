@@ -67,7 +67,7 @@ export const addExerciseToWorkoutSchema = z.object({
   weight: z.number().min(0).max(9999).optional(),
   restSeconds: z.number().int().min(0).max(600).default(60),
   notes: z.string().max(500, 'Notes must be 500 characters or less').optional(),
-  groupId: z.string().optional(),
+  groupId: z.string().optional().nullable(),
 })
 
 /**
@@ -136,7 +136,7 @@ export const addMultipleExercisesToWorkoutSchema = z.object({
       weight: z.number().min(0).max(9999).optional(),
       restSeconds: z.number().int().min(0).max(600).default(60),
       notes: z.string().max(500, 'Notes must be 500 characters or less').optional(),
-      groupId: z.string().optional(),
+      groupId: z.string().optional().nullable(),
     })
   ),
 })
@@ -157,7 +157,7 @@ export const syncWorkoutExercisesSchema = z.object({
       weight: z.number().min(0).max(9999).optional(),
       restSeconds: z.number().int().min(0).max(600).default(60),
       notes: z.string().max(500, 'Notes must be 500 characters or less').optional(),
-      groupId: z.string().optional(),
+      groupId: z.string().optional().nullable(),
     })
   ),
 })

@@ -23,6 +23,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { useWorkouts } from '@/hooks/queries/useWorkouts'
 import { toast } from 'sonner'
+// import { startWorkoutSession } from '@/lib/utils/session-navigation'
+// import { useAppDispatch } from '@/store/hooks'
 
 interface WorkoutWithExerciseCount {
   id: string
@@ -36,6 +38,7 @@ interface WorkoutWithExerciseCount {
 
 export default function WorkoutsPage() {
   const router = useRouter()
+  // const dispatch = useAppDispatch()
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
 
@@ -169,6 +172,7 @@ export default function WorkoutsPage() {
                       e.stopPropagation()
                       // Navigate to workout detail page where we can start session
                       router.push(`/workouts/${workout.id}`)
+                      // startWorkoutSession(workout, dispatch, router)
                     }}
                   >
                     Start Workout

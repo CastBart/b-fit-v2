@@ -18,12 +18,14 @@ interface SetLoggerCarouselProps {
   exercises: SessionExerciseEntry[]
   currentExerciseIndex: number
   onOpenExerciseOptions?: (exercise: SessionExerciseEntry) => void
+  onExerciseNameClick?: (exerciseId: string) => void
 }
 
 export function SetLoggerCarousel({
   exercises,
   currentExerciseIndex,
   onOpenExerciseOptions,
+  onExerciseNameClick,
 }: SetLoggerCarouselProps) {
   const dispatch = useAppDispatch()
 
@@ -82,6 +84,7 @@ export function SetLoggerCarousel({
             <SetLogger
               exercise={exercise}
               onOpenOptions={() => onOpenExerciseOptions?.(exercise)}
+              onExerciseNameClick={() => onExerciseNameClick?.(exercise.exerciseId)}
             />
           </div>
         ))}

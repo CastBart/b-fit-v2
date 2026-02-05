@@ -16,9 +16,30 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Wrench, Loader2, AlertCircle, CheckCircle2, Play } from 'lucide-react'
+import { toast } from 'sonner'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
-import { sessionViewLoaded, goToExercise, addExercises } from '@/store/slices/sessionSlice'
+import {
+  sessionViewLoaded,
+  goToExercise,
+  addExercises,
+  prepareSessionEnd,
+  endSession,
+  resetSessionState,
+} from '@/store/slices/sessionSlice'
+import { clearSessionBackup } from '@/store/middleware/persistence'
+import { useCompleteSession } from '@/hooks/mutations/useSessionMutations'
+import { SessionStatus, type SaveSessionPayload } from '@/types/session'
 import { useSessionRecovery } from '@/hooks/useSessionRecovery'
 import { useElapsedSessionTime } from '@/hooks/useElapsedSessionTime'
 import { useRestTimer } from '@/hooks/useRestTimer'
@@ -29,6 +50,11 @@ import { RestTimerDrawer } from '@/components/features/sessions/RestTimerDrawer'
 import { ExerciseSelectorDrawer } from '@/components/features/workouts/ExerciseSelectorDrawer'
 import { ExerciseOptionsDrawer } from '@/components/features/sessions/ExerciseOptionsDrawer'
 import { SupersetDrawer } from '@/components/features/sessions/SupersetDrawer'
+import { ExerciseDrawer } from '@/components/features/exercises/ExerciseDrawer'
+import {
+  CompletedSessionDrawer,
+  type CompletedSessionData,
+} from '@/components/features/sessions/CompletedSessionDrawer'
 import { formatDuration } from '@/lib/utils/format-time'
 import type { Exercise } from '@prisma/client'
 import type { SessionExerciseEntry } from '@/types/session'
@@ -42,6 +68,8 @@ export default function SessionPage() {
 
   // Redux state
   const {
+    sessionId,
+    workoutId,
     isActive,
     isStarting,
     workoutCompleted,
@@ -49,6 +77,10 @@ export default function SessionPage() {
     exercises,
     activeExerciseId,
     workoutName,
+    progress,
+    sessionNotes,
+    startTime,
+    accumulatedPauseDuration,
     error,
   } = useAppSelector((state) => state.session)
 
@@ -56,11 +88,23 @@ export default function SessionPage() {
   const elapsedSeconds = useElapsedSessionTime()
   const { remaining: restRemaining, isRunning: restIsRunning } = useRestTimer()
 
+  // Mutations
+  const completeSessionMutation = useCompleteSession()
+
   // Local UI state
   const [exerciseSelectorOpen, setExerciseSelectorOpen] = useState(false)
   const [exerciseOptionsOpen, setExerciseOptionsOpen] = useState(false)
   const [supersetDrawerOpen, setSupersetDrawerOpen] = useState(false)
   const [selectedExercise, setSelectedExercise] = useState<SessionExerciseEntry | null>(null)
+  const [exerciseDrawerOpen, setExerciseDrawerOpen] = useState(false)
+  const [exerciseDrawerId, setExerciseDrawerId] = useState<string | null>(null)
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false)
+
+  // Completed session drawer state
+  const [completedSessionDrawerOpen, setCompletedSessionDrawerOpen] = useState(false)
+  const [completedSessionData, setCompletedSessionData] = useState<CompletedSessionData | null>(
+    null
+  )
 
   // Clear selected exercise when both drawers are closed
   useEffect(() => {
@@ -84,6 +128,136 @@ export default function SessionPage() {
   // EVENT HANDLERS
   // ============================================================================
 
+  // Build save payload from Redux state
+  const buildSavePayload = (status: SessionStatus): SaveSessionPayload => {
+    return {
+      sessionId: sessionId!,
+      workoutId,
+      workoutName,
+      startTime: startTime!,
+      completeTime: Date.now(),
+      accumulatedPauseDuration,
+      status,
+      sessionNotes: sessionNotes || null,
+      exercises: exercises.map((exercise) => {
+        const exerciseProgress = progress[exercise.instanceId]
+        return {
+          instanceId: exercise.instanceId,
+          exerciseId: exercise.exerciseId,
+          order: exercise.order,
+          groupId: exercise.groupId,
+          targetSets: exercise.targetSets,
+          targetReps: exercise.targetReps,
+          targetWeight: exercise.targetWeight,
+          targetRestSeconds: exercise.targetRestSeconds,
+          notes: exerciseProgress?.notes || null,
+          sets:
+            exerciseProgress?.sets.map((set) => ({
+              setNumber: set.setNumber,
+              weight: set.metrics.weight || null,
+              reps: set.metrics.reps || null,
+              duration: set.metrics.duration || null,
+              distance: set.metrics.distance || null,
+              counterWeight: set.metrics.counterWeight || null,
+              isCompleted: set.completed,
+              completedAt: set.completedAt || null,
+            })) || [],
+        }
+      }),
+    }
+  }
+
+  // Build completed session data for the drawer (must be called BEFORE clearing state)
+  const buildCompletedSessionData = (): CompletedSessionData => {
+    const endTime = Date.now()
+    const durationSeconds = startTime
+      ? Math.floor((endTime - startTime - accumulatedPauseDuration) / 1000)
+      : 0
+
+    return {
+      sessionId: sessionId!,
+      workoutName: workoutName || 'Workout',
+      startTime: startTime!,
+      endTime,
+      durationSeconds,
+      sessionNotes: sessionNotes || null,
+      exercises: exercises.map((exercise) => {
+        const exerciseProgress = progress[exercise.instanceId]
+        return {
+          id: exercise.instanceId,
+          name: exercise.name,
+          metricType: exercise.metricType,
+          notes: exerciseProgress?.notes || null,
+          sets:
+            exerciseProgress?.sets.map((set) => ({
+              setNumber: set.setNumber,
+              weight: set.metrics.weight,
+              reps: set.metrics.reps,
+              duration: set.metrics.duration,
+              distance: set.metrics.distance,
+              counterWeight: set.metrics.counterWeight,
+              isCompleted: set.completed,
+            })) || [],
+        }
+      }),
+    }
+  }
+
+  // Handle complete session from banner
+  const handleCompleteSession = async () => {
+    try {
+      // Build the drawer data BEFORE any state changes
+      const drawerData = buildCompletedSessionData()
+      const payload = buildSavePayload(SessionStatus.COMPLETED)
+
+      // Prepare session end (stops timer, sets completeTime, but keeps isActive = true)
+      dispatch(prepareSessionEnd())
+
+      // Save to database
+      await completeSessionMutation.mutateAsync(payload)
+
+      // Show the completed session drawer (state will be cleared when drawer closes)
+      setCompletedSessionData(drawerData)
+      setCompletedSessionDrawerOpen(true)
+    } catch (error) {
+      console.error('Failed to complete session:', error)
+      toast.error('Failed to save session. Please try again.')
+    } finally {
+      setCompleteDialogOpen(false)
+    }
+  }
+
+  // Handle closing the completed session drawer
+  const handleCompletedSessionClose = () => {
+    // Now fully end the session and clear state
+    dispatch(endSession())
+    dispatch(resetSessionState())
+    clearSessionBackup()
+
+    setCompletedSessionDrawerOpen(false)
+    setCompletedSessionData(null)
+    router.push('/dashboard')
+  }
+
+  const handleCompletedDrawerOpenChange = (open: boolean) => {
+    // when Radix closes it via overlay click / swipe down / ESC
+    if (!open) {
+      handleCompletedSessionClose()
+      return
+    }
+    setCompletedSessionDrawerOpen(true)
+  }
+
+  // Handle session complete from settings drawer (called after DB save, before state clear)
+  const handleSessionCompleteFromDrawer = () => {
+    // Build the drawer data while state is still available
+    const drawerData = buildCompletedSessionData()
+
+    // Show the completed session drawer (state will be cleared when drawer closes)
+    setCompletedSessionData(drawerData)
+    setCompletedSessionDrawerOpen(true)
+  }
+
   // Handle opening exercise options
   const handleOpenExerciseOptions = (exercise: SessionExerciseEntry) => {
     setSelectedExercise(exercise)
@@ -93,6 +267,12 @@ export default function SessionPage() {
   // Handle opening superset drawer
   const handleOpenSuperset = () => {
     setSupersetDrawerOpen(true)
+  }
+
+  // Handle opening exercise details drawer
+  const handleExerciseNameClick = (exerciseId: string) => {
+    setExerciseDrawerId(exerciseId)
+    setExerciseDrawerOpen(true)
   }
 
   // Handle adding exercises to the session
@@ -196,7 +376,7 @@ export default function SessionPage() {
       <>
         <div className="container mx-auto max-w-5xl space-y-6 py-6 px-4">
           {/* Session Header */}
-          <SessionSettingsDrawer>
+          <SessionSettingsDrawer onSessionComplete={handleSessionCompleteFromDrawer}>
             <Button
               variant="outline"
               size="lg"
@@ -248,7 +428,7 @@ export default function SessionPage() {
     <div className="container mx-auto max-w-5xl space-y-6 py-6 px-4">
       {/* Session Header with Settings */}
       <div className="space-y-4">
-        <SessionSettingsDrawer>
+        <SessionSettingsDrawer onSessionComplete={handleSessionCompleteFromDrawer}>
           <Button variant="outline" size="lg" className="w-full justify-between text-xl font-bold">
             <span className="truncate">{workoutName || 'Standalone Workout'}</span>
             <div className="flex items-center gap-2 shrink-0 ml-2">
@@ -274,18 +454,29 @@ export default function SessionPage() {
         {/* Workout Complete Banner */}
         {workoutCompleted && (
           <div className="rounded-lg border-2 border-green-500 bg-green-50 dark:bg-green-950 p-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400 shrink-0" />
                 <div>
                   <p className="font-semibold text-green-900 dark:text-green-100">
                     Workout Complete!
                   </p>
                   <p className="text-sm text-green-700 dark:text-green-300">
-                    All exercises finished. Complete your session to save.
+                    All exercises finished.
                   </p>
                 </div>
               </div>
+              <Button
+                onClick={() => setCompleteDialogOpen(true)}
+                disabled={completeSessionMutation.isPending}
+                className="shrink-0 bg-green-600 hover:bg-green-700"
+              >
+                {completeSessionMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  'Save'
+                )}
+              </Button>
             </div>
           </div>
         )}
@@ -309,6 +500,7 @@ export default function SessionPage() {
         exercises={exercises}
         currentExerciseIndex={currentExerciseIndex}
         onOpenExerciseOptions={handleOpenExerciseOptions}
+        onExerciseNameClick={handleExerciseNameClick}
       />
 
       {/* Exercise Selector Drawer */}
@@ -333,8 +525,41 @@ export default function SessionPage() {
         onOpenChange={setSupersetDrawerOpen}
       />
 
+      {/* Exercise Details Drawer */}
+      <ExerciseDrawer
+        exerciseId={exerciseDrawerId}
+        open={exerciseDrawerOpen}
+        onOpenChange={setExerciseDrawerOpen}
+      />
+
       {/* Rest Timer (Floating Button) - Outside container for proper fixed positioning */}
       {restIsRunning && <RestTimerDrawer remaining={restRemaining} />}
+
+      {/* Complete Session Confirmation Dialog */}
+      <AlertDialog open={completeDialogOpen} onOpenChange={setCompleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Complete Session?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will save your session to the database. You can view it in your session history.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleCompleteSession}>Complete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Completed Session Summary Drawer */}
+      <CompletedSessionDrawer
+        open={completedSessionDrawerOpen}
+        onOpenChange={handleCompletedDrawerOpenChange}
+        data={completedSessionData}
+        onClose={handleCompletedSessionClose}
+        actionLabel="Go to Dashboard"
+        onAction={handleCompletedSessionClose}
+      />
     </div>
   )
 }

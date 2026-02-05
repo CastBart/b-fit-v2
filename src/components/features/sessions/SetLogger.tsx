@@ -7,7 +7,13 @@
  * - Add/Remove set buttons
  * - Undo last set button
  * - Exercise notes
- * - Active set highlighting (only activeSetNumber is interactive)
+ * - Active set highlighting (only activeSetNumber shows "complete" button)
+ *
+ * FIXES:
+ * - Any NON-completed set is now editable (not just the active set)
+ * - Inputs always display their set.metrics values (no more blanking non-active rows)
+ * - onChange updates the correct setNumber in Redux (not always activeSetNumber)
+ * - Validation is "0-safe" (0 no longer fails validation)
  */
 
 'use client'
@@ -31,6 +37,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { completeSet, updateSet, updateExerciseNotes } from '@/store/slices/sessionSlice'
 import { toast } from 'sonner'
 import { SetSettingsDrawer } from './SetSettingsDrawer'
+import { LatestHistoryPreview } from './ExerciseHistoryDisplay'
 import type { SessionExerciseEntry, SetMetrics, SessionSet } from '@/types/session'
 import type { MetricType } from '@prisma/client'
 
@@ -38,15 +45,21 @@ interface SetLoggerProps {
   exercise: SessionExerciseEntry
   disabled?: boolean
   onOpenOptions?: () => void
+  onExerciseNameClick?: () => void
 }
 
-export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps) {
+export function SetLogger({
+  exercise,
+  disabled,
+  onOpenOptions,
+  onExerciseNameClick,
+}: SetLoggerProps) {
   const dispatch = useAppDispatch()
 
   // Get progress from Redux
   const progress = useAppSelector((state) => state.session.progress[exercise.instanceId])
 
-  // Local state for current set inputs
+  // Local state for current (active) set inputs (used for validation + clearing after complete)
   const [currentInputs, setCurrentInputs] = useState<SetMetrics>({})
 
   // Notes state
@@ -66,6 +79,13 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
   }
 
   const { sets, activeSetNumber } = progress
+  const activeSet = sets.find((s) => s.setNumber === activeSetNumber)
+
+  // Keep currentInputs aligned with the active set's stored metrics when active set changes
+  // Note: intentionally only depends on instanceId and activeSetNumber to avoid resetting on metric changes
+  useEffect(() => {
+    setCurrentInputs(activeSet?.metrics ?? {})
+  }, [exercise.instanceId, activeSetNumber, activeSet?.metrics])
 
   // Handle notes change
   const handleNotesBlur = () => {
@@ -79,47 +99,45 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
     }
   }
 
-  // Handle input change for active set
-  const handleInputChange = (field: keyof SetMetrics, value: string) => {
-    const numValue = value === '' ? undefined : parseFloat(value)
-    setCurrentInputs((prev) => ({
-      ...prev,
-      [field]: numValue,
-    }))
+  /**
+   * ✅ FIX: input change is now tied to the row's setNumber (not always activeSetNumber)
+   */
+  const handleInputChange = (setNumber: number, field: keyof SetMetrics, value: string) => {
+    const numValue = value === '' ? undefined : Number(value)
 
-    // Also update in Redux (for persistence)
+    // Update Redux for that exact set number
     dispatch(
       updateSet({
         instanceId: exercise.instanceId,
-        setNumber: activeSetNumber,
-        metrics: {
-          [field]: numValue,
-        },
+        setNumber,
+        metrics: { [field]: Number.isNaN(numValue as number) ? undefined : numValue },
       })
     )
+
+    // If editing the active set, keep local state in sync (for validate + clear on complete)
+    if (setNumber === activeSetNumber) {
+      setCurrentInputs((prev) => ({
+        ...prev,
+        [field]: Number.isNaN(numValue as number) ? undefined : numValue,
+      }))
+    }
   }
 
-  // Handle complete set
+  // Handle complete set (active set only)
   const handleCompleteSet = () => {
-    // Validate inputs based on metric type
     if (!validateMetrics(exercise.metricType, currentInputs)) {
       toast.error('Please fill in all required fields')
       return
     }
 
-    // Dispatch completeSet (handles auto-advance, superset rotation, timer)
     dispatch(completeSet({ metrics: currentInputs }))
 
-    // Clear inputs for next set
+    // Clear inputs for next set (will also be re-synced by effect when activeSetNumber advances)
     setCurrentInputs({})
 
-    // Show success toast
-    toast.success(`Set ${activeSetNumber} completed`, {
-      duration: 1000,
-    })
+    toast.success(`Set ${activeSetNumber} completed`, { duration: 1000 })
   }
 
-  // Check if there's any completed set to undo
   const hasCompletedSets = sets.some((s) => s.completed)
 
   return (
@@ -127,14 +145,18 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
       {/* Exercise Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">{exercise.name}</h2>
+          <h2
+            className="cursor-pointer text-2xl font-bold transition-colors hover:text-primary"
+            onClick={onExerciseNameClick}
+          >
+            {exercise.name}
+          </h2>
           <p className="text-sm text-muted-foreground">
             {exercise.targetSets} sets × {exercise.targetReps || '–'} reps
             {exercise.targetWeight && ` @ ${exercise.targetWeight}kg`}
           </p>
         </div>
 
-        {/* Exercise Options Menu Button */}
         <Button variant="ghost" size="icon" disabled={disabled} onClick={onOpenOptions}>
           <MoreVertical className="h-5 w-5" />
         </Button>
@@ -147,7 +169,7 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
             <TableRow>
               <TableHead className="text-center">Set</TableHead>
               {renderTableHeaders(exercise.metricType)}
-              <TableHead className=" text-center">
+              <TableHead className="text-center">
                 <SetSettingsDrawer
                   instanceId={exercise.instanceId}
                   currentSetCount={sets.length}
@@ -157,6 +179,7 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
               </TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {sets.map((set) => {
               const isActive = set.setNumber === activeSetNumber
@@ -165,29 +188,27 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
               return (
                 <TableRow
                   key={set.setNumber}
-                  // className={cn(
-                  //   isActive && !isCompleted && 'bg-primary/5',
-                  //   isCompleted && 'bg-muted/50'
-                  // )}
+                  className={cn(
+                    isActive && !isCompleted && 'bg-primary/5',
+                    isCompleted && 'bg-muted/30'
+                  )}
                 >
-                  {/* Set Number */}
                   <TableCell className="font-medium">{set.setNumber}</TableCell>
 
-                  {/* Metric Inputs */}
                   {renderSetInputs(
                     set.setNumber,
                     exercise.metricType,
                     set,
                     isActive,
                     isCompleted,
+                    disabled,
                     currentInputs,
                     handleInputChange
                   )}
 
-                  {/* Complete Button */}
                   <TableCell>
                     {isCompleted ? (
-                      <div className="flex justify-center">
+                      <div className="transition flex justify-center">
                         <CheckCircle2 className="h-5 w-5 text-green-600" />
                       </div>
                     ) : isActive ? (
@@ -224,6 +245,9 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
           disabled={disabled}
         />
       </div>
+
+      {/* Latest History Preview */}
+      <LatestHistoryPreview exerciseId={exercise.exerciseId} metricType={exercise.metricType} />
     </div>
   )
 }
@@ -232,9 +256,6 @@ export function SetLogger({ exercise, disabled, onOpenOptions }: SetLoggerProps)
 // HELPER FUNCTIONS
 // ============================================================================
 
-/**
- * Render table headers based on metric type
- */
 function renderTableHeaders(metricType: MetricType): React.ReactNode {
   const classInput = 'text-center'
   switch (metricType) {
@@ -249,7 +270,7 @@ function renderTableHeaders(metricType: MetricType): React.ReactNode {
       return (
         <>
           <TableHead className={classInput}>Assist (kg)</TableHead>
-          <TableHead>Reps</TableHead>
+          <TableHead className={classInput}>Reps</TableHead>
         </>
       )
     case 'REPS':
@@ -289,24 +310,34 @@ function renderTableHeaders(metricType: MetricType): React.ReactNode {
   }
 }
 
-/**
- * Render set input fields based on metric type
- */
 function renderSetInputs(
   setNumber: number,
   metricType: MetricType,
   set: SessionSet,
   isActive: boolean,
   isCompleted: boolean,
+  disabled: boolean | undefined,
   currentInputs: SetMetrics,
-  handleInputChange: (field: keyof SetMetrics, value: string) => void
+  handleInputChange: (setNumber: number, field: keyof SetMetrics, value: string) => void
 ): React.ReactNode {
-  const inputProps = {
-    className: cn(
-      'text-center rounded-full transition',
-      isActive && 'bg-muted',
-      !isActive && !isCompleted && 'opacity-40'
-    ),
+  // ✅ Edit rules:
+  // - allow editing ANY non-completed set
+  // - lock completed sets
+  const isInputDisabled = !!disabled || isCompleted
+
+  const inputClass = cn(
+    'text-center rounded-full',
+    isActive && 'bg-muted',
+    !isActive && !isCompleted && 'opacity-80'
+  )
+
+  // Helper: for active set, prefer local input (so user can type freely), fallback to stored metrics.
+  // For non-active sets, just show stored metrics.
+  const valueFor = (field: keyof SetMetrics) => {
+    const stored = set.metrics[field]
+    const activeLocal = currentInputs[field]
+    if (isActive) return activeLocal ?? stored ?? ''
+    return stored ?? ''
   }
 
   switch (metricType) {
@@ -318,22 +349,20 @@ function renderSetInputs(
               type="number"
               step="0.5"
               placeholder="0"
-              value={
-                isCompleted ? set.metrics.weight || '' : isActive ? currentInputs.weight || '' : ''
-              }
-              onChange={(e) => handleInputChange('weight', e.target.value)}
-              {...inputProps}
+              value={valueFor('weight')}
+              onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
           <TableCell>
             <Input
               type="number"
               placeholder="0"
-              value={
-                isCompleted ? set.metrics.reps || '' : isActive ? currentInputs.reps || '' : ''
-              }
-              onChange={(e) => handleInputChange('reps', e.target.value)}
-              {...inputProps}
+              value={valueFor('reps')}
+              onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
         </>
@@ -347,26 +376,20 @@ function renderSetInputs(
               type="number"
               step="0.5"
               placeholder="0"
-              value={
-                isCompleted
-                  ? set.metrics.counterWeight || ''
-                  : isActive
-                    ? currentInputs.counterWeight || ''
-                    : ''
-              }
-              onChange={(e) => handleInputChange('counterWeight', e.target.value)}
-              {...inputProps}
+              value={valueFor('counterWeight')}
+              onChange={(e) => handleInputChange(setNumber, 'counterWeight', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
           <TableCell>
             <Input
               type="number"
               placeholder="0"
-              value={
-                isCompleted ? set.metrics.reps || '' : isActive ? currentInputs.reps || '' : ''
-              }
-              onChange={(e) => handleInputChange('reps', e.target.value)}
-              {...inputProps}
+              value={valueFor('reps')}
+              onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
         </>
@@ -378,9 +401,10 @@ function renderSetInputs(
           <Input
             type="number"
             placeholder="0"
-            value={isCompleted ? set.metrics.reps || '' : isActive ? currentInputs.reps || '' : ''}
-            onChange={(e) => handleInputChange('reps', e.target.value)}
-            {...inputProps}
+            value={valueFor('reps')}
+            onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
+            disabled={isInputDisabled}
+            className={inputClass}
           />
         </TableCell>
       )
@@ -392,26 +416,20 @@ function renderSetInputs(
             <Input
               type="number"
               placeholder="0"
-              value={
-                isCompleted ? set.metrics.reps || '' : isActive ? currentInputs.reps || '' : ''
-              }
-              onChange={(e) => handleInputChange('reps', e.target.value)}
-              {...inputProps}
+              value={valueFor('reps')}
+              onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
           <TableCell>
             <Input
               type="number"
               placeholder="0"
-              value={
-                isCompleted
-                  ? set.metrics.duration || ''
-                  : isActive
-                    ? currentInputs.duration || ''
-                    : ''
-              }
-              onChange={(e) => handleInputChange('duration', e.target.value)}
-              {...inputProps}
+              value={valueFor('duration')}
+              onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
         </>
@@ -423,15 +441,10 @@ function renderSetInputs(
           <Input
             type="number"
             placeholder="0"
-            value={
-              isCompleted
-                ? set.metrics.duration || ''
-                : isActive
-                  ? currentInputs.duration || ''
-                  : ''
-            }
-            onChange={(e) => handleInputChange('duration', e.target.value)}
-            {...inputProps}
+            value={valueFor('duration')}
+            onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
+            disabled={isInputDisabled}
+            className={inputClass}
           />
         </TableCell>
       )
@@ -443,30 +456,20 @@ function renderSetInputs(
             <Input
               type="number"
               placeholder="0"
-              value={
-                isCompleted
-                  ? set.metrics.distance || ''
-                  : isActive
-                    ? currentInputs.distance || ''
-                    : ''
-              }
-              onChange={(e) => handleInputChange('distance', e.target.value)}
-              {...inputProps}
+              value={valueFor('distance')}
+              onChange={(e) => handleInputChange(setNumber, 'distance', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
           <TableCell>
             <Input
               type="number"
               placeholder="0"
-              value={
-                isCompleted
-                  ? set.metrics.duration || ''
-                  : isActive
-                    ? currentInputs.duration || ''
-                    : ''
-              }
-              onChange={(e) => handleInputChange('duration', e.target.value)}
-              {...inputProps}
+              value={valueFor('duration')}
+              onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
         </>
@@ -480,26 +483,20 @@ function renderSetInputs(
               type="number"
               step="0.5"
               placeholder="0"
-              value={
-                isCompleted ? set.metrics.weight || '' : isActive ? currentInputs.weight || '' : ''
-              }
-              onChange={(e) => handleInputChange('weight', e.target.value)}
-              {...inputProps}
+              value={valueFor('weight')}
+              onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
           <TableCell>
             <Input
               type="number"
               placeholder="0"
-              value={
-                isCompleted
-                  ? set.metrics.distance || ''
-                  : isActive
-                    ? currentInputs.distance || ''
-                    : ''
-              }
-              onChange={(e) => handleInputChange('distance', e.target.value)}
-              {...inputProps}
+              value={valueFor('distance')}
+              onChange={(e) => handleInputChange(setNumber, 'distance', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
         </>
@@ -513,26 +510,20 @@ function renderSetInputs(
               type="number"
               step="0.5"
               placeholder="0"
-              value={
-                isCompleted ? set.metrics.weight || '' : isActive ? currentInputs.weight || '' : ''
-              }
-              onChange={(e) => handleInputChange('weight', e.target.value)}
-              {...inputProps}
+              value={valueFor('weight')}
+              onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
           <TableCell>
             <Input
               type="number"
               placeholder="0"
-              value={
-                isCompleted
-                  ? set.metrics.duration || ''
-                  : isActive
-                    ? currentInputs.duration || ''
-                    : ''
-              }
-              onChange={(e) => handleInputChange('duration', e.target.value)}
-              {...inputProps}
+              value={valueFor('duration')}
+              onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
             />
           </TableCell>
         </>
@@ -544,26 +535,31 @@ function renderSetInputs(
 }
 
 /**
- * Validate metrics based on metric type
+ * ✅ 0-safe validation:
+ * - 0 is valid input
+ * - undefined / null / NaN are invalid
  */
 function validateMetrics(metricType: MetricType, metrics: SetMetrics): boolean {
+  const hasNumber = (v: unknown) =>
+    v !== undefined && v !== null && v !== '' && !(typeof v === 'number' && Number.isNaN(v))
+
   switch (metricType) {
     case 'WEIGHT_REPS':
-      return !!metrics.weight && !!metrics.reps
+      return hasNumber(metrics.weight) && hasNumber(metrics.reps)
     case 'COUNTER_WEIGHT_REPS':
-      return !!metrics.counterWeight && !!metrics.reps
+      return hasNumber(metrics.counterWeight) && hasNumber(metrics.reps)
     case 'REPS':
-      return !!metrics.reps
+      return hasNumber(metrics.reps)
     case 'REPS_DURATION':
-      return !!metrics.reps && !!metrics.duration
+      return hasNumber(metrics.reps) && hasNumber(metrics.duration)
     case 'DURATION':
-      return !!metrics.duration
+      return hasNumber(metrics.duration)
     case 'DISTANCE_DURATION':
-      return !!metrics.distance && !!metrics.duration
+      return hasNumber(metrics.distance) && hasNumber(metrics.duration)
     case 'WEIGHT_DISTANCE':
-      return !!metrics.weight && !!metrics.distance
+      return hasNumber(metrics.weight) && hasNumber(metrics.distance)
     case 'WEIGHT_DURATION':
-      return !!metrics.weight && !!metrics.duration
+      return hasNumber(metrics.weight) && hasNumber(metrics.duration)
     default:
       return false
   }

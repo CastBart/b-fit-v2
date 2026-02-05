@@ -153,3 +153,38 @@
     overflow-y: auto; /* Ensure scrolling */
   }
 }
+
+/* Hide by default (Chrome/Safari/Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+  /* height: 0px !important; horizontal */
+  /* width: 0px !important;  just in case */
+  height: 8px !important;
+}
+
+/* Show only on hover */
+.custom-scrollbar:hover::-webkit-scrollbar {
+  height: 8px !important;
+}
+
+/* Track + thumb (only visible when scrollbar is visible) */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #2d3748;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #4a5568;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #718096;
+}
+
+/* Firefox
+.custom-scrollbar {
+  scrollbar-width: none; 
+}
+
+.custom-scrollbar:hover {
+  scrollbar-width: thin; 
+} */

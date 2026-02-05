@@ -268,3 +268,31 @@ export type ExerciseSessionMetrics = {
   averageWeight: number | null
   averageReps: number | null
 }
+
+// ============================================================================
+// EXERCISE HISTORY TYPES
+// ============================================================================
+
+// A single set from history
+export type HistorySet = {
+  setNumber: number
+  weight: number | null
+  reps: number | null
+  duration: number | null
+  distance: number | null
+  counterWeight: number | null
+}
+
+// A single history entry (one session's performance for an exercise)
+export type ExerciseHistoryEntry = {
+  sessionId: string
+  sessionName: string | null
+  sessionDate: Date
+  sets: HistorySet[]
+  notes: string | null
+  // Computed metrics
+  totalSets: number
+  maxWeight: number | null
+  maxReps: number | null
+  totalVolume: number | null // weight * reps summed
+}

@@ -64,6 +64,14 @@ export const sessionFiltersSchema = z.object({
   limit: z.number().int().min(1).max(100).default(20),
 })
 
+/**
+ * Schema for getting exercise history
+ */
+export const getExerciseHistorySchema = z.object({
+  exerciseId: z.string().cuid('Invalid exercise ID'),
+  limit: z.number().int().min(1).max(50).optional().default(10),
+})
+
 // ============================================================================
 // TYPE EXPORTS
 // ============================================================================
@@ -71,3 +79,4 @@ export const sessionFiltersSchema = z.object({
 export type SaveSessionInput = z.infer<typeof saveSessionSchema>
 export type GetSessionByIdInput = z.infer<typeof getSessionByIdSchema>
 export type SessionFiltersInput = z.infer<typeof sessionFiltersSchema>
+export type GetExerciseHistoryInput = z.input<typeof getExerciseHistorySchema>

@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
 import { useExercise } from '@/hooks/queries/useExercise'
+import { ExerciseHistoryList } from '@/components/features/sessions/ExerciseHistoryDisplay'
 import {
   MuscleGroupLabels,
   EquipmentTypeLabels,
@@ -77,9 +78,9 @@ export function ExerciseDrawer({ exerciseId, open, onOpenChange }: ExerciseDrawe
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[90vh]">
-        <div className="mx-auto w-full max-w-2xl overflow-y-auto">
-          <DrawerHeader className="relative">
+      <DrawerContent className="h-[70vh]">
+        <div className="mx-auto w-full max-w-2xl h-full flex flex-col">
+          <DrawerHeader className="relative shrink-0">
             <DrawerTitle className="hidden">Exercise Details</DrawerTitle>
             <DrawerDescription className="hidden">
               See full details of the exercise
@@ -123,7 +124,7 @@ export function ExerciseDrawer({ exerciseId, open, onOpenChange }: ExerciseDrawe
             ) : null}
           </DrawerHeader>
 
-          <div className="px-4 pb-6">
+          <div className="px-4 pb-6 flex-1 overflow-y-auto">
             {isLoading ? (
               <LoadingSkeleton />
             ) : error ? (
@@ -240,10 +241,10 @@ export function ExerciseDrawer({ exerciseId, open, onOpenChange }: ExerciseDrawe
                 </TabsContent>
 
                 <TabsContent value="history" className="space-y-4">
-                  <EmptyState
-                    icon={<Dumbbell className="h-12 w-12 text-muted-foreground" />}
-                    title="Exercise history"
-                    description="Complete workouts to see your exercise history, personal records, and performance trends."
+                  <ExerciseHistoryList
+                    exerciseId={exercise.id}
+                    metricType={exercise.metricType}
+                    limit={20}
                   />
                 </TabsContent>
               </Tabs>
@@ -261,7 +262,7 @@ function DetailItem({ label, value }: { label: string; value: React.ReactNode })
   return (
     <div>
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="mt-1 text-sm font-medium">{value}</p>
+      <div className="mt-1 text-sm font-medium">{value}</div>
     </div>
   )
 }

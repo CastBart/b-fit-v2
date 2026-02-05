@@ -43,28 +43,34 @@ export function SupersetDrawer({ open, onOpenChange, exercise }: SupersetDrawerP
 
   if (!exercise) return null
 
-  // Find current exercise index
+  // Find current exercise index and get fresh data from Redux
   const currentIndex = exercises.findIndex((ex) => ex.instanceId === exercise.instanceId)
 
   if (currentIndex < 0) return null
 
+  // Use current exercise from Redux array to avoid stale prop data
+  const currentExercise = exercises[currentIndex]
   const prevExercise = currentIndex > 0 ? exercises[currentIndex - 1] : null
   const nextExercise = currentIndex < exercises.length - 1 ? exercises[currentIndex + 1] : null
 
   // Helper functions to determine what actions are available
   const canSupersetWithPrev =
     prevExercise &&
-    (!prevExercise.groupId || !exercise.groupId || prevExercise.groupId !== exercise.groupId)
+    (!prevExercise.groupId ||
+      !currentExercise?.groupId ||
+      prevExercise.groupId !== currentExercise?.groupId)
 
   const canRemoveSupersetWithPrev =
-    prevExercise && exercise.groupId && prevExercise.groupId === exercise.groupId
+    prevExercise && currentExercise?.groupId && prevExercise.groupId === currentExercise?.groupId
 
   const canSupersetWithNext =
     nextExercise &&
-    (!nextExercise.groupId || !exercise.groupId || nextExercise.groupId !== exercise.groupId)
+    (!nextExercise.groupId ||
+      !currentExercise?.groupId ||
+      nextExercise.groupId !== currentExercise?.groupId)
 
   const canRemoveSupersetWithNext =
-    nextExercise && exercise.groupId && nextExercise.groupId === exercise.groupId
+    nextExercise && currentExercise?.groupId && nextExercise.groupId === currentExercise?.groupId
 
   // Action handlers
   const handleSupersetWithPrev = () => {

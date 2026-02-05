@@ -6,6 +6,10 @@ import type {
   SetMetrics,
 } from '@/types/session'
 import { ExerciseType } from '@prisma/client'
+import { SupersetManager } from '@/lib/superset-manager'
+
+// Singleton instance for superset operations
+const supersetManager = new SupersetManager<SessionExerciseEntry>()
 
 // ============================================================================
 // INITIAL STATE
@@ -80,6 +84,26 @@ function findNextIncompleteExercise(
     }
   }
   return null
+}
+
+/**
+ * Check if all exercises in the workout have all their sets completed
+ * @param exercises All exercises array
+ * @param progress Progress map
+ * @returns true if workout is complete, false otherwise
+ */
+function checkWorkoutCompletion(
+  exercises: SessionExerciseEntry[],
+  progress: Record<string, ExerciseProgress>
+): boolean {
+  // No exercises means not complete
+  if (exercises.length === 0) return false
+
+  return exercises.every((ex) => {
+    const prog = progress[ex.instanceId]
+    // Must have progress, at least one set, and all sets completed
+    return prog && prog.sets.length > 0 && prog.sets.every((s) => s.completed)
+  })
 }
 
 /**
@@ -199,11 +223,26 @@ const sessionSlice = createSlice({
     },
 
     /**
-     * End the session (set completion time, stop timer)
+     * Prepare session for completion (stops timer, sets completion time)
+     * but keeps isActive = true so UI doesn't change.
+     * Use this when showing a completion summary before fully ending.
+     */
+    prepareSessionEnd: (state) => {
+      state.completeTime = Date.now()
+      if (state.timer) {
+        state.timer.isRunning = false
+      }
+    },
+
+    /**
+     * End the session (set isActive = false)
+     * Call this after prepareSessionEnd when ready to fully end the session.
      */
     endSession: (state) => {
       state.isActive = false
-      state.completeTime = Date.now()
+      if (!state.completeTime) {
+        state.completeTime = Date.now()
+      }
       if (state.timer) {
         state.timer.isRunning = false
       }
@@ -292,13 +331,9 @@ const sessionSlice = createSlice({
             startRestTimerIfApplicable()
           } else {
             // No more incomplete exercises - check if workout is complete
-            const allComplete = state.exercises.every((ex) => {
-              const prog = state.progress[ex.instanceId]
-              return prog && prog.sets.every((s) => s.completed)
-            })
+            state.workoutCompleted = checkWorkoutCompletion(state.exercises, state.progress)
 
-            if (allComplete) {
-              state.workoutCompleted = true
+            if (state.workoutCompleted) {
               if (state.timer) {
                 state.timer.isRunning = false
               }
@@ -363,13 +398,9 @@ const sessionSlice = createSlice({
             state.activeExerciseId = nextId
           } else {
             // Check if workout is complete
-            const allComplete = state.exercises.every((ex) => {
-              const prog = state.progress[ex.instanceId]
-              return prog && prog.sets.every((s) => s.completed)
-            })
+            state.workoutCompleted = checkWorkoutCompletion(state.exercises, state.progress)
 
-            if (allComplete) {
-              state.workoutCompleted = true
+            if (state.workoutCompleted) {
               if (state.timer) {
                 state.timer.isRunning = false
               }
@@ -457,8 +488,8 @@ const sessionSlice = createSlice({
         progress.activeSetNumber = nextSetNumber
       }
 
-      // Mark workout as not completed
-      state.workoutCompleted = false
+      // Re-check workout completion (adding incomplete set means not complete)
+      state.workoutCompleted = checkWorkoutCompletion(state.exercises, state.progress)
     },
 
     /**
@@ -477,17 +508,13 @@ const sessionSlice = createSlice({
         progress.sets.length === 0 ? 1 : progress.sets.length
       )
 
-      // Check if all exercises are complete
-      const allComplete = state.exercises.every((ex) => {
-        const prog = state.progress[ex.instanceId]
-        return prog && prog.sets.length > 0 && prog.sets.every((s) => s.completed)
-      })
-
-      state.workoutCompleted = allComplete
+      // Re-check workout completion (removing incomplete set might complete the workout)
+      state.workoutCompleted = checkWorkoutCompletion(state.exercises, state.progress)
     },
 
     /**
      * Undo the last completed set for an exercise
+     * Preserves metrics so user can re-complete without re-entering values
      */
     undoLastCompletedSet: (state, action: PayloadAction<{ instanceId: string }>) => {
       const progress = state.progress[action.payload.instanceId]
@@ -498,8 +525,8 @@ const sessionSlice = createSlice({
         const set = progress.sets[i]
         if (set && set.completed) {
           set.completed = false
-          set.metrics = {}
           set.completedAt = null
+          // Keep set.metrics intact so user can see/edit previous values
 
           // Set activeSetNumber to this set (1-indexed)
           progress.activeSetNumber = i + 1
@@ -574,12 +601,8 @@ const sessionSlice = createSlice({
         ex.order = index
       })
 
-      // Check workout completion
-      const allComplete = state.exercises.every((ex) => {
-        const prog = state.progress[ex.instanceId]
-        return prog && prog.sets.length > 0 && prog.sets.every((s) => s.completed)
-      })
-      state.workoutCompleted = allComplete
+      // Re-check workout completion
+      state.workoutCompleted = checkWorkoutCompletion(state.exercises, state.progress)
     },
 
     /**
@@ -593,12 +616,8 @@ const sessionSlice = createSlice({
         ex.order = index
       })
 
-      // Check workout completion
-      const allComplete = state.exercises.every((ex) => {
-        const prog = state.progress[ex.instanceId]
-        return prog && prog.sets.length > 0 && prog.sets.every((s) => s.completed)
-      })
-      state.workoutCompleted = allComplete
+      // Re-check workout completion
+      state.workoutCompleted = checkWorkoutCompletion(state.exercises, state.progress)
     },
 
     /**
@@ -625,16 +644,13 @@ const sessionSlice = createSlice({
         state.activeExerciseId = state.exercises[0]?.instanceId || null
       }
 
-      // Check workout completion
-      const allComplete = state.exercises.every((ex) => {
-        const prog = state.progress[ex.instanceId]
-        return prog && prog.sets.length > 0 && prog.sets.every((s) => s.completed)
-      })
-      state.workoutCompleted = allComplete
+      // Re-check workout completion
+      state.workoutCompleted = checkWorkoutCompletion(state.exercises, state.progress)
     },
 
     /**
      * Reorder exercises (for drag-and-drop)
+     * Also reassigns superset groups to maintain integrity after reordering
      */
     reorderExercises: (state, action: PayloadAction<{ fromIndex: number; toIndex: number }>) => {
       const { fromIndex, toIndex } = action.payload
@@ -644,6 +660,9 @@ const sessionSlice = createSlice({
       if (!movedExercise) return
 
       state.exercises.splice(toIndex, 0, movedExercise)
+
+      // Reassign superset groups after reordering
+      state.exercises = supersetManager.reassignAfterReorder(state.exercises, fromIndex, toIndex)
 
       // Update order field
       state.exercises.forEach((ex, index) => {
@@ -772,6 +791,9 @@ const sessionSlice = createSlice({
 
     /**
      * Create a superset with the previous exercise
+     * Uses SupersetManager to handle all edge cases:
+     * - Merging existing groups
+     * - Creating new groups
      */
     supersetWithPrev: (state, action: PayloadAction<{ instanceId: string }>) => {
       const instanceId = action.payload.instanceId
@@ -779,22 +801,15 @@ const sessionSlice = createSlice({
 
       if (currentIndex <= 0) return // No previous exercise
 
-      const currentExercise = state.exercises[currentIndex]
-      const prevExercise = state.exercises[currentIndex - 1]
-
-      if (!currentExercise || !prevExercise) return
-
-      // If prev has a groupId, use it; otherwise create a new one
-      const groupId = prevExercise.groupId || crypto.randomUUID()
-
-      if (!prevExercise.groupId) {
-        prevExercise.groupId = groupId
-      }
-      currentExercise.groupId = groupId
+      // Use SupersetManager for proper superset handling
+      state.exercises = supersetManager.supersetWithPrev(state.exercises, currentIndex)
     },
 
     /**
      * Create a superset with the next exercise
+     * Uses SupersetManager to handle all edge cases:
+     * - Merging existing groups
+     * - Creating new groups
      */
     supersetWithNext: (state, action: PayloadAction<{ instanceId: string }>) => {
       const instanceId = action.payload.instanceId
@@ -802,22 +817,15 @@ const sessionSlice = createSlice({
 
       if (currentIndex < 0 || currentIndex >= state.exercises.length - 1) return // No next exercise
 
-      const currentExercise = state.exercises[currentIndex]
-      const nextExercise = state.exercises[currentIndex + 1]
-
-      if (!currentExercise || !nextExercise) return
-
-      // If current has a groupId, use it; otherwise create a new one
-      const groupId = currentExercise.groupId || crypto.randomUUID()
-
-      if (!currentExercise.groupId) {
-        currentExercise.groupId = groupId
-      }
-      nextExercise.groupId = groupId
+      // Use SupersetManager for proper superset handling
+      state.exercises = supersetManager.supersetWithNext(state.exercises, currentIndex)
     },
 
     /**
      * Remove superset with previous exercise
+     * Uses SupersetManager to handle:
+     * - Splitting groups at the connection point
+     * - Dissolving groups that drop below 2 members
      */
     removeSupersetWithPrev: (state, action: PayloadAction<{ instanceId: string }>) => {
       const instanceId = action.payload.instanceId
@@ -825,15 +833,15 @@ const sessionSlice = createSlice({
 
       if (currentIndex <= 0) return
 
-      const currentExercise = state.exercises[currentIndex]
-      if (!currentExercise?.groupId) return
-
-      // Clear groupId from current exercise
-      currentExercise.groupId = null
+      // Use SupersetManager for proper removal with group dissolution
+      state.exercises = supersetManager.removeSupersetWithPrev(state.exercises, currentIndex)
     },
 
     /**
      * Remove superset with next exercise
+     * Uses SupersetManager to handle:
+     * - Splitting groups at the connection point
+     * - Dissolving groups that drop below 2 members
      */
     removeSupersetWithNext: (state, action: PayloadAction<{ instanceId: string }>) => {
       const instanceId = action.payload.instanceId
@@ -841,11 +849,8 @@ const sessionSlice = createSlice({
 
       if (currentIndex < 0 || currentIndex >= state.exercises.length - 1) return
 
-      const nextExercise = state.exercises[currentIndex + 1]
-      if (!nextExercise?.groupId) return
-
-      // Clear groupId from next exercise
-      nextExercise.groupId = null
+      // Use SupersetManager for proper removal with group dissolution
+      state.exercises = supersetManager.removeSupersetWithNext(state.exercises, currentIndex)
     },
   },
 })
@@ -858,6 +863,7 @@ export const {
   startSession,
   startFreeSession,
   sessionViewLoaded,
+  prepareSessionEnd,
   endSession,
   resetSessionState,
   rehydrateSession,
