@@ -1617,6 +1617,100 @@ Refactored from server-first to client-first architecture:
 
 ---
 
+## Week 7: Plan Builder (2026-02-07)
+
+### ✅ Task 7.1: Plan Schema & Migration
+
+**Completion Date**: 2026-02-07
+
+**What was completed:**
+
+- Added Plan, PlanDay, PlanDayExercise models to Prisma schema
+- Plan supports daysPerWeek (1-7), durationWeeks (0=unlimited, 1-52)
+- isActive/activatedAt for plan activation (one active per user)
+- isTemplate/copiedFromId for PT-to-client copy pattern
+- PlanDay has dayNumber + optional label
+- PlanDayExercise mirrors WorkoutExercise fields (order, groupId, sets, reps, weight, restSeconds, notes)
+- Ran migration `add_plan_models`
+
+### ✅ Task 7.2: Plan Types & Validations
+
+**What was completed:**
+
+- `src/types/plan.ts` - PlanEntity, PlanDayEntity, PlanDayExerciseEntity, PlanWithDays, PlanWithDetails, PlanDayExerciseWithExercise, PlanDayExerciseFormData
+- `src/lib/validations/plan.ts` - 9 Zod schemas (createPlan, updatePlan, planFilters, updatePlanDay, syncPlanDayExercises, savePlanAllDays, copyWorkoutToPlanDay, activatePlan, copyPlan)
+
+### ✅ Task 7.3: Plan Server Actions
+
+**What was completed:**
+
+- `src/server/actions/plans.ts` - 11 server actions following established patterns
+- getPlans, getPlanById, createPlan, updatePlan, deletePlan
+- syncPlanDayExercises, savePlanAllDays (atomic save all days)
+- copyWorkoutToPlanDay, activatePlan, deactivatePlan, copyPlan
+- All include auth, validation, ownership checks, revalidation
+
+### ✅ Task 7.4: Plan React Query Hooks
+
+**What was completed:**
+
+- `src/hooks/queries/usePlans.ts` - Plans list query
+- `src/hooks/queries/usePlan.ts` - Single plan query
+- `src/hooks/mutations/usePlanMutations.ts` - 10 mutation hooks (create, update, delete, sync, save, copyWorkout, activate, deactivate, copy, updateDay)
+
+### ✅ Task 7.5: Plans Dashboard
+
+**What was completed:**
+
+- `src/app/(dashboard)/plans/page.tsx` - Plans list page
+- Active plan shown first with progress bar
+- Grid cards with exercise count, days/week, duration
+- Search, pagination, loading skeletons, empty state
+- Three-dot menu: Edit Days, Copy, Delete
+- Activate button on inactive plans
+
+### ✅ Task 7.6: Create Plan Flow
+
+**What was completed:**
+
+- `src/app/(dashboard)/plans/create/page.tsx` - Multi-step creation
+- Step 1: Plan name & description
+- Step 2: Days per week (1-7) with card selector
+- Step 3: Duration (Unlimited or 1-52 weeks)
+- Redirects to builder on creation
+
+### ✅ Task 7.7: Plan Builder
+
+**What was completed:**
+
+- `src/components/features/plans/PlanBuilderPage.tsx` - Core builder component
+- `src/components/features/plans/DayCarousel.tsx` - Horizontal Embla carousel for day navigation
+- `src/components/features/plans/CopyFromWorkoutDrawer.tsx` - Copy exercises from workout drawer
+- Three-column layout reusing: ExerciseSelectorPanel, WorkoutExercisesList, ExerciseConfigPanel
+- Mobile: FAB + ExerciseSelectorDrawer + ExerciseConfigDrawer (all reused)
+- SupersetManagerDrawer (reused)
+- Day-scoped exercise management with Map<dayNumber, exercises[]>
+- Atomic save of all days via savePlanAllDays
+
+### ✅ Task 7.8: Plan Details Page
+
+**What was completed:**
+
+- `src/app/(dashboard)/plans/[id]/page.tsx` - Plan detail view
+- Plan header with metadata badges and progress bar
+- Action buttons: Activate/Deactivate, Edit Days, Copy, Delete
+- Day-by-day exercise breakdown with superset indicators
+
+### ✅ Task 7.9: Navigation & Utilities
+
+**What was completed:**
+
+- Added "Plans" nav item to Sidebar (ClipboardList icon, after Workouts)
+- `src/lib/utils/plan-utils.ts` - getCurrentWeek, getPlanProgress, formatPlanDuration
+- `src/app/(dashboard)/plans/[id]/builder/page.tsx` - Builder route page
+
+---
+
 ## Phase 2 Status: ✅ COMPLETE
 
-All 13 core tasks + refactor complete. Ready for Phase 3 or Analytics.
+All 13 core tasks + refactor + Plan Builder complete. Ready for Phase 3 or Analytics.
