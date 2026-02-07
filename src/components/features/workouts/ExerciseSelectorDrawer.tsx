@@ -80,18 +80,19 @@ export function ExerciseSelectorDrawer({
 
   return (
     <Drawer open={open} onOpenChange={handleOpenChange}>
-      <DrawerContent className="max-h-[85vh]">
+      <DrawerContent className="custom-drawer">
         <DrawerHeader>
           <DrawerTitle>Exercise Library</DrawerTitle>
         </DrawerHeader>
 
-        <ScrollArea className="flex-1 overflow-auto">
+        <ScrollArea className="flex-1">
           <ExerciseSelectorPanel
             mode={multiSelect ? 'multi' : 'single'}
             selectedIds={selectedIds}
             onSelectionChange={handleSelectionChange}
             onExerciseSelect={handleExerciseClick}
             disabled={disabled}
+            nestedDrawer={true}
           />
         </ScrollArea>
 

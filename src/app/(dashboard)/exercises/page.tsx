@@ -2,11 +2,15 @@
 
 import { Suspense, useCallback, useMemo, useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Plus } from 'lucide-react'
 import { ExerciseCard } from '@/components/features/exercises/ExerciseCard'
 import { ExerciseFilters } from '@/components/features/exercises/ExerciseFilters'
 import { ExerciseDrawer } from '@/components/features/exercises/ExerciseDrawer'
+import { CreateExerciseDrawer } from '@/components/features/exercises/CreateExerciseDrawer'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useExercises } from '@/hooks/queries/useExercises'
+import { useCanCreateExercise } from '@/hooks/useCanCreateExercise'
 import type { MuscleGroup, EquipmentType, DifficultyLevel } from '@/types/exercise'
 import { toast } from 'sonner'
 
@@ -33,6 +37,10 @@ function ExercisesContent() {
   /* ---------- drawer state (LOCAL ONLY) ---------- */
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [createDrawerOpen, setCreateDrawerOpen] = useState(false)
+
+  /* ---------- permissions ---------- */
+  const { canCreate } = useCanCreateExercise()
 
   /* ---------- URL params ---------- */
   const currentPage = Number(searchParams.get('page')) || 1
@@ -151,6 +159,17 @@ function ExercisesContent() {
   /* ---------- render ---------- */
   return (
     <div className="space-y-6">
+      {/* Header with Create button */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Exercises</h1>
+        {canCreate && (
+          <Button onClick={() => setCreateDrawerOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create Exercise
+          </Button>
+        )}
+      </div>
+
       <ExerciseFilters
         search={search}
         muscleGroups={muscleGroups}
@@ -183,11 +202,40 @@ function ExercisesContent() {
         </div>
       )}
 
+      {/* Pagination */}
+      {!isLoading && (data?.totalPages ?? 0) > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage === 1}
+            onClick={() => updateFilters({ page: String(currentPage - 1) })}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {currentPage} of {data?.totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage >= (data?.totalPages ?? 1)}
+            onClick={() => updateFilters({ page: String(currentPage + 1) })}
+          >
+            Next
+          </Button>
+        </div>
+      )}
+
       <ExerciseDrawer
         exerciseId={selectedExerciseId}
         open={drawerOpen}
         onOpenChange={handleDrawerClose}
       />
+
+      {canCreate && (
+        <CreateExerciseDrawer open={createDrawerOpen} onOpenChange={setCreateDrawerOpen} />
+      )}
     </div>
   )
 }

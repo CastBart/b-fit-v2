@@ -146,7 +146,7 @@ export function CompletedSessionDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-w-[600px] mx-auto max-h-[90vh]">
+      <DrawerContent className="custom-drawer">
         <DrawerHeader className="text-center pb-2">
           <div className="flex justify-center mb-2">
             <div className="rounded-full bg-green-100 dark:bg-green-900 p-3">
@@ -157,7 +157,7 @@ export function CompletedSessionDrawer({
           <DrawerDescription className="text-base">{data.workoutName}</DrawerDescription>
         </DrawerHeader>
 
-        <ScrollArea className="flex-1 px-6 overflow-y-auto max-h-[50vh]">
+        <ScrollArea className="flex-1 px-6">
           <div className="space-y-6 pb-4">
             {/* Session Stats */}
             <div className="grid grid-cols-2 gap-3">

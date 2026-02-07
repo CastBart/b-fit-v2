@@ -67,7 +67,7 @@ export function SetSettingsDrawer({
         </Button>
       </DrawerTrigger>
 
-      <DrawerContent className="max-w-[600px] mx-auto">
+      <DrawerContent className="custom-drawer">
         <DrawerHeader>
           <DrawerTitle className="text-center text-2xl">Set Settings</DrawerTitle>
           <DrawerDescription className="hidden">Manage sets for this exercise</DrawerDescription>

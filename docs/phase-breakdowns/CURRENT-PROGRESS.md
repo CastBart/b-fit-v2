@@ -1,8 +1,9 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-02
+**Last Updated**: 2026-02-05
 **Current Phase**: Phase 2 - Core Features
-**Current Task**: Week 6 - Live Session Mode ✅ COMPLETE (6/6 tasks)
+**Recently Completed**: Task 3.7 - Custom Exercise Creation ✅
+**Next Tasks**: Plan Functionality (Task 3.8 - to be planned)
 **Next Phase**: Phase 3 - Multi-Role Features OR Phase 2 Week 7 - Analytics
 
 ---
@@ -1274,10 +1275,68 @@ package.json (added dependencies)
 
 ---
 
+### ✅ Task 3.7: Custom Exercise Creation (COMPLETED)
+
+**Completion Date**: 2026-02-05
+**Time Taken**: ~3 hours
+
+**What was completed:**
+
+- Created `useExerciseMutations` hook with `useCreateExercise`, `useUpdateExercise`, `useDeleteExercise`
+- Created `useCanCreateExercise` hook for RBAC permission checking (PERSONAL/PT roles only)
+- Installed Shadcn Switch component for isPublic toggle
+- Created `InstructionsField` component with dynamic add/remove/reorder functionality
+- Created `ExerciseForm` component with all exercise fields using react-hook-form + zodResolver
+- Created `CreateExerciseDrawer` component with nested drawer support for Vaul
+- Integrated Create Exercise button into Exercises page (visible for PERSONAL/PT only)
+- Integrated Create Exercise button into ExerciseSelectorPanel
+- Integrated nested drawer support in ExerciseSelectorDrawer
+
+**Files Created:**
+
+```
+src/hooks/mutations/useExerciseMutations.ts
+src/hooks/useCanCreateExercise.ts
+src/components/ui/switch.tsx
+src/components/features/exercises/InstructionsField.tsx
+src/components/features/exercises/ExerciseForm.tsx
+src/components/features/exercises/CreateExerciseDrawer.tsx
+```
+
+**Files Modified:**
+
+```
+src/app/(dashboard)/exercises/page.tsx
+src/components/features/workouts/ExerciseSelectorPanel.tsx
+src/components/features/workouts/ExerciseSelectorDrawer.tsx
+```
+
+**Key Features:**
+
+- RBAC enforcement - only PERSONAL and PT users can create exercises
+- Form validation using existing `createExerciseSchema` from zod
+- Toast notifications for success/error states
+- Cache invalidation on successful creation
+- Instructions field with dynamic add/remove/reorder
+- Supports nested drawers (for use inside ExerciseSelectorDrawer)
+- Mobile-friendly responsive design
+
+**Verification:**
+
+- ✅ TypeScript compilation passes
+- ✅ ESLint passes with no errors
+- ✅ Build succeeds
+- ✅ CreateExerciseDrawer is reusable and accepts typed props
+- ✅ Form validates all fields according to createExerciseSchema
+- ✅ Create button visible from 3 locations for PERSONAL/PT users
+- ✅ Nested drawer from ExerciseSelectorDrawer works correctly
+
+---
+
 ## Week 3 Summary
 
 **Status**: Complete ✅
-**Progress**: 6/6 tasks complete (100%)
+**Progress**: 7/7 tasks complete (100%)
 
 1. ✅ Task 3.1: Complete Exercise Schema
 2. ✅ Task 3.2: Create Exercise Seed Data
@@ -1285,8 +1344,9 @@ package.json (added dependencies)
 4. ✅ Task 3.4: Exercise Search/Filter UI
 5. ✅ Task 3.5: Exercise Detail Drawer
 6. ✅ Task 3.6: React Query Integration
+7. ✅ Task 3.7: Custom Exercise Creation
 
-**Total Time**: ~13.5 hours
+**Total Time**: ~16.5 hours
 **Build Status**: ✅ Passing
 
 ---
@@ -2434,7 +2494,7 @@ src/app/(dashboard)/workouts/page.tsx (1 line - navigation)
 
 ## Phase 2 Progress Summary
 
-**Exercise Library (Week 3)**: ✅ 6/6 tasks complete (100%)
+**Exercise Library (Week 3)**: ✅ 7/7 tasks complete (100%)
 **Workout Builder Part 1 (Week 4)**: ✅ 5/5 tasks complete (100%)
 **Workout Builder Part 2 (Week 5)**: ✅ 5/5 tasks complete (100%)
 **Live Session Mode (Week 6)**: ✅ 6/6 tasks complete (100%)

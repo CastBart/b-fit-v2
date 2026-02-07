@@ -77,7 +77,7 @@ export function SupersetManagerDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
+      <DrawerContent className="custom-drawer">
         <DrawerHeader>
           <DrawerTitle>Superset Manager</DrawerTitle>
           <DrawerDescription>

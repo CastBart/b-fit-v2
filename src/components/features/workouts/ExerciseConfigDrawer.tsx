@@ -81,12 +81,12 @@ export function ExerciseConfigDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[85vh]">
+      <DrawerContent className="custom-drawer">
         <DrawerHeader>
           <DrawerTitle>{exercise?.exercise?.name || 'Exercise Configuration'}</DrawerTitle>
         </DrawerHeader>
 
-        <ScrollArea className="flex-1 overflow-auto">
+        <ScrollArea className="flex-1">
           <ExerciseConfigPanel
             exercise={draftExercise}
             onUpdate={handleDraftUpdate}

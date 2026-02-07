@@ -68,7 +68,7 @@ export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
       </DrawerTrigger>
 
       {/* Drawer Content */}
-      <DrawerContent className="max-w-150 mx-auto">
+      <DrawerContent className="custom-drawer">
         <DrawerHeader>
           <DrawerTitle className="text-center text-2xl">Rest Timer</DrawerTitle>
           <DrawerDescription className="hidden">

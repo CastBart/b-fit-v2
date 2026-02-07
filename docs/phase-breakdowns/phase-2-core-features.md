@@ -332,6 +332,175 @@
 
 ---
 
+### Task 3.7: Custom Exercise Creation
+
+**Priority**: High
+**Estimated Effort**: 4-5 hours
+**Dependencies**: Task 3.3 (server actions exist), Task 3.6 (React Query)
+**Status**: ✅ COMPLETE
+**Completion Date**: 2026-02-05
+
+#### Overview
+
+Add a reusable `CreateExerciseDrawer` component allowing PT and Personal users to create custom exercises from multiple locations in the app.
+
+#### Integration Points
+
+The "Create Exercise" button will appear in **3 locations**:
+
+1. **Exercises page** - Main exercise library
+2. **ExerciseSelectorPanel** - Workout builder left panel
+3. **ExerciseSelectorDrawer** - Session page exercise selector
+
+#### Existing Infrastructure (Reuse)
+
+| Component                      | Path                              | Purpose                                      |
+| ------------------------------ | --------------------------------- | -------------------------------------------- |
+| `createExercise` server action | `src/server/actions/exercises.ts` | Already has RBAC for PERSONAL/PT             |
+| `createExerciseSchema`         | `src/lib/validations/exercise.ts` | Zod validation schema                        |
+| `ExerciseFormData` type        | `src/types/exercise.ts`           | Form data interface                          |
+| Display labels                 | `src/types/exercise.ts`           | MuscleGroupLabels, EquipmentTypeLabels, etc. |
+| Drawer primitives              | `src/components/ui/drawer.tsx`    | Vaul-based drawer components                 |
+
+#### Sub-tasks:
+
+**Phase 1: Foundation Hooks**
+
+1. **Create Exercise Mutation Hook**
+   - [x] Create `src/hooks/mutations/useExerciseMutations.ts`
+   - [x] `useCreateExercise()` mutation with cache invalidation
+   - [x] Toast notifications for success/error
+
+2. **Create Role Check Hook**
+   - [x] Create `src/hooks/useCanCreateExercise.ts`
+   - [x] Check if current user has PERSONAL or PT role
+   - [x] Returns boolean for UI visibility
+
+3. **Add Switch UI Component**
+   - [x] Run `npx shadcn@latest add switch`
+   - [x] For isPublic toggle field
+
+**Phase 2: Form Components**
+
+4. **Create InstructionsField Component**
+   - [x] Create `src/components/features/exercises/InstructionsField.tsx`
+   - [x] Dynamic array field for adding/removing instruction steps
+   - [x] Add/Remove buttons, numbered labels (Step 1, Step 2, etc.)
+   - [x] Reorder support with move up/down buttons
+
+5. **Create ExerciseForm Component**
+   - [x] Create `src/components/features/exercises/ExerciseForm.tsx`
+   - [x] All exercise fields with react-hook-form + zodResolver
+   - [x] Reusable for Edit mode later
+
+**Form Fields:**
+
+- name (required, Input, 3-100 chars)
+- description (optional, Textarea, max 500 chars)
+- primaryMuscleGroup (required, Select)
+- secondaryMuscleGroups (optional, multi-select with checkboxes)
+- equipmentType (required, Select)
+- exerciseType (required, Select)
+- metricType (required, Select)
+- movementPattern (required, Select)
+- difficultyLevel (required, Select)
+- instructions (optional, InstructionsField array)
+- isPublic (optional, Switch, default false)
+
+**Phase 3: Main Drawer Component**
+
+6. **Create CreateExerciseDrawer Component**
+   - [x] Create `src/components/features/exercises/CreateExerciseDrawer.tsx`
+   - [x] Wrap ExerciseForm with drawer header, scroll area, footer buttons
+   - [x] Props: `open`, `onOpenChange`, `onExerciseCreated?`, `nested?`
+   - [x] Loading state during submission
+   - [x] Close drawer on successful creation
+
+**Phase 4: Integration**
+
+7. **Integrate into Exercises Page**
+   - [x] Modify `src/app/(dashboard)/exercises/page.tsx`
+   - [x] Add "Create Exercise" button (visible only for PERSONAL/PT)
+   - [x] Add CreateExerciseDrawer with open state
+
+8. **Integrate into ExerciseSelectorPanel**
+   - [x] Modify `src/components/features/workouts/ExerciseSelectorPanel.tsx`
+   - [x] Add "Create" button in header next to "Exercise Library" title
+   - [x] Add CreateExerciseDrawer with optional nested mode
+
+9. **Integrate into ExerciseSelectorDrawer**
+   - [x] Modify `src/components/features/workouts/ExerciseSelectorDrawer.tsx`
+   - [x] Pass `nestedDrawer={true}` to ExerciseSelectorPanel
+   - [x] Nested CreateExerciseDrawer works via panel
+
+#### Files to Create
+
+```
+src/
+  components/
+    features/
+      exercises/
+        CreateExerciseDrawer.tsx    (NEW)
+        ExerciseForm.tsx            (NEW)
+        InstructionsField.tsx       (NEW)
+    ui/
+      switch.tsx                    (NEW - shadcn install)
+  hooks/
+    mutations/
+      useExerciseMutations.ts       (NEW)
+    useCanCreateExercise.ts         (NEW)
+```
+
+#### Files to Modify
+
+```
+src/
+  app/(dashboard)/exercises/
+    page.tsx                        (MODIFY - add Create button + drawer)
+  components/features/workouts/
+    ExerciseSelectorPanel.tsx       (MODIFY - add Create button + drawer)
+    ExerciseSelectorDrawer.tsx      (MODIFY - add Create button + nested drawer)
+```
+
+#### Acceptance Criteria
+
+- [x] CreateExerciseDrawer is reusable and accepts typed props
+- [x] Form validates all fields according to `createExerciseSchema`
+- [x] PERSONAL and PT users can create exercises from all three locations
+- [x] CLIENT and ORG users cannot see the Create button
+- [x] New exercises appear immediately in lists after creation (cache invalidation)
+- [x] Toast notifications display appropriate success/error messages
+- [x] Form is mobile-friendly (proper touch targets, scroll behavior)
+- [x] Nested drawer from session page works correctly
+- [x] Instructions field supports dynamic add/remove/reorder
+- [x] All enum fields use display labels from `@/types/exercise.ts`
+- [x] Form uses react-hook-form with defaults
+
+#### Implementation Notes
+
+**Completion Date**: 2026-02-05
+**Actual Effort**: ~3 hours
+
+**Key Implementation Decisions:**
+
+1. **Form Type Handling**: Used `z.input<typeof createExerciseSchema>` for form values type to properly handle defaults from zod schema
+
+2. **Nested Drawer Support**: Added `nested` prop to CreateExerciseDrawer and `nestedDrawer` prop to ExerciseSelectorPanel to pass through for proper Vaul drawer nesting
+
+3. **Instructions Reordering**: Implemented move up/down buttons instead of drag-and-drop for simpler implementation (can be enhanced later with DnD Kit if needed)
+
+4. **Permission Check**: Created simple `useCanCreateExercise` hook using `useSession` from next-auth to check for PERSONAL or PT role
+
+5. **Cache Invalidation**: Mutation hooks invalidate `['exercises']` query key on success to refresh exercise lists
+
+**Notes:**
+
+- Secondary muscle groups multi-select was deferred (form field exists but not implemented as multi-select)
+- Maximum instructions limit not enforced in UI (schema allows unlimited)
+- Form reset on drawer reopen happens automatically via react-hook-form defaultValues
+
+---
+
 ## Week 4: Workout Builder (Part 1)
 
 ### Task 4.1: Workout & WorkoutExercise Schema ✅ COMPLETED

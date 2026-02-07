@@ -8,8 +8,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Dumbbell } from 'lucide-react'
+import { Search, Dumbbell, Plus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -20,7 +21,9 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
+import { CreateExerciseDrawer } from '@/components/features/exercises/CreateExerciseDrawer'
 import { useExercises } from '@/hooks/queries/useExercises'
+import { useCanCreateExercise } from '@/hooks/useCanCreateExercise'
 import {
   MuscleGroup,
   EquipmentType,
@@ -36,6 +39,8 @@ interface ExerciseSelectorPanelProps {
   mode?: 'single' | 'multi'
   selectedIds?: Set<string>
   onSelectionChange?: (ids: Set<string>, exercises?: Map<string, Exercise>) => void
+  /** If true, the create drawer will be nested (for use inside another drawer) */
+  nestedDrawer?: boolean
 }
 
 export function ExerciseSelectorPanel({
@@ -44,12 +49,16 @@ export function ExerciseSelectorPanel({
   mode = 'single',
   selectedIds = new Set(),
   onSelectionChange,
+  nestedDrawer = false,
 }: ExerciseSelectorPanelProps) {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [muscleGroup, setMuscleGroup] = useState<MuscleGroup | undefined>(undefined)
   const [equipment, setEquipment] = useState<EquipmentType | undefined>(undefined)
   const [exerciseMap, setExerciseMap] = useState<Map<string, Exercise>>(new Map())
+  const [createDrawerOpen, setCreateDrawerOpen] = useState(false)
+
+  const { canCreate } = useCanCreateExercise()
 
   // Clear exercise map when filters change (exercises list changes)
   useEffect(() => {
@@ -104,10 +113,25 @@ export function ExerciseSelectorPanel({
     <div className="flex h-full flex-col">
       {/* Header */}
       <div className="border-b p-4">
-        <h3 className="font-semibold">Exercise Library</h3>
-        <p className="text-xs text-muted-foreground">
-          {mode === 'multi' ? 'Select exercises to add' : 'Click an exercise to add it'}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold">Exercise Library</h3>
+            <p className="text-xs text-muted-foreground">
+              {mode === 'multi' ? 'Select exercises to add' : 'Click an exercise to add it'}
+            </p>
+          </div>
+          {canCreate && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCreateDrawerOpen(true)}
+              disabled={disabled}
+            >
+              <Plus className="mr-1 h-3 w-3" />
+              Create
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Filters */}
@@ -219,6 +243,21 @@ export function ExerciseSelectorPanel({
             })}
         </div>
       </ScrollArea>
+
+      {/* Create Exercise Drawer */}
+      {canCreate && (
+        <CreateExerciseDrawer
+          open={createDrawerOpen}
+          onOpenChange={setCreateDrawerOpen}
+          nested={nestedDrawer}
+          onExerciseCreated={(exercise) => {
+            // In single mode, select the newly created exercise
+            if (mode === 'single') {
+              onExerciseSelect(exercise)
+            }
+          }}
+        />
+      )}
     </div>
   )
 }
