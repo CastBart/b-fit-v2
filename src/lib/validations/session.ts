@@ -12,6 +12,8 @@ export const saveSessionSchema = z.object({
   sessionId: z.string().uuid('Invalid session ID'),
   workoutId: z.string().cuid('Invalid workout ID').nullable(),
   workoutName: z.string().min(1).max(100),
+  planId: z.string().cuid('Invalid plan ID').nullable().optional(),
+  planDayId: z.string().cuid('Invalid plan day ID').nullable().optional(),
   startTime: z.number().int().positive(),
   completeTime: z.number().int().positive(),
   accumulatedPauseDuration: z.number().int().min(0),
@@ -48,7 +50,7 @@ export const saveSessionSchema = z.object({
  * Schema for getting a session by ID
  */
 export const getSessionByIdSchema = z.object({
-  sessionId: z.string().cuid('Invalid session ID'),
+  sessionId: z.string().min(1, 'Session ID is required'),
 })
 
 /**

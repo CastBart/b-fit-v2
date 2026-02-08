@@ -27,6 +27,7 @@ import { Pencil, Check, X, Copy, Plus, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface DayInfo {
+  uid: string // stable identity for DnD and React keys
   dayNumber: number
   dayId?: string
   label?: string | null
@@ -56,7 +57,7 @@ export function DayCarousel({
   onDeleteDay,
   maxDays = 7,
 }: DayCarouselProps) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
+  const [_emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     containScroll: 'trimSnaps',
     dragFree: true,
@@ -133,8 +134,8 @@ export function DayCarousel({
     const { active, over } = event
     if (!over || active.id === over.id || !onReorderDay) return
 
-    const fromIndex = days.findIndex((d) => d.dayNumber === active.id)
-    const toIndex = days.findIndex((d) => d.dayNumber === over.id)
+    const fromIndex = days.findIndex((d) => d.uid === active.id)
+    const toIndex = days.findIndex((d) => d.uid === over.id)
 
     if (fromIndex !== -1 && toIndex !== -1) {
       onReorderDay(fromIndex, toIndex)
@@ -149,15 +150,12 @@ export function DayCarousel({
         onDragEnd={handleDragEnd}
         modifiers={[restrictToHorizontalAxis, restrictToParentElement]}
       >
-        <div className="overflow-hidden" ref={emblaRef}>
-          <SortableContext
-            items={days.map((d) => d.dayNumber)}
-            strategy={horizontalListSortingStrategy}
-          >
+        <div className="flex flex-row items-center overflow-x-auto overflow-y-hidden">
+          <SortableContext items={days.map((d) => d.uid)} strategy={horizontalListSortingStrategy}>
             <div className="flex gap-2">
               {days.map((day, index) => (
                 <SortableDayCard
-                  key={`day-${day.dayNumber}`}
+                  key={day.uid}
                   day={day}
                   index={index}
                   isSelected={index === currentDayIndex}
@@ -242,7 +240,7 @@ function SortableDayCard({
   hasLabelUpdate,
 }: SortableDayCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: day.dayNumber,
+    id: day.uid,
   })
 
   const style = {
@@ -251,10 +249,23 @@ function SortableDayCard({
     zIndex: isDragging ? 999 : undefined,
     opacity: isDragging ? 0.7 : 1,
   }
+  const nodeRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (isSelected && nodeRef.current) {
+      nodeRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      })
+    }
+  }, [isSelected])
 
   return (
     <div
-      ref={setNodeRef}
+      ref={(el) => {
+        setNodeRef(el)
+        nodeRef.current = el
+      }}
       style={style}
       {...attributes}
       {...listeners}

@@ -82,6 +82,8 @@ export default function SessionPage() {
     startTime,
     accumulatedPauseDuration,
     error,
+    planId,
+    planDayId,
   } = useAppSelector((state) => state.session)
 
   // Live timers
@@ -134,6 +136,8 @@ export default function SessionPage() {
       sessionId: sessionId!,
       workoutId,
       workoutName,
+      planId,
+      planDayId,
       startTime: startTime!,
       completeTime: Date.now(),
       accumulatedPauseDuration,

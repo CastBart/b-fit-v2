@@ -19,6 +19,7 @@ import {
   type ExerciseHistoryEntry,
 } from '@/types/session'
 import { revalidatePath } from 'next/cache'
+import { checkAndAdvanceWeek } from '@/server/utils/plan-week-utils'
 
 // ============================================================================
 // RESPONSE TYPES
@@ -66,6 +67,8 @@ export async function saveCompletedSession(
           status: validated.status,
           startedAt: new Date(validated.startTime),
           completedAt: new Date(validated.completeTime),
+          planId: validated.planId ?? null,
+          planDayId: validated.planDayId ?? null,
         },
       })
 
@@ -107,12 +110,44 @@ export async function saveCompletedSession(
         }
       }
 
+      // 4. Plan day completion tracking
+      if (validated.planId && validated.planDayId && validated.status === 'COMPLETED') {
+        const activeWeek = await tx.planWeek.findFirst({
+          where: { planId: validated.planId, status: 'IN_PROGRESS' },
+        })
+
+        if (activeWeek) {
+          const existing = await tx.planDayCompletion.findUnique({
+            where: {
+              planWeekId_planDayId: {
+                planWeekId: activeWeek.id,
+                planDayId: validated.planDayId,
+              },
+            },
+          })
+
+          if (!existing) {
+            await tx.planDayCompletion.create({
+              data: {
+                planWeekId: activeWeek.id,
+                planDayId: validated.planDayId,
+                status: 'COMPLETED',
+                sessionId: newSession.id,
+              },
+            })
+
+            await checkAndAdvanceWeek(tx, validated.planId, activeWeek.id)
+          }
+        }
+      }
+
       return newSession
     })
 
     // Revalidate sessions list
     revalidatePath('/sessions')
     revalidatePath(`/sessions/${trainingSession.id}`)
+    revalidatePath('/dashboard')
 
     return {
       success: true,

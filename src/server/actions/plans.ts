@@ -22,6 +22,7 @@ import {
   copyWorkoutToPlanDaySchema,
   activatePlanSchema,
   copyPlanSchema,
+  skipPlanDaySchema,
   type CreatePlanInput,
   type UpdatePlanInput,
   type PlanFiltersInput,
@@ -30,7 +31,10 @@ import {
   type SavePlanAllDaysInput,
   type CopyWorkoutToPlanDayInput,
   type CopyPlanInput,
+  type SkipPlanDayInput,
 } from '@/lib/validations/plan'
+import type { ActivePlanDashboardResponse } from '@/types/plan'
+import { checkAndAdvanceWeek } from '@/server/utils/plan-week-utils'
 
 // ============================================================================
 // Types
@@ -506,7 +510,8 @@ export async function syncPlanDayExercises(
 /**
  * Atomic save of all days in one transaction.
  * Handles adding new days, reordering days, copying days, and updating labels.
- * Deletes all existing PlanDays and recreates them to avoid unique constraint conflicts.
+ * Preserves existing PlanDay IDs (and their PlanDayCompletion records) by
+ * updating in place rather than delete-and-recreate.
  */
 export async function savePlanAllDays(
   input: SavePlanAllDaysInput
@@ -540,25 +545,64 @@ export async function savePlanAllDays(
     let totalSaved = 0
 
     await prisma.$transaction(async (tx) => {
-      // Delete all existing PlanDays (cascades to PlanDayExercise)
+      const inputDayIds = validatedInput.days.filter((d) => d.dayId).map((d) => d.dayId!)
+
+      // 1. Delete only days that were removed (cascades exercises + completions)
       await tx.planDay.deleteMany({
-        where: { planId: validatedInput.planId },
+        where: {
+          planId: validatedInput.planId,
+          id: { notIn: inputDayIds },
+        },
       })
 
-      // Create new PlanDays with exercises
-      for (const day of validatedInput.days) {
-        const createdDay = await tx.planDay.create({
-          data: {
-            planId: validatedInput.planId,
-            dayNumber: day.dayNumber,
-            label: day.label,
-          },
+      // 2. Delete exercises for all remaining days (will be recreated below)
+      if (inputDayIds.length > 0) {
+        await tx.planDayExercise.deleteMany({
+          where: { planDayId: { in: inputDayIds } },
         })
+      }
 
+      // 3. Temporarily offset existing dayNumbers to avoid unique constraint
+      //    conflicts during reordering (e.g. swapping day 1 and day 2)
+      if (inputDayIds.length > 0) {
+        for (const day of validatedInput.days) {
+          if (day.dayId) {
+            await tx.planDay.update({
+              where: { id: day.dayId },
+              data: { dayNumber: day.dayNumber + 100 },
+            })
+          }
+        }
+      }
+
+      // 4. Update existing days to final dayNumber/label, create new days
+      for (const day of validatedInput.days) {
+        let dayId: string
+
+        if (day.dayId) {
+          // Existing day — update in place (preserves ID and completions)
+          await tx.planDay.update({
+            where: { id: day.dayId },
+            data: { dayNumber: day.dayNumber, label: day.label },
+          })
+          dayId = day.dayId
+        } else {
+          // New day — create
+          const createdDay = await tx.planDay.create({
+            data: {
+              planId: validatedInput.planId,
+              dayNumber: day.dayNumber,
+              label: day.label,
+            },
+          })
+          dayId = createdDay.id
+        }
+
+        // 5. Recreate exercises for this day
         if (day.exercises.length > 0) {
           await tx.planDayExercise.createMany({
             data: day.exercises.map((e) => ({
-              planDayId: createdDay.id,
+              planDayId: dayId,
               exerciseId: e.exerciseId,
               order: e.order,
               sets: e.sets,
@@ -573,7 +617,7 @@ export async function savePlanAllDays(
         }
       }
 
-      // Update daysPerWeek to match new day count
+      // 6. Update daysPerWeek to match new day count
       await tx.plan.update({
         where: { id: validatedInput.planId },
         data: { daysPerWeek: validatedInput.days.length },
@@ -582,6 +626,7 @@ export async function savePlanAllDays(
 
     revalidatePath('/plans')
     revalidatePath(`/plans/${validatedInput.planId}`)
+    revalidatePath('/dashboard')
     return { success: true, data: { totalSaved } }
   } catch (error) {
     console.error('Error saving plan days:', error)
@@ -693,21 +738,31 @@ export async function activatePlan(planId: string): Promise<ActionResponse<void>
       return { success: false, error: 'You can only activate your own plans' }
     }
 
-    await prisma.$transaction([
+    await prisma.$transaction(async (tx) => {
       // Deactivate all user's plans
-      prisma.plan.updateMany({
+      await tx.plan.updateMany({
         where: { createdById: session.user.id },
         data: { isActive: false, activatedAt: null },
-      }),
+      })
       // Activate the target plan
-      prisma.plan.update({
+      await tx.plan.update({
         where: { id: planId },
         data: { isActive: true, activatedAt: new Date() },
-      }),
-    ])
+      })
+      // Create Week 1 if it doesn't exist (handles reactivation gracefully)
+      const existingWeek = await tx.planWeek.findUnique({
+        where: { planId_weekNumber: { planId, weekNumber: 1 } },
+      })
+      if (!existingWeek) {
+        await tx.planWeek.create({
+          data: { planId, weekNumber: 1 },
+        })
+      }
+    })
 
     revalidatePath('/plans')
     revalidatePath(`/plans/${planId}`)
+    revalidatePath('/dashboard')
     return { success: true }
   } catch (error) {
     console.error('Error activating plan:', error)
@@ -860,5 +915,223 @@ export async function copyPlan(input: CopyPlanInput): Promise<ActionResponse<Pla
       return { success: false, error: error.message }
     }
     return { success: false, error: 'Failed to copy plan' }
+  }
+}
+
+// ============================================================================
+// Active Plan Dashboard
+// ============================================================================
+
+/**
+ * Get active plan dashboard data for the current user.
+ * Returns plan info, weeks, days with exercises, and completions for the viewed week.
+ */
+export async function getActivePlanDashboard(
+  weekNumber?: number
+): Promise<ActionResponse<ActivePlanDashboardResponse>> {
+  try {
+    const session = await getServerSession()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Authentication required' }
+    }
+
+    // Find active plan
+    const plan = await prisma.plan.findFirst({
+      where: { createdById: session.user.id, isActive: true },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        daysPerWeek: true,
+        durationWeeks: true,
+        activatedAt: true,
+      },
+    })
+
+    if (!plan || !plan.activatedAt) {
+      return { success: true, data: { plan: null } }
+    }
+
+    // Fetch all weeks
+    const weeks = await prisma.planWeek.findMany({
+      where: { planId: plan.id },
+      orderBy: { weekNumber: 'asc' },
+      select: {
+        id: true,
+        weekNumber: true,
+        status: true,
+        startedAt: true,
+        completedAt: true,
+      },
+    })
+
+    if (weeks.length === 0) {
+      return { success: true, data: { plan: null } }
+    }
+
+    // Active week = last IN_PROGRESS week, or max week if all complete
+    const activeWeek = weeks.findLast((w) => w.status === 'IN_PROGRESS') || weeks[weeks.length - 1]!
+    const activeWeekNumber = activeWeek.weekNumber
+
+    // Viewed week = requested or active
+    const viewedWeekNumber = weekNumber ?? activeWeekNumber
+    const viewedWeek = weeks.find((w) => w.weekNumber === viewedWeekNumber)
+
+    if (!viewedWeek) {
+      return { success: false, error: 'Week not found' }
+    }
+
+    // Fetch days with exercises
+    const days = await prisma.planDay.findMany({
+      where: { planId: plan.id },
+      include: {
+        exercises: {
+          include: {
+            exercise: {
+              select: {
+                id: true,
+                name: true,
+                exerciseType: true,
+                metricType: true,
+              },
+            },
+          },
+          orderBy: { order: 'asc' },
+        },
+      },
+      orderBy: { dayNumber: 'asc' },
+    })
+
+    // Fetch completions for viewed week
+    const completions = await prisma.planDayCompletion.findMany({
+      where: { planWeekId: viewedWeek.id },
+      select: {
+        planDayId: true,
+        status: true,
+        sessionId: true,
+        completedAt: true,
+      },
+    })
+
+    return {
+      success: true,
+      data: {
+        plan: {
+          id: plan.id,
+          name: plan.name,
+          description: plan.description,
+          daysPerWeek: plan.daysPerWeek,
+          durationWeeks: plan.durationWeeks,
+          activatedAt: plan.activatedAt,
+        },
+        weeks,
+        activeWeekNumber,
+        viewedWeekNumber,
+        days: days.map((d) => ({
+          id: d.id,
+          dayNumber: d.dayNumber,
+          label: d.label,
+          exercises: d.exercises.map((e) => ({
+            id: e.id,
+            exerciseId: e.exerciseId,
+            exercise: e.exercise,
+            order: e.order,
+            groupId: e.groupId,
+            sets: e.sets,
+            reps: e.reps,
+            weight: e.weight,
+            restSeconds: e.restSeconds,
+            notes: e.notes,
+          })),
+        })),
+        weekCompletions: completions,
+      },
+    }
+  } catch (error) {
+    console.error('Error fetching active plan dashboard:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to fetch active plan dashboard' }
+  }
+}
+
+// ============================================================================
+// Skip Plan Day
+// ============================================================================
+
+/**
+ * Skip a plan day for the current active week.
+ * Creates a PlanDayCompletion with SKIPPED status.
+ */
+export async function skipPlanDay(input: SkipPlanDayInput): Promise<ActionResponse<void>> {
+  try {
+    const session = await getServerSession()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Authentication required' }
+    }
+
+    const validated = skipPlanDaySchema.parse(input)
+
+    // Verify plan ownership
+    const plan = await prisma.plan.findUnique({
+      where: { id: validated.planId },
+    })
+
+    if (!plan) {
+      return { success: false, error: 'Plan not found' }
+    }
+
+    if (plan.createdById !== session.user.id) {
+      return { success: false, error: 'You can only modify your own plans' }
+    }
+
+    if (!plan.isActive) {
+      return { success: false, error: 'Plan is not active' }
+    }
+
+    // Find the IN_PROGRESS week
+    const activeWeek = await prisma.planWeek.findFirst({
+      where: { planId: validated.planId, status: 'IN_PROGRESS' },
+    })
+
+    if (!activeWeek) {
+      return { success: false, error: 'No active week found' }
+    }
+
+    // Guard: no existing completion
+    const existing = await prisma.planDayCompletion.findUnique({
+      where: {
+        planWeekId_planDayId: {
+          planWeekId: activeWeek.id,
+          planDayId: validated.planDayId,
+        },
+      },
+    })
+
+    if (existing) {
+      return { success: false, error: 'Day already completed or skipped' }
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.planDayCompletion.create({
+        data: {
+          planWeekId: activeWeek.id,
+          planDayId: validated.planDayId,
+          status: 'SKIPPED',
+        },
+      })
+
+      await checkAndAdvanceWeek(tx, validated.planId, activeWeek.id)
+    })
+
+    revalidatePath('/dashboard')
+    return { success: true }
+  } catch (error) {
+    console.error('Error skipping plan day:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to skip plan day' }
   }
 }

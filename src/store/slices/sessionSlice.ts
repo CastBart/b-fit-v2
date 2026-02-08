@@ -19,6 +19,8 @@ const initialState: SessionState = {
   sessionId: null,
   workoutId: null,
   workoutName: '',
+  planId: null,
+  planDayId: null,
   startTime: null,
   isPaused: false,
   pauseTime: null,
@@ -149,8 +151,10 @@ const sessionSlice = createSlice({
     startSession: (
       state,
       action: PayloadAction<{
-        workoutId: string
+        workoutId: string | null
         workoutName: string
+        planId?: string | null
+        planDayId?: string | null
         exercises: SessionExerciseEntry[]
       }>
     ) => {
@@ -159,6 +163,8 @@ const sessionSlice = createSlice({
       state.sessionId = crypto.randomUUID()
       state.workoutId = workoutId
       state.workoutName = workoutName
+      state.planId = action.payload.planId ?? null
+      state.planDayId = action.payload.planDayId ?? null
       state.startTime = Date.now()
       state.isActive = true
       state.isStarting = true
@@ -198,6 +204,8 @@ const sessionSlice = createSlice({
       state.sessionId = crypto.randomUUID()
       state.workoutId = null
       state.workoutName = action.payload.name
+      state.planId = null
+      state.planDayId = null
       state.startTime = Date.now()
       state.isActive = true
       state.isStarting = true

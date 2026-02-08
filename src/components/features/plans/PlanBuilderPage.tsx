@@ -45,6 +45,7 @@ interface WorkoutExercise {
 }
 
 interface LocalDay {
+  uid: string // stable client-side ID for React keys and DnD
   dayId?: string
   dayNumber: number
   label?: string | null
@@ -52,9 +53,10 @@ interface LocalDay {
 
 interface PlanBuilderPageProps {
   planId: string
+  initialDayIndex?: number
 }
 
-export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
+export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPageProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
 
@@ -63,8 +65,8 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
   const savePlanAllDays = useSavePlanAllDays()
 
   // State
-  const [currentDayIndex, setCurrentDayIndex] = useState(0)
-  const [dayExercises, setDayExercises] = useState<Map<number, WorkoutExercise[]>>(new Map())
+  const [currentDayIndex, setCurrentDayIndex] = useState(initialDayIndex)
+  const [dayExercises, setDayExercises] = useState<Map<string, WorkoutExercise[]>>(new Map())
   const [localDays, setLocalDays] = useState<LocalDay[]>([])
   const [selectedExerciseIndex, setSelectedExerciseIndex] = useState<number | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
@@ -81,9 +83,10 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
   // Load existing plan data
   useEffect(() => {
     if (plan && !isLoaded) {
-      const exerciseMap = new Map<number, WorkoutExercise[]>()
+      const exerciseMap = new Map<string, WorkoutExercise[]>()
 
       const days: LocalDay[] = plan.days.map((day) => {
+        const uid = day.id // use persisted dayId as stable uid
         const dayExs: WorkoutExercise[] = day.exercises.map((pde) => ({
           workoutExerciseId: pde.id,
           instanceId: pde.id,
@@ -97,8 +100,8 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
           groupId: pde.groupId || undefined,
           exercise: pde.exercise,
         }))
-        exerciseMap.set(day.dayNumber, dayExs)
-        return { dayId: day.id, dayNumber: day.dayNumber, label: day.label }
+        exerciseMap.set(uid, dayExs)
+        return { uid, dayId: day.id, dayNumber: day.dayNumber, label: day.label }
       })
 
       setLocalDays(days)
@@ -107,16 +110,16 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
     }
   }, [plan, isLoaded])
 
-  // Current day's exercises
-  const currentDayNumber = localDays[currentDayIndex]?.dayNumber ?? 1
-  const exercises = dayExercises.get(currentDayNumber) || []
+  // Current day's exercises (keyed by stable uid)
+  const currentDayUid = localDays[currentDayIndex]?.uid ?? ''
+  const exercises = dayExercises.get(currentDayUid) || []
 
   // Update exercises for the current day
   const setCurrentDayExercises = (updater: (prev: WorkoutExercise[]) => WorkoutExercise[]) => {
     setDayExercises((prev) => {
       const newMap = new Map(prev)
-      const current = newMap.get(currentDayNumber) || []
-      newMap.set(currentDayNumber, updater(current))
+      const current = newMap.get(currentDayUid) || []
+      newMap.set(currentDayUid, updater(current))
       return newMap
     })
   }
@@ -127,11 +130,12 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
       toast.error('Plan cannot exceed 7 days')
       return
     }
+    const uid = crypto.randomUUID()
     const newDayNumber = localDays.length + 1
-    setLocalDays((prev) => [...prev, { dayNumber: newDayNumber }])
+    setLocalDays((prev) => [...prev, { uid, dayNumber: newDayNumber }])
     setDayExercises((prev) => {
       const newMap = new Map(prev)
-      newMap.set(newDayNumber, [])
+      newMap.set(uid, [])
       return newMap
     })
     setCurrentDayIndex(localDays.length)
@@ -139,6 +143,7 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
   }, [localDays.length])
 
   // Reorder a day (drag-and-drop: fromIndex -> toIndex)
+  // Exercise map is keyed by stable uid, so no remapping needed — just reorder and renumber
   const handleReorderDay = useCallback(
     (fromIndex: number, toIndex: number) => {
       if (fromIndex === toIndex) return
@@ -150,18 +155,6 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
         const [removed] = updated.splice(fromIndex, 1)
         if (!removed) return prev
         updated.splice(toIndex, 0, removed)
-
-        // Reassign dayNumbers sequentially and update exercise map keys
-        setDayExercises((prevExercises) => {
-          const newMap = new Map<number, WorkoutExercise[]>()
-          updated.forEach((day, i) => {
-            const oldDayNumber = day.dayNumber
-            const newDayNumber = i + 1
-            newMap.set(newDayNumber, prevExercises.get(oldDayNumber) || [])
-          })
-          return newMap
-        })
-
         return updated.map((day, i) => ({ ...day, dayNumber: i + 1 }))
       })
 
@@ -187,19 +180,14 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
         const dayToRemove = prev[dayIndex]
         if (!dayToRemove) return prev
 
-        const updated = prev.filter((_, i) => i !== dayIndex)
-
-        // Remove deleted day's exercises, rebuild map with new sequential dayNumbers
+        // Remove deleted day's exercises from map
         setDayExercises((prevExercises) => {
-          const newMap = new Map<number, WorkoutExercise[]>()
-          updated.forEach((day, i) => {
-            const oldDayNumber = day.dayNumber
-            const newDayNumber = i + 1
-            newMap.set(newDayNumber, prevExercises.get(oldDayNumber) || [])
-          })
+          const newMap = new Map(prevExercises)
+          newMap.delete(dayToRemove.uid)
           return newMap
         })
 
+        const updated = prev.filter((_, i) => i !== dayIndex)
         return updated.map((day, i) => ({ ...day, dayNumber: i + 1 }))
       })
 
@@ -223,8 +211,9 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
       const sourceDay = localDays[dayIndex]
       if (!sourceDay) return
 
+      const uid = crypto.randomUUID()
       const newDayNumber = localDays.length + 1
-      const sourceExercises = dayExercises.get(sourceDay.dayNumber) || []
+      const sourceExercises = dayExercises.get(sourceDay.uid) || []
 
       // Copy exercises with new instanceIds, no workoutExerciseId
       const copiedExercises: WorkoutExercise[] = sourceExercises.map((ex) => ({
@@ -235,11 +224,15 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
 
       setLocalDays((prev) => [
         ...prev,
-        { dayNumber: newDayNumber, label: sourceDay.label ? `${sourceDay.label} (Copy)` : null },
+        {
+          uid,
+          dayNumber: newDayNumber,
+          label: sourceDay.label ? `${sourceDay.label} (Copy)` : null,
+        },
       ])
       setDayExercises((prev) => {
         const newMap = new Map(prev)
-        newMap.set(newDayNumber, copiedExercises)
+        newMap.set(uid, copiedExercises)
         return newMap
       })
       setCurrentDayIndex(localDays.length)
@@ -415,7 +408,7 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
     if (!plan || localDays.length === 0) return
 
     const daysPayload = localDays.map((day) => {
-      const exs = dayExercises.get(day.dayNumber) || []
+      const exs = dayExercises.get(day.uid) || []
       return {
         dayId: day.dayId,
         dayNumber: day.dayNumber,
@@ -445,10 +438,11 @@ export function PlanBuilderPage({ planId }: PlanBuilderPageProps) {
 
   // Day info for carousel
   const dayInfos = localDays.map((day) => ({
+    uid: day.uid,
     dayNumber: day.dayNumber,
     dayId: day.dayId,
     label: day.label,
-    exerciseCount: (dayExercises.get(day.dayNumber) || []).length,
+    exerciseCount: (dayExercises.get(day.uid) || []).length,
   }))
 
   // Handle day label update (local only, saved with plan save)

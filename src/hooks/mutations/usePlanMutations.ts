@@ -15,6 +15,7 @@ import {
   deactivatePlan,
   copyPlan,
   updatePlanDay,
+  skipPlanDay,
 } from '@/server/actions/plans'
 import type {
   CreatePlanInput,
@@ -24,6 +25,7 @@ import type {
   CopyWorkoutToPlanDayInput,
   CopyPlanInput,
   UpdatePlanDayInput,
+  SkipPlanDayInput,
 } from '@/lib/validations/plan'
 
 // ============================================================================
@@ -197,6 +199,7 @@ export function useActivatePlan() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plans'] })
+      queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
       toast.success('Plan activated')
     },
     onError: (error: Error) => {
@@ -222,6 +225,7 @@ export function useDeactivatePlan() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plans'] })
+      queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
       toast.success('Plan deactivated')
     },
     onError: (error: Error) => {
@@ -274,6 +278,31 @@ export function useUpdatePlanDay() {
       // Also invalidate any single plan query so the detail page refreshes
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'plan' })
       toast.success('Day label updated')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+// ============================================================================
+// Skip Plan Day
+// ============================================================================
+
+export function useSkipPlanDay() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (input: SkipPlanDayInput) => {
+      const result = await skipPlanDay(input)
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to skip day')
+      }
+      return result
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
+      toast.success('Day skipped')
     },
     onError: (error: Error) => {
       toast.error(error.message)

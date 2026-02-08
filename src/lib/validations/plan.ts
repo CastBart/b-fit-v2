@@ -162,6 +162,34 @@ export const copyPlanSchema = z.object({
 })
 
 // ============================================================================
+// Plan Week Tracking Schemas
+// ============================================================================
+
+/**
+ * Schema for skipping a plan day
+ */
+export const skipPlanDaySchema = z.object({
+  planId: z.string().cuid('Invalid plan ID'),
+  planDayId: z.string().cuid('Invalid plan day ID'),
+})
+
+/**
+ * Schema for completing a plan day (internal use from session completion)
+ */
+export const completePlanDaySchema = z.object({
+  planId: z.string().cuid('Invalid plan ID'),
+  planDayId: z.string().cuid('Invalid plan day ID'),
+  sessionId: z.string('Invalid session ID'),
+})
+
+/**
+ * Schema for getting active plan dashboard data for a specific week
+ */
+export const getActivePlanWeekSchema = z.object({
+  weekNumber: z.number().int().min(1).optional(),
+})
+
+// ============================================================================
 // Type Inference
 // ============================================================================
 
@@ -175,3 +203,6 @@ export type SavePlanAllDaysInput = z.infer<typeof savePlanAllDaysSchema>
 export type CopyWorkoutToPlanDayInput = z.infer<typeof copyWorkoutToPlanDaySchema>
 export type ActivatePlanInput = z.infer<typeof activatePlanSchema>
 export type CopyPlanInput = z.infer<typeof copyPlanSchema>
+export type SkipPlanDayInput = z.infer<typeof skipPlanDaySchema>
+export type CompletePlanDayInput = z.infer<typeof completePlanDaySchema>
+export type GetActivePlanWeekInput = z.infer<typeof getActivePlanWeekSchema>

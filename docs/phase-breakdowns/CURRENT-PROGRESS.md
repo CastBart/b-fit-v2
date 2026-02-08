@@ -1,8 +1,8 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-07
+**Last Updated**: 2026-02-08
 **Current Phase**: Phase 2 - Core Features
-**Recently Completed**: Task 7.10 - Plan Builder: Add Day, Reorder Days, Copy Day ✅
+**Recently Completed**: Active Plan Dashboard with Week Tracking ✅
 **Next Tasks**: Phase 3 - Multi-Role Features OR Analytics Dashboard
 **Next Phase**: Phase 3 - Multi-Role Features
 
@@ -3648,5 +3648,102 @@ src/components/features/plans/DayCarousel.tsx     (MODIFIED - UI controls)
 
 - Phase 3 - Multi-Role Features OR Analytics Dashboard
 - Exercise History display in plan builder (show previous performance per exercise)
+
+---
+
+### ✅ Active Plan Dashboard with Week Tracking (COMPLETED)
+
+**Completion Date**: 2026-02-08
+
+**What was completed:**
+
+Full active plan tracking system with week-by-week progress, session-to-plan linkage, and dashboard integration.
+
+**Schema Changes:**
+
+- New enums: `PlanWeekStatus`, `DayCompletionStatus`
+- New models: `PlanWeek`, `PlanDayCompletion`
+- Extended `TrainingSession` with `planId`, `planDayId` fields
+- Extended `Plan` and `PlanDay` with new relations
+- Migration: `add-plan-week-tracking`
+
+**Server Actions:**
+
+- Extended `activatePlan` to create Week 1 on activation (interactive transaction)
+- New `getActivePlanDashboard(weekNumber?)` - fetches active plan with weeks, days, completions
+- New `skipPlanDay(input)` - marks a day as skipped for current week
+- New `checkAndAdvanceWeek` utility - auto-creates next week when all days complete/skipped
+- Extended `saveCompletedSession` to create PlanDayCompletion on plan session completion
+
+**Client Integration:**
+
+- Extended Redux `SessionState` with `planId`, `planDayId`
+- Extended `SaveSessionPayload` with `planId`, `planDayId`
+- Updated `startSession` reducer to accept `planId`/`planDayId`
+- New `startPlanDaySession` utility in session-navigation.ts
+- Updated `buildSavePayload` in session page + SessionSettingsDrawer
+
+**Hooks:**
+
+- New `useActivePlanDashboard(weekNumber?)` query hook
+- New `useSkipPlanDay()` mutation hook
+- Updated `useActivatePlan`/`useDeactivatePlan` to invalidate dashboard queries
+
+**UI Components:**
+
+- New `ActivePlanSection` - dashboard section with week navigation, day cards
+- New `PlanDayDetailDrawer` - day detail with inline session stats for completed days, exercise list for pending
+- New `PlanDayOptionsDrawer` - options menu (Start, Skip, Edit Plan)
+- Dashboard page converted to `'use client'` with ActivePlanSection integration
+
+**Builder Integration:**
+
+- Plan builder route reads `?day=N` query param
+- `PlanBuilderPage` accepts `initialDayIndex` prop
+
+**Files Changed/Created (21 files):**
+
+```
+prisma/schema.prisma                                    (modified)
+src/types/plan.ts                                        (modified)
+src/types/session.ts                                     (modified)
+src/lib/validations/plan.ts                              (modified)
+src/lib/validations/session.ts                           (modified)
+src/server/utils/plan-week-utils.ts                      (created)
+src/server/actions/plans.ts                              (modified)
+src/server/actions/sessions.ts                           (modified)
+src/store/slices/sessionSlice.ts                         (modified)
+src/lib/utils/session-navigation.ts                      (modified)
+src/hooks/queries/useActivePlanDashboard.ts              (created)
+src/hooks/mutations/usePlanMutations.ts                  (modified)
+src/hooks/mutations/useSessionMutations.ts               (modified)
+src/components/features/plans/ActivePlanSection.tsx      (created)
+src/components/features/plans/PlanDayDetailDrawer.tsx    (created)
+src/components/features/plans/PlanDayOptionsDrawer.tsx   (created)
+src/app/(dashboard)/dashboard/page.tsx                   (modified)
+src/app/(dashboard)/session/page.tsx                     (modified)
+src/app/(dashboard)/plans/[id]/builder/page.tsx          (modified)
+src/components/features/plans/PlanBuilderPage.tsx        (modified)
+src/components/features/sessions/SessionSettingsDrawer.tsx (modified)
+```
+
+**Bug Fixes & Enhancements (post-implementation):**
+
+- Fixed `getSessionByIdSchema` validation (was `.cuid()`, session IDs are UUIDs — changed to `.string().min(1)`)
+- Added React Query cache invalidation for `activePlanDashboard` in `useCompleteSession` and `useSaveCompletedSession`
+- Rewrote `savePlanAllDays` from destructive delete-all-recreate to ID-preserving update-in-place approach, preventing cascade deletion of `PlanDayCompletion` records when editing plan details
+- Enhanced `PlanDayDetailDrawer` to show inline session stats (duration, exercises, sets, volume) for completed days instead of a navigation button
+- Updated `useSessionMutations.ts` to invalidate `['activePlanDashboard']` on session completion/save
+
+**Verification:**
+
+- ✅ `npm run build` passes with no TypeScript errors
+- ✅ Schema migration applied successfully
+- ✅ Plan day completions preserved when editing plan details (labels, reordering)
+- ✅ Dashboard refreshes after session completion without browser reload
+
+**Next Tasks:**
+
+- Phase 3 - Multi-Role Features OR Analytics Dashboard
 
 ---
