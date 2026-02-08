@@ -52,7 +52,11 @@
       "Bash(printf:*)",
       "Bash(npm run:*)",
       "Bash(npx next build)",
-      "Bash(npm ls:*)"
+      "Bash(npm ls:*)",
+      "Bash(git checkout:*)",
+      "Bash(tasklist)",
+      "Bash(cmd /c \"taskkill /PID 5752 /F\")",
+      "Bash(cmd /c:*)"
     ]
   },
   "enabledPlugins": {

@@ -2,16 +2,36 @@
  * Plan Detail Page
  *
  * Displays full plan details with day-by-day breakdown of exercises.
- * Allows activating, editing, copying, and deleting the plan.
+ * Allows activating, editing, copying (with name prompt), and deleting the plan.
  */
 
 'use client'
 
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Edit, Trash2, Calendar, Dumbbell, Zap, ZapOff, Copy } from 'lucide-react'
+import {
+  ArrowLeft,
+  Edit,
+  Trash2,
+  Calendar,
+  Dumbbell,
+  Zap,
+  ZapOff,
+  Copy,
+  Settings,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +47,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { usePlan } from '@/hooks/queries/usePlan'
 import {
   useDeletePlan,
+  useUpdatePlan,
   useActivatePlan,
   useDeactivatePlan,
   useCopyPlan,
@@ -36,6 +57,8 @@ import { SupersetManager } from '@/lib/superset-manager'
 import { cn } from '@/lib/utils'
 import { useSession } from 'next-auth/react'
 import type { PlanDayExerciseWithExercise } from '@/types/plan'
+
+const DURATION_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 16, 20, 24, 36, 52]
 
 interface PlanDetailPageProps {
   params: Promise<{ id: string }>
@@ -47,10 +70,23 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
   const { id } = use(params)
   const { data: plan, isLoading, error } = usePlan(id)
   const deletePlan = useDeletePlan()
+  const updatePlan = useUpdatePlan()
   const activatePlan = useActivatePlan()
   const deactivatePlan = useDeactivatePlan()
   const copyPlan = useCopyPlan()
+
+  // Dialog states
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false)
+
+  // Edit form state
+  const [editName, setEditName] = useState('')
+  const [editDescription, setEditDescription] = useState('')
+  const [editDuration, setEditDuration] = useState(0)
+
+  // Copy form state
+  const [copyName, setCopyName] = useState('')
 
   const supersetManager = new SupersetManager<PlanDayExerciseWithExercise>()
 
@@ -63,12 +99,48 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
     }
   }
 
+  const handleOpenEditDialog = () => {
+    if (!plan) return
+    setEditName(plan.name)
+    setEditDescription(plan.description || '')
+    setEditDuration(plan.durationWeeks)
+    setEditDialogOpen(true)
+  }
+
+  const handleSaveEdit = () => {
+    updatePlan.mutate(
+      {
+        planId: id,
+        input: {
+          name: editName.trim(),
+          description: editDescription.trim() || undefined,
+          durationWeeks: editDuration,
+        },
+      },
+      {
+        onSuccess: () => setEditDialogOpen(false),
+      }
+    )
+  }
+
+  const handleOpenCopyDialog = () => {
+    if (!plan) return
+    setCopyName(`${plan.name} (Copy)`)
+    setCopyDialogOpen(true)
+  }
+
   const handleCopy = () => {
     if (!session?.user?.id) return
-    copyPlan.mutate({
-      originalPlanId: id,
-      targetUserId: session.user.id,
-    })
+    copyPlan.mutate(
+      {
+        originalPlanId: id,
+        targetUserId: session.user.id,
+        name: copyName.trim() || undefined,
+      },
+      {
+        onSuccess: () => setCopyDialogOpen(false),
+      }
+    )
   }
 
   // Loading state
@@ -217,7 +289,16 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
             <Edit className="h-4 w-4 mr-2" />
             Edit Days
           </Button>
-          <Button onClick={handleCopy} variant="outline" size="lg" disabled={copyPlan.isPending}>
+          <Button onClick={handleOpenEditDialog} variant="outline" size="lg">
+            <Settings className="h-4 w-4 mr-2" />
+            Edit Plan
+          </Button>
+          <Button
+            onClick={handleOpenCopyDialog}
+            variant="outline"
+            size="lg"
+            disabled={copyPlan.isPending}
+          >
             <Copy className="h-4 w-4 mr-2" />
             Copy
           </Button>
@@ -325,6 +406,105 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
           )
         })}
       </div>
+
+      {/* Edit Plan Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Plan</DialogTitle>
+            <DialogDescription>Update the plan name, description, or duration.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">Plan Name</Label>
+              <Input
+                id="edit-name"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                maxLength={100}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Description</Label>
+              <Input
+                id="edit-description"
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                placeholder="Optional description"
+                maxLength={500}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Duration</Label>
+              <div className="grid grid-cols-5 sm:grid-cols-8 gap-1.5">
+                {DURATION_OPTIONS.map((weeks) => (
+                  <button
+                    key={weeks}
+                    onClick={() => setEditDuration(weeks)}
+                    className={cn(
+                      'rounded-lg border p-1.5 text-center transition-all text-xs',
+                      editDuration === weeks
+                        ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                        : 'border-border hover:border-primary/50 hover:bg-accent'
+                    )}
+                  >
+                    <div className="font-semibold">{weeks === 0 ? '\u221E' : weeks}</div>
+                    <div
+                      className={cn(
+                        'text-[9px] leading-tight',
+                        editDuration === weeks
+                          ? 'text-primary-foreground/70'
+                          : 'text-muted-foreground'
+                      )}
+                    >
+                      {weeks === 0 ? '' : weeks === 1 ? 'wk' : 'wks'}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit} disabled={!editName.trim() || updatePlan.isPending}>
+              {updatePlan.isPending ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Copy Plan Dialog */}
+      <Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Copy Plan</DialogTitle>
+            <DialogDescription>
+              Create a copy of this plan with all its days and exercises.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            <Label htmlFor="copy-name">Plan Name</Label>
+            <Input
+              id="copy-name"
+              value={copyName}
+              onChange={(e) => setCopyName(e.target.value)}
+              placeholder="Name for the copied plan"
+              maxLength={100}
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCopyDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCopy} disabled={!copyName.trim() || copyPlan.isPending}>
+              {copyPlan.isPending ? 'Copying...' : 'Copy Plan'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

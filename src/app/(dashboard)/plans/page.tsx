@@ -30,8 +30,17 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,6 +70,9 @@ export default function PlansPage() {
   const [page, setPage] = useState(1)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [planToDelete, setPlanToDelete] = useState<{ id: string; name: string } | null>(null)
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false)
+  const [planToCopy, setPlanToCopy] = useState<{ id: string; name: string } | null>(null)
+  const [copyName, setCopyName] = useState('')
 
   const { data, isLoading, error } = usePlans({ search, page, limit: 12 })
   const deletePlan = useDeletePlan()
@@ -81,12 +93,28 @@ export default function PlansPage() {
     })
   }
 
-  const handleCopy = (planId: string) => {
-    if (!session?.user?.id) return
-    copyPlan.mutate({
-      originalPlanId: planId,
-      targetUserId: session.user.id,
-    })
+  const handleOpenCopyDialog = (planId: string, planName: string) => {
+    setPlanToCopy({ id: planId, name: planName })
+    setCopyName(`${planName} (Copy)`)
+    setCopyDialogOpen(true)
+  }
+
+  const handleCopy = () => {
+    if (!session?.user?.id || !planToCopy) return
+    copyPlan.mutate(
+      {
+        originalPlanId: planToCopy.id,
+        targetUserId: session.user.id,
+        name: copyName.trim() || undefined,
+      },
+      {
+        onSuccess: () => {
+          setCopyDialogOpen(false)
+          setPlanToCopy(null)
+          setCopyName('')
+        },
+      }
+    )
   }
 
   return (
@@ -209,7 +237,9 @@ export default function PlansPage() {
                             <Edit className="mr-2 h-4 w-4" />
                             Edit Days
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleCopy(plan.id)}>
+                          <DropdownMenuItem
+                            onClick={() => handleOpenCopyDialog(plan.id, plan.name)}
+                          >
                             <Copy className="mr-2 h-4 w-4" />
                             Copy Plan
                           </DropdownMenuItem>
@@ -346,6 +376,35 @@ export default function PlansPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Copy Plan Dialog */}
+      <Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Copy Plan</DialogTitle>
+            <DialogDescription>
+              Create a copy of &quot;{planToCopy?.name}&quot; with a new name.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="copy-plan-name">Plan Name</Label>
+            <Input
+              id="copy-plan-name"
+              value={copyName}
+              onChange={(e) => setCopyName(e.target.value)}
+              placeholder="Enter name for the copied plan"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCopyDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCopy} disabled={copyPlan.isPending}>
+              {copyPlan.isPending ? 'Copying...' : 'Copy Plan'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -38,6 +38,12 @@ export const updatePlanSchema = z.object({
     .max(100, 'Name must be 100 characters or less')
     .optional(),
   description: z.string().max(500, 'Description must be 500 characters or less').optional(),
+  durationWeeks: z
+    .number()
+    .int()
+    .min(0, 'Duration must be 0 (unlimited) or more')
+    .max(52, 'Duration cannot exceed 52 weeks')
+    .optional(),
 })
 
 /**
@@ -95,25 +101,36 @@ export const syncPlanDayExercisesSchema = z.object({
 
 /**
  * Schema for saving all plan days at once (atomic save)
+ * Accepts full day structure including new days, reordered dayNumbers, and labels.
  */
 export const savePlanAllDaysSchema = z.object({
   planId: z.string().cuid('Invalid plan ID format'),
-  dayExercises: z.record(
-    z.string(), // dayNumber as string key
-    z.array(
+  days: z
+    .array(
       z.object({
-        planDayExerciseId: z.string().cuid().optional(),
-        exerciseId: z.string().cuid('Invalid exercise ID format'),
-        order: z.number().int().min(0, 'Order must be 0 or greater'),
-        sets: z.number().int().min(1, 'Sets must be at least 1').max(20, 'Sets cannot exceed 20'),
-        reps: z.number().int().min(1).max(999).optional(),
-        weight: z.number().min(0).max(9999).optional(),
-        restSeconds: z.number().int().min(0).max(600).default(60),
-        notes: z.string().max(500, 'Notes must be 500 characters or less').optional(),
-        groupId: z.string().optional().nullable(),
+        dayId: z.string().cuid().optional(),
+        dayNumber: z.number().int().min(1),
+        label: z.string().max(100).optional().nullable(),
+        exercises: z.array(
+          z.object({
+            exerciseId: z.string().cuid('Invalid exercise ID format'),
+            order: z.number().int().min(0, 'Order must be 0 or greater'),
+            sets: z
+              .number()
+              .int()
+              .min(1, 'Sets must be at least 1')
+              .max(20, 'Sets cannot exceed 20'),
+            reps: z.number().int().min(1).max(999).optional(),
+            weight: z.number().min(0).max(9999).optional(),
+            restSeconds: z.number().int().min(0).max(600).default(60),
+            notes: z.string().max(500, 'Notes must be 500 characters or less').optional(),
+            groupId: z.string().optional().nullable(),
+          })
+        ),
       })
     )
-  ),
+    .min(1, 'Plan must have at least 1 day')
+    .max(7, 'Plan cannot exceed 7 days'),
 })
 
 /**

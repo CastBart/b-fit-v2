@@ -1709,8 +1709,106 @@ Refactored from server-first to client-first architecture:
 - `src/lib/utils/plan-utils.ts` - getCurrentWeek, getPlanProgress, formatPlanDuration
 - `src/app/(dashboard)/plans/[id]/builder/page.tsx` - Builder route page
 
+### ✅ Task 7.10: Plan Builder - Add Day, Reorder Days, Copy Day
+
+**Completion Date**: 2026-02-07
+
+**What was completed:**
+
+Enhanced the Plan Builder with three new day management capabilities:
+
+1. **Add Day** — Append a new empty day to the plan (up to 7 max)
+2. **Reorder Days** — Move days left/right to change position/order
+3. **Copy Day** — Duplicate a day with all its exercises (appended at end)
+
+All operations work client-side in local state and persist atomically when the user clicks "Save Plan".
+
+#### Architecture: Client-First with Enhanced Save
+
+The save mechanism was upgraded from sending a `dayExercises` record (keyed by day number, exercises only) to sending a full `days` array that includes the complete day structure — new days, reordered dayNumbers, labels, and exercises. The server action then handles creating/deleting/updating PlanDay records within the same transaction.
+
+**Key design decision:** To avoid `@@unique([planId, dayNumber])` constraint conflicts during reorders, the transaction deletes all existing PlanDays for the plan and creates fresh ones with correct dayNumbers + exercises. This is safe because the save is already atomic and PlanDayExercise has `onDelete: Cascade` on its PlanDay relation.
+
+#### Files Modified (5 files)
+
+**1. `src/lib/validations/plan.ts` — Updated save schema**
+
+Replaced `savePlanAllDaysSchema` from a `dayExercises: Record<string, exercises[]>` shape to a `days` array shape:
+
+```typescript
+days: z.array(z.object({
+  dayId: z.string().cuid().optional(),  // undefined for new days
+  dayNumber: z.number().int().min(1),
+  label: z.string().max(100).optional().nullable(),
+  exercises: z.array(z.object({ ... })),
+})).min(1, 'Plan must have at least 1 day').max(7, 'Plan cannot exceed 7 days')
+```
+
+**2. `src/server/actions/plans.ts` — Rewrote `savePlanAllDays`**
+
+New transaction logic:
+
+- Delete all existing PlanDays for the plan (cascades to PlanDayExercise)
+- Create new PlanDays with dayNumber + label from input
+- Create exercises for each day
+- Update `plan.daysPerWeek` to `input.days.length`
+
+**3. `src/hooks/mutations/usePlanMutations.ts` — No changes needed**
+
+The `SavePlanAllDaysInput` type flows through automatically from the updated Zod schema.
+
+**4. `src/components/features/plans/PlanBuilderPage.tsx` — Added local day state + handlers**
+
+New state:
+
+- `localDays: LocalDay[]` — tracks day structure independently of server data. Initialized from `plan.days`, modified by add/reorder/copy.
+
+New handlers:
+
+- `handleAddDay()` — appends new day with `dayNumber = localDays.length + 1`, empty exercises, max 7 check
+- `handleReorderDay(dayIndex, direction)` — swaps day at dayIndex with neighbor, reassigns all dayNumbers sequentially, updates `dayExercises` map keys to match new dayNumbers, adjusts `currentDayIndex` to follow the selected day
+- `handleCopyDay(dayIndex)` — copies exercises from source day (with new instanceIds, no workoutExerciseId) to a new day appended at end, max 7 check
+
+Updated logic:
+
+- `currentDayNumber` derives from `localDays[currentDayIndex]` instead of `plan.days[currentDayIndex]`
+- `dayInfos` derives from `localDays` instead of `plan.days`
+- `handleSave()` builds payload from `localDays` (not `plan.days`)
+- `handleDayLabelUpdate()` updates `localDays` state only (label saved with plan save, no immediate server call)
+- Save button allows saving even with 0 exercises (user may just be managing day structure)
+- Removed `useUpdatePlanDay` import (labels now saved atomically with plan)
+
+**5. `src/components/features/plans/DayCarousel.tsx` — Added UI controls**
+
+New props:
+
+- `onAddDay?: () => void`
+- `onReorderDay?: (dayIndex: number, direction: 'left' | 'right') => void`
+- `onCopyDay?: (dayIndex: number) => void`
+- `maxDays?: number` (default 7)
+
+Interface change:
+
+- `dayId` changed from required to optional (new days don't have an ID yet)
+- `onDayLabelUpdate` changed from `(dayId: string, label)` to `(dayIndex: number, label)` (works with new days that lack an ID)
+
+UI additions:
+
+- **Action buttons on selected day**: Row of small icon buttons below exercise count — ChevronLeft (move left), ChevronRight (move right), Copy icon. Left arrow hidden on first day, right arrow hidden on last day.
+- **Add Day button**: Dashed-border card with `+` icon and "Add Day" text at the end of the carousel. Hidden when `days.length >= maxDays`.
+
+#### Acceptance Criteria
+
+- [x] Add Day: Click "+" → new empty day appears → add exercises → Save → persisted in DB
+- [x] Reorder Days: Select day → click arrow → day swaps with neighbor → exercises stay with their day → Save → new order persisted
+- [x] Copy Day: Click copy on a day → new day at end with same exercises (new instanceIds) → Save → copied day persisted
+- [x] Day labels update locally (no immediate server call), saved atomically with plan
+- [x] `daysPerWeek` updated in DB to match new day count on save
+- [x] Max 7 days enforced (Add Day and Copy Day buttons hidden at limit)
+- [x] Build: `npm run build` passes with no TypeScript errors
+
 ---
 
 ## Phase 2 Status: ✅ COMPLETE
 
-All 13 core tasks + refactor + Plan Builder complete. Ready for Phase 3 or Analytics.
+All 13 core tasks + refactor + Plan Builder (Tasks 7.1-7.10) complete. Ready for Phase 3 or Analytics.

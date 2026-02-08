@@ -2,7 +2,7 @@
 
 **Last Updated**: 2026-02-07
 **Current Phase**: Phase 2 - Core Features
-**Recently Completed**: Week 7 - Plan Builder (Tasks 7.1-7.9) ✅
+**Recently Completed**: Task 7.10 - Plan Builder: Add Day, Reorder Days, Copy Day ✅
 **Next Tasks**: Phase 3 - Multi-Role Features OR Analytics Dashboard
 **Next Phase**: Phase 3 - Multi-Role Features
 
@@ -3576,5 +3576,77 @@ The session refactor is complete! All code has been written. Now it's time to:
 4. Polish the UI/UX
 
 **Estimated testing time:** 2-4 hours
+
+---
+
+## Week 7 (continued): Plan Builder Enhancements
+
+### ✅ Task 7.10: Plan Builder - Add Day, Reorder Days, Copy Day (COMPLETED)
+
+**Completion Date**: 2026-02-07
+
+**What was completed:**
+
+Enhanced the Plan Builder with three new day management capabilities that were missing from the initial implementation:
+
+1. **Add Day** — Append a new empty day to the plan (up to 7 days max)
+2. **Reorder Days** — Move days left/right to change their position/order
+3. **Copy Day** — Duplicate a day with all its exercises (appended at end)
+
+All three operations are **client-side state changes** that persist atomically when the user clicks "Save Plan". This matches the existing builder pattern where exercises are managed in local state and saved all at once.
+
+**Files Modified (5 files):**
+
+```
+src/lib/validations/plan.ts           (MODIFIED - new days-based schema)
+src/server/actions/plans.ts           (MODIFIED - rewrote savePlanAllDays)
+src/hooks/mutations/usePlanMutations.ts (UNCHANGED - types flow through)
+src/components/features/plans/PlanBuilderPage.tsx (MODIFIED - local day state + handlers)
+src/components/features/plans/DayCarousel.tsx     (MODIFIED - UI controls)
+```
+
+**Key Changes:**
+
+1. **Validation Schema (`plan.ts`):**
+   - `savePlanAllDaysSchema` changed from `dayExercises: Record<string, exercises[]>` to `days: Array<{ dayId?, dayNumber, label, exercises[] }>`
+   - Added `.min(1)` and `.max(7)` constraints on days array
+
+2. **Server Action (`plans.ts` - `savePlanAllDays`):**
+   - Transaction now deletes all existing PlanDays (cascade deletes exercises) then creates fresh PlanDays with correct dayNumbers, labels, and exercises
+   - Updates `plan.daysPerWeek` to match the new day count
+   - Avoids `@@unique([planId, dayNumber])` constraint conflicts during reorders
+
+3. **PlanBuilderPage (`PlanBuilderPage.tsx`):**
+   - Added `localDays: LocalDay[]` state (tracks day structure independently of server data)
+   - `handleAddDay()` — creates empty day, navigates to it, max 7 check
+   - `handleReorderDay(dayIndex, direction)` — swaps with neighbor, remaps exercise keys, follows currentDayIndex
+   - `handleCopyDay(dayIndex)` — duplicates exercises with new instanceIds, copies label with "(Copy)" suffix
+   - `handleSave()` builds payload from `localDays` instead of `plan.days`
+   - `handleDayLabelUpdate()` now updates local state only (saved atomically with plan)
+   - Save button enabled even with 0 exercises (for managing day structure)
+   - Removed `useUpdatePlanDay` import
+
+4. **DayCarousel (`DayCarousel.tsx`):**
+   - New props: `onAddDay`, `onReorderDay`, `onCopyDay`, `maxDays`
+   - `dayId` changed from required to optional (new days don't have DB ID)
+   - `onDayLabelUpdate` changed from `(dayId, label)` to `(dayIndex, label)`
+   - Action buttons on selected day: left/right arrows (reorder), copy icon
+   - Dashed-border "Add Day" card at end of carousel (hidden when at 7 days)
+
+**Acceptance Criteria:**
+
+- ✅ Add Day works (new empty day appears, can add exercises, save persists)
+- ✅ Reorder Days works (days swap, exercises follow, save persists new order)
+- ✅ Copy Day works (duplicate with new instanceIds, save persists)
+- ✅ Combined operations work (add + copy + reorder + save all at once)
+- ✅ Day labels saved atomically with plan (no immediate server call)
+- ✅ `daysPerWeek` updated in DB to match new day count
+- ✅ Max 7 days enforced
+- ✅ Build passes: `npm run build` ✅
+
+**Next Tasks:**
+
+- Phase 3 - Multi-Role Features OR Analytics Dashboard
+- Exercise History display in plan builder (show previous performance per exercise)
 
 ---

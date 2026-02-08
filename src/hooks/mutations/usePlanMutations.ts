@@ -271,6 +271,8 @@ export function useUpdatePlanDay() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plans'] })
+      // Also invalidate any single plan query so the detail page refreshes
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'plan' })
       toast.success('Day label updated')
     },
     onError: (error: Error) => {

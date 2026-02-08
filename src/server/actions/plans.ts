@@ -504,7 +504,9 @@ export async function syncPlanDayExercises(
 }
 
 /**
- * Atomic save of all days in one transaction
+ * Atomic save of all days in one transaction.
+ * Handles adding new days, reordering days, copying days, and updating labels.
+ * Deletes all existing PlanDays and recreates them to avoid unique constraint conflicts.
  */
 export async function savePlanAllDays(
   input: SavePlanAllDaysInput
@@ -538,20 +540,25 @@ export async function savePlanAllDays(
     let totalSaved = 0
 
     await prisma.$transaction(async (tx) => {
-      for (const day of plan.days) {
-        const dayKey = String(day.dayNumber)
-        const dayExercises = validatedInput.dayExercises[dayKey] || []
+      // Delete all existing PlanDays (cascades to PlanDayExercise)
+      await tx.planDay.deleteMany({
+        where: { planId: validatedInput.planId },
+      })
 
-        // Delete all existing exercises for this day
-        await tx.planDayExercise.deleteMany({
-          where: { planDayId: day.id },
+      // Create new PlanDays with exercises
+      for (const day of validatedInput.days) {
+        const createdDay = await tx.planDay.create({
+          data: {
+            planId: validatedInput.planId,
+            dayNumber: day.dayNumber,
+            label: day.label,
+          },
         })
 
-        // Create new exercises
-        if (dayExercises.length > 0) {
+        if (day.exercises.length > 0) {
           await tx.planDayExercise.createMany({
-            data: dayExercises.map((e) => ({
-              planDayId: day.id,
+            data: day.exercises.map((e) => ({
+              planDayId: createdDay.id,
               exerciseId: e.exerciseId,
               order: e.order,
               sets: e.sets,
@@ -562,9 +569,15 @@ export async function savePlanAllDays(
               groupId: e.groupId,
             })),
           })
-          totalSaved += dayExercises.length
+          totalSaved += day.exercises.length
         }
       }
+
+      // Update daysPerWeek to match new day count
+      await tx.plan.update({
+        where: { id: validatedInput.planId },
+        data: { daysPerWeek: validatedInput.days.length },
+      })
     })
 
     revalidatePath('/plans')
