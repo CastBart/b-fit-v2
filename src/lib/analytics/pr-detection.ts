@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/db/prisma'
 
 /**
@@ -10,6 +11,17 @@ export type PRDetectionResult = {
   currentMax: number
   previousMax: number | null
   isNewPR: boolean
+}
+
+/**
+ * Per-session PR result for display in session completion summary.
+ */
+export type SessionPR = {
+  exerciseId: string
+  exerciseName: string
+  prType: 'WEIGHT'
+  newValue: number
+  previousValue: number | null
 }
 
 /**
@@ -67,4 +79,70 @@ export async function getMonthlyPRCount(userId: string): Promise<number> {
   }
 
   return prCount
+}
+
+/**
+ * Detect weight PRs set in a specific session.
+ *
+ * For each exercise in the session, compares max weight achieved
+ * against all prior completed sessions for the same user.
+ *
+ * @param userId - The user who owns the session
+ * @param sessionId - The session to check for PRs
+ * @returns Array of PRs detected in this session
+ */
+export async function detectSessionPRs(userId: string, sessionId: string): Promise<SessionPR[]> {
+  // Get max weight per exercise in this session
+  const sessionMaxes = await prisma.$queryRaw<
+    { exerciseId: string; exerciseName: string; maxWeight: number }[]
+  >`
+    SELECT se."exerciseId", e.name AS "exerciseName", MAX(ss.weight)::float AS "maxWeight"
+    FROM "SessionSet" ss
+    INNER JOIN "SessionExercise" se ON se.id = ss."sessionExerciseId"
+    INNER JOIN "Exercise" e ON e.id = se."exerciseId"
+    INNER JOIN "TrainingSession" ts ON ts.id = ss."sessionId"
+    WHERE ts.id = ${sessionId}
+      AND ts."userId" = ${userId}
+      AND ts.status = 'COMPLETED'
+      AND ss."isCompleted" = true
+      AND ss.weight IS NOT NULL
+    GROUP BY se."exerciseId", e.name
+  `
+
+  if (sessionMaxes.length === 0) return []
+
+  const exerciseIds = sessionMaxes.map((r) => r.exerciseId)
+
+  // Get all-time max weight per exercise BEFORE this session (excluding this session)
+  const priorMaxes = await prisma.$queryRaw<{ exerciseId: string; maxWeight: number }[]>`
+    SELECT se."exerciseId", MAX(ss.weight)::float AS "maxWeight"
+    FROM "SessionSet" ss
+    INNER JOIN "SessionExercise" se ON se.id = ss."sessionExerciseId"
+    INNER JOIN "TrainingSession" ts ON ts.id = ss."sessionId"
+    WHERE ts."userId" = ${userId}
+      AND ts.id != ${sessionId}
+      AND ts.status = 'COMPLETED'
+      AND ss."isCompleted" = true
+      AND ss.weight IS NOT NULL
+      AND se."exerciseId" IN (${Prisma.join(exerciseIds)})
+    GROUP BY se."exerciseId"
+  `
+
+  const priorMap = new Map(priorMaxes.map((r) => [r.exerciseId, r.maxWeight]))
+
+  const prs: SessionPR[] = []
+  for (const current of sessionMaxes) {
+    const prior = priorMap.get(current.exerciseId)
+    if (prior === undefined || current.maxWeight > prior) {
+      prs.push({
+        exerciseId: current.exerciseId,
+        exerciseName: current.exerciseName,
+        prType: 'WEIGHT',
+        newValue: current.maxWeight,
+        previousValue: prior ?? null,
+      })
+    }
+  }
+
+  return prs
 }

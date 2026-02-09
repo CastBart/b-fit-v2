@@ -11,6 +11,7 @@ import { revalidatePath } from 'next/cache'
 import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/db/prisma'
 import { getServerSession } from '@/lib/auth/auth'
+import { requirePermission } from '@/lib/auth/rbac'
 import {
   createPlanSchema,
   updatePlanSchema,
@@ -204,7 +205,18 @@ export async function getPlanById(planId: string): Promise<ActionResponse<PlanWi
     }
 
     if (plan.createdById !== session.user.id) {
-      return { success: false, error: 'You do not have access to this plan' }
+      // PT fallback: check if PT has active relationship with plan owner
+      const ptAccess = await prisma.clientRelationship.findFirst({
+        where: {
+          ptId: session.user.id,
+          clientId: plan.createdById,
+          status: 'ACTIVE',
+        },
+      })
+
+      if (!ptAccess) {
+        return { success: false, error: 'You do not have access to this plan' }
+      }
     }
 
     return { success: true, data: plan }
@@ -231,13 +243,9 @@ export async function createPlan(input: CreatePlanInput): Promise<
   >
 > {
   try {
-    const session = await getServerSession()
-    if (!session?.user?.id) {
-      return { success: false, error: 'Authentication required' }
-    }
-
-    if (session.user.role !== 'PERSONAL' && session.user.role !== 'PT') {
-      return { success: false, error: 'Only Personal users and PTs can create plans' }
+    const auth = await requirePermission('plan:create')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
     }
 
     const validatedInput = createPlanSchema.parse(input)
@@ -248,7 +256,7 @@ export async function createPlan(input: CreatePlanInput): Promise<
         description: validatedInput.description,
         daysPerWeek: validatedInput.daysPerWeek,
         durationWeeks: validatedInput.durationWeeks,
-        createdById: session.user.id,
+        createdById: auth.userId,
         isTemplate: true,
         days: {
           create: Array.from({ length: validatedInput.daysPerWeek }, (_, i) => ({
@@ -1133,5 +1141,54 @@ export async function skipPlanDay(input: SkipPlanDayInput): Promise<ActionRespon
       return { success: false, error: error.message }
     }
     return { success: false, error: 'Failed to skip plan day' }
+  }
+}
+
+// ============================================================================
+// Assign Plan to Client (PT-only)
+// ============================================================================
+
+/**
+ * Assign a plan to a client by deep copying it.
+ * Verifies active PT-client relationship before copying.
+ */
+export async function assignPlanToClient(input: {
+  planId: string
+  clientId: string
+  name?: string
+}): Promise<ActionResponse<PlanWithDetails>> {
+  try {
+    const auth = await requirePermission('plan:assign')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
+    }
+
+    // Verify active relationship
+    const relationship = await prisma.clientRelationship.findFirst({
+      where: {
+        ptId: auth.userId,
+        clientId: input.clientId,
+        status: 'ACTIVE',
+      },
+    })
+
+    if (!relationship) {
+      return { success: false, error: 'No active relationship with this client' }
+    }
+
+    // Use existing copyPlan logic
+    const result = await copyPlan({
+      originalPlanId: input.planId,
+      targetUserId: input.clientId,
+      name: input.name,
+    })
+
+    return result
+  } catch (error) {
+    console.error('Error assigning plan to client:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to assign plan to client' }
   }
 }

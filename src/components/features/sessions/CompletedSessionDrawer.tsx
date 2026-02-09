@@ -64,6 +64,14 @@ export type CompletedExerciseData = {
  * Props for the completed session drawer
  * Can accept either just-completed session data or historical session data
  */
+export type SessionPRDisplay = {
+  exerciseId: string
+  exerciseName: string
+  prType: string
+  newValue: number
+  previousValue: number | null
+}
+
 export type CompletedSessionData = {
   sessionId: string
   workoutName: string
@@ -72,6 +80,7 @@ export type CompletedSessionData = {
   durationSeconds: number
   exercises: CompletedExerciseData[]
   sessionNotes?: string | null
+  prs?: SessionPRDisplay[]
 }
 
 interface CompletedSessionDrawerProps {
@@ -193,6 +202,40 @@ export function CompletedSessionDrawer({
                 />
               )}
             </div>
+
+            {/* PRs Section */}
+            {data.prs && data.prs.length > 0 && (
+              <>
+                <Separator />
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                    <Trophy className="h-4 w-4 text-yellow-500" />
+                    New Personal Records!
+                  </h3>
+                  <div className="space-y-2">
+                    {data.prs.map((pr) => (
+                      <div
+                        key={pr.exerciseId}
+                        className="flex items-center justify-between rounded-lg border border-yellow-200 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-950/30 p-3"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Trophy className="h-4 w-4 text-yellow-500" />
+                          <span className="font-medium text-sm">{pr.exerciseName}</span>
+                        </div>
+                        <div className="text-sm font-semibold">
+                          {pr.newValue} kg
+                          {pr.previousValue !== null && (
+                            <span className="text-muted-foreground font-normal ml-1">
+                              (was {pr.previousValue} kg)
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             <Separator />
 

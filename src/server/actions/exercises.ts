@@ -10,8 +10,8 @@ import {
   type UpdateExerciseInput,
   type ExerciseFiltersInput,
 } from '@/lib/validations/exercise'
-import { UserRole } from '@prisma/client'
 import type { ExerciseListResponse } from '@/types/exercise'
+import { requirePermission } from '@/lib/auth/rbac'
 
 /**
  * Get a list of exercises with filters and pagination
@@ -235,27 +235,9 @@ export async function getExerciseById(id: string) {
  */
 export async function createExercise(data: CreateExerciseInput) {
   try {
-    const session = await getServerSession()
-
-    if (!session?.user?.id) {
-      return {
-        success: false,
-        error: 'You must be logged in to create exercises',
-      }
-    }
-
-    // Get user with role
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { role: true },
-    })
-
-    // Check RBAC - only PERSONAL and PT can create exercises
-    if (user?.role !== UserRole.PERSONAL && user?.role !== UserRole.PT) {
-      return {
-        success: false,
-        error: 'Only Personal users and Personal Trainers can create exercises',
-      }
+    const auth = await requirePermission('exercise:create')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
     }
 
     // Validate input
@@ -265,7 +247,7 @@ export async function createExercise(data: CreateExerciseInput) {
     const exercise = await prisma.exercise.create({
       data: {
         ...validatedData,
-        createdById: session.user.id,
+        createdById: auth.userId,
         instructions: validatedData.instructions || [],
       },
     })

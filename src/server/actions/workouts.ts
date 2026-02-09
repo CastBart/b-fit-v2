@@ -11,6 +11,7 @@ import { revalidatePath } from 'next/cache'
 import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/db/prisma'
 import { getServerSession } from '@/lib/auth/auth'
+import { requirePermission } from '@/lib/auth/rbac'
 import {
   createWorkoutSchema,
   updateWorkoutSchema,
@@ -221,7 +222,18 @@ export async function getWorkoutById(
 
     // Check if user has access to this workout
     if (workout.createdById !== session.user.id) {
-      return { success: false, error: 'You do not have access to this workout' }
+      // PT fallback: check if PT has active relationship with workout owner
+      const ptAccess = await prisma.clientRelationship.findFirst({
+        where: {
+          ptId: session.user.id,
+          clientId: workout.createdById,
+          status: 'ACTIVE',
+        },
+      })
+
+      if (!ptAccess) {
+        return { success: false, error: 'You do not have access to this workout' }
+      }
     }
 
     return { success: true, data: workout }
@@ -241,14 +253,9 @@ export async function createWorkout(
   input: CreateWorkoutInput
 ): Promise<ActionResponse<WorkoutBasic>> {
   try {
-    const session = await getServerSession()
-    if (!session?.user?.id) {
-      return { success: false, error: 'Authentication required' }
-    }
-
-    // Check role - only PERSONAL and PT can create workouts
-    if (session.user.role !== 'PERSONAL' && session.user.role !== 'PT') {
-      return { success: false, error: 'Only Personal users and PTs can create workouts' }
+    const auth = await requirePermission('workout:create')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
     }
 
     // Validate input
@@ -258,7 +265,7 @@ export async function createWorkout(
       data: {
         name: validatedInput.name,
         description: validatedInput.description,
-        createdById: session.user.id,
+        createdById: auth.userId,
         isTemplate: true,
       },
       include: {
@@ -883,5 +890,54 @@ export async function syncWorkoutExercises(
       return { success: false, error: error.message }
     }
     return { success: false, error: 'Failed to sync workout exercises' }
+  }
+}
+
+// ============================================================================
+// Assign Workout to Client (PT-only)
+// ============================================================================
+
+/**
+ * Assign a workout to a client by deep copying it.
+ * Verifies active PT-client relationship before copying.
+ */
+export async function assignWorkoutToClient(input: {
+  workoutId: string
+  clientId: string
+  name?: string
+}): Promise<ActionResponse<WorkoutWithDetails>> {
+  try {
+    const auth = await requirePermission('workout:assign')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
+    }
+
+    // Verify active relationship
+    const relationship = await prisma.clientRelationship.findFirst({
+      where: {
+        ptId: auth.userId,
+        clientId: input.clientId,
+        status: 'ACTIVE',
+      },
+    })
+
+    if (!relationship) {
+      return { success: false, error: 'No active relationship with this client' }
+    }
+
+    // Use existing copyWorkout logic
+    const result = await copyWorkout({
+      originalWorkoutId: input.workoutId,
+      targetUserId: input.clientId,
+      name: input.name,
+    })
+
+    return result
+  } catch (error) {
+    console.error('Error assigning workout to client:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to assign workout to client' }
   }
 }
