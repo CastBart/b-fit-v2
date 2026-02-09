@@ -42,12 +42,21 @@
 - Added `assignPlanToClient()` - same pattern for plans
 - Added PT fallback read access to `getWorkoutById()`, `getSessionById()`, `getPlanById()`
 
-### Next: Chunk 6 (Client Management UI)
+### Remaining Chunks
 
-- Create query/mutation hooks for client operations
-- Build ClientCard, InviteClientDrawer, AssignWorkoutDrawer, AssignPlanDrawer, EndRelationshipDialog
-- Build /clients list page, /clients/[id] detail page, /invite/[code] acceptance page
-- Update middleware matcher
+**Chunk 6 - Client Management UI** (largest chunk, ~13 steps):
+
+- Query hooks: `useClients`, `useClientDetail`, `useInvitation`
+- Mutation hooks: `useInviteClient`, `useAcceptInvitation`, `useRejectInvitation`, `useEndRelationship`, `useAssignWorkout`, `useAssignPlan`
+- Components: `ClientCard`, `InviteClientDrawer`, `AssignWorkoutDrawer`, `AssignPlanDrawer`, `EndRelationshipDialog`
+- Pages: `/clients` (list), `/clients/[id]` (detail with tabs), `/invite/[code]` (acceptance)
+- Middleware: add `/clients/:path*`, `/invite/:path*`, `/settings/:path*`
+
+**Chunk 7 - Role Upgrade Flow**: Settings page, `upgradeToPT()` action, sidebar nav update
+
+**Chunk 8 - Client Experience**: Dashboard role-awareness, "Assigned" badges, hidden create buttons for CLIENT
+
+**Chunk 9 - Polish**: Role guards, edge case handling, final documentation
 
 ### Files Created
 
