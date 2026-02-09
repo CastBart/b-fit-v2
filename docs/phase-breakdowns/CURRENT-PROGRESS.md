@@ -1,10 +1,79 @@
 # B-Fit Project - Current Progress
 
 **Last Updated**: 2026-02-09
-**Current Phase**: Phase 2 - Core Features
-**Recently Completed**: Dashboard Real Data + Analytics Foundation ✅
-**Next Tasks**: Phase 3 - Multi-Role Features OR Full Analytics Dashboard (Week 13)
-**Next Phase**: Phase 3 - Multi-Role Features
+**Current Phase**: Phase 3 - Multi-Role Features
+**Recently Completed**: Phase 3 Chunks 1-5 (RBAC, Session History, PRs, Client Relationships, Assignment)
+**Next Tasks**: Chunk 6 (Client Management UI), Chunk 7 (Role Upgrade), Chunk 8 (Client Experience), Chunk 9 (Polish)
+**Branch**: `feature/phase-3-multi-role`
+
+---
+
+## Phase 3: Multi-Role Features (In Progress)
+
+### Chunk 1: RBAC Utility ✅
+
+- Created `src/lib/auth/rbac.ts` with centralized permission map, `hasPermission()`, `requirePermission()`, `requireRole()` helpers
+- Uses `success` boolean discriminant for TypeScript type narrowing
+- Refactored inline role checks in `exercises.ts`, `workouts.ts`, `plans.ts` to use `requirePermission('entity:create')`
+
+### Chunk 2: Session History Page ✅
+
+- Created `SessionHistoryCard` component showing name, date, duration, exercise count, volume, status badge
+- Created `/sessions` page with search, status filter (All/Completed/Abandoned), paginated grid, CompletedSessionDrawer for detail view
+
+### Chunk 3: PR Enhancement ✅
+
+- Added `detectSessionPRs()` - per-session weight PR detection comparing against all prior sessions
+- Added `getSessionPRs()` server action wrapper
+- Added optional `prs` prop to CompletedSessionDrawer with trophy badges section
+- Wired PR detection into both session completion paths (banner + settings drawer)
+
+### Chunk 4: ClientRelationship Schema & Server Actions ✅
+
+- Added `RelationshipStatus` enum (PENDING, ACTIVE, ENDED) and `ClientRelationship` model with invite code system
+- Added `ptRelationships`/`clientRelationships` relations on User
+- Created client types (`src/types/client.ts`), Zod schemas (`src/lib/validations/client.ts`)
+- Created full server actions (`src/server/actions/clients.ts`): `getMyClients()`, `getClientDetail()`, `getClientSessions()`, `inviteClient()`, `getInvitation()`, `acceptInvitation()`, `rejectInvitation()`, `endRelationship()`, `getMyPT()`, `getPendingInvitations()`
+- Updated JWT callback to handle `trigger: 'update'` for runtime role changes
+
+### Chunk 5: Workout & Plan Assignment ✅
+
+- Added `assignWorkoutToClient()` - verifies active relationship, deep copies workout to client
+- Added `assignPlanToClient()` - same pattern for plans
+- Added PT fallback read access to `getWorkoutById()`, `getSessionById()`, `getPlanById()`
+
+### Next: Chunk 6 (Client Management UI)
+
+- Create query/mutation hooks for client operations
+- Build ClientCard, InviteClientDrawer, AssignWorkoutDrawer, AssignPlanDrawer, EndRelationshipDialog
+- Build /clients list page, /clients/[id] detail page, /invite/[code] acceptance page
+- Update middleware matcher
+
+### Files Created
+
+```
+src/lib/auth/rbac.ts                                    - RBAC permissions + helpers
+src/app/(dashboard)/sessions/page.tsx                   - Session History page
+src/components/features/sessions/SessionHistoryCard.tsx  - Session card component
+src/types/client.ts                                     - Client relationship types
+src/lib/validations/client.ts                           - Client Zod schemas
+src/server/actions/clients.ts                           - All client server actions
+prisma/migrations/20260209204756_add_client_relationship/ - DB migration
+```
+
+### Files Modified
+
+```
+prisma/schema.prisma                                    - ClientRelationship model + enum
+src/lib/auth/auth.config.ts                            - JWT callback for role updates
+src/server/actions/exercises.ts                        - RBAC refactor
+src/server/actions/workouts.ts                         - RBAC + assignWorkout + PT access
+src/server/actions/plans.ts                            - RBAC + assignPlan + PT access
+src/server/actions/sessions.ts                         - getSessionPRs + PT access
+src/lib/analytics/pr-detection.ts                      - detectSessionPRs function
+src/components/features/sessions/CompletedSessionDrawer.tsx - PR display section
+src/app/(dashboard)/session/page.tsx                   - PR integration in completion flow
+```
 
 ---
 

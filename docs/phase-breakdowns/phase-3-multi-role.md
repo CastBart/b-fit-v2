@@ -352,5 +352,32 @@
 
 ---
 
-**Last Updated**: 2026-01-26
+**Last Updated**: 2026-02-09
 **Next Phase**: Phase 4 - Payments & Subscriptions
+
+---
+
+## Implementation Progress (Revised Plan - 9 Chunks)
+
+The implementation follows a revised 9-chunk plan focused on practical delivery.
+
+### Completed Chunks
+
+| Chunk | Name                                       | Status  |
+| ----- | ------------------------------------------ | ------- |
+| 1     | RBAC Utility                               | ✅ Done |
+| 2     | Session History Page                       | ✅ Done |
+| 3     | PR Enhancement                             | ✅ Done |
+| 4     | ClientRelationship Schema & Server Actions | ✅ Done |
+| 5     | Workout & Plan Assignment                  | ✅ Done |
+| 6     | Client Management UI                       | Pending |
+| 7     | Role Upgrade Flow                          | Pending |
+| 8     | Client-Side Experience & Dashboard         | Pending |
+| 9     | Polish & Edge Cases                        | Pending |
+
+### Design Decisions
+
+- **Invite system**: Shareable link/code (no email service needed)
+- **PT Branding**: Deferred to a later phase
+- **ExerciseHistory model**: Skipped - computing on-the-fly
+- **Plan assignment**: Included alongside workout assignment
