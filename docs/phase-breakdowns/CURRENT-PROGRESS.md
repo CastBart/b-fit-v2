@@ -1,10 +1,10 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-05
+**Last Updated**: 2026-02-08
 **Current Phase**: Phase 2 - Core Features
-**Recently Completed**: Task 3.7 - Custom Exercise Creation ✅
-**Next Tasks**: Plan Functionality (Task 3.8 - to be planned)
-**Next Phase**: Phase 3 - Multi-Role Features OR Phase 2 Week 7 - Analytics
+**Recently Completed**: Active Plan Dashboard with Week Tracking ✅
+**Next Tasks**: Phase 3 - Multi-Role Features OR Analytics Dashboard
+**Next Phase**: Phase 3 - Multi-Role Features
 
 ---
 
@@ -3576,5 +3576,174 @@ The session refactor is complete! All code has been written. Now it's time to:
 4. Polish the UI/UX
 
 **Estimated testing time:** 2-4 hours
+
+---
+
+## Week 7 (continued): Plan Builder Enhancements
+
+### ✅ Task 7.10: Plan Builder - Add Day, Reorder Days, Copy Day (COMPLETED)
+
+**Completion Date**: 2026-02-07
+
+**What was completed:**
+
+Enhanced the Plan Builder with three new day management capabilities that were missing from the initial implementation:
+
+1. **Add Day** — Append a new empty day to the plan (up to 7 days max)
+2. **Reorder Days** — Move days left/right to change their position/order
+3. **Copy Day** — Duplicate a day with all its exercises (appended at end)
+
+All three operations are **client-side state changes** that persist atomically when the user clicks "Save Plan". This matches the existing builder pattern where exercises are managed in local state and saved all at once.
+
+**Files Modified (5 files):**
+
+```
+src/lib/validations/plan.ts           (MODIFIED - new days-based schema)
+src/server/actions/plans.ts           (MODIFIED - rewrote savePlanAllDays)
+src/hooks/mutations/usePlanMutations.ts (UNCHANGED - types flow through)
+src/components/features/plans/PlanBuilderPage.tsx (MODIFIED - local day state + handlers)
+src/components/features/plans/DayCarousel.tsx     (MODIFIED - UI controls)
+```
+
+**Key Changes:**
+
+1. **Validation Schema (`plan.ts`):**
+   - `savePlanAllDaysSchema` changed from `dayExercises: Record<string, exercises[]>` to `days: Array<{ dayId?, dayNumber, label, exercises[] }>`
+   - Added `.min(1)` and `.max(7)` constraints on days array
+
+2. **Server Action (`plans.ts` - `savePlanAllDays`):**
+   - Transaction now deletes all existing PlanDays (cascade deletes exercises) then creates fresh PlanDays with correct dayNumbers, labels, and exercises
+   - Updates `plan.daysPerWeek` to match the new day count
+   - Avoids `@@unique([planId, dayNumber])` constraint conflicts during reorders
+
+3. **PlanBuilderPage (`PlanBuilderPage.tsx`):**
+   - Added `localDays: LocalDay[]` state (tracks day structure independently of server data)
+   - `handleAddDay()` — creates empty day, navigates to it, max 7 check
+   - `handleReorderDay(dayIndex, direction)` — swaps with neighbor, remaps exercise keys, follows currentDayIndex
+   - `handleCopyDay(dayIndex)` — duplicates exercises with new instanceIds, copies label with "(Copy)" suffix
+   - `handleSave()` builds payload from `localDays` instead of `plan.days`
+   - `handleDayLabelUpdate()` now updates local state only (saved atomically with plan)
+   - Save button enabled even with 0 exercises (for managing day structure)
+   - Removed `useUpdatePlanDay` import
+
+4. **DayCarousel (`DayCarousel.tsx`):**
+   - New props: `onAddDay`, `onReorderDay`, `onCopyDay`, `maxDays`
+   - `dayId` changed from required to optional (new days don't have DB ID)
+   - `onDayLabelUpdate` changed from `(dayId, label)` to `(dayIndex, label)`
+   - Action buttons on selected day: left/right arrows (reorder), copy icon
+   - Dashed-border "Add Day" card at end of carousel (hidden when at 7 days)
+
+**Acceptance Criteria:**
+
+- ✅ Add Day works (new empty day appears, can add exercises, save persists)
+- ✅ Reorder Days works (days swap, exercises follow, save persists new order)
+- ✅ Copy Day works (duplicate with new instanceIds, save persists)
+- ✅ Combined operations work (add + copy + reorder + save all at once)
+- ✅ Day labels saved atomically with plan (no immediate server call)
+- ✅ `daysPerWeek` updated in DB to match new day count
+- ✅ Max 7 days enforced
+- ✅ Build passes: `npm run build` ✅
+
+**Next Tasks:**
+
+- Phase 3 - Multi-Role Features OR Analytics Dashboard
+- Exercise History display in plan builder (show previous performance per exercise)
+
+---
+
+### ✅ Active Plan Dashboard with Week Tracking (COMPLETED)
+
+**Completion Date**: 2026-02-08
+
+**What was completed:**
+
+Full active plan tracking system with week-by-week progress, session-to-plan linkage, and dashboard integration.
+
+**Schema Changes:**
+
+- New enums: `PlanWeekStatus`, `DayCompletionStatus`
+- New models: `PlanWeek`, `PlanDayCompletion`
+- Extended `TrainingSession` with `planId`, `planDayId` fields
+- Extended `Plan` and `PlanDay` with new relations
+- Migration: `add-plan-week-tracking`
+
+**Server Actions:**
+
+- Extended `activatePlan` to create Week 1 on activation (interactive transaction)
+- New `getActivePlanDashboard(weekNumber?)` - fetches active plan with weeks, days, completions
+- New `skipPlanDay(input)` - marks a day as skipped for current week
+- New `checkAndAdvanceWeek` utility - auto-creates next week when all days complete/skipped
+- Extended `saveCompletedSession` to create PlanDayCompletion on plan session completion
+
+**Client Integration:**
+
+- Extended Redux `SessionState` with `planId`, `planDayId`
+- Extended `SaveSessionPayload` with `planId`, `planDayId`
+- Updated `startSession` reducer to accept `planId`/`planDayId`
+- New `startPlanDaySession` utility in session-navigation.ts
+- Updated `buildSavePayload` in session page + SessionSettingsDrawer
+
+**Hooks:**
+
+- New `useActivePlanDashboard(weekNumber?)` query hook
+- New `useSkipPlanDay()` mutation hook
+- Updated `useActivatePlan`/`useDeactivatePlan` to invalidate dashboard queries
+
+**UI Components:**
+
+- New `ActivePlanSection` - dashboard section with week navigation, day cards
+- New `PlanDayDetailDrawer` - day detail with inline session stats for completed days, exercise list for pending
+- New `PlanDayOptionsDrawer` - options menu (Start, Skip, Edit Plan)
+- Dashboard page converted to `'use client'` with ActivePlanSection integration
+
+**Builder Integration:**
+
+- Plan builder route reads `?day=N` query param
+- `PlanBuilderPage` accepts `initialDayIndex` prop
+
+**Files Changed/Created (21 files):**
+
+```
+prisma/schema.prisma                                    (modified)
+src/types/plan.ts                                        (modified)
+src/types/session.ts                                     (modified)
+src/lib/validations/plan.ts                              (modified)
+src/lib/validations/session.ts                           (modified)
+src/server/utils/plan-week-utils.ts                      (created)
+src/server/actions/plans.ts                              (modified)
+src/server/actions/sessions.ts                           (modified)
+src/store/slices/sessionSlice.ts                         (modified)
+src/lib/utils/session-navigation.ts                      (modified)
+src/hooks/queries/useActivePlanDashboard.ts              (created)
+src/hooks/mutations/usePlanMutations.ts                  (modified)
+src/hooks/mutations/useSessionMutations.ts               (modified)
+src/components/features/plans/ActivePlanSection.tsx      (created)
+src/components/features/plans/PlanDayDetailDrawer.tsx    (created)
+src/components/features/plans/PlanDayOptionsDrawer.tsx   (created)
+src/app/(dashboard)/dashboard/page.tsx                   (modified)
+src/app/(dashboard)/session/page.tsx                     (modified)
+src/app/(dashboard)/plans/[id]/builder/page.tsx          (modified)
+src/components/features/plans/PlanBuilderPage.tsx        (modified)
+src/components/features/sessions/SessionSettingsDrawer.tsx (modified)
+```
+
+**Bug Fixes & Enhancements (post-implementation):**
+
+- Fixed `getSessionByIdSchema` validation (was `.cuid()`, session IDs are UUIDs — changed to `.string().min(1)`)
+- Added React Query cache invalidation for `activePlanDashboard` in `useCompleteSession` and `useSaveCompletedSession`
+- Rewrote `savePlanAllDays` from destructive delete-all-recreate to ID-preserving update-in-place approach, preventing cascade deletion of `PlanDayCompletion` records when editing plan details
+- Enhanced `PlanDayDetailDrawer` to show inline session stats (duration, exercises, sets, volume) for completed days instead of a navigation button
+- Updated `useSessionMutations.ts` to invalidate `['activePlanDashboard']` on session completion/save
+
+**Verification:**
+
+- ✅ `npm run build` passes with no TypeScript errors
+- ✅ Schema migration applied successfully
+- ✅ Plan day completions preserved when editing plan details (labels, reordering)
+- ✅ Dashboard refreshes after session completion without browser reload
+
+**Next Tasks:**
+
+- Phase 3 - Multi-Role Features OR Analytics Dashboard
 
 ---

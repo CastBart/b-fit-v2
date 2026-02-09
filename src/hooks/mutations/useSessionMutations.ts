@@ -27,6 +27,7 @@ export function useSaveCompletedSession() {
     onSuccess: (sessionId) => {
       queryClient.invalidateQueries({ queryKey: ['sessions'] })
       queryClient.invalidateQueries({ queryKey: ['session', sessionId] })
+      queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
       toast.success('🎉 Workout saved!')
     },
     onError: (error: Error) => {
@@ -60,6 +61,7 @@ export function useCompleteSession() {
     onSuccess: (sessionId) => {
       queryClient.invalidateQueries({ queryKey: ['sessions'] })
       queryClient.invalidateQueries({ queryKey: ['session', sessionId] })
+      queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
       toast.success('🎉 Workout completed!')
     },
     onError: (error: Error) => {

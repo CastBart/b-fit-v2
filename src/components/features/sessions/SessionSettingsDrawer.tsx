@@ -74,6 +74,8 @@ export function SessionSettingsDrawer({ children, onSessionComplete }: SessionSe
     progress,
     sessionNotes,
     accumulatedPauseDuration,
+    planId,
+    planDayId,
   } = useAppSelector((state) => state.session)
 
   // Live elapsed time
@@ -101,6 +103,8 @@ export function SessionSettingsDrawer({ children, onSessionComplete }: SessionSe
       sessionId: sessionId!,
       workoutId,
       workoutName,
+      planId,
+      planDayId,
       startTime: startTime!,
       completeTime: Date.now(),
       accumulatedPauseDuration,

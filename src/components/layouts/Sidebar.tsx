@@ -6,6 +6,7 @@ import {
   Home,
   Dumbbell,
   ListChecks,
+  ClipboardList,
   PlayCircle,
   BarChart3,
   Users,
@@ -46,6 +47,12 @@ const navItems: NavItem[] = [
     title: 'Workouts',
     href: '/workouts',
     icon: ListChecks,
+    roles: ['PERSONAL', 'PT', 'CLIENT'],
+  },
+  {
+    title: 'Plans',
+    href: '/plans',
+    icon: ClipboardList,
     roles: ['PERSONAL', 'PT', 'CLIENT'],
   },
   {

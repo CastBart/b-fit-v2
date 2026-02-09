@@ -1,6 +1,9 @@
+'use client'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { BarChart3, Dumbbell, PlayCircle, TrendingUp } from 'lucide-react'
+import { ActivePlanSection } from '@/components/features/plans/ActivePlanSection'
 
 export default function DashboardPage() {
   return (
@@ -59,6 +62,9 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Active Plan Section */}
+      <ActivePlanSection />
 
       {/* Recent Activity */}
       <div className="grid gap-4 md:grid-cols-2">

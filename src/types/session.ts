@@ -102,6 +102,10 @@ export type SessionState = {
   workoutId: string | null // null for free sessions
   workoutName: string
 
+  // Plan tracking (null for non-plan sessions)
+  planId: string | null
+  planDayId: string | null
+
   // Timing
   startTime: number | null // Date.now() when started
   isPaused: boolean
@@ -151,6 +155,8 @@ export type SaveSessionPayload = {
   sessionId: string
   workoutId: string | null
   workoutName: string
+  planId: string | null
+  planDayId: string | null
   startTime: number
   completeTime: number
   accumulatedPauseDuration: number

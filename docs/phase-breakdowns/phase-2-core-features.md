@@ -1617,6 +1617,198 @@ Refactored from server-first to client-first architecture:
 
 ---
 
+## Week 7: Plan Builder (2026-02-07)
+
+### ✅ Task 7.1: Plan Schema & Migration
+
+**Completion Date**: 2026-02-07
+
+**What was completed:**
+
+- Added Plan, PlanDay, PlanDayExercise models to Prisma schema
+- Plan supports daysPerWeek (1-7), durationWeeks (0=unlimited, 1-52)
+- isActive/activatedAt for plan activation (one active per user)
+- isTemplate/copiedFromId for PT-to-client copy pattern
+- PlanDay has dayNumber + optional label
+- PlanDayExercise mirrors WorkoutExercise fields (order, groupId, sets, reps, weight, restSeconds, notes)
+- Ran migration `add_plan_models`
+
+### ✅ Task 7.2: Plan Types & Validations
+
+**What was completed:**
+
+- `src/types/plan.ts` - PlanEntity, PlanDayEntity, PlanDayExerciseEntity, PlanWithDays, PlanWithDetails, PlanDayExerciseWithExercise, PlanDayExerciseFormData
+- `src/lib/validations/plan.ts` - 9 Zod schemas (createPlan, updatePlan, planFilters, updatePlanDay, syncPlanDayExercises, savePlanAllDays, copyWorkoutToPlanDay, activatePlan, copyPlan)
+
+### ✅ Task 7.3: Plan Server Actions
+
+**What was completed:**
+
+- `src/server/actions/plans.ts` - 11 server actions following established patterns
+- getPlans, getPlanById, createPlan, updatePlan, deletePlan
+- syncPlanDayExercises, savePlanAllDays (atomic save all days)
+- copyWorkoutToPlanDay, activatePlan, deactivatePlan, copyPlan
+- All include auth, validation, ownership checks, revalidation
+
+### ✅ Task 7.4: Plan React Query Hooks
+
+**What was completed:**
+
+- `src/hooks/queries/usePlans.ts` - Plans list query
+- `src/hooks/queries/usePlan.ts` - Single plan query
+- `src/hooks/mutations/usePlanMutations.ts` - 10 mutation hooks (create, update, delete, sync, save, copyWorkout, activate, deactivate, copy, updateDay)
+
+### ✅ Task 7.5: Plans Dashboard
+
+**What was completed:**
+
+- `src/app/(dashboard)/plans/page.tsx` - Plans list page
+- Active plan shown first with progress bar
+- Grid cards with exercise count, days/week, duration
+- Search, pagination, loading skeletons, empty state
+- Three-dot menu: Edit Days, Copy, Delete
+- Activate button on inactive plans
+
+### ✅ Task 7.6: Create Plan Flow
+
+**What was completed:**
+
+- `src/app/(dashboard)/plans/create/page.tsx` - Multi-step creation
+- Step 1: Plan name & description
+- Step 2: Days per week (1-7) with card selector
+- Step 3: Duration (Unlimited or 1-52 weeks)
+- Redirects to builder on creation
+
+### ✅ Task 7.7: Plan Builder
+
+**What was completed:**
+
+- `src/components/features/plans/PlanBuilderPage.tsx` - Core builder component
+- `src/components/features/plans/DayCarousel.tsx` - Horizontal Embla carousel for day navigation
+- `src/components/features/plans/CopyFromWorkoutDrawer.tsx` - Copy exercises from workout drawer
+- Three-column layout reusing: ExerciseSelectorPanel, WorkoutExercisesList, ExerciseConfigPanel
+- Mobile: FAB + ExerciseSelectorDrawer + ExerciseConfigDrawer (all reused)
+- SupersetManagerDrawer (reused)
+- Day-scoped exercise management with Map<dayNumber, exercises[]>
+- Atomic save of all days via savePlanAllDays
+
+### ✅ Task 7.8: Plan Details Page
+
+**What was completed:**
+
+- `src/app/(dashboard)/plans/[id]/page.tsx` - Plan detail view
+- Plan header with metadata badges and progress bar
+- Action buttons: Activate/Deactivate, Edit Days, Copy, Delete
+- Day-by-day exercise breakdown with superset indicators
+
+### ✅ Task 7.9: Navigation & Utilities
+
+**What was completed:**
+
+- Added "Plans" nav item to Sidebar (ClipboardList icon, after Workouts)
+- `src/lib/utils/plan-utils.ts` - getCurrentWeek, getPlanProgress, formatPlanDuration
+- `src/app/(dashboard)/plans/[id]/builder/page.tsx` - Builder route page
+
+### ✅ Task 7.10: Plan Builder - Add Day, Reorder Days, Copy Day
+
+**Completion Date**: 2026-02-07
+
+**What was completed:**
+
+Enhanced the Plan Builder with three new day management capabilities:
+
+1. **Add Day** — Append a new empty day to the plan (up to 7 max)
+2. **Reorder Days** — Move days left/right to change position/order
+3. **Copy Day** — Duplicate a day with all its exercises (appended at end)
+
+All operations work client-side in local state and persist atomically when the user clicks "Save Plan".
+
+#### Architecture: Client-First with Enhanced Save
+
+The save mechanism was upgraded from sending a `dayExercises` record (keyed by day number, exercises only) to sending a full `days` array that includes the complete day structure — new days, reordered dayNumbers, labels, and exercises. The server action then handles creating/deleting/updating PlanDay records within the same transaction.
+
+**Key design decision:** To avoid `@@unique([planId, dayNumber])` constraint conflicts during reorders, the transaction deletes all existing PlanDays for the plan and creates fresh ones with correct dayNumbers + exercises. This is safe because the save is already atomic and PlanDayExercise has `onDelete: Cascade` on its PlanDay relation.
+
+#### Files Modified (5 files)
+
+**1. `src/lib/validations/plan.ts` — Updated save schema**
+
+Replaced `savePlanAllDaysSchema` from a `dayExercises: Record<string, exercises[]>` shape to a `days` array shape:
+
+```typescript
+days: z.array(z.object({
+  dayId: z.string().cuid().optional(),  // undefined for new days
+  dayNumber: z.number().int().min(1),
+  label: z.string().max(100).optional().nullable(),
+  exercises: z.array(z.object({ ... })),
+})).min(1, 'Plan must have at least 1 day').max(7, 'Plan cannot exceed 7 days')
+```
+
+**2. `src/server/actions/plans.ts` — Rewrote `savePlanAllDays`**
+
+New transaction logic:
+
+- Delete all existing PlanDays for the plan (cascades to PlanDayExercise)
+- Create new PlanDays with dayNumber + label from input
+- Create exercises for each day
+- Update `plan.daysPerWeek` to `input.days.length`
+
+**3. `src/hooks/mutations/usePlanMutations.ts` — No changes needed**
+
+The `SavePlanAllDaysInput` type flows through automatically from the updated Zod schema.
+
+**4. `src/components/features/plans/PlanBuilderPage.tsx` — Added local day state + handlers**
+
+New state:
+
+- `localDays: LocalDay[]` — tracks day structure independently of server data. Initialized from `plan.days`, modified by add/reorder/copy.
+
+New handlers:
+
+- `handleAddDay()` — appends new day with `dayNumber = localDays.length + 1`, empty exercises, max 7 check
+- `handleReorderDay(dayIndex, direction)` — swaps day at dayIndex with neighbor, reassigns all dayNumbers sequentially, updates `dayExercises` map keys to match new dayNumbers, adjusts `currentDayIndex` to follow the selected day
+- `handleCopyDay(dayIndex)` — copies exercises from source day (with new instanceIds, no workoutExerciseId) to a new day appended at end, max 7 check
+
+Updated logic:
+
+- `currentDayNumber` derives from `localDays[currentDayIndex]` instead of `plan.days[currentDayIndex]`
+- `dayInfos` derives from `localDays` instead of `plan.days`
+- `handleSave()` builds payload from `localDays` (not `plan.days`)
+- `handleDayLabelUpdate()` updates `localDays` state only (label saved with plan save, no immediate server call)
+- Save button allows saving even with 0 exercises (user may just be managing day structure)
+- Removed `useUpdatePlanDay` import (labels now saved atomically with plan)
+
+**5. `src/components/features/plans/DayCarousel.tsx` — Added UI controls**
+
+New props:
+
+- `onAddDay?: () => void`
+- `onReorderDay?: (dayIndex: number, direction: 'left' | 'right') => void`
+- `onCopyDay?: (dayIndex: number) => void`
+- `maxDays?: number` (default 7)
+
+Interface change:
+
+- `dayId` changed from required to optional (new days don't have an ID yet)
+- `onDayLabelUpdate` changed from `(dayId: string, label)` to `(dayIndex: number, label)` (works with new days that lack an ID)
+
+UI additions:
+
+- **Action buttons on selected day**: Row of small icon buttons below exercise count — ChevronLeft (move left), ChevronRight (move right), Copy icon. Left arrow hidden on first day, right arrow hidden on last day.
+- **Add Day button**: Dashed-border card with `+` icon and "Add Day" text at the end of the carousel. Hidden when `days.length >= maxDays`.
+
+#### Acceptance Criteria
+
+- [x] Add Day: Click "+" → new empty day appears → add exercises → Save → persisted in DB
+- [x] Reorder Days: Select day → click arrow → day swaps with neighbor → exercises stay with their day → Save → new order persisted
+- [x] Copy Day: Click copy on a day → new day at end with same exercises (new instanceIds) → Save → copied day persisted
+- [x] Day labels update locally (no immediate server call), saved atomically with plan
+- [x] `daysPerWeek` updated in DB to match new day count on save
+- [x] Max 7 days enforced (Add Day and Copy Day buttons hidden at limit)
+- [x] Build: `npm run build` passes with no TypeScript errors
+
+---
+
 ## Phase 2 Status: ✅ COMPLETE
 
-All 13 core tasks + refactor complete. Ready for Phase 3 or Analytics.
+All 13 core tasks + refactor + Plan Builder (Tasks 7.1-7.10) complete. Ready for Phase 3 or Analytics.

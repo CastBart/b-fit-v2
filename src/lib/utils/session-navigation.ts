@@ -127,3 +127,62 @@ export function startStandaloneSession(dispatch: AppDispatch, router: AppRouterI
   dispatch(startFreeSession({ name: 'Standalone Workout' }))
   router.push('/session')
 }
+
+/**
+ * Start a session from a plan day.
+ * Transforms plan day exercises into session format and navigates to session page.
+ */
+export function startPlanDaySession(
+  planDay: {
+    planId: string
+    planDayId: string
+    sessionName: string
+    exercises: Array<{
+      id: string
+      exerciseId: string
+      exercise: {
+        name: string
+        exerciseType: string
+        metricType: string
+      }
+      order: number
+      groupId: string | null
+      sets: number
+      reps: number | null
+      weight: number | null
+      restSeconds: number
+      notes: string | null
+    }>
+  },
+  dispatch: AppDispatch,
+  router: AppRouterInstance
+): void {
+  const exercises: SessionExerciseEntry[] = planDay.exercises
+    .sort((a, b) => a.order - b.order)
+    .map((pde, index) => ({
+      instanceId: crypto.randomUUID(),
+      exerciseId: pde.exerciseId,
+      name: pde.exercise.name,
+      order: index,
+      groupId: pde.groupId,
+      targetSets: pde.sets,
+      targetReps: pde.reps,
+      targetWeight: pde.weight,
+      targetRestSeconds: pde.restSeconds,
+      exerciseType: pde.exercise.exerciseType as ExerciseType,
+      metricType: pde.exercise.metricType as MetricType,
+      notes: pde.notes,
+    }))
+
+  dispatch(
+    startSession({
+      workoutId: null,
+      workoutName: planDay.sessionName,
+      planId: planDay.planId,
+      planDayId: planDay.planDayId,
+      exercises,
+    })
+  )
+
+  router.push('/session')
+}

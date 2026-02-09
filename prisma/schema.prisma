@@ -33,6 +33,9 @@ model User {
   // Workout relations
   workouts      Workout[]
 
+  // Plan relations
+  plans         Plan[]
+
   @@index([email])
   @@index([role])
   @@index([isActive])
@@ -78,6 +81,17 @@ model VerificationToken {
 // ============================================================================
 // ENUMS
 // ============================================================================
+
+// Plan week tracking
+enum PlanWeekStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum DayCompletionStatus {
+  COMPLETED
+  SKIPPED
+}
 
 // User roles enum
 enum UserRole {
@@ -182,8 +196,9 @@ model Exercise {
   updatedAt DateTime @updatedAt
 
   // Relations
-  workoutExercises  WorkoutExercise[]
-  sessionExercises  SessionExercise[]
+  workoutExercises    WorkoutExercise[]
+  sessionExercises    SessionExercise[]
+  planDayExercises    PlanDayExercise[]
 
   @@index([createdById])
   @@index([isDefault])
@@ -286,14 +301,21 @@ model TrainingSession {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Plan tracking (null for non-plan sessions)
+  planId    String?
+  planDayId String?
+
   // Relations
-  exercises SessionExercise[]
-  sets      SessionSet[]
+  exercises     SessionExercise[]
+  sets          SessionSet[]
+  dayCompletion PlanDayCompletion?
 
   @@index([userId])
   @@index([workoutId])
   @@index([status])
   @@index([startedAt])
+  @@index([planId])
+  @@index([planDayId])
 }
 
 model SessionExercise {
@@ -366,4 +388,135 @@ model SessionSet {
   @@index([sessionExerciseId])
   @@index([isCompleted])
   @@unique([sessionExerciseId, setNumber]) // Ensure unique set numbers per exercise
+}
+
+// ============================================================================
+// PLANS
+// ============================================================================
+
+model Plan {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+
+  // Plan configuration
+  daysPerWeek   Int // 1-7
+  durationWeeks Int @default(0) // 0 = unlimited, 1-52
+
+  // Activation
+  isActive    Boolean   @default(false)
+  activatedAt DateTime?
+
+  // Ownership
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  // Template vs Copy (mirrors Workout pattern)
+  isTemplate   Boolean @default(true)
+  copiedFromId String?
+  copiedFrom   Plan?   @relation("PlanCopies", fields: [copiedFromId], references: [id], onDelete: SetNull)
+  copies       Plan[]  @relation("PlanCopies")
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  days  PlanDay[]
+  weeks PlanWeek[]
+
+  @@index([createdById])
+  @@index([isActive])
+  @@index([copiedFromId])
+  @@index([createdAt])
+}
+
+model PlanDay {
+  id String @id @default(cuid())
+
+  // Relations
+  planId String
+  plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  // Day configuration
+  dayNumber Int     // 1 through daysPerWeek
+  label     String? // Optional label (e.g., "Push Day", "Leg Day")
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  exercises   PlanDayExercise[]
+  completions PlanDayCompletion[]
+
+  @@unique([planId, dayNumber])
+  @@index([planId])
+}
+
+model PlanDayExercise {
+  id String @id @default(cuid())
+
+  // Relations
+  planDayId  String
+  planDay    PlanDay  @relation(fields: [planDayId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  // Ordering & Grouping
+  order   Int     // 0-indexed position in day
+  groupId String? // For supersets
+
+  // Target parameters
+  sets        Int
+  reps        Int?
+  weight      Float?
+  restSeconds Int     @default(60)
+  notes       String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([planDayId])
+  @@index([exerciseId])
+  @@index([groupId])
+  @@unique([planDayId, order])
+}
+
+// ============================================================================
+// PLAN WEEK TRACKING
+// ============================================================================
+
+model PlanWeek {
+  id          String         @id @default(cuid())
+  planId      String
+  plan        Plan           @relation(fields: [planId], references: [id], onDelete: Cascade)
+  weekNumber  Int
+  status      PlanWeekStatus @default(IN_PROGRESS)
+  startedAt   DateTime       @default(now())
+  completedAt DateTime?
+
+  dayCompletions PlanDayCompletion[]
+
+  @@unique([planId, weekNumber])
+  @@index([planId])
+  @@index([status])
+}
+
+model PlanDayCompletion {
+  id          String              @id @default(cuid())
+  planWeekId  String
+  planWeek    PlanWeek            @relation(fields: [planWeekId], references: [id], onDelete: Cascade)
+  planDayId   String
+  planDay     PlanDay             @relation(fields: [planDayId], references: [id], onDelete: Cascade)
+  status      DayCompletionStatus @default(COMPLETED)
+  sessionId   String?             @unique
+  session     TrainingSession?    @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  completedAt DateTime            @default(now())
+
+  @@unique([planWeekId, planDayId])
+  @@index([planWeekId])
+  @@index([planDayId])
+  @@index([sessionId])
 }
