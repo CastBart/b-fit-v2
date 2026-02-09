@@ -2,8 +2,10 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { BarChart3, Dumbbell, PlayCircle, TrendingUp } from 'lucide-react'
+import { BarChart3, Dumbbell, PlayCircle } from 'lucide-react'
 import { ActivePlanSection } from '@/components/features/plans/ActivePlanSection'
+import { StatsGrid } from '@/components/features/dashboard/StatsGrid'
+import { RecentSessions } from '@/components/features/dashboard/RecentSessions'
 
 export default function DashboardPage() {
   return (
@@ -17,91 +19,14 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Workouts</CardTitle>
-            <Dumbbell className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">24</div>
-            <p className="text-xs text-muted-foreground">+4 from last month</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sessions Completed</CardTitle>
-            <PlayCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">142</div>
-            <p className="text-xs text-muted-foreground">+12 from last month</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Volume</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">45,231 kg</div>
-            <p className="text-xs text-muted-foreground">+2,350 kg from last month</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Personal Records</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">7</div>
-            <p className="text-xs text-muted-foreground">New PRs this month</p>
-          </CardContent>
-        </Card>
-      </div>
+      <StatsGrid />
 
       {/* Active Plan Section */}
       <ActivePlanSection />
 
       {/* Recent Activity */}
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Sessions</CardTitle>
-            <CardDescription>Your last 5 workout sessions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                'Push Day - Upper Body',
-                'Pull Day - Back & Biceps',
-                'Leg Day - Quads Focus',
-                'Push Day - Chest & Shoulders',
-                'Full Body Workout',
-              ].map((workout, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                      <Dumbbell className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{workout}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {index + 1} day{index !== 0 ? 's' : ''} ago
-                      </p>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="sm">
-                    View
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <RecentSessions />
 
         <Card>
           <CardHeader>

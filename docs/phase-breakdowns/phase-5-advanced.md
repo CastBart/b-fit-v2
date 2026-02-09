@@ -152,25 +152,26 @@
 
 ## Week 13: Advanced Analytics
 
-### Task 13.1: Volume Calculation Logic
+### Task 13.1: Volume Calculation Logic (PARTIALLY COMPLETE)
 
 **Priority**: Critical
 **Estimated Effort**: 5-6 hours
+**Status**: Core utility created in dashboard integration (2026-02-09)
 
 #### Sub-tasks:
 
 1. **Create Analytics Utilities**
-   - [ ] Create `src/lib/analytics/volume.ts`
-   - [ ] `calculateSessionVolume(sessionSets)` - Total volume
-   - [ ] `calculateExerciseVolume(exerciseId, dateRange)` - Volume over time
+   - [x] Create `src/lib/analytics/volume.ts`
+   - [x] `getTotalVolume(userId)` - Total volume using raw SQL SUM(weight\*reps)
+   - [ ] `calculateExerciseVolume(exerciseId, dateRange)` - Volume over time (remaining)
 
 2. **Aggregate on Session Completion**
-   - [ ] Update ExerciseHistory volumeHistory on session complete
+   - [ ] Update ExerciseHistory volumeHistory on session complete (remaining)
 
 **Acceptance Criteria**:
 
 - ✅ Volume calculated correctly
-- ✅ Volume history updated
+- ⬜ Volume history updated (remaining)
 
 ---
 
@@ -197,27 +198,28 @@
 
 ---
 
-### Task 13.3: PR Detection Algorithm
+### Task 13.3: PR Detection Algorithm (PARTIALLY COMPLETE)
 
 **Priority**: High
 **Estimated Effort**: 5-6 hours
+**Status**: Weight PR detection created in dashboard integration (2026-02-09)
 
 #### Sub-tasks:
 
 1. **Enhance PR Detection**
-   - [ ] Update `src/lib/analytics/pr-detection.ts`
-   - [ ] Detect PRs for all metric types:
-     - Weight × Reps
+   - [x] Create `src/lib/analytics/pr-detection.ts` with `getMonthlyPRCount(userId)`
+   - [x] Detect weight PRs (max weight per exercise this month vs all-time prior)
+   - [ ] Detect PRs for remaining metric types (remaining):
      - Duration
      - Distance
      - Total volume
-   - [ ] Store in ExerciseHistory.personalRecords JSON
+   - [ ] Store in ExerciseHistory.personalRecords JSON (remaining)
 
 **Acceptance Criteria**:
 
-- ✅ PRs detected for all metric types
-- ✅ PRs stored correctly
-- ✅ PRs displayed in session summary
+- ⬜ PRs detected for all metric types (weight PRs done, others remaining)
+- ⬜ PRs stored correctly (remaining)
+- ⬜ PRs displayed in session summary (remaining)
 
 ---
 
@@ -244,31 +246,33 @@
 
 ---
 
-### Task 13.5: Analytics Dashboard
+### Task 13.5: Analytics Dashboard (PARTIALLY COMPLETE)
 
 **Priority**: High
 **Estimated Effort**: 7-8 hours
+**Status**: Dashboard stats widgets created in dashboard integration (2026-02-09)
 
 #### Sub-tasks:
 
 1. **Create Personal Analytics Page**
-   - [ ] Create `src/app/analytics/page.tsx`
-   - [ ] Widgets:
-     - Total volume (last 30 days)
-     - Recent PRs
+   - [x] Dashboard stats widgets (total workouts, sessions, volume, PRs) with real data
+   - [x] `getDashboardStats()` server action reusable by analytics page
+   - [ ] Create `src/app/analytics/page.tsx` (remaining)
+   - [ ] Additional widgets (remaining):
+     - Volume progression chart (Recharts)
      - Workout frequency
-     - Volume progression chart
+   - [ ] Recent sessions with CompletedSessionDrawer (done on dashboard)
 
 2. **PT Client Analytics View**
-   - [ ] Create `src/app/pt/clients/[id]/analytics/page.tsx`
-   - [ ] Show client's analytics
-   - [ ] Compare client performance over time
+   - [ ] Create `src/app/pt/clients/[id]/analytics/page.tsx` (remaining)
+   - [ ] Show client's analytics (remaining)
+   - [ ] Compare client performance over time (remaining)
 
 **Acceptance Criteria**:
 
-- ✅ Personal analytics page complete
-- ✅ PT can view client analytics
-- ✅ Charts and widgets functional
+- ⬜ Personal analytics page complete (dashboard stats done, full page remaining)
+- ⬜ PT can view client analytics (remaining)
+- ⬜ Charts and widgets functional (remaining)
 
 ---
 

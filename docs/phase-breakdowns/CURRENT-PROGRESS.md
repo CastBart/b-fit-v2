@@ -1,10 +1,58 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-08
+**Last Updated**: 2026-02-09
 **Current Phase**: Phase 2 - Core Features
-**Recently Completed**: Active Plan Dashboard with Week Tracking ✅
-**Next Tasks**: Phase 3 - Multi-Role Features OR Analytics Dashboard
+**Recently Completed**: Dashboard Real Data + Analytics Foundation ✅
+**Next Tasks**: Phase 3 - Multi-Role Features OR Full Analytics Dashboard (Week 13)
 **Next Phase**: Phase 3 - Multi-Role Features
+
+---
+
+## Dashboard Real Data + Analytics Foundation ✅
+
+**Completion Date**: 2026-02-09
+
+**What was completed:**
+
+- Replaced hardcoded dashboard stats with real user-specific data from the database
+- Created shared analytics utility layer (`src/lib/analytics/`) for both dashboard and future analytics page
+- Volume calculation utility (`getTotalVolume`) using raw SQL for `SUM(weight * reps)`
+- PR detection utility (`getMonthlyPRCount`) comparing monthly max weights vs all-time prior max
+- Dashboard server action (`getDashboardStats`) with parallel query execution
+- React Query hook (`useDashboardStats`) with 5-minute stale time
+- Session-to-drawer mapper utility (`mapSessionToCompletedData`) for reuse across pages
+- StatsGrid component with skeleton loading and error states
+- RecentSessions component with CompletedSessionDrawer integration
+- Recent sessions are clickable - "View" button opens CompletedSessionDrawer with full session details
+
+**Files Created:**
+
+```
+src/types/dashboard.ts                          - DashboardStats type
+src/lib/analytics/volume.ts                     - Volume calculation utility (shared)
+src/lib/analytics/pr-detection.ts               - PR detection utility (shared, extensible)
+src/server/actions/dashboard.ts                 - getDashboardStats server action
+src/hooks/queries/useDashboardStats.ts          - React Query hook
+src/lib/utils/session-mappers.ts                - mapSessionToCompletedData utility
+src/components/features/dashboard/StatsGrid.tsx - Stats grid with loading/error states
+src/components/features/dashboard/RecentSessions.tsx - Recent sessions with drawer
+```
+
+**Files Modified:**
+
+```
+src/app/(dashboard)/dashboard/page.tsx          - Replaced hardcoded content with components
+```
+
+**Partial Completion of Phase 5 Week 13 Tasks:**
+
+- Task 13.1 (Volume Calculation): Core `getTotalVolume()` utility created. Remaining: `calculateExerciseVolume(exerciseId, dateRange)` per-exercise time-series queries
+- Task 13.3 (PR Detection): Weight PR detection created. Remaining: duration, distance, reps PRs; ExerciseHistory storage
+- Task 13.5 (Analytics Dashboard): Dashboard stats widgets created. Remaining: full analytics page with charts, PT client analytics
+
+**Next Steps:**
+
+- Phase 3 - Multi-Role Features OR continue Week 13 analytics (charts, full analytics page)
 
 ---
 
