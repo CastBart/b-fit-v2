@@ -97,7 +97,7 @@ export function PlanDayDetailDrawer({
   return (
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="custom-drawer">
+        <DrawerContent className="custom-drawer-no-height justify-self-center">
           <DrawerHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

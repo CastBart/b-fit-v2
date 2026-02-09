@@ -106,7 +106,7 @@ export function SupersetDrawer({ open, onOpenChange, exercise }: SupersetDrawerP
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="custom-drawer">
+      <DrawerContent className="custom-drawer-no-height justify-self-center">
         <DrawerHeader>
           <DrawerTitle className="text-center text-2xl">Superset</DrawerTitle>
           <DrawerDescription className="hidden">Manage superset configuration</DrawerDescription>

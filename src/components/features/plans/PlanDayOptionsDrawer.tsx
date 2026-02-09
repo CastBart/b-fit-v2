@@ -54,7 +54,7 @@ export function PlanDayOptionsDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="custom-drawer">
+      <DrawerContent className="custom-drawer-no-height justify-self-center">
         <DrawerHeader>
           <DrawerTitle>Day Options</DrawerTitle>
           <DrawerDescription className="hidden">Options for this plan day</DrawerDescription>

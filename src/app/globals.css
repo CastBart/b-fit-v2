@@ -107,6 +107,9 @@
     height: 75vh;
     width: 600px;
   }
+  .custom-drawer-no-height {
+    width: 600px;
+  }
   .custom-dialog {
     width: 600px;
     height: auto;
@@ -119,6 +122,9 @@
     height: 90vh;
     width: 100vw;
   }
+  .custom-drawer-no-height {
+    width: 100vw;
+  }
   .custom-dialog {
     width: 100vw;
     max-height: 90vh;
@@ -128,6 +134,10 @@
 @media (max-width: 1024px) and (orientation: landscape) {
   /* Mobile Landscape */
   .custom-drawer {
+    height: 100vh;
+    width: 100vw;
+  }
+  .custom-drawer-no-height {
     height: 100vh;
     width: 100vw;
   }

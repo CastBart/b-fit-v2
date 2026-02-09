@@ -78,7 +78,7 @@ export function ExerciseDrawer({ exerciseId, open, onOpenChange }: ExerciseDrawe
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="custom-drawer">
+      <DrawerContent className="custom-drawer justify-self-center">
         <div className="mx-auto w-full max-w-2xl h-full flex flex-col">
           <DrawerHeader className="relative shrink-0">
             <DrawerTitle className="hidden">Exercise Details</DrawerTitle>

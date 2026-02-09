@@ -204,7 +204,7 @@ export function SessionSettingsDrawer({ children, onSessionComplete }: SessionSe
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>{children}</DrawerTrigger>
 
-        <DrawerContent className="custom-drawer">
+        <DrawerContent className="custom-drawer-no-height justify-self-center">
           <DrawerHeader>
             <DrawerTitle className="text-center text-2xl">{workoutName}</DrawerTitle>
             <DrawerDescription className="hidden">Session settings and controls</DrawerDescription>

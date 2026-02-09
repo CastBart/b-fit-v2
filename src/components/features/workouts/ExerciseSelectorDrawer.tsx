@@ -80,7 +80,7 @@ export function ExerciseSelectorDrawer({
 
   return (
     <Drawer open={open} onOpenChange={handleOpenChange}>
-      <DrawerContent className="custom-drawer">
+      <DrawerContent className="custom-drawer justify-self-center">
         <DrawerHeader>
           <DrawerTitle>Exercise Library</DrawerTitle>
         </DrawerHeader>

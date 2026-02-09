@@ -79,7 +79,7 @@ export function ExerciseOptionsDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="custom-drawer">
+      <DrawerContent className="custom-drawer-no-height justify-self-center">
         <DrawerHeader>
           <DrawerTitle className="text-center text-2xl">{exercise.name}</DrawerTitle>
           <DrawerDescription className="hidden">Exercise options</DrawerDescription>

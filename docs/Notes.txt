@@ -1,0 +1,50 @@
+bfitv2 Notes
+1. carousel of exercise thums is moving when exercises are dragged and dropped - look at b-fit implementation to check for a fix
+2. sets cannot be edited if its not the active set - same fix as above
+3. exercise details drawer is not present in the session
+	- this also includes superset drawer
+4. Timer is not present when a set is completed
+
+
+
+ next thing regarding the set logger: 1 the header of the set logger, its last colums says "action", lets make this a spanner icon and when pressed it opens a set settings drawer, this drawer will display number of sets and on either side a minus and aplus button which  
+  adds a set, also a button to undolast set and a close button. the current exercise menu shows this but i want to add different exercise menu, this button shoul open exercise options drawer, i inlcuded an example in                                                         
+  docs/examples/session/options_drawer_and_set_drawer.tsx  
+
+
+
+
+Create new exercises:
+1. THE exercise list must pull all system exercises and the ones created by the user.
+
+Drawers:
+1. All drawers have 
+
+
+Active plan:
+Need a dashboard section for the active plan.
+	- Should show current week. - more notes on weeks below.
+	- this section should show the days within the plan
+		- Each day card should be split into column of 3
+			- Day number
+			- Name of the days label. if no label provided it should just say "Day [day number]"
+			- Exercises section (show first letters of first 3 exercises, if the day exceeds 3 exercises, then show a +[number of how many more exercises there is])
+		- Clicking on the card will open a drawer with the Day details such as
+			- Label
+			- beside the label, three dots for options
+				- once clicked, an options options drawer should appear with following options:
+					- Start; this button will start the live workout session using its exercises as session data.
+					- Skip; this button marks the day as complete for the week selected.
+					- Edit Plan; this button brings the user to the plan builder for this plan. while bringing the user to the plan builder, make sure that the day that the user chose is preselected in th builder
+			- Name of the plan it is from 
+			- Current number week
+			- number of exercises in this day and total number of sets.
+			- Start; this button will start the session from this day using its exercises as session data.
+
+	- Week Notes logic:
+		- We have the functionality of adding number of weeks into the plan. The idea here is that once a plan is created, the user can track his day workouts for a given week. Each plan stared at first is beginning at week 1. when all day workouts are complete or skipped then the week is marked as complete moving to the next week. There are some rules here as we allow a user to create unlimited duration or 1-52 weeks. when a user selects a number, this number of weeks should be created and each day should be assigned to its own week as this is how we will track the active week, If the user selects unlimited weeks, then the weeks should by created dynamically once all day workouts are completed or skipped. we will use the weeks logic for tracking purpose as the user will be able to open a given week and click on the completed day which will open a drawer displaying the information of that session.
+		- The important things here is that the days when started lead us to the session page so for all this logic to work we need a mechanisim for all of this to communicated. can you devise a plan on how we can achieve all this.
+
+Notes:
+- The current implementation of creating weeks is the logic I need for when user selected Unlimited option. When a user selects 1-52 weeks, that number of weeks should be created.
+

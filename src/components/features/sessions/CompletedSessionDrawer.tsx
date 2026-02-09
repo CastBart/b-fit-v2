@@ -146,7 +146,7 @@ export function CompletedSessionDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="custom-drawer">
+      <DrawerContent className="custom-drawer justify-self-center">
         <DrawerHeader className="text-center pb-2">
           <div className="flex justify-center mb-2">
             <div className="rounded-full bg-green-100 dark:bg-green-900 p-3">
