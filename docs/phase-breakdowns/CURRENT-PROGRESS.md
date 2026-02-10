@@ -1,9 +1,9 @@
 # B-Fit Project - Current Progress
 
 **Last Updated**: 2026-02-10
-**Current Phase**: Phase 3 - Multi-Role Features
-**Recently Completed**: Phase 3 Chunks 1-8 (RBAC, Session History, PRs, Client Relationships, Assignment, Client Management UI, Role Upgrade, Client Experience)
-**Next Tasks**: Chunk 9 (Polish & Edge Cases)
+**Current Phase**: Phase 3 - Multi-Role Features (COMPLETE)
+**Recently Completed**: Phase 3 - All 9 Chunks (RBAC, Session History, PRs, Client Relationships, Assignment, Client Management UI, Role Upgrade, Client Experience, Polish)
+**Next Tasks**: Phase 4 planning (or merge Phase 3 to main)
 **Branch**: `feature/phase-3-multi-role`
 
 ---
@@ -66,9 +66,13 @@
 - Hidden Create/Edit/Delete/Copy buttons on workouts and plans pages for CLIENT role
 - Dashboard quick actions now use proper Link navigation
 
-### Remaining Chunks
+### Chunk 9: Polish & Edge Cases ✅
 
-**Chunk 9 - Polish**: Role guards, edge case handling, final documentation
+- Audited all role-changing actions — all use `revalidatePath('/')` correctly
+- Added client-side role guards on `/clients` and `/clients/[id]` pages (redirects non-PT/ORG to dashboard)
+- Verified invite deduplication already in place (`inviteClient()` checks existing PENDING invites)
+- Verified RBAC blocks CLIENT from creating workouts/plans/exercises at server level
+- Updated all documentation to mark Phase 3 complete
 
 ### Files Created
 

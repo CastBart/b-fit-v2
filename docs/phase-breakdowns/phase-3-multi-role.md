@@ -3,7 +3,8 @@
 **Goal**: Transform B-Fit from a single-user fitness app into a multi-role platform supporting PT-Client relationships, workout/plan assignment, session history browsing, and role lifecycle management.
 
 **Branch**: `feature/phase-3-multi-role`
-**Last Updated**: 2026-02-09
+**Status**: Complete (all 9 chunks implemented)
+**Last Updated**: 2026-02-10
 
 ---
 
@@ -187,17 +188,24 @@
 
 ---
 
-### Chunk 9: Polish & Edge Cases (Pending)
+### Chunk 9: Polish & Edge Cases ✅
 
 **Goal**: Handle role transitions, stale JWT, UI guards.
 
-| Step | Action                                                                  | File                            |
-| ---- | ----------------------------------------------------------------------- | ------------------------------- |
-| 9.1  | Verify all role-changing actions call `revalidatePath('/')`             | Multiple server actions         |
-| 9.2  | Add client-side role guards on `/clients` pages (redirect non-PT/ORG)   | Client pages                    |
-| 9.3  | Deduplicate PENDING invites for same email in `inviteClient()`          | `src/server/actions/clients.ts` |
-| 9.4  | Verify CLIENT cannot create workouts/plans/exercises (RBAC + hidden UI) | Multiple files                  |
-| 9.5  | Update documentation                                                    | `docs/phase-breakdowns/`        |
+| Step | Action                                                                  | File                            | Status |
+| ---- | ----------------------------------------------------------------------- | ------------------------------- | ------ |
+| 9.1  | Verify all role-changing actions call `revalidatePath('/')`             | Multiple server actions         | ✅     |
+| 9.2  | Add client-side role guards on `/clients` pages (redirect non-PT/ORG)   | Client pages                    | ✅     |
+| 9.3  | Deduplicate PENDING invites for same email in `inviteClient()`          | `src/server/actions/clients.ts` | ✅     |
+| 9.4  | Verify CLIENT cannot create workouts/plans/exercises (RBAC + hidden UI) | Multiple files                  | ✅     |
+| 9.5  | Update documentation                                                    | `docs/phase-breakdowns/`        | ✅     |
+
+**Audit Results**:
+
+- 9.1: All role-changing actions (`acceptInvitation`, `endRelationship`, `upgradeToPT`, `updateUserProfile`) already use `revalidatePath('/')`
+- 9.2: Added `useSession()` + `useEffect` role guards on `/clients` and `/clients/[id]` pages — redirects non-PT/ORG to `/dashboard`
+- 9.3: Already implemented — `inviteClient()` checks for existing PENDING invite with same email before creating new one
+- 9.4: Verified — CLIENT role only has `exercise:read`, `workout:read`, `plan:read`, `session:create`, `session:read`. Server actions block via `requirePermission()`. UI hides create/edit/delete buttons (Chunk 8)
 
 ---
 

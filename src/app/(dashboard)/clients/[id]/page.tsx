@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { ArrowLeft, Dumbbell, CalendarDays, History, UserX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -17,7 +18,19 @@ import { EndRelationshipDialog } from '@/components/features/clients/EndRelation
 export default function ClientDetailPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
+  const { data: session, status } = useSession()
   const clientId = params.id
+
+  // Role guard: only PT and ORG can access client detail
+  useEffect(() => {
+    if (
+      status === 'authenticated' &&
+      session?.user?.role !== 'PT' &&
+      session?.user?.role !== 'ORG'
+    ) {
+      router.replace('/dashboard')
+    }
+  }, [status, session, router])
 
   const [sessionsPage, setSessionsPage] = useState(1)
   const [assignWorkoutOpen, setAssignWorkoutOpen] = useState(false)

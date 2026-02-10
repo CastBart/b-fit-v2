@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Users, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,6 +24,19 @@ type StatusFilter = 'ALL' | RelationshipStatus
 
 export default function ClientsPage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
+
+  // Role guard: only PT and ORG can access /clients
+  useEffect(() => {
+    if (
+      status === 'authenticated' &&
+      session?.user?.role !== 'PT' &&
+      session?.user?.role !== 'ORG'
+    ) {
+      router.replace('/dashboard')
+    }
+  }, [status, session, router])
+
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL')
   const [page, setPage] = useState(1)
