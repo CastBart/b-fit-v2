@@ -1,9 +1,9 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-09
+**Last Updated**: 2026-02-10
 **Current Phase**: Phase 3 - Multi-Role Features
-**Recently Completed**: Phase 3 Chunks 1-5 (RBAC, Session History, PRs, Client Relationships, Assignment)
-**Next Tasks**: Chunk 6 (Client Management UI), Chunk 7 (Role Upgrade), Chunk 8 (Client Experience), Chunk 9 (Polish)
+**Recently Completed**: Phase 3 Chunks 1-6 (RBAC, Session History, PRs, Client Relationships, Assignment, Client Management UI)
+**Next Tasks**: Chunk 7 (Role Upgrade Flow), Chunk 8 (Client Experience), Chunk 9 (Polish)
 **Branch**: `feature/phase-3-multi-role`
 
 ---
@@ -42,15 +42,15 @@
 - Added `assignPlanToClient()` - same pattern for plans
 - Added PT fallback read access to `getWorkoutById()`, `getSessionById()`, `getPlanById()`
 
+### Chunk 6: Client Management UI ✅
+
+- Created 3 query hook files: `useClients`, `useClientDetail` (+ `useClientSessions`), `useInvitation`
+- Created 1 mutation hooks file with 6 mutations: `useInviteClient`, `useAcceptInvitation`, `useRejectInvitation`, `useEndRelationship`, `useAssignWorkout`, `useAssignPlan`
+- Created 5 components: `ClientCard`, `InviteClientDrawer`, `AssignWorkoutDrawer`, `AssignPlanDrawer`, `EndRelationshipDialog`
+- Created 3 pages: `/clients` (list with search/filter/pagination), `/clients/[id]` (detail with tabs), `/invite/[code]` (acceptance)
+- Updated middleware with `/clients`, `/invite`, `/settings` route protection
+
 ### Remaining Chunks
-
-**Chunk 6 - Client Management UI** (largest chunk, ~13 steps):
-
-- Query hooks: `useClients`, `useClientDetail`, `useInvitation`
-- Mutation hooks: `useInviteClient`, `useAcceptInvitation`, `useRejectInvitation`, `useEndRelationship`, `useAssignWorkout`, `useAssignPlan`
-- Components: `ClientCard`, `InviteClientDrawer`, `AssignWorkoutDrawer`, `AssignPlanDrawer`, `EndRelationshipDialog`
-- Pages: `/clients` (list), `/clients/[id]` (detail with tabs), `/invite/[code]` (acceptance)
-- Middleware: add `/clients/:path*`, `/invite/:path*`, `/settings/:path*`
 
 **Chunk 7 - Role Upgrade Flow**: Settings page, `upgradeToPT()` action, sidebar nav update
 
@@ -68,6 +68,18 @@ src/types/client.ts                                     - Client relationship ty
 src/lib/validations/client.ts                           - Client Zod schemas
 src/server/actions/clients.ts                           - All client server actions
 prisma/migrations/20260209204756_add_client_relationship/ - DB migration
+src/hooks/queries/useClients.ts                         - Clients list query hook
+src/hooks/queries/useClientDetail.ts                    - Client detail + sessions query hooks
+src/hooks/queries/useInvitation.ts                      - Invitation query hook
+src/hooks/mutations/useClientMutations.ts               - Client mutation hooks (6)
+src/components/features/clients/ClientCard.tsx           - Client card component
+src/components/features/clients/InviteClientDrawer.tsx   - Invite client drawer
+src/components/features/clients/AssignWorkoutDrawer.tsx  - Assign workout drawer
+src/components/features/clients/AssignPlanDrawer.tsx     - Assign plan drawer
+src/components/features/clients/EndRelationshipDialog.tsx - End relationship dialog
+src/app/(dashboard)/clients/page.tsx                    - Clients list page
+src/app/(dashboard)/clients/[id]/page.tsx               - Client detail page
+src/app/(dashboard)/invite/[code]/page.tsx              - Invite acceptance page
 ```
 
 ### Files Modified
@@ -78,6 +90,7 @@ src/lib/auth/auth.config.ts                            - JWT callback for role u
 src/server/actions/exercises.ts                        - RBAC refactor
 src/server/actions/workouts.ts                         - RBAC + assignWorkout + PT access
 src/server/actions/plans.ts                            - RBAC + assignPlan + PT access
+src/middleware.ts                                       - Added clients/invite/settings route protection
 src/server/actions/sessions.ts                         - getSessionPRs + PT access
 src/lib/analytics/pr-detection.ts                      - detectSessionPRs function
 src/components/features/sessions/CompletedSessionDrawer.tsx - PR display section

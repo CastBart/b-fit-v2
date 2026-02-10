@@ -110,25 +110,37 @@
 
 ---
 
-### Chunk 6: Client Management UI (Pending)
+### Chunk 6: Client Management UI ✅
 
 **Goal**: PT-facing pages to manage clients, invite, and assign.
 
-| Step | Action                                                                         | File                                                              |
-| ---- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
-| 6.1  | Create `useClients(filters?)` query hook                                       | `src/hooks/queries/useClients.ts` (NEW)                           |
-| 6.2  | Create `useClientDetail(clientId)` query hook                                  | `src/hooks/queries/useClientDetail.ts` (NEW)                      |
-| 6.3  | Create `useInvitation(inviteCode)` query hook                                  | `src/hooks/queries/useInvitation.ts` (NEW)                        |
-| 6.4  | Create client mutation hooks                                                   | `src/hooks/mutations/useClientMutations.ts` (NEW)                 |
-| 6.5  | Create `ClientCard` component                                                  | `src/components/features/clients/ClientCard.tsx` (NEW)            |
-| 6.6  | Create `InviteClientDrawer` - generate link, copy to clipboard                 | `src/components/features/clients/InviteClientDrawer.tsx` (NEW)    |
-| 6.7  | Create `AssignWorkoutDrawer` - list PT's workouts, assign button               | `src/components/features/clients/AssignWorkoutDrawer.tsx` (NEW)   |
-| 6.8  | Create `AssignPlanDrawer` - same pattern for plans                             | `src/components/features/clients/AssignPlanDrawer.tsx` (NEW)      |
-| 6.9  | Create `EndRelationshipDialog` - AlertDialog with confirm                      | `src/components/features/clients/EndRelationshipDialog.tsx` (NEW) |
-| 6.10 | Create Clients List page - search, filter, grid, invite drawer                 | `src/app/(dashboard)/clients/page.tsx` (NEW)                      |
-| 6.11 | Create Client Detail page - info, tabs (workouts, plans, sessions), assignment | `src/app/(dashboard)/clients/[id]/page.tsx` (NEW)                 |
-| 6.12 | Create Invite Acceptance page - PT info, accept/decline buttons                | `src/app/(dashboard)/invite/[code]/page.tsx` (NEW)                |
-| 6.13 | Update middleware matcher for new routes                                       | `src/middleware.ts`                                               |
+| Step | Action                                                                         | File                                                              | Status |
+| ---- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------- | ------ |
+| 6.1  | Create `useClients(filters?)` query hook                                       | `src/hooks/queries/useClients.ts` (NEW)                           | ✅     |
+| 6.2  | Create `useClientDetail(clientId)` + `useClientSessions(clientId)` hooks       | `src/hooks/queries/useClientDetail.ts` (NEW)                      | ✅     |
+| 6.3  | Create `useInvitation(inviteCode)` query hook                                  | `src/hooks/queries/useInvitation.ts` (NEW)                        | ✅     |
+| 6.4  | Create client mutation hooks (6 mutations)                                     | `src/hooks/mutations/useClientMutations.ts` (NEW)                 | ✅     |
+| 6.5  | Create `ClientCard` component                                                  | `src/components/features/clients/ClientCard.tsx` (NEW)            | ✅     |
+| 6.6  | Create `InviteClientDrawer` - generate link, copy to clipboard                 | `src/components/features/clients/InviteClientDrawer.tsx` (NEW)    | ✅     |
+| 6.7  | Create `AssignWorkoutDrawer` - list PT's workouts, assign button               | `src/components/features/clients/AssignWorkoutDrawer.tsx` (NEW)   | ✅     |
+| 6.8  | Create `AssignPlanDrawer` - same pattern for plans                             | `src/components/features/clients/AssignPlanDrawer.tsx` (NEW)      | ✅     |
+| 6.9  | Create `EndRelationshipDialog` - AlertDialog with confirm                      | `src/components/features/clients/EndRelationshipDialog.tsx` (NEW) | ✅     |
+| 6.10 | Create Clients List page - search, filter, grid, invite drawer                 | `src/app/(dashboard)/clients/page.tsx` (NEW)                      | ✅     |
+| 6.11 | Create Client Detail page - info, tabs (workouts, plans, sessions), assignment | `src/app/(dashboard)/clients/[id]/page.tsx` (NEW)                 | ✅     |
+| 6.12 | Create Invite Acceptance page - PT info, accept/decline buttons                | `src/app/(dashboard)/invite/[code]/page.tsx` (NEW)                | ✅     |
+| 6.13 | Update middleware matcher for new routes                                       | `src/middleware.ts`                                               | ✅     |
+
+**Query Hooks**: `useClients(filters)`, `useClientDetail(clientId)`, `useClientSessions(clientId, page)`, `useInvitation(inviteCode)`
+
+**Mutation Hooks**: `useInviteClient()`, `useAcceptInvitation()`, `useRejectInvitation()`, `useEndRelationship()`, `useAssignWorkout()`, `useAssignPlan()`
+
+**Key Features**:
+
+- Clients List: search, status filter (All/Active/Pending/Ended), paginated grid, invite drawer
+- Client Detail: avatar + info header, tabs (Sessions/Workouts/Plans), assign drawers, end relationship dialog
+- Invite Acceptance: centered card with PT info, accept/decline buttons, error/loading states
+- InviteClientDrawer: optional email input, generates invite link, copy-to-clipboard
+- Middleware updated with `/clients`, `/invite`, `/settings` route protection
 
 ---
 

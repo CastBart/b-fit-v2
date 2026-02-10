@@ -12,7 +12,10 @@ export default auth((req) => {
     nextUrl.pathname.startsWith('/workouts') ||
     nextUrl.pathname.startsWith('/exercises') ||
     nextUrl.pathname.startsWith('/sessions') ||
-    nextUrl.pathname.startsWith('/plans')
+    nextUrl.pathname.startsWith('/plans') ||
+    nextUrl.pathname.startsWith('/clients') ||
+    nextUrl.pathname.startsWith('/invite') ||
+    nextUrl.pathname.startsWith('/settings')
 
   // Redirect logged-in users away from auth pages
   if (isAuthRoute && isLoggedIn) {
@@ -37,6 +40,9 @@ export const config = {
     '/exercises/:path*',
     '/sessions/:path*',
     '/plans/:path*',
+    '/clients/:path*',
+    '/invite/:path*',
+    '/settings/:path*',
     // Auth routes (to redirect logged-in users)
     '/login',
     '/signup',
