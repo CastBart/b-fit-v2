@@ -2,8 +2,8 @@
 
 **Last Updated**: 2026-02-10
 **Current Phase**: Phase 3 - Multi-Role Features
-**Recently Completed**: Phase 3 Chunks 1-7 (RBAC, Session History, PRs, Client Relationships, Assignment, Client Management UI, Role Upgrade)
-**Next Tasks**: Chunk 8 (Client Experience & Dashboard), Chunk 9 (Polish)
+**Recently Completed**: Phase 3 Chunks 1-8 (RBAC, Session History, PRs, Client Relationships, Assignment, Client Management UI, Role Upgrade, Client Experience)
+**Next Tasks**: Chunk 9 (Polish & Edge Cases)
 **Branch**: `feature/phase-3-multi-role`
 
 ---
@@ -58,9 +58,15 @@
 - Created Settings page with profile editing and role-conditional upgrade card
 - Added Settings nav item to sidebar for all roles
 
-### Remaining Chunks
+### Chunk 8: Client-Side Experience & Dashboard ✅
 
-**Chunk 8 - Client Experience**: Dashboard role-awareness, "Assigned" badges, hidden create buttons for CLIENT
+- Created `useMyPT()` query hook for client's trainer info
+- Dashboard role-awareness: CLIENT sees "Your Trainer" card, PT sees "My Clients" quick action card
+- Added "Assigned" badge on plans page for plans with `copiedFrom` (workouts already had it)
+- Hidden Create/Edit/Delete/Copy buttons on workouts and plans pages for CLIENT role
+- Dashboard quick actions now use proper Link navigation
+
+### Remaining Chunks
 
 **Chunk 9 - Polish**: Role guards, edge case handling, final documentation
 
@@ -91,6 +97,7 @@ src/server/actions/users.ts                            - User server actions
 src/hooks/queries/useUserProfile.ts                    - User profile query hook
 src/hooks/mutations/useUserMutations.ts                - User mutation hooks
 src/app/(dashboard)/settings/page.tsx                  - Settings page
+src/hooks/queries/useMyPT.ts                           - Client's PT query hook
 ```
 
 ### Files Modified
@@ -103,6 +110,9 @@ src/server/actions/workouts.ts                         - RBAC + assignWorkout + 
 src/server/actions/plans.ts                            - RBAC + assignPlan + PT access
 src/middleware.ts                                       - Added clients/invite/settings route protection
 src/components/layouts/Sidebar.tsx                      - Added Settings nav item
+src/app/(dashboard)/dashboard/page.tsx                 - Role-aware dashboard (TrainerCard, ClientsQuickCard)
+src/app/(dashboard)/workouts/page.tsx                  - Hidden Create/Edit for CLIENT role
+src/app/(dashboard)/plans/page.tsx                     - Hidden Create/Edit/Delete + Assigned badge for CLIENT
 src/server/actions/sessions.ts                         - getSessionPRs + PT access
 src/lib/analytics/pr-detection.ts                      - detectSessionPRs function
 src/components/features/sessions/CompletedSessionDrawer.tsx - PR display section

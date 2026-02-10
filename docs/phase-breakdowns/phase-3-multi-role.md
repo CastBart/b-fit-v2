@@ -167,16 +167,23 @@
 
 ---
 
-### Chunk 8: Client-Side Experience & Dashboard (Pending)
+### Chunk 8: Client-Side Experience & Dashboard ✅
 
 **Goal**: Polish CLIENT role UX and role-aware dashboard.
 
-| Step | Action                                                                                       | File                                     |
-| ---- | -------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| 8.1  | Create `useMyPT()` query hook                                                                | `src/hooks/queries/useMyPT.ts` (NEW)     |
-| 8.2  | Dashboard role-awareness: CLIENT sees "Your Trainer" card, PT sees "My Clients" quick action | `src/app/(dashboard)/dashboard/page.tsx` |
-| 8.3  | Show "Assigned" badge on client workouts where `copiedFromId !== null`                       | `src/app/(dashboard)/workouts/page.tsx`  |
-| 8.4  | Hide "Create" buttons on workouts/plans pages for CLIENT role                                | `workouts/page.tsx`, `plans/page.tsx`    |
+| Step | Action                                                                                       | File                                     | Status |
+| ---- | -------------------------------------------------------------------------------------------- | ---------------------------------------- | ------ |
+| 8.1  | Create `useMyPT()` query hook                                                                | `src/hooks/queries/useMyPT.ts` (NEW)     | ✅     |
+| 8.2  | Dashboard role-awareness: CLIENT sees "Your Trainer" card, PT sees "My Clients" quick action | `src/app/(dashboard)/dashboard/page.tsx` | ✅     |
+| 8.3  | Show "Assigned" badge on workouts/plans where `copiedFrom !== null`                          | `workouts/page.tsx`, `plans/page.tsx`    | ✅     |
+| 8.4  | Hide "Create"/"Edit"/"Delete" buttons on workouts/plans pages for CLIENT role                | `workouts/page.tsx`, `plans/page.tsx`    | ✅     |
+
+**Key Features**:
+
+- Dashboard: CLIENT sees TrainerCard with PT info, PT sees ClientsQuickCard with active count + link
+- Workouts page: CLIENT cannot create/edit, sees "Assigned" badge on copied workouts
+- Plans page: CLIENT cannot create/edit/delete/copy/activate, sees "Assigned" badge on copied plans
+- Quick actions on dashboard now use proper Link navigation
 
 ---
 

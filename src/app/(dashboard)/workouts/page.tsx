@@ -8,6 +8,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Plus, Dumbbell, Calendar, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -38,6 +39,8 @@ interface WorkoutWithExerciseCount {
 
 export default function WorkoutsPage() {
   const router = useRouter()
+  const { data: session } = useSession()
+  const isClient = session?.user?.role === 'CLIENT'
   // const dispatch = useAppDispatch()
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -60,10 +63,12 @@ export default function WorkoutsPage() {
           <h1 className="text-3xl font-bold">My Workouts</h1>
           <p className="mt-1 text-muted-foreground">Create and manage your workout routines</p>
         </div>
-        <Button onClick={() => router.push('/workouts/builder')} size="lg">
-          <Plus className="mr-2 h-4 w-4" />
-          Create Workout
-        </Button>
+        {!isClient && (
+          <Button onClick={() => router.push('/workouts/builder')} size="lg">
+            <Plus className="mr-2 h-4 w-4" />
+            Create Workout
+          </Button>
+        )}
       </div>
 
       {/* Search */}
@@ -108,7 +113,7 @@ export default function WorkoutsPage() {
                 ? 'No workouts match your search.'
                 : 'Create your first workout to get started.'}
             </p>
-            {!search && (
+            {!search && !isClient && (
               <Button onClick={() => router.push('/workouts/builder')}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create Your First Workout
@@ -170,23 +175,23 @@ export default function WorkoutsPage() {
                     className="flex-1"
                     onClick={(e) => {
                       e.stopPropagation()
-                      // Navigate to workout detail page where we can start session
                       router.push(`/workouts/${workout.id}`)
-                      // startWorkoutSession(workout, dispatch, router)
                     }}
                   >
                     Start Workout
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      router.push(`/workouts/builder/${workout.id}`)
-                    }}
-                  >
-                    Edit
-                  </Button>
+                  {!isClient && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(`/workouts/builder/${workout.id}`)
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             ))}
