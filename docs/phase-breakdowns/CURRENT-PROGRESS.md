@@ -2,8 +2,8 @@
 
 **Last Updated**: 2026-02-10
 **Current Phase**: Phase 3 - Multi-Role Features
-**Recently Completed**: Phase 3 Chunks 1-6 (RBAC, Session History, PRs, Client Relationships, Assignment, Client Management UI)
-**Next Tasks**: Chunk 7 (Role Upgrade Flow), Chunk 8 (Client Experience), Chunk 9 (Polish)
+**Recently Completed**: Phase 3 Chunks 1-7 (RBAC, Session History, PRs, Client Relationships, Assignment, Client Management UI, Role Upgrade)
+**Next Tasks**: Chunk 8 (Client Experience & Dashboard), Chunk 9 (Polish)
 **Branch**: `feature/phase-3-multi-role`
 
 ---
@@ -50,9 +50,15 @@
 - Created 3 pages: `/clients` (list with search/filter/pagination), `/clients/[id]` (detail with tabs), `/invite/[code]` (acceptance)
 - Updated middleware with `/clients`, `/invite`, `/settings` route protection
 
-### Remaining Chunks
+### Chunk 7: Role Upgrade Flow ✅
 
-**Chunk 7 - Role Upgrade Flow**: Settings page, `upgradeToPT()` action, sidebar nav update
+- Created user validation schemas (`src/lib/validations/user.ts`)
+- Created server actions: `getUserProfile()`, `updateUserProfile()`, `upgradeToPT()` (`src/server/actions/users.ts`)
+- Created query hook `useUserProfile()` and mutation hooks `useUpdateProfile()`, `useUpgradeToPT()`
+- Created Settings page with profile editing and role-conditional upgrade card
+- Added Settings nav item to sidebar for all roles
+
+### Remaining Chunks
 
 **Chunk 8 - Client Experience**: Dashboard role-awareness, "Assigned" badges, hidden create buttons for CLIENT
 
@@ -80,6 +86,11 @@ src/components/features/clients/EndRelationshipDialog.tsx - End relationship dia
 src/app/(dashboard)/clients/page.tsx                    - Clients list page
 src/app/(dashboard)/clients/[id]/page.tsx               - Client detail page
 src/app/(dashboard)/invite/[code]/page.tsx              - Invite acceptance page
+src/lib/validations/user.ts                            - User validation schemas
+src/server/actions/users.ts                            - User server actions
+src/hooks/queries/useUserProfile.ts                    - User profile query hook
+src/hooks/mutations/useUserMutations.ts                - User mutation hooks
+src/app/(dashboard)/settings/page.tsx                  - Settings page
 ```
 
 ### Files Modified
@@ -91,6 +102,7 @@ src/server/actions/exercises.ts                        - RBAC refactor
 src/server/actions/workouts.ts                         - RBAC + assignWorkout + PT access
 src/server/actions/plans.ts                            - RBAC + assignPlan + PT access
 src/middleware.ts                                       - Added clients/invite/settings route protection
+src/components/layouts/Sidebar.tsx                      - Added Settings nav item
 src/server/actions/sessions.ts                         - getSessionPRs + PT access
 src/lib/analytics/pr-detection.ts                      - detectSessionPRs function
 src/components/features/sessions/CompletedSessionDrawer.tsx - PR display section

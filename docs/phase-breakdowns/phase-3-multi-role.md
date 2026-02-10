@@ -144,17 +144,26 @@
 
 ---
 
-### Chunk 7: Role Upgrade Flow (Pending)
+### Chunk 7: Role Upgrade Flow ✅
 
 **Goal**: PERSONAL users can upgrade to PT role.
 
-| Step | Action                                                                                 | File                                            |
-| ---- | -------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| 7.1  | Create user validation schemas (`updateProfileSchema`)                                 | `src/lib/validations/user.ts` (NEW)             |
-| 7.2  | Create user server actions: `getUserProfile()`, `upgradeToPT()`, `updateUserProfile()` | `src/server/actions/users.ts` (NEW)             |
-| 7.3  | Create mutation hooks: `useUpgradeToPT()`, `useUpdateProfile()`                        | `src/hooks/mutations/useUserMutations.ts` (NEW) |
-| 7.4  | Create Settings page - profile info, role-conditional upgrade/status cards             | `src/app/(dashboard)/settings/page.tsx` (NEW)   |
-| 7.5  | Add Settings nav item to sidebar (all roles)                                           | `src/components/layouts/Sidebar.tsx`            |
+| Step | Action                                                                                 | File                                            | Status |
+| ---- | -------------------------------------------------------------------------------------- | ----------------------------------------------- | ------ |
+| 7.1  | Create user validation schemas (`updateProfileSchema`)                                 | `src/lib/validations/user.ts` (NEW)             | ✅     |
+| 7.2  | Create user server actions: `getUserProfile()`, `upgradeToPT()`, `updateUserProfile()` | `src/server/actions/users.ts` (NEW)             | ✅     |
+| 7.3  | Create mutation hooks: `useUpgradeToPT()`, `useUpdateProfile()`                        | `src/hooks/mutations/useUserMutations.ts` (NEW) | ✅     |
+| 7.4  | Create Settings page - profile info, role-conditional upgrade/status cards             | `src/app/(dashboard)/settings/page.tsx` (NEW)   | ✅     |
+| 7.5  | Add Settings nav item to sidebar (all roles)                                           | `src/components/layouts/Sidebar.tsx`            | ✅     |
+
+**Additional**: Created `useUserProfile()` query hook (`src/hooks/queries/useUserProfile.ts`)
+
+**Key Features**:
+
+- Settings page with profile editing (name) and role status card
+- PERSONAL users see upgrade-to-PT card with confirmation dialog
+- PT/CLIENT users see role-specific status descriptions
+- Upgrade uses `session.update({ role: 'PT' })` for immediate JWT refresh
 
 ---
 
