@@ -130,6 +130,7 @@ export function useAssignWorkout() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientSessions'] })
       queryClient.invalidateQueries({ queryKey: ['client'] })
+      queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
       toast.success('Workout assigned successfully')
     },
     onError: (error: Error) => {
@@ -156,6 +157,7 @@ export function useAssignPlan() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientSessions'] })
       queryClient.invalidateQueries({ queryKey: ['client'] })
+      queryClient.invalidateQueries({ queryKey: ['clientPlans'] })
       toast.success('Plan assigned successfully')
     },
     onError: (error: Error) => {

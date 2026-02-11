@@ -265,6 +265,7 @@ export async function inviteClient(
         status: 'PENDING',
         inviteCode,
         clientEmail: validated.clientEmail ?? null,
+        expiresAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days
       },
     })
 
@@ -283,15 +284,11 @@ export async function inviteClient(
 // ============================================================================
 
 /**
- * Get invitation details by invite code (for the acceptance page)
+ * Get invitation details by invite code (public - no auth required)
+ * Only exposes PT name/email/avatar for the invite landing page
  */
 export async function getInvitation(inviteCode: string): Promise<ActionResponse<InvitationView>> {
   try {
-    const session = await getServerSession()
-    if (!session?.user?.id) {
-      return { success: false, error: 'Authentication required' }
-    }
-
     const relationship = await prisma.clientRelationship.findUnique({
       where: { inviteCode },
       include: {
@@ -309,6 +306,10 @@ export async function getInvitation(inviteCode: string): Promise<ActionResponse<
       return { success: false, error: 'This invitation is no longer valid' }
     }
 
+    if (relationship.expiresAt && new Date() > relationship.expiresAt) {
+      return { success: false, error: 'This invitation has expired' }
+    }
+
     return {
       success: true,
       data: {
@@ -316,6 +317,7 @@ export async function getInvitation(inviteCode: string): Promise<ActionResponse<
         inviteCode: relationship.inviteCode,
         status: relationship.status,
         clientEmail: relationship.clientEmail,
+        expiresAt: relationship.expiresAt,
         createdAt: relationship.createdAt,
         pt: relationship.pt,
       },
@@ -602,6 +604,7 @@ export async function getPendingInvitations(): Promise<ActionResponse<Invitation
         inviteCode: inv.inviteCode,
         status: inv.status,
         clientEmail: inv.clientEmail,
+        expiresAt: inv.expiresAt,
         createdAt: inv.createdAt,
         pt: inv.pt,
       })),

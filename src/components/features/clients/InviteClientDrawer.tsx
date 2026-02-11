@@ -58,7 +58,7 @@ export function InviteClientDrawer({ open, onOpenChange }: InviteClientDrawerPro
 
   return (
     <Drawer open={open} onOpenChange={handleClose}>
-      <DrawerContent>
+      <DrawerContent className="custom-drawer-no-height justify-self-center">
         <DrawerHeader>
           <DrawerTitle>Invite Client</DrawerTitle>
           <DrawerDescription>

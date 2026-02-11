@@ -49,6 +49,7 @@ export type InvitationView = {
   inviteCode: string
   status: RelationshipStatus
   clientEmail: string | null
+  expiresAt: Date | null
   createdAt: Date
   pt: {
     id: string

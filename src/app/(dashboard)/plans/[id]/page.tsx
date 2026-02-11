@@ -264,49 +264,51 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-3 mt-6 flex-wrap">
-          {plan.isActive ? (
+        {session?.user?.role !== 'CLIENT' && (
+          <div className="flex gap-3 mt-6 flex-wrap">
+            {plan.isActive ? (
+              <Button
+                onClick={() => deactivatePlan.mutate(id)}
+                variant="outline"
+                size="lg"
+                disabled={deactivatePlan.isPending}
+              >
+                <ZapOff className="h-4 w-4 mr-2" />
+                Deactivate
+              </Button>
+            ) : (
+              <Button
+                onClick={() => activatePlan.mutate(id)}
+                size="lg"
+                disabled={activatePlan.isPending}
+              >
+                <Zap className="h-4 w-4 mr-2" />
+                Activate Plan
+              </Button>
+            )}
+            <Button onClick={() => router.push(`/plans/${id}/builder`)} variant="outline" size="lg">
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Days
+            </Button>
+            <Button onClick={handleOpenEditDialog} variant="outline" size="lg">
+              <Settings className="h-4 w-4 mr-2" />
+              Edit Plan
+            </Button>
             <Button
-              onClick={() => deactivatePlan.mutate(id)}
+              onClick={handleOpenCopyDialog}
               variant="outline"
               size="lg"
-              disabled={deactivatePlan.isPending}
+              disabled={copyPlan.isPending}
             >
-              <ZapOff className="h-4 w-4 mr-2" />
-              Deactivate
+              <Copy className="h-4 w-4 mr-2" />
+              Copy
             </Button>
-          ) : (
-            <Button
-              onClick={() => activatePlan.mutate(id)}
-              size="lg"
-              disabled={activatePlan.isPending}
-            >
-              <Zap className="h-4 w-4 mr-2" />
-              Activate Plan
+            <Button onClick={() => setDeleteDialogOpen(true)} variant="destructive" size="lg">
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
             </Button>
-          )}
-          <Button onClick={() => router.push(`/plans/${id}/builder`)} variant="outline" size="lg">
-            <Edit className="h-4 w-4 mr-2" />
-            Edit Days
-          </Button>
-          <Button onClick={handleOpenEditDialog} variant="outline" size="lg">
-            <Settings className="h-4 w-4 mr-2" />
-            Edit Plan
-          </Button>
-          <Button
-            onClick={handleOpenCopyDialog}
-            variant="outline"
-            size="lg"
-            disabled={copyPlan.isPending}
-          >
-            <Copy className="h-4 w-4 mr-2" />
-            Copy
-          </Button>
-          <Button onClick={() => setDeleteDialogOpen(true)} variant="destructive" size="lg">
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Day-by-Day Breakdown */}

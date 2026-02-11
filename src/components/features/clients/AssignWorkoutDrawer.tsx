@@ -42,7 +42,7 @@ export function AssignWorkoutDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
+      <DrawerContent className="custom-drawer-no-height justify-self-center">
         <DrawerHeader>
           <DrawerTitle>Assign Workout</DrawerTitle>
           <DrawerDescription>

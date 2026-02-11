@@ -13,6 +13,7 @@ import { AuthError } from 'next-auth'
 
 /**
  * Server action to create a new user account
+ * When inviteCode is provided, creates user as CLIENT and activates the PT relationship
  */
 export async function signup(data: SignupInput) {
   try {
@@ -34,15 +35,69 @@ export async function signup(data: SignupInput) {
     // Hash password
     const hashedPassword = await hashPassword(validatedData.password)
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email: validatedData.email,
-        name: validatedData.name,
-        password: hashedPassword,
-        role: 'PERSONAL', // Default role
-      },
-    })
+    let user
+
+    if (validatedData.inviteCode) {
+      // Invite-based signup: validate invite and create user as CLIENT
+      const invitation = await prisma.clientRelationship.findUnique({
+        where: { inviteCode: validatedData.inviteCode },
+      })
+
+      if (!invitation) {
+        return { success: false, error: 'Invitation not found' }
+      }
+
+      if (invitation.status !== 'PENDING') {
+        return { success: false, error: 'This invitation is no longer valid' }
+      }
+
+      if (invitation.expiresAt && new Date() > invitation.expiresAt) {
+        return { success: false, error: 'This invitation has expired' }
+      }
+
+      // Email enforcement: if PT specified a client email, it must match
+      if (
+        invitation.clientEmail &&
+        invitation.clientEmail.toLowerCase() !== validatedData.email.toLowerCase()
+      ) {
+        return {
+          success: false,
+          error: 'This invitation is for a different email address',
+        }
+      }
+
+      // Transaction: create user as CLIENT + activate relationship
+      user = await prisma.$transaction(async (tx) => {
+        const newUser = await tx.user.create({
+          data: {
+            email: validatedData.email,
+            name: validatedData.name,
+            password: hashedPassword,
+            role: 'CLIENT',
+          },
+        })
+
+        await tx.clientRelationship.update({
+          where: { id: invitation.id },
+          data: {
+            clientId: newUser.id,
+            status: 'ACTIVE',
+          },
+        })
+
+        return newUser
+      })
+    } else {
+      // Standard signup: create as PERSONAL
+      user = await prisma.user.create({
+        data: {
+          email: validatedData.email,
+          name: validatedData.name,
+          password: hashedPassword,
+          role: 'PERSONAL',
+        },
+      })
+    }
 
     // Auto-login after signup
     try {

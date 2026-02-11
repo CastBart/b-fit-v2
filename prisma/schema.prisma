@@ -551,6 +551,7 @@ model ClientRelationship {
   status      RelationshipStatus @default(PENDING)
   inviteCode  String             @unique
   clientEmail String?            // Optional: PT can record intended client email
+  expiresAt   DateTime?          // Invite expiration (null = no expiry for legacy)
 
   // Timestamps
   createdAt   DateTime           @default(now())

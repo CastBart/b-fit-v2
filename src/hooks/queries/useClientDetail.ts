@@ -4,6 +4,8 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { getClientDetail, getClientSessions } from '@/server/actions/clients'
+import { getClientWorkouts } from '@/server/actions/workouts'
+import { getClientPlans } from '@/server/actions/plans'
 
 export function useClientDetail(clientId?: string) {
   return useQuery({
@@ -31,6 +33,36 @@ export function useClientSessions(clientId?: string, page = 1) {
       return result.data
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
+    enabled: !!clientId,
+  })
+}
+
+export function useClientWorkouts(clientId?: string) {
+  return useQuery({
+    queryKey: ['clientWorkouts', clientId],
+    queryFn: async () => {
+      const result = await getClientWorkouts(clientId!)
+      if (!result.success || !result.data) {
+        throw new Error(result.error || 'Failed to fetch client workouts')
+      }
+      return result.data
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: !!clientId,
+  })
+}
+
+export function useClientPlans(clientId?: string) {
+  return useQuery({
+    queryKey: ['clientPlans', clientId],
+    queryFn: async () => {
+      const result = await getClientPlans(clientId!)
+      if (!result.success || !result.data) {
+        throw new Error(result.error || 'Failed to fetch client plans')
+      }
+      return result.data
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: !!clientId,
   })
 }

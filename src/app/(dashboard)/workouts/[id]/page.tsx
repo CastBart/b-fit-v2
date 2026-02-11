@@ -9,6 +9,7 @@
 
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { ArrowLeft, Play, Edit, Trash2, Calendar, Dumbbell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -40,8 +41,10 @@ interface WorkoutDetailPageProps {
 
 export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const router = useRouter()
+  const { data: session } = useSession()
   const dispatch = useAppDispatch()
   const { id } = use(params)
+  const userRole = session?.user?.role
   const { data: workout, isLoading, error } = useWorkout(id)
   const deleteWorkout = useDeleteWorkout()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -204,14 +207,18 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
             <Play className="h-4 w-4 mr-2" />
             Start Workout
           </Button>
-          <Button onClick={handleEdit} variant="outline" size="lg">
-            <Edit className="h-4 w-4 mr-2" />
-            Edit
-          </Button>
-          <Button onClick={() => setDeleteDialogOpen(true)} variant="destructive" size="lg">
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete
-          </Button>
+          {userRole !== 'CLIENT' && (
+            <>
+              <Button onClick={handleEdit} variant="outline" size="lg">
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+              <Button onClick={() => setDeleteDialogOpen(true)} variant="destructive" size="lg">
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            </>
+          )}
         </div>
       </div>
 

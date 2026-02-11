@@ -1,10 +1,102 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-10
-**Current Phase**: Phase 3 - Multi-Role Features (COMPLETE)
-**Recently Completed**: Phase 3 - All 9 Chunks (RBAC, Session History, PRs, Client Relationships, Assignment, Client Management UI, Role Upgrade, Client Experience, Polish)
+**Last Updated**: 2026-02-11
+**Current Phase**: Phase 3 - Multi-Role Features (COMPLETE) + PT-Client Relationship Improvements
+**Recently Completed**: PT-Client relationship improvements (role-based UI hiding, client workout/plan display, PT write access, create-for-client flows)
 **Next Tasks**: Phase 4 planning (or merge Phase 3 to main)
 **Branch**: `feature/phase-3-multi-role`
+
+---
+
+## Invite Flow Redesign (Signup-Only + Expiration) ✅
+
+Redesigned PT-to-Client invite system for signup-only flow:
+
+- **Schema**: Added `expiresAt DateTime?` to `ClientRelationship` model
+- **Invite Creation**: `inviteClient()` now sets `expiresAt` to 2 days from creation
+- **Invite Validation**: `getInvitation()` checks expiry before returning data
+- **Signup with Invite**: `signup()` action handles `inviteCode` — validates invite, enforces email match if PT specified one, creates user as CLIENT, activates relationship atomically via `$transaction`
+- **SignupForm**: Reads `inviteCode` + `email` from URL params, locks email field when prefilled, passes invite code to signup action
+- **Invite Page**: Three states — expired (Clock icon + "contact trainer"), authenticated ("you're already logged in" message), unauthenticated (PT info + "Sign up to Accept" button linking to `/signup?inviteCode=...`)
+- **No regression**: Signup without invite still creates PERSONAL role user
+
+### Files Modified
+
+```
+prisma/schema.prisma                             - Added expiresAt to ClientRelationship
+src/types/client.ts                               - Added expiresAt to InvitationView
+src/lib/validations/auth.ts                       - Added optional inviteCode to signupSchema
+src/server/actions/clients.ts                     - expiresAt in inviteClient(), expiry check in getInvitation()
+src/server/actions/auth.ts                        - Invite-aware signup flow with email enforcement
+src/components/features/auth/SignupForm.tsx        - inviteCode/email URL params, locked email, redirect logic
+src/app/invite/[code]/page.tsx                    - Signup-only flow (replaced accept/reject buttons)
+```
+
+---
+
+## PT-Client Relationship Improvements ✅
+
+Addressed multiple gaps in PT-Client features discovered during testing:
+
+### Chunk 1: Role-Based UI Hiding + Session Click
+
+- **Workout detail**: CLIENT role only sees "Start Workout" button (Edit/Delete hidden)
+- **Plan detail**: CLIENT role sees read-only view (all action buttons hidden)
+- **Client session click**: PT can click sessions on client detail page to open CompletedSessionDrawer
+
+### Chunk 2: Display Client Workouts/Plans in Detail Tabs
+
+- **`getClientWorkouts`** server action: PT fetches client's workouts with relationship verification
+- **`getClientPlans`** server action: PT fetches client's plans with relationship verification
+- **`useClientWorkouts` / `useClientPlans`** query hooks
+- **Workouts tab**: Shows client's workout cards with name, exercise count, Assigned badge, View/Edit buttons
+- **Plans tab**: Shows client's plan cards with Active badge, days/week, duration, View/Edit Days/Activate buttons
+
+### Chunk 3: PT Write Access to Client Workouts/Plans
+
+- **`canModifyWorkout`** helper: checks owner OR PT with active relationship
+- **`canModifyPlan`** helper: same pattern
+- All workout actions (sync, addMultiple, update, delete, reorder, addExercise, removeExercise, updateExercise) use PT fallback
+- All plan actions (update, delete, updateDay, syncDayExercises, savePlanAllDays, copyWorkoutToPlanDay, activate, deactivate, skip) use PT fallback
+- **Critical fix**: `activatePlan` now deactivates `plan.createdById`'s plans (not PT's own plans)
+
+### Chunk 4: PT Creates Workouts/Plans for Clients
+
+- **`createWorkoutForClient`**: Creates workout owned by client (`createdById: clientId, isTemplate: false`)
+- **`createPlanForClient`**: Creates plan owned by client with empty days
+- Mutation hooks: `useCreateWorkoutForClient`, `useCreatePlanForClient`
+- **Workout builder** `forClientId` prop: client-aware create, back navigation to `/clients/[id]`
+- **Plan builder**: client-aware back button when editing client's plan
+- New route pages: `/clients/[id]/workouts/create`, `/clients/[id]/plans/create`
+
+### Chunk 5: Query Invalidation Polish
+
+- `useAssignWorkout` / `useAssignPlan` invalidate `clientWorkouts` / `clientPlans`
+- `useSyncWorkoutExercises` invalidates `clientWorkouts`
+- `useSavePlanAllDays` / `useActivatePlan` / `useDeactivatePlan` invalidate `clientPlans`
+
+### Files Modified
+
+```
+src/app/(dashboard)/workouts/[id]/page.tsx          - Hide Edit/Delete for CLIENT
+src/app/(dashboard)/plans/[id]/page.tsx             - Hide all actions for CLIENT
+src/app/(dashboard)/clients/[id]/page.tsx           - Session drawer, display workouts/plans, create buttons
+src/server/actions/workouts.ts                      - canModifyWorkout helper, getClientWorkouts, createWorkoutForClient, PT fallback in all actions
+src/server/actions/plans.ts                         - canModifyPlan helper, getClientPlans, createPlanForClient, PT fallback, activatePlan fix
+src/hooks/queries/useClientDetail.ts                - useClientWorkouts, useClientPlans
+src/hooks/mutations/useWorkoutMutations.ts          - useCreateWorkoutForClient, clientWorkouts invalidation
+src/hooks/mutations/usePlanMutations.ts             - useCreatePlanForClient, clientPlans invalidation
+src/hooks/mutations/useClientMutations.ts           - clientWorkouts/clientPlans invalidation
+src/app/(dashboard)/workouts/builder/page.tsx       - forClientId prop, client-aware navigation
+src/components/features/plans/PlanBuilderPage.tsx   - Client-aware back button
+```
+
+### New Files
+
+```
+src/app/(dashboard)/clients/[id]/workouts/create/page.tsx  - Workout builder wrapper for client
+src/app/(dashboard)/clients/[id]/plans/create/page.tsx     - Plan creation flow for client
+```
 
 ---
 

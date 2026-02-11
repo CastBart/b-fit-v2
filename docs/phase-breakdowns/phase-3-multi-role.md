@@ -311,4 +311,34 @@ src/app/(dashboard)/session/page.tsx                   - fetchAndAttachPRs in bo
 
 ---
 
+## Post-Phase 3: Invite Flow Redesign ✅
+
+**Goal**: Redesign the invite system so invites are signup-only (no accept/reject for logged-in users), with 2-day expiration and server-side email enforcement.
+
+| Step | Action                                                                 | File                                          | Status |
+| ---- | ---------------------------------------------------------------------- | --------------------------------------------- | ------ |
+| 1    | Add `expiresAt DateTime?` to ClientRelationship                        | `prisma/schema.prisma`                        | ✅     |
+| 2    | Add `expiresAt` to `InvitationView` type                               | `src/types/client.ts`                         | ✅     |
+| 3    | Add optional `inviteCode` to `signupSchema`                            | `src/lib/validations/auth.ts`                 | ✅     |
+| 4    | Set `expiresAt` in `inviteClient()`, check expiry in `getInvitation()` | `src/server/actions/clients.ts`               | ✅     |
+| 5    | Handle `inviteCode` in `signup()` with email enforcement + transaction | `src/server/actions/auth.ts`                  | ✅     |
+| 6    | Update SignupForm for inviteCode/email URL params                      | `src/components/features/auth/SignupForm.tsx` | ✅     |
+| 7    | Rewrite invite page for signup-only flow                               | `src/app/invite/[code]/page.tsx`              | ✅     |
+
+---
+
+## Post-Phase 3: PT-Client Relationship Improvements ✅
+
+**Goal**: Fix gaps in PT-Client features: role-based UI hiding, client workout/plan display, PT write access, create-for-client flows.
+
+| Chunk | Description                                                                                     | Status |
+| ----- | ----------------------------------------------------------------------------------------------- | ------ |
+| 1     | Hide Edit/Delete for CLIENT on workout/plan detail, session click drawer                        | ✅     |
+| 2     | Display client workouts/plans in detail tabs with server actions + query hooks                  | ✅     |
+| 3     | PT write access via `canModifyWorkout`/`canModifyPlan` helpers, fix `activatePlan` bug          | ✅     |
+| 4     | `createWorkoutForClient`/`createPlanForClient` actions, builder `forClientId` prop, route pages | ✅     |
+| 5     | Query invalidation polish for clientWorkouts/clientPlans                                        | ✅     |
+
+---
+
 **Next Phase**: Phase 4 - Payments & Subscriptions

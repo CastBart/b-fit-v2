@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,15 +25,20 @@ export function SignupForm() {
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
 
-  // Get callback URL from query parameters
+  // Get invite-related params
+  const inviteCode = searchParams.get('inviteCode') || undefined
+  const prefillEmail = searchParams.get('email') || ''
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+
+  const hasInviteEmail = !!inviteCode && !!prefillEmail
 
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      email: '',
+      email: prefillEmail,
       name: '',
       password: '',
+      inviteCode,
     },
   })
 
@@ -44,8 +50,8 @@ export function SignupForm() {
 
       if (result.success) {
         toast.success(result.message || 'Account created successfully!')
-        // Redirect to callback URL or dashboard after successful signup
-        router.push(callbackUrl)
+        // For invite signups, always go to dashboard (relationship already activated)
+        router.push(inviteCode ? '/dashboard' : callbackUrl)
         router.refresh()
       } else {
         toast.error(result.error || 'Failed to create account')
@@ -86,9 +92,13 @@ export function SignupForm() {
                   type="email"
                   placeholder="john@example.com"
                   {...field}
-                  disabled={isLoading}
+                  disabled={isLoading || hasInviteEmail}
+                  readOnly={hasInviteEmail}
                 />
               </FormControl>
+              {hasInviteEmail && (
+                <FormDescription>This invite is for this email address</FormDescription>
+              )}
               <FormMessage />
             </FormItem>
           )}
