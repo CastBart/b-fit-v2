@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   createWorkout,
+  createWorkoutForClient,
   updateWorkout,
   deleteWorkout,
   addExerciseToWorkout,
@@ -288,6 +289,7 @@ export function useSyncWorkoutExercises() {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] })
       queryClient.invalidateQueries({ queryKey: ['workout', variables.workoutId] })
+      queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
 
       const { addedCount, updatedCount, deletedCount } = data || {
         addedCount: 0,
@@ -300,6 +302,31 @@ export function useSyncWorkoutExercises() {
       if (deletedCount > 0) changes.push(`${deletedCount} removed`)
 
       toast.success(`Workout updated: ${changes.join(', ')}`)
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+// ============================================================================
+// Create Workout for Client
+// ============================================================================
+
+export function useCreateWorkoutForClient() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (input: { clientId: string; name: string; description?: string }) => {
+      const result = await createWorkoutForClient(input)
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to create workout for client')
+      }
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
+      toast.success('Workout created for client')
     },
     onError: (error: Error) => {
       toast.error(error.message)

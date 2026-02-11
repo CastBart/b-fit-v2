@@ -66,6 +66,7 @@ import { useSession } from 'next-auth/react'
 export default function PlansPage() {
   const router = useRouter()
   const { data: session } = useSession()
+  const isClient = session?.user?.role === 'CLIENT'
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -125,10 +126,12 @@ export default function PlansPage() {
           <h1 className="text-3xl font-bold">My Plans</h1>
           <p className="mt-1 text-muted-foreground">Create and manage your training plans</p>
         </div>
-        <Button onClick={() => router.push('/plans/create')} size="lg">
-          <Plus className="mr-2 h-4 w-4" />
-          Create Plan
-        </Button>
+        {!isClient && (
+          <Button onClick={() => router.push('/plans/create')} size="lg">
+            <Plus className="mr-2 h-4 w-4" />
+            Create Plan
+          </Button>
+        )}
       </div>
 
       {/* Search */}
@@ -173,7 +176,7 @@ export default function PlansPage() {
                 ? 'No plans match your search.'
                 : 'Create your first training plan to get started.'}
             </p>
-            {!search && (
+            {!search && !isClient && (
               <Button onClick={() => router.push('/plans/create')}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create Your First Plan
@@ -219,42 +222,44 @@ export default function PlansPage() {
                           </CardDescription>
                         )}
                       </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 opacity-0 group-hover:opacity-100"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                          <DropdownMenuItem
-                            onClick={() => router.push(`/plans/${plan.id}/builder`)}
-                          >
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit Days
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleOpenCopyDialog(plan.id, plan.name)}
-                          >
-                            <Copy className="mr-2 h-4 w-4" />
-                            Copy Plan
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => {
-                              setPlanToDelete({ id: plan.id, name: plan.name })
-                              setDeleteDialogOpen(true)
-                            }}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      {!isClient && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 opacity-0 group-hover:opacity-100"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                            <DropdownMenuItem
+                              onClick={() => router.push(`/plans/${plan.id}/builder`)}
+                            >
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit Days
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleOpenCopyDialog(plan.id, plan.name)}
+                            >
+                              <Copy className="mr-2 h-4 w-4" />
+                              Copy Plan
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => {
+                                setPlanToDelete({ id: plan.id, name: plan.name })
+                                setDeleteDialogOpen(true)
+                              }}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
@@ -268,8 +273,15 @@ export default function PlansPage() {
                         <span>{plan.totalExerciseCount} exercises</span>
                       </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {formatPlanDuration(plan.durationWeeks)}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">
+                        {formatPlanDuration(plan.durationWeeks)}
+                      </span>
+                      {plan.copiedFrom && (
+                        <Badge variant="outline" className="text-xs">
+                          Assigned
+                        </Badge>
+                      )}
                     </div>
 
                     {/* Active plan progress */}
@@ -291,7 +303,7 @@ export default function PlansPage() {
                     )}
                   </CardContent>
                   <CardFooter className="gap-2">
-                    {!plan.isActive ? (
+                    {!plan.isActive && !isClient ? (
                       <Button
                         variant="default"
                         size="sm"
@@ -318,16 +330,18 @@ export default function PlansPage() {
                         View Plan
                       </Button>
                     )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        router.push(`/plans/${plan.id}/builder`)
-                      }}
-                    >
-                      Edit
-                    </Button>
+                    {!isClient && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          router.push(`/plans/${plan.id}/builder`)
+                        }}
+                      >
+                        Edit
+                      </Button>
+                    )}
                   </CardFooter>
                 </Card>
               )

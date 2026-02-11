@@ -1,10 +1,219 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-09
-**Current Phase**: Phase 2 - Core Features
-**Recently Completed**: Dashboard Real Data + Analytics Foundation ✅
-**Next Tasks**: Phase 3 - Multi-Role Features OR Full Analytics Dashboard (Week 13)
-**Next Phase**: Phase 3 - Multi-Role Features
+**Last Updated**: 2026-02-11
+**Current Phase**: Phase 3 - Multi-Role Features (COMPLETE) + PT-Client Relationship Improvements
+**Recently Completed**: PT-Client relationship improvements (role-based UI hiding, client workout/plan display, PT write access, create-for-client flows)
+**Next Tasks**: Phase 4 planning (or merge Phase 3 to main)
+**Branch**: `feature/phase-3-multi-role`
+
+---
+
+## Invite Flow Redesign (Signup-Only + Expiration) ✅
+
+Redesigned PT-to-Client invite system for signup-only flow:
+
+- **Schema**: Added `expiresAt DateTime?` to `ClientRelationship` model
+- **Invite Creation**: `inviteClient()` now sets `expiresAt` to 2 days from creation
+- **Invite Validation**: `getInvitation()` checks expiry before returning data
+- **Signup with Invite**: `signup()` action handles `inviteCode` — validates invite, enforces email match if PT specified one, creates user as CLIENT, activates relationship atomically via `$transaction`
+- **SignupForm**: Reads `inviteCode` + `email` from URL params, locks email field when prefilled, passes invite code to signup action
+- **Invite Page**: Three states — expired (Clock icon + "contact trainer"), authenticated ("you're already logged in" message), unauthenticated (PT info + "Sign up to Accept" button linking to `/signup?inviteCode=...`)
+- **No regression**: Signup without invite still creates PERSONAL role user
+
+### Files Modified
+
+```
+prisma/schema.prisma                             - Added expiresAt to ClientRelationship
+src/types/client.ts                               - Added expiresAt to InvitationView
+src/lib/validations/auth.ts                       - Added optional inviteCode to signupSchema
+src/server/actions/clients.ts                     - expiresAt in inviteClient(), expiry check in getInvitation()
+src/server/actions/auth.ts                        - Invite-aware signup flow with email enforcement
+src/components/features/auth/SignupForm.tsx        - inviteCode/email URL params, locked email, redirect logic
+src/app/invite/[code]/page.tsx                    - Signup-only flow (replaced accept/reject buttons)
+```
+
+---
+
+## PT-Client Relationship Improvements ✅
+
+Addressed multiple gaps in PT-Client features discovered during testing:
+
+### Chunk 1: Role-Based UI Hiding + Session Click
+
+- **Workout detail**: CLIENT role only sees "Start Workout" button (Edit/Delete hidden)
+- **Plan detail**: CLIENT role sees read-only view (all action buttons hidden)
+- **Client session click**: PT can click sessions on client detail page to open CompletedSessionDrawer
+
+### Chunk 2: Display Client Workouts/Plans in Detail Tabs
+
+- **`getClientWorkouts`** server action: PT fetches client's workouts with relationship verification
+- **`getClientPlans`** server action: PT fetches client's plans with relationship verification
+- **`useClientWorkouts` / `useClientPlans`** query hooks
+- **Workouts tab**: Shows client's workout cards with name, exercise count, Assigned badge, View/Edit buttons
+- **Plans tab**: Shows client's plan cards with Active badge, days/week, duration, View/Edit Days/Activate buttons
+
+### Chunk 3: PT Write Access to Client Workouts/Plans
+
+- **`canModifyWorkout`** helper: checks owner OR PT with active relationship
+- **`canModifyPlan`** helper: same pattern
+- All workout actions (sync, addMultiple, update, delete, reorder, addExercise, removeExercise, updateExercise) use PT fallback
+- All plan actions (update, delete, updateDay, syncDayExercises, savePlanAllDays, copyWorkoutToPlanDay, activate, deactivate, skip) use PT fallback
+- **Critical fix**: `activatePlan` now deactivates `plan.createdById`'s plans (not PT's own plans)
+
+### Chunk 4: PT Creates Workouts/Plans for Clients
+
+- **`createWorkoutForClient`**: Creates workout owned by client (`createdById: clientId, isTemplate: false`)
+- **`createPlanForClient`**: Creates plan owned by client with empty days
+- Mutation hooks: `useCreateWorkoutForClient`, `useCreatePlanForClient`
+- **Workout builder** `forClientId` prop: client-aware create, back navigation to `/clients/[id]`
+- **Plan builder**: client-aware back button when editing client's plan
+- New route pages: `/clients/[id]/workouts/create`, `/clients/[id]/plans/create`
+
+### Chunk 5: Query Invalidation Polish
+
+- `useAssignWorkout` / `useAssignPlan` invalidate `clientWorkouts` / `clientPlans`
+- `useSyncWorkoutExercises` invalidates `clientWorkouts`
+- `useSavePlanAllDays` / `useActivatePlan` / `useDeactivatePlan` invalidate `clientPlans`
+
+### Files Modified
+
+```
+src/app/(dashboard)/workouts/[id]/page.tsx          - Hide Edit/Delete for CLIENT
+src/app/(dashboard)/plans/[id]/page.tsx             - Hide all actions for CLIENT
+src/app/(dashboard)/clients/[id]/page.tsx           - Session drawer, display workouts/plans, create buttons
+src/server/actions/workouts.ts                      - canModifyWorkout helper, getClientWorkouts, createWorkoutForClient, PT fallback in all actions
+src/server/actions/plans.ts                         - canModifyPlan helper, getClientPlans, createPlanForClient, PT fallback, activatePlan fix
+src/hooks/queries/useClientDetail.ts                - useClientWorkouts, useClientPlans
+src/hooks/mutations/useWorkoutMutations.ts          - useCreateWorkoutForClient, clientWorkouts invalidation
+src/hooks/mutations/usePlanMutations.ts             - useCreatePlanForClient, clientPlans invalidation
+src/hooks/mutations/useClientMutations.ts           - clientWorkouts/clientPlans invalidation
+src/app/(dashboard)/workouts/builder/page.tsx       - forClientId prop, client-aware navigation
+src/components/features/plans/PlanBuilderPage.tsx   - Client-aware back button
+```
+
+### New Files
+
+```
+src/app/(dashboard)/clients/[id]/workouts/create/page.tsx  - Workout builder wrapper for client
+src/app/(dashboard)/clients/[id]/plans/create/page.tsx     - Plan creation flow for client
+```
+
+---
+
+## Phase 3: Multi-Role Features (In Progress)
+
+### Chunk 1: RBAC Utility ✅
+
+- Created `src/lib/auth/rbac.ts` with centralized permission map, `hasPermission()`, `requirePermission()`, `requireRole()` helpers
+- Uses `success` boolean discriminant for TypeScript type narrowing
+- Refactored inline role checks in `exercises.ts`, `workouts.ts`, `plans.ts` to use `requirePermission('entity:create')`
+
+### Chunk 2: Session History Page ✅
+
+- Created `SessionHistoryCard` component showing name, date, duration, exercise count, volume, status badge
+- Created `/sessions` page with search, status filter (All/Completed/Abandoned), paginated grid, CompletedSessionDrawer for detail view
+
+### Chunk 3: PR Enhancement ✅
+
+- Added `detectSessionPRs()` - per-session weight PR detection comparing against all prior sessions
+- Added `getSessionPRs()` server action wrapper
+- Added optional `prs` prop to CompletedSessionDrawer with trophy badges section
+- Wired PR detection into both session completion paths (banner + settings drawer)
+
+### Chunk 4: ClientRelationship Schema & Server Actions ✅
+
+- Added `RelationshipStatus` enum (PENDING, ACTIVE, ENDED) and `ClientRelationship` model with invite code system
+- Added `ptRelationships`/`clientRelationships` relations on User
+- Created client types (`src/types/client.ts`), Zod schemas (`src/lib/validations/client.ts`)
+- Created full server actions (`src/server/actions/clients.ts`): `getMyClients()`, `getClientDetail()`, `getClientSessions()`, `inviteClient()`, `getInvitation()`, `acceptInvitation()`, `rejectInvitation()`, `endRelationship()`, `getMyPT()`, `getPendingInvitations()`
+- Updated JWT callback to handle `trigger: 'update'` for runtime role changes
+
+### Chunk 5: Workout & Plan Assignment ✅
+
+- Added `assignWorkoutToClient()` - verifies active relationship, deep copies workout to client
+- Added `assignPlanToClient()` - same pattern for plans
+- Added PT fallback read access to `getWorkoutById()`, `getSessionById()`, `getPlanById()`
+
+### Chunk 6: Client Management UI ✅
+
+- Created 3 query hook files: `useClients`, `useClientDetail` (+ `useClientSessions`), `useInvitation`
+- Created 1 mutation hooks file with 6 mutations: `useInviteClient`, `useAcceptInvitation`, `useRejectInvitation`, `useEndRelationship`, `useAssignWorkout`, `useAssignPlan`
+- Created 5 components: `ClientCard`, `InviteClientDrawer`, `AssignWorkoutDrawer`, `AssignPlanDrawer`, `EndRelationshipDialog`
+- Created 3 pages: `/clients` (list with search/filter/pagination), `/clients/[id]` (detail with tabs), `/invite/[code]` (acceptance)
+- Updated middleware with `/clients`, `/invite`, `/settings` route protection
+
+### Chunk 7: Role Upgrade Flow ✅
+
+- Created user validation schemas (`src/lib/validations/user.ts`)
+- Created server actions: `getUserProfile()`, `updateUserProfile()`, `upgradeToPT()` (`src/server/actions/users.ts`)
+- Created query hook `useUserProfile()` and mutation hooks `useUpdateProfile()`, `useUpgradeToPT()`
+- Created Settings page with profile editing and role-conditional upgrade card
+- Added Settings nav item to sidebar for all roles
+
+### Chunk 8: Client-Side Experience & Dashboard ✅
+
+- Created `useMyPT()` query hook for client's trainer info
+- Dashboard role-awareness: CLIENT sees "Your Trainer" card, PT sees "My Clients" quick action card
+- Added "Assigned" badge on plans page for plans with `copiedFrom` (workouts already had it)
+- Hidden Create/Edit/Delete/Copy buttons on workouts and plans pages for CLIENT role
+- Dashboard quick actions now use proper Link navigation
+
+### Chunk 9: Polish & Edge Cases ✅
+
+- Audited all role-changing actions — all use `revalidatePath('/')` correctly
+- Added client-side role guards on `/clients` and `/clients/[id]` pages (redirects non-PT/ORG to dashboard)
+- Verified invite deduplication already in place (`inviteClient()` checks existing PENDING invites)
+- Verified RBAC blocks CLIENT from creating workouts/plans/exercises at server level
+- Updated all documentation to mark Phase 3 complete
+
+### Files Created
+
+```
+src/lib/auth/rbac.ts                                    - RBAC permissions + helpers
+src/app/(dashboard)/sessions/page.tsx                   - Session History page
+src/components/features/sessions/SessionHistoryCard.tsx  - Session card component
+src/types/client.ts                                     - Client relationship types
+src/lib/validations/client.ts                           - Client Zod schemas
+src/server/actions/clients.ts                           - All client server actions
+prisma/migrations/20260209204756_add_client_relationship/ - DB migration
+src/hooks/queries/useClients.ts                         - Clients list query hook
+src/hooks/queries/useClientDetail.ts                    - Client detail + sessions query hooks
+src/hooks/queries/useInvitation.ts                      - Invitation query hook
+src/hooks/mutations/useClientMutations.ts               - Client mutation hooks (6)
+src/components/features/clients/ClientCard.tsx           - Client card component
+src/components/features/clients/InviteClientDrawer.tsx   - Invite client drawer
+src/components/features/clients/AssignWorkoutDrawer.tsx  - Assign workout drawer
+src/components/features/clients/AssignPlanDrawer.tsx     - Assign plan drawer
+src/components/features/clients/EndRelationshipDialog.tsx - End relationship dialog
+src/app/(dashboard)/clients/page.tsx                    - Clients list page
+src/app/(dashboard)/clients/[id]/page.tsx               - Client detail page
+src/app/(dashboard)/invite/[code]/page.tsx              - Invite acceptance page
+src/lib/validations/user.ts                            - User validation schemas
+src/server/actions/users.ts                            - User server actions
+src/hooks/queries/useUserProfile.ts                    - User profile query hook
+src/hooks/mutations/useUserMutations.ts                - User mutation hooks
+src/app/(dashboard)/settings/page.tsx                  - Settings page
+src/hooks/queries/useMyPT.ts                           - Client's PT query hook
+```
+
+### Files Modified
+
+```
+prisma/schema.prisma                                    - ClientRelationship model + enum
+src/lib/auth/auth.config.ts                            - JWT callback for role updates
+src/server/actions/exercises.ts                        - RBAC refactor
+src/server/actions/workouts.ts                         - RBAC + assignWorkout + PT access
+src/server/actions/plans.ts                            - RBAC + assignPlan + PT access
+src/middleware.ts                                       - Added clients/invite/settings route protection
+src/components/layouts/Sidebar.tsx                      - Added Settings nav item
+src/app/(dashboard)/dashboard/page.tsx                 - Role-aware dashboard (TrainerCard, ClientsQuickCard)
+src/app/(dashboard)/workouts/page.tsx                  - Hidden Create/Edit for CLIENT role
+src/app/(dashboard)/plans/page.tsx                     - Hidden Create/Edit/Delete + Assigned badge for CLIENT
+src/server/actions/sessions.ts                         - getSessionPRs + PT access
+src/lib/analytics/pr-detection.ts                      - detectSessionPRs function
+src/components/features/sessions/CompletedSessionDrawer.tsx - PR display section
+src/app/(dashboard)/session/page.tsx                   - PR integration in completion flow
+```
 
 ---
 

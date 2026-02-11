@@ -48,3 +48,26 @@ Need a dashboard section for the active plan.
 Notes:
 - The current implementation of creating weeks is the logic I need for when user selected Unlimited option. When a user selects 1-52 weeks, that number of weeks should be created.
 
+
+
+PT > Client relations
+PT Role findings:
+- PT Workouts:
+	- PT should be able to assign a workout to a client from the clients page or create one for them there and then
+	- currently the PT can only assign existing workouts from the PTs library of workouts
+	- When PT assigns a workout from his library, the assigned workout is not displayed on the workoouts tab in the /cleints/[id] > workouts tab. once workouts are assigned to a client, they should show on the workouts tab.
+	- PTs should be able to create a workout for the client but it doesnt necessary create a workout for the PT. we need some UI for creating Client Workouts without creating a Wokout for PT User
+	- PTs should be able to edit an assigned workout. Since assigning a workout to a client performs a "copy" workout action and Client is considered as the "creator". Once a PT assigns a workout, they should also be able to edit this workout within the clients page
+- PT Plans:
+	- PT should be able to assign a plan to a client from the clients page or create one for them there and then
+	- currently the PT can only assign existing plans from the PTs library of plans
+	- When PT assigns a plan from his library, the assigned plan is not displayed in the  /cleints/[id] > plans tab. once plans are assigned to a client, they should show on the plans tab.
+	- PT should be able to edit plan details for the client assigned plans without modifying his own. EG. PT has a "Push Pull Plan" in his own plans library. He navigates to clients page, assigns the "Push Pull Plan" to the client. The plan is created for the Client as his own copy. As a scenario, lets say that the PT now wants to modify the Plan slightly for more specific use for the client so wee need ability for the PT to change plan, basically giving him access to plan builder within the clients page. Perhaps this can re-use the plans/[id] page but in a full screen drawer. plan builder should also work in a drawer manner. 
+	- PT should be able to activate a plan for a client
+- Sessions:
+	- PT cannot view client session details - when PT is in the clients/[id] page in sessions tab, sessions performed by the client show up but when clicked, nothing happens. When clicked this should show the complete session drawer (re-use components already in the code)
+Client Role findings:
+- clients view or workout and plan pages:
+	- clients can see workouts and plan page which is great.
+	- When a client role is visiting a workouts page and navigates to workout/[id] page, the client can currently see edit and delete button. these action buttons should not be visible for CLIENT roles. the only button that they should see is the start workout action button 
+	- When a client role is visiting plans page and navigates to plans/[id] page, the client can currently see all action buttons. The client role should NOT see any action buttons as this should be controlled by the PT.

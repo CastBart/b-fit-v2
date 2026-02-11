@@ -1,0 +1,461 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import {
+  ArrowLeft,
+  Dumbbell,
+  CalendarDays,
+  History,
+  UserX,
+  Plus,
+  Eye,
+  Edit,
+  Zap,
+  ZapOff,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  useClientDetail,
+  useClientSessions,
+  useClientWorkouts,
+  useClientPlans,
+} from '@/hooks/queries/useClientDetail'
+import { useActivatePlan, useDeactivatePlan } from '@/hooks/mutations/usePlanMutations'
+import { SessionHistoryCard } from '@/components/features/sessions/SessionHistoryCard'
+import {
+  CompletedSessionDrawer,
+  type CompletedSessionData,
+} from '@/components/features/sessions/CompletedSessionDrawer'
+import { mapSessionToCompletedData } from '@/lib/utils/session-mappers'
+import type { TrainingSessionWithDetails } from '@/types/session'
+import { AssignWorkoutDrawer } from '@/components/features/clients/AssignWorkoutDrawer'
+import { AssignPlanDrawer } from '@/components/features/clients/AssignPlanDrawer'
+import { EndRelationshipDialog } from '@/components/features/clients/EndRelationshipDialog'
+
+export default function ClientDetailPage() {
+  const params = useParams<{ id: string }>()
+  const router = useRouter()
+  const { data: session, status } = useSession()
+  const clientId = params.id
+
+  // Role guard: only PT and ORG can access client detail
+  useEffect(() => {
+    if (
+      status === 'authenticated' &&
+      session?.user?.role !== 'PT' &&
+      session?.user?.role !== 'ORG'
+    ) {
+      router.replace('/dashboard')
+    }
+  }, [status, session, router])
+
+  const [sessionsPage, setSessionsPage] = useState(1)
+  const [assignWorkoutOpen, setAssignWorkoutOpen] = useState(false)
+  const [assignPlanOpen, setAssignPlanOpen] = useState(false)
+  const [endDialogOpen, setEndDialogOpen] = useState(false)
+  const [sessionDrawerOpen, setSessionDrawerOpen] = useState(false)
+  const [selectedSession, setSelectedSession] = useState<CompletedSessionData | null>(null)
+
+  const { data: client, isLoading: clientLoading } = useClientDetail(clientId)
+  const { data: sessionsData, isLoading: sessionsLoading } = useClientSessions(
+    clientId,
+    sessionsPage
+  )
+  const { data: clientWorkouts, isLoading: workoutsLoading } = useClientWorkouts(clientId)
+  const { data: clientPlans, isLoading: plansLoading } = useClientPlans(clientId)
+  const activatePlanMutation = useActivatePlan()
+  const deactivatePlanMutation = useDeactivatePlan()
+
+  const clientName = client?.client?.name ?? client?.client?.email ?? 'Client'
+
+  if (clientLoading) {
+    return (
+      <div className="container mx-auto p-6">
+        <Skeleton className="mb-4 h-8 w-32" />
+        <Skeleton className="mb-2 h-10 w-64" />
+        <Skeleton className="h-5 w-48" />
+      </div>
+    )
+  }
+
+  if (!client) {
+    return (
+      <div className="container mx-auto p-6">
+        <Button variant="ghost" onClick={() => router.push('/clients')}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Clients
+        </Button>
+        <Card className="mt-4">
+          <CardContent className="py-16 text-center">
+            <p className="text-muted-foreground">Client not found or relationship is not active.</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto p-6">
+      {/* Back Button */}
+      <Button variant="ghost" className="mb-4" onClick={() => router.push('/clients')}>
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to Clients
+      </Button>
+
+      {/* Header */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4">
+          {client.client?.image ? (
+            <img
+              src={client.client.image}
+              alt={clientName}
+              className="h-14 w-14 rounded-full object-cover"
+            />
+          ) : (
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary">
+              {clientName[0]?.toUpperCase() ?? '?'}
+            </div>
+          )}
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold">{clientName}</h1>
+              <Badge variant="default" className="capitalize">
+                {client.status.toLowerCase()}
+              </Badge>
+            </div>
+            <p className="text-sm text-muted-foreground">{client.client?.email}</p>
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+          onClick={() => setEndDialogOpen(true)}
+        >
+          <UserX className="mr-2 h-4 w-4" />
+          End Relationship
+        </Button>
+      </div>
+
+      {/* Tabs */}
+      <Tabs defaultValue="sessions">
+        <TabsList>
+          <TabsTrigger value="sessions">
+            <History className="mr-1.5 h-4 w-4" />
+            Sessions
+          </TabsTrigger>
+          <TabsTrigger value="workouts">
+            <Dumbbell className="mr-1.5 h-4 w-4" />
+            Workouts
+          </TabsTrigger>
+          <TabsTrigger value="plans">
+            <CalendarDays className="mr-1.5 h-4 w-4" />
+            Plans
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Sessions Tab */}
+        <TabsContent value="sessions" className="mt-6">
+          {sessionsLoading && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-4 space-y-3">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-full" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {!sessionsLoading && sessionsData?.sessions.length === 0 && (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col items-center py-12">
+                <History className="mb-3 h-10 w-10 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  No sessions recorded yet for this client.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {!sessionsLoading && sessionsData && sessionsData.sessions.length > 0 && (
+            <>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {sessionsData.sessions.map((s) => (
+                  <SessionHistoryCard
+                    key={s.id}
+                    session={s}
+                    onClick={() => {
+                      const mapped = mapSessionToCompletedData(s as TrainingSessionWithDetails)
+                      setSelectedSession(mapped)
+                      setSessionDrawerOpen(true)
+                    }}
+                  />
+                ))}
+              </div>
+
+              {sessionsData.totalPages > 1 && (
+                <div className="mt-6 flex items-center justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    disabled={sessionsPage === 1}
+                    onClick={() => setSessionsPage((p) => p - 1)}
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Page {sessionsData.page} of {sessionsData.totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    disabled={sessionsPage >= sessionsData.totalPages}
+                    onClick={() => setSessionsPage((p) => p + 1)}
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </TabsContent>
+
+        {/* Workouts Tab */}
+        <TabsContent value="workouts" className="mt-6">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-muted-foreground">{clientName}&apos;s workouts</p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/clients/${clientId}/workouts/create`)}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Create Workout
+              </Button>
+              <Button onClick={() => setAssignWorkoutOpen(true)}>
+                <Dumbbell className="mr-2 h-4 w-4" />
+                Assign Workout
+              </Button>
+            </div>
+          </div>
+
+          {workoutsLoading && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-4 space-y-3">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {!workoutsLoading && (!clientWorkouts || clientWorkouts.length === 0) && (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col items-center py-12">
+                <Dumbbell className="mb-3 h-10 w-10 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  No workouts yet. Assign or create a workout for {clientName}.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {!workoutsLoading && clientWorkouts && clientWorkouts.length > 0 && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {clientWorkouts.map((workout) => (
+                <Card key={workout.id} className="group transition-all hover:shadow-md">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-semibold truncate">{workout.name}</h3>
+                      {workout.copiedFrom && (
+                        <Badge variant="secondary" className="ml-2 shrink-0 text-xs">
+                          Assigned
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {workout.exerciseCount} exercise{workout.exerciseCount !== 1 ? 's' : ''}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/workouts/${workout.id}`)}
+                      >
+                        <Eye className="mr-1 h-3 w-3" />
+                        View
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/workouts/builder/${workout.id}`)}
+                      >
+                        <Edit className="mr-1 h-3 w-3" />
+                        Edit
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Plans Tab */}
+        <TabsContent value="plans" className="mt-6">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-muted-foreground">{clientName}&apos;s training plans</p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/clients/${clientId}/plans/create`)}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Create Plan
+              </Button>
+              <Button onClick={() => setAssignPlanOpen(true)}>
+                <CalendarDays className="mr-2 h-4 w-4" />
+                Assign Plan
+              </Button>
+            </div>
+          </div>
+
+          {plansLoading && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-4 space-y-3">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {!plansLoading && (!clientPlans || clientPlans.length === 0) && (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col items-center py-12">
+                <CalendarDays className="mb-3 h-10 w-10 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  No plans yet. Assign or create a plan for {clientName}.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {!plansLoading && clientPlans && clientPlans.length > 0 && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {clientPlans.map((plan) => (
+                <Card key={plan.id} className="group transition-all hover:shadow-md">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-semibold truncate">{plan.name}</h3>
+                      <div className="flex gap-1 ml-2 shrink-0">
+                        {plan.isActive && (
+                          <Badge className="bg-primary text-primary-foreground text-xs">
+                            <Zap className="mr-0.5 h-3 w-3" />
+                            Active
+                          </Badge>
+                        )}
+                        {plan.copiedFrom && (
+                          <Badge variant="secondary" className="text-xs">
+                            Assigned
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      {plan.daysPerWeek} days/week
+                      {plan.durationWeeks > 0 ? ` \u00b7 ${plan.durationWeeks} weeks` : ''}
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {plan.totalExerciseCount} total exercise
+                      {plan.totalExerciseCount !== 1 ? 's' : ''}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/plans/${plan.id}`)}
+                      >
+                        <Eye className="mr-1 h-3 w-3" />
+                        View
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/plans/${plan.id}/builder`)}
+                      >
+                        <Edit className="mr-1 h-3 w-3" />
+                        Edit Days
+                      </Button>
+                      {plan.isActive ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={deactivatePlanMutation.isPending}
+                          onClick={() => deactivatePlanMutation.mutate(plan.id)}
+                        >
+                          <ZapOff className="mr-1 h-3 w-3" />
+                          Deactivate
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={activatePlanMutation.isPending}
+                          onClick={() => activatePlanMutation.mutate(plan.id)}
+                        >
+                          <Zap className="mr-1 h-3 w-3" />
+                          Activate
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+
+      {/* Drawers & Dialogs */}
+      <AssignWorkoutDrawer
+        open={assignWorkoutOpen}
+        onOpenChange={setAssignWorkoutOpen}
+        clientId={clientId}
+        clientName={clientName}
+      />
+      <AssignPlanDrawer
+        open={assignPlanOpen}
+        onOpenChange={setAssignPlanOpen}
+        clientId={clientId}
+        clientName={clientName}
+      />
+      <EndRelationshipDialog
+        open={endDialogOpen}
+        onOpenChange={setEndDialogOpen}
+        relationshipId={client.id}
+        clientName={clientName}
+      />
+      <CompletedSessionDrawer
+        open={sessionDrawerOpen}
+        onOpenChange={setSessionDrawerOpen}
+        data={selectedSession}
+        actionLabel="Close"
+      />
+    </div>
+  )
+}

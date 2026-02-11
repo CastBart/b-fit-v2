@@ -18,6 +18,7 @@ import {
   type SaveSessionPayload,
   type ExerciseHistoryEntry,
 } from '@/types/session'
+import { detectSessionPRs, type SessionPR } from '@/lib/analytics/pr-detection'
 import { revalidatePath } from 'next/cache'
 import { checkAndAdvanceWeek } from '@/server/utils/plan-week-utils'
 
@@ -223,7 +224,6 @@ export async function getSessionById(
     const trainingSession = await prisma.trainingSession.findUnique({
       where: {
         id: validated.sessionId,
-        userId: session.user.id,
       },
       include: {
         exercises: {
@@ -241,6 +241,21 @@ export async function getSessionById(
 
     if (!trainingSession) {
       return { success: false, error: 'Session not found' }
+    }
+
+    // Check access: owner or PT with active relationship
+    if (trainingSession.userId !== session.user.id) {
+      const ptAccess = await prisma.clientRelationship.findFirst({
+        where: {
+          ptId: session.user.id,
+          clientId: trainingSession.userId,
+          status: 'ACTIVE',
+        },
+      })
+
+      if (!ptAccess) {
+        return { success: false, error: 'Session not found' }
+      }
     }
 
     return {
@@ -461,6 +476,38 @@ export async function getExerciseHistory(
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to get exercise history',
+    }
+  }
+}
+
+// ============================================================================
+// GET SESSION PRS (For session completion summary)
+// ============================================================================
+
+/**
+ * Get PRs detected in a specific session.
+ *
+ * @param sessionId - The session to check for PRs
+ * @returns ActionResponse with array of PRs
+ */
+export async function getSessionPRs(sessionId: string): Promise<ActionResponse<SessionPR[]>> {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    const prs = await detectSessionPRs(session.user.id, sessionId)
+
+    return {
+      success: true,
+      data: prs,
+    }
+  } catch (error) {
+    console.error('Failed to get session PRs:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get session PRs',
     }
   }
 }

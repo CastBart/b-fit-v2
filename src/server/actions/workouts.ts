@@ -11,6 +11,7 @@ import { revalidatePath } from 'next/cache'
 import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/db/prisma'
 import { getServerSession } from '@/lib/auth/auth'
+import { requirePermission } from '@/lib/auth/rbac'
 import {
   createWorkoutSchema,
   updateWorkoutSchema,
@@ -32,6 +33,24 @@ import {
   type AddMultipleExercisesToWorkoutInput,
   type SyncWorkoutExercisesInput,
 } from '@/lib/validations/workout'
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+/**
+ * Check if a user can modify a workout (owner OR PT with active relationship)
+ */
+async function canModifyWorkout(
+  workout: { createdById: string },
+  userId: string
+): Promise<boolean> {
+  if (workout.createdById === userId) return true
+  const ptAccess = await prisma.clientRelationship.findFirst({
+    where: { ptId: userId, clientId: workout.createdById, status: 'ACTIVE' },
+  })
+  return !!ptAccess
+}
 
 // ============================================================================
 // Types
@@ -221,7 +240,18 @@ export async function getWorkoutById(
 
     // Check if user has access to this workout
     if (workout.createdById !== session.user.id) {
-      return { success: false, error: 'You do not have access to this workout' }
+      // PT fallback: check if PT has active relationship with workout owner
+      const ptAccess = await prisma.clientRelationship.findFirst({
+        where: {
+          ptId: session.user.id,
+          clientId: workout.createdById,
+          status: 'ACTIVE',
+        },
+      })
+
+      if (!ptAccess) {
+        return { success: false, error: 'You do not have access to this workout' }
+      }
     }
 
     return { success: true, data: workout }
@@ -241,14 +271,9 @@ export async function createWorkout(
   input: CreateWorkoutInput
 ): Promise<ActionResponse<WorkoutBasic>> {
   try {
-    const session = await getServerSession()
-    if (!session?.user?.id) {
-      return { success: false, error: 'Authentication required' }
-    }
-
-    // Check role - only PERSONAL and PT can create workouts
-    if (session.user.role !== 'PERSONAL' && session.user.role !== 'PT') {
-      return { success: false, error: 'Only Personal users and PTs can create workouts' }
+    const auth = await requirePermission('workout:create')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
     }
 
     // Validate input
@@ -258,7 +283,7 @@ export async function createWorkout(
       data: {
         name: validatedInput.name,
         description: validatedInput.description,
-        createdById: session.user.id,
+        createdById: auth.userId,
         isTemplate: true,
       },
       include: {
@@ -309,7 +334,7 @@ export async function updateWorkout(
       return { success: false, error: 'Workout not found' }
     }
 
-    if (workout.createdById !== session.user.id) {
+    if (!(await canModifyWorkout(workout, session.user.id))) {
       return { success: false, error: 'You can only update your own workouts' }
     }
 
@@ -352,7 +377,7 @@ export async function deleteWorkout(workoutId: string): Promise<ActionResponse<v
     // Validate workout ID
     workoutIdSchema.parse({ workoutId })
 
-    // Check if workout exists and user is the owner
+    // Check if workout exists and user has access
     const workout = await prisma.workout.findUnique({
       where: { id: workoutId },
     })
@@ -361,7 +386,7 @@ export async function deleteWorkout(workoutId: string): Promise<ActionResponse<v
       return { success: false, error: 'Workout not found' }
     }
 
-    if (workout.createdById !== session.user.id) {
+    if (!(await canModifyWorkout(workout, session.user.id))) {
       return { success: false, error: 'You can only delete your own workouts' }
     }
 
@@ -399,7 +424,7 @@ export async function addExerciseToWorkout(
     // Validate input
     const validatedInput = addExerciseToWorkoutSchema.parse(input)
 
-    // Check if workout exists and user is the owner
+    // Check if workout exists and user has access
     const workout = await prisma.workout.findUnique({
       where: { id: validatedInput.workoutId },
     })
@@ -408,7 +433,7 @@ export async function addExerciseToWorkout(
       return { success: false, error: 'Workout not found' }
     }
 
-    if (workout.createdById !== session.user.id) {
+    if (!(await canModifyWorkout(workout, session.user.id))) {
       return { success: false, error: 'You can only modify your own workouts' }
     }
 
@@ -467,7 +492,7 @@ export async function addMultipleExercisesToWorkout(
     // Validate input
     const validatedInput = addMultipleExercisesToWorkoutSchema.parse(input)
 
-    // Check if workout exists and user is the owner
+    // Check if workout exists and user has access
     const workout = await prisma.workout.findUnique({
       where: { id: validatedInput.workoutId },
     })
@@ -476,7 +501,7 @@ export async function addMultipleExercisesToWorkout(
       return { success: false, error: 'Workout not found' }
     }
 
-    if (workout.createdById !== session.user.id) {
+    if (!(await canModifyWorkout(workout, session.user.id))) {
       return { success: false, error: 'You can only modify your own workouts' }
     }
 
@@ -552,7 +577,7 @@ export async function updateWorkoutExercise(
       return { success: false, error: 'Workout exercise not found' }
     }
 
-    if (workoutExercise.workout.createdById !== session.user.id) {
+    if (!(await canModifyWorkout(workoutExercise.workout, session.user.id))) {
       return { success: false, error: 'You can only modify your own workouts' }
     }
 
@@ -608,7 +633,7 @@ export async function removeExerciseFromWorkout(
       return { success: false, error: 'Workout exercise not found' }
     }
 
-    if (workoutExercise.workout.createdById !== session.user.id) {
+    if (!(await canModifyWorkout(workoutExercise.workout, session.user.id))) {
       return { success: false, error: 'You can only modify your own workouts' }
     }
 
@@ -652,7 +677,7 @@ export async function reorderExercises(
       return { success: false, error: 'Workout not found' }
     }
 
-    if (workout.createdById !== session.user.id) {
+    if (!(await canModifyWorkout(workout, session.user.id))) {
       return { success: false, error: 'You can only modify your own workouts' }
     }
 
@@ -801,7 +826,7 @@ export async function syncWorkoutExercises(
       return { success: false, error: 'Workout not found' }
     }
 
-    if (workout.createdById !== session.user.id) {
+    if (!(await canModifyWorkout(workout, session.user.id))) {
       return { success: false, error: 'You can only edit your own workouts' }
     }
 
@@ -883,5 +908,173 @@ export async function syncWorkoutExercises(
       return { success: false, error: error.message }
     }
     return { success: false, error: 'Failed to sync workout exercises' }
+  }
+}
+
+// ============================================================================
+// Create Workout for Client (PT-only)
+// ============================================================================
+
+/**
+ * Create a new workout owned by a client (PT creates on behalf of client)
+ */
+export async function createWorkoutForClient(input: {
+  clientId: string
+  name: string
+  description?: string
+}): Promise<ActionResponse<WorkoutBasic>> {
+  try {
+    const auth = await requirePermission('workout:assign')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
+    }
+
+    // Verify active relationship
+    const relationship = await prisma.clientRelationship.findFirst({
+      where: {
+        ptId: auth.userId,
+        clientId: input.clientId,
+        status: 'ACTIVE',
+      },
+    })
+
+    if (!relationship) {
+      return { success: false, error: 'No active relationship with this client' }
+    }
+
+    const workout = await prisma.workout.create({
+      data: {
+        name: input.name,
+        description: input.description,
+        createdById: input.clientId,
+        isTemplate: false,
+      },
+      include: {
+        createdBy: {
+          select: { id: true, name: true, email: true },
+        },
+      },
+    })
+
+    revalidatePath('/workouts')
+    return { success: true, data: workout }
+  } catch (error) {
+    console.error('Error creating workout for client:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to create workout for client' }
+  }
+}
+
+// ============================================================================
+// Get Client Workouts (PT-only)
+// ============================================================================
+
+/**
+ * Get all workouts belonging to a client (for PT viewing)
+ */
+export async function getClientWorkouts(clientId: string): Promise<
+  ActionResponse<
+    Array<
+      Prisma.WorkoutGetPayload<{
+        include: {
+          exercises: { select: { id: true } }
+          copiedFrom: { select: { id: true; name: true } }
+        }
+      }> & { exerciseCount: number }
+    >
+  >
+> {
+  try {
+    const auth = await requirePermission('workout:assign')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
+    }
+
+    // Verify active relationship
+    const relationship = await prisma.clientRelationship.findFirst({
+      where: {
+        ptId: auth.userId,
+        clientId,
+        status: 'ACTIVE',
+      },
+    })
+
+    if (!relationship) {
+      return { success: false, error: 'No active relationship with this client' }
+    }
+
+    const workouts = await prisma.workout.findMany({
+      where: { createdById: clientId },
+      include: {
+        exercises: { select: { id: true } },
+        copiedFrom: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    const transformed = workouts.map((w) => ({
+      ...w,
+      exerciseCount: w.exercises.length,
+    }))
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return { success: true, data: transformed as any }
+  } catch (error) {
+    console.error('Error fetching client workouts:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to fetch client workouts' }
+  }
+}
+
+// ============================================================================
+// Assign Workout to Client (PT-only)
+// ============================================================================
+
+/**
+ * Assign a workout to a client by deep copying it.
+ * Verifies active PT-client relationship before copying.
+ */
+export async function assignWorkoutToClient(input: {
+  workoutId: string
+  clientId: string
+  name?: string
+}): Promise<ActionResponse<WorkoutWithDetails>> {
+  try {
+    const auth = await requirePermission('workout:assign')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
+    }
+
+    // Verify active relationship
+    const relationship = await prisma.clientRelationship.findFirst({
+      where: {
+        ptId: auth.userId,
+        clientId: input.clientId,
+        status: 'ACTIVE',
+      },
+    })
+
+    if (!relationship) {
+      return { success: false, error: 'No active relationship with this client' }
+    }
+
+    // Use existing copyWorkout logic
+    const result = await copyWorkout({
+      originalWorkoutId: input.workoutId,
+      targetUserId: input.clientId,
+      name: input.name,
+    })
+
+    return result
+  } catch (error) {
+    console.error('Error assigning workout to client:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to assign workout to client' }
   }
 }

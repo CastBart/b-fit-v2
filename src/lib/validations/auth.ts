@@ -17,6 +17,7 @@ export const signupSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       'Password must contain at least one uppercase letter, one lowercase letter, and one number'
     ),
+  inviteCode: z.string().optional(),
 })
 
 export type SignupInput = z.infer<typeof signupSchema>

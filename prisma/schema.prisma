@@ -36,6 +36,10 @@ model User {
   // Plan relations
   plans         Plan[]
 
+  // Client relationship relations
+  ptRelationships     ClientRelationship[] @relation("PTRelationships")
+  clientRelationships ClientRelationship[] @relation("ClientRelationships")
+
   @@index([email])
   @@index([role])
   @@index([isActive])
@@ -99,6 +103,13 @@ enum UserRole {
   PT        // Personal Trainer (trains themselves + manages clients)
   CLIENT    // Client (assigned to a PT)
   ORG       // Organisation (manages PTs)
+}
+
+// Client relationship status
+enum RelationshipStatus {
+  PENDING   // Invite sent, not yet accepted
+  ACTIVE    // Client has accepted, relationship is active
+  ENDED     // Relationship has been terminated by either party
 }
 
 // Exercise enums
@@ -519,4 +530,36 @@ model PlanDayCompletion {
   @@index([planWeekId])
   @@index([planDayId])
   @@index([sessionId])
+}
+
+// ============================================================================
+// CLIENT RELATIONSHIPS
+// ============================================================================
+
+model ClientRelationship {
+  id          String             @id @default(cuid())
+
+  // PT who owns the relationship
+  ptId        String
+  pt          User               @relation("PTRelationships", fields: [ptId], references: [id], onDelete: Cascade)
+
+  // Client (null while PENDING - set when invite is accepted)
+  clientId    String?
+  client      User?              @relation("ClientRelationships", fields: [clientId], references: [id], onDelete: Cascade)
+
+  // Relationship state
+  status      RelationshipStatus @default(PENDING)
+  inviteCode  String             @unique
+  clientEmail String?            // Optional: PT can record intended client email
+  expiresAt   DateTime?          // Invite expiration (null = no expiry for legacy)
+
+  // Timestamps
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@unique([ptId, clientId])
+  @@index([ptId])
+  @@index([clientId])
+  @@index([status])
+  @@index([inviteCode])
 }

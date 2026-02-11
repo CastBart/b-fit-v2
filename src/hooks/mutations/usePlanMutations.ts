@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   createPlan,
+  createPlanForClient,
   updatePlan,
   deletePlan,
   syncPlanDayExercises,
@@ -149,6 +150,7 @@ export function useSavePlanAllDays() {
     onSuccess: ({ planId }) => {
       queryClient.invalidateQueries({ queryKey: ['plans'] })
       queryClient.invalidateQueries({ queryKey: ['plan', planId] })
+      queryClient.invalidateQueries({ queryKey: ['clientPlans'] })
       toast.success('Plan saved successfully')
     },
     onError: (error: Error) => {
@@ -200,6 +202,7 @@ export function useActivatePlan() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plans'] })
       queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['clientPlans'] })
       toast.success('Plan activated')
     },
     onError: (error: Error) => {
@@ -226,6 +229,7 @@ export function useDeactivatePlan() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plans'] })
       queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['clientPlans'] })
       toast.success('Plan deactivated')
     },
     onError: (error: Error) => {
@@ -303,6 +307,37 @@ export function useSkipPlanDay() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
       toast.success('Day skipped')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+// ============================================================================
+// Create Plan for Client
+// ============================================================================
+
+export function useCreatePlanForClient() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (input: {
+      clientId: string
+      name: string
+      description?: string
+      daysPerWeek: number
+      durationWeeks: number
+    }) => {
+      const result = await createPlanForClient(input)
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to create plan for client')
+      }
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clientPlans'] })
+      toast.success('Plan created for client')
     },
     onError: (error: Error) => {
       toast.error(error.message)

@@ -11,6 +11,7 @@ import { revalidatePath } from 'next/cache'
 import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/db/prisma'
 import { getServerSession } from '@/lib/auth/auth'
+import { requirePermission } from '@/lib/auth/rbac'
 import {
   createPlanSchema,
   updatePlanSchema,
@@ -35,6 +36,21 @@ import {
 } from '@/lib/validations/plan'
 import type { ActivePlanDashboardResponse } from '@/types/plan'
 import { checkAndAdvanceWeek } from '@/server/utils/plan-week-utils'
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+/**
+ * Check if a user can modify a plan (owner OR PT with active relationship)
+ */
+async function canModifyPlan(plan: { createdById: string }, userId: string): Promise<boolean> {
+  if (plan.createdById === userId) return true
+  const ptAccess = await prisma.clientRelationship.findFirst({
+    where: { ptId: userId, clientId: plan.createdById, status: 'ACTIVE' },
+  })
+  return !!ptAccess
+}
 
 // ============================================================================
 // Types
@@ -204,7 +220,18 @@ export async function getPlanById(planId: string): Promise<ActionResponse<PlanWi
     }
 
     if (plan.createdById !== session.user.id) {
-      return { success: false, error: 'You do not have access to this plan' }
+      // PT fallback: check if PT has active relationship with plan owner
+      const ptAccess = await prisma.clientRelationship.findFirst({
+        where: {
+          ptId: session.user.id,
+          clientId: plan.createdById,
+          status: 'ACTIVE',
+        },
+      })
+
+      if (!ptAccess) {
+        return { success: false, error: 'You do not have access to this plan' }
+      }
     }
 
     return { success: true, data: plan }
@@ -231,13 +258,9 @@ export async function createPlan(input: CreatePlanInput): Promise<
   >
 > {
   try {
-    const session = await getServerSession()
-    if (!session?.user?.id) {
-      return { success: false, error: 'Authentication required' }
-    }
-
-    if (session.user.role !== 'PERSONAL' && session.user.role !== 'PT') {
-      return { success: false, error: 'Only Personal users and PTs can create plans' }
+    const auth = await requirePermission('plan:create')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
     }
 
     const validatedInput = createPlanSchema.parse(input)
@@ -248,7 +271,7 @@ export async function createPlan(input: CreatePlanInput): Promise<
         description: validatedInput.description,
         daysPerWeek: validatedInput.daysPerWeek,
         durationWeeks: validatedInput.durationWeeks,
-        createdById: session.user.id,
+        createdById: auth.userId,
         isTemplate: true,
         days: {
           create: Array.from({ length: validatedInput.daysPerWeek }, (_, i) => ({
@@ -301,7 +324,7 @@ export async function updatePlan(
       return { success: false, error: 'Plan not found' }
     }
 
-    if (plan.createdById !== session.user.id) {
+    if (!(await canModifyPlan(plan, session.user.id))) {
       return { success: false, error: 'You can only update your own plans' }
     }
 
@@ -343,7 +366,7 @@ export async function deletePlan(planId: string): Promise<ActionResponse<void>> 
       return { success: false, error: 'Plan not found' }
     }
 
-    if (plan.createdById !== session.user.id) {
+    if (!(await canModifyPlan(plan, session.user.id))) {
       return { success: false, error: 'You can only delete your own plans' }
     }
 
@@ -387,7 +410,7 @@ export async function updatePlanDay(input: UpdatePlanDayInput): Promise<ActionRe
       return { success: false, error: 'Plan day not found' }
     }
 
-    if (planDay.plan.createdById !== session.user.id) {
+    if (!(await canModifyPlan(planDay.plan, session.user.id))) {
       return { success: false, error: 'You can only modify your own plans' }
     }
 
@@ -434,7 +457,7 @@ export async function syncPlanDayExercises(
       return { success: false, error: 'Plan day not found' }
     }
 
-    if (planDay.plan.createdById !== session.user.id) {
+    if (!(await canModifyPlan(planDay.plan, session.user.id))) {
       return { success: false, error: 'You can only modify your own plans' }
     }
 
@@ -538,7 +561,7 @@ export async function savePlanAllDays(
       return { success: false, error: 'Plan not found' }
     }
 
-    if (plan.createdById !== session.user.id) {
+    if (!(await canModifyPlan(plan, session.user.id))) {
       return { success: false, error: 'You can only modify your own plans' }
     }
 
@@ -660,7 +683,7 @@ export async function copyWorkoutToPlanDay(
       return { success: false, error: 'Plan day not found' }
     }
 
-    if (planDay.plan.createdById !== session.user.id) {
+    if (!(await canModifyPlan(planDay.plan, session.user.id))) {
       return { success: false, error: 'You can only modify your own plans' }
     }
 
@@ -734,14 +757,14 @@ export async function activatePlan(planId: string): Promise<ActionResponse<void>
       return { success: false, error: 'Plan not found' }
     }
 
-    if (plan.createdById !== session.user.id) {
+    if (!(await canModifyPlan(plan, session.user.id))) {
       return { success: false, error: 'You can only activate your own plans' }
     }
 
     await prisma.$transaction(async (tx) => {
-      // Deactivate all user's plans
+      // Deactivate all plans belonging to the plan owner (not necessarily the PT)
       await tx.plan.updateMany({
-        where: { createdById: session.user.id },
+        where: { createdById: plan.createdById },
         data: { isActive: false, activatedAt: null },
       })
       // Activate the target plan
@@ -793,7 +816,7 @@ export async function deactivatePlan(planId: string): Promise<ActionResponse<voi
       return { success: false, error: 'Plan not found' }
     }
 
-    if (plan.createdById !== session.user.id) {
+    if (!(await canModifyPlan(plan, session.user.id))) {
       return { success: false, error: 'You can only deactivate your own plans' }
     }
 
@@ -1082,7 +1105,7 @@ export async function skipPlanDay(input: SkipPlanDayInput): Promise<ActionRespon
       return { success: false, error: 'Plan not found' }
     }
 
-    if (plan.createdById !== session.user.id) {
+    if (!(await canModifyPlan(plan, session.user.id))) {
       return { success: false, error: 'You can only modify your own plans' }
     }
 
@@ -1133,5 +1156,203 @@ export async function skipPlanDay(input: SkipPlanDayInput): Promise<ActionRespon
       return { success: false, error: error.message }
     }
     return { success: false, error: 'Failed to skip plan day' }
+  }
+}
+
+// ============================================================================
+// Create Plan for Client (PT-only)
+// ============================================================================
+
+/**
+ * Create a new plan owned by a client (PT creates on behalf of client)
+ */
+export async function createPlanForClient(input: {
+  clientId: string
+  name: string
+  description?: string
+  daysPerWeek: number
+  durationWeeks: number
+}): Promise<
+  ActionResponse<
+    Prisma.PlanGetPayload<{
+      include: {
+        createdBy: { select: { id: true; name: true; email: true } }
+        days: true
+      }
+    }>
+  >
+> {
+  try {
+    const auth = await requirePermission('plan:assign')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
+    }
+
+    // Verify active relationship
+    const relationship = await prisma.clientRelationship.findFirst({
+      where: {
+        ptId: auth.userId,
+        clientId: input.clientId,
+        status: 'ACTIVE',
+      },
+    })
+
+    if (!relationship) {
+      return { success: false, error: 'No active relationship with this client' }
+    }
+
+    const plan = await prisma.plan.create({
+      data: {
+        name: input.name,
+        description: input.description,
+        daysPerWeek: input.daysPerWeek,
+        durationWeeks: input.durationWeeks,
+        createdById: input.clientId,
+        isTemplate: false,
+        days: {
+          create: Array.from({ length: input.daysPerWeek }, (_, i) => ({
+            dayNumber: i + 1,
+          })),
+        },
+      },
+      include: {
+        createdBy: {
+          select: { id: true, name: true, email: true },
+        },
+        days: {
+          orderBy: { dayNumber: 'asc' },
+        },
+      },
+    })
+
+    revalidatePath('/plans')
+    return { success: true, data: plan }
+  } catch (error) {
+    console.error('Error creating plan for client:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to create plan for client' }
+  }
+}
+
+// ============================================================================
+// Get Client Plans (PT-only)
+// ============================================================================
+
+/**
+ * Get all plans belonging to a client (for PT viewing)
+ */
+export async function getClientPlans(clientId: string): Promise<
+  ActionResponse<
+    Array<
+      Prisma.PlanGetPayload<{
+        include: {
+          days: {
+            include: {
+              exercises: { select: { id: true } }
+            }
+          }
+          copiedFrom: { select: { id: true; name: true } }
+        }
+      }> & { totalExerciseCount: number }
+    >
+  >
+> {
+  try {
+    const auth = await requirePermission('plan:assign')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
+    }
+
+    // Verify active relationship
+    const relationship = await prisma.clientRelationship.findFirst({
+      where: {
+        ptId: auth.userId,
+        clientId,
+        status: 'ACTIVE',
+      },
+    })
+
+    if (!relationship) {
+      return { success: false, error: 'No active relationship with this client' }
+    }
+
+    const plans = await prisma.plan.findMany({
+      where: { createdById: clientId },
+      include: {
+        days: {
+          include: {
+            exercises: { select: { id: true } },
+          },
+          orderBy: { dayNumber: 'asc' },
+        },
+        copiedFrom: { select: { id: true, name: true } },
+      },
+      orderBy: [{ isActive: 'desc' }, { createdAt: 'desc' }],
+    })
+
+    const transformed = plans.map((p) => ({
+      ...p,
+      totalExerciseCount: p.days.reduce((sum, d) => sum + d.exercises.length, 0),
+    }))
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return { success: true, data: transformed as any }
+  } catch (error) {
+    console.error('Error fetching client plans:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to fetch client plans' }
+  }
+}
+
+// ============================================================================
+// Assign Plan to Client (PT-only)
+// ============================================================================
+
+/**
+ * Assign a plan to a client by deep copying it.
+ * Verifies active PT-client relationship before copying.
+ */
+export async function assignPlanToClient(input: {
+  planId: string
+  clientId: string
+  name?: string
+}): Promise<ActionResponse<PlanWithDetails>> {
+  try {
+    const auth = await requirePermission('plan:assign')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
+    }
+
+    // Verify active relationship
+    const relationship = await prisma.clientRelationship.findFirst({
+      where: {
+        ptId: auth.userId,
+        clientId: input.clientId,
+        status: 'ACTIVE',
+      },
+    })
+
+    if (!relationship) {
+      return { success: false, error: 'No active relationship with this client' }
+    }
+
+    // Use existing copyPlan logic
+    const result = await copyPlan({
+      originalPlanId: input.planId,
+      targetUserId: input.clientId,
+      name: input.name,
+    })
+
+    return result
+  } catch (error) {
+    console.error('Error assigning plan to client:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to assign plan to client' }
   }
 }

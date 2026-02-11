@@ -11,6 +11,7 @@ import {
   BarChart3,
   Users,
   Building2,
+  Settings,
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -78,6 +79,12 @@ const navItems: NavItem[] = [
     href: '/trainers',
     icon: Building2,
     roles: ['ORG'],
+  },
+  {
+    title: 'Settings',
+    href: '/settings',
+    icon: Settings,
+    roles: ['PERSONAL', 'PT', 'CLIENT', 'ORG'],
   },
 ]
 

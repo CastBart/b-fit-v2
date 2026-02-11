@@ -39,6 +39,7 @@ import {
 } from '@/store/slices/sessionSlice'
 import { clearSessionBackup } from '@/store/middleware/persistence'
 import { useCompleteSession } from '@/hooks/mutations/useSessionMutations'
+import { getSessionPRs } from '@/server/actions/sessions'
 import { SessionStatus, type SaveSessionPayload } from '@/types/session'
 import { useSessionRecovery } from '@/hooks/useSessionRecovery'
 import { useElapsedSessionTime } from '@/hooks/useElapsedSessionTime'
@@ -207,6 +208,18 @@ export default function SessionPage() {
     }
   }
 
+  // Fetch PRs for a session and merge into drawer data
+  const fetchAndAttachPRs = async (savedSessionId: string, drawerData: CompletedSessionData) => {
+    try {
+      const prResult = await getSessionPRs(savedSessionId)
+      if (prResult.success && prResult.data && prResult.data.length > 0) {
+        drawerData.prs = prResult.data
+      }
+    } catch {
+      // PRs are non-critical; silently skip
+    }
+  }
+
   // Handle complete session from banner
   const handleCompleteSession = async () => {
     try {
@@ -219,6 +232,9 @@ export default function SessionPage() {
 
       // Save to database
       await completeSessionMutation.mutateAsync(payload)
+
+      // Fetch PRs and attach to drawer data
+      await fetchAndAttachPRs(payload.sessionId, drawerData)
 
       // Show the completed session drawer (state will be cleared when drawer closes)
       setCompletedSessionData(drawerData)
@@ -253,9 +269,14 @@ export default function SessionPage() {
   }
 
   // Handle session complete from settings drawer (called after DB save, before state clear)
-  const handleSessionCompleteFromDrawer = () => {
+  const handleSessionCompleteFromDrawer = async () => {
     // Build the drawer data while state is still available
     const drawerData = buildCompletedSessionData()
+
+    // Fetch PRs and attach to drawer data
+    if (sessionId) {
+      await fetchAndAttachPRs(sessionId, drawerData)
+    }
 
     // Show the completed session drawer (state will be cleared when drawer closes)
     setCompletedSessionData(drawerData)

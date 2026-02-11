@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import {
   Drawer,
   DrawerContent,
@@ -40,6 +41,8 @@ export function PlanDayOptionsDrawer({
   onClose,
 }: PlanDayOptionsDrawerProps) {
   const router = useRouter()
+  const { data: authSession } = useSession()
+  const isClient = authSession?.user?.role === 'CLIENT'
   const skipMutation = useSkipPlanDay()
 
   const handleSkip = async () => {
@@ -81,12 +84,14 @@ export function PlanDayOptionsDrawer({
             </Button>
           )}
 
-          {(canStart || canSkip) && <Separator />}
+          {!isClient && (canStart || canSkip) && <Separator />}
 
-          <Button variant="outline" className="w-full" size="lg" onClick={handleEditPlan}>
-            <Pencil className="mr-2 h-5 w-5" />
-            Edit Plan
-          </Button>
+          {!isClient && (
+            <Button variant="outline" className="w-full" size="lg" onClick={handleEditPlan}>
+              <Pencil className="mr-2 h-5 w-5" />
+              Edit Plan
+            </Button>
+          )}
         </div>
       </DrawerContent>
     </Drawer>

@@ -60,10 +60,14 @@ export const authConfig = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session: updateSession }) {
       if (user) {
         token.id = user.id
         token.role = user.role as UserRole
+      }
+      // Handle session.update() calls from client (e.g., after role change)
+      if (trigger === 'update' && updateSession?.role) {
+        token.role = updateSession.role as UserRole
       }
       return token
     },

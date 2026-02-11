@@ -13,8 +13,9 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { ArrowLeft, Save, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FloatingActionButton } from '@/components/ui/floating-action-button'
@@ -27,6 +28,7 @@ import { CreateWorkoutDialog } from '@/components/features/workouts/CreateWorkou
 import { SupersetManagerDrawer } from '@/components/features/workouts/SupersetManagerDrawer'
 import {
   useCreateWorkout,
+  useCreateWorkoutForClient,
   useAddMultipleExercisesToWorkout,
   useSyncWorkoutExercises,
 } from '@/hooks/mutations/useWorkoutMutations'
@@ -54,10 +56,15 @@ interface WorkoutExercise {
 
 interface WorkoutBuilderPageProps {
   editWorkoutId?: string // If provided, edit mode; otherwise create mode
+  forClientId?: string // If provided, creates workout owned by client
 }
 
-export default function WorkoutBuilderPage({ editWorkoutId }: WorkoutBuilderPageProps) {
+export default function WorkoutBuilderPage({
+  editWorkoutId,
+  forClientId,
+}: WorkoutBuilderPageProps) {
   const router = useRouter()
+  const { data: authSession } = useSession()
   // const searchParams = useSearchParams()
   const queryClient = useQueryClient()
 
@@ -81,6 +88,7 @@ export default function WorkoutBuilderPage({ editWorkoutId }: WorkoutBuilderPage
 
   // Mutations
   const createWorkout = useCreateWorkout()
+  const createWorkoutForClientMutation = useCreateWorkoutForClient()
   // const updateWorkout = useUpdateWorkout()
   const addMultipleExercises = useAddMultipleExercisesToWorkout()
   const syncExercises = useSyncWorkoutExercises()
@@ -89,6 +97,17 @@ export default function WorkoutBuilderPage({ editWorkoutId }: WorkoutBuilderPage
   const { data: existingWorkout, isLoading: isLoadingExistingWorkout } = useWorkout(
     isEditMode ? editWorkoutId : undefined
   )
+
+  // Determine if this is a client context (for navigation)
+  const clientContextId = useMemo(() => {
+    if (forClientId) return forClientId
+    if (isEditMode && existingWorkout && authSession?.user?.id) {
+      if (existingWorkout.createdBy.id !== authSession.user.id) {
+        return existingWorkout.createdBy.id
+      }
+    }
+    return null
+  }, [forClientId, isEditMode, existingWorkout, authSession?.user?.id])
 
   // Instantiate SupersetManager
   const supersetManager = new SupersetManager<WorkoutExercise>()
@@ -122,22 +141,27 @@ export default function WorkoutBuilderPage({ editWorkoutId }: WorkoutBuilderPage
 
   // Handle workout creation (create mode only)
   const handleCreateWorkout = async (name: string, description?: string) => {
-    createWorkout.mutate(
-      { name, description },
-      {
-        onSuccess: (data) => {
-          if (!data) return
-          setWorkoutId(data.id)
-          setWorkoutName(name)
-          setWorkoutDescription(description || '')
-          setShowCreateDialog(false)
-          toast.success('Workout created! Now add exercises.')
-        },
-        onError: (_) => {
-          toast.error('Failed to create workout. Please try again.')
-        },
-      }
-    )
+    const onSuccess = (data: { id: string } | undefined) => {
+      if (!data) return
+      setWorkoutId(data.id)
+      setWorkoutName(name)
+      setWorkoutDescription(description || '')
+      setShowCreateDialog(false)
+      toast.success('Workout created! Now add exercises.')
+    }
+
+    const onError = () => {
+      toast.error('Failed to create workout. Please try again.')
+    }
+
+    if (forClientId) {
+      createWorkoutForClientMutation.mutate(
+        { clientId: forClientId, name, description },
+        { onSuccess, onError }
+      )
+    } else {
+      createWorkout.mutate({ name, description }, { onSuccess, onError })
+    }
   }
 
   // Handle exercise selection from library (desktop single-select)
@@ -337,8 +361,7 @@ export default function WorkoutBuilderPage({ editWorkoutId }: WorkoutBuilderPage
         },
         {
           onSuccess: () => {
-            // Navigate to workout detail page
-            router.push(`/workouts/${workoutId}`)
+            router.push(clientContextId ? `/clients/${clientContextId}` : `/workouts/${workoutId}`)
           },
         }
       )
@@ -360,8 +383,7 @@ export default function WorkoutBuilderPage({ editWorkoutId }: WorkoutBuilderPage
         },
         {
           onSuccess: () => {
-            // Navigate to the workouts list page
-            router.push('/workouts')
+            router.push(clientContextId ? `/clients/${clientContextId}` : '/workouts')
           },
         }
       )
@@ -398,7 +420,13 @@ export default function WorkoutBuilderPage({ editWorkoutId }: WorkoutBuilderPage
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.push(isEditMode ? `/workouts/${workoutId}` : '/workouts')}
+              onClick={() => {
+                if (clientContextId) {
+                  router.push(`/clients/${clientContextId}`)
+                } else {
+                  router.push(isEditMode ? `/workouts/${workoutId}` : '/workouts')
+                }
+              }}
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -514,13 +542,13 @@ export default function WorkoutBuilderPage({ editWorkoutId }: WorkoutBuilderPage
           onOpenChange={(nextOpen) => {
             // If user closes the dialog before creating a workout, leave the builder.
             if (!nextOpen && !workoutId) {
-              router.push('/workouts')
+              router.push(forClientId ? `/clients/${forClientId}` : '/workouts')
               return
             }
             setShowCreateDialog(nextOpen)
           }}
           onSubmit={handleCreateWorkout}
-          isLoading={createWorkout.isPending}
+          isLoading={createWorkout.isPending || createWorkoutForClientMutation.isPending}
         />
       )}
     </div>

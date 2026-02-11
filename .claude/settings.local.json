@@ -56,7 +56,9 @@
       "Bash(git checkout:*)",
       "Bash(tasklist)",
       "Bash(cmd /c \"taskkill /PID 5752 /F\")",
-      "Bash(cmd /c:*)"
+      "Bash(cmd /c:*)",
+      "Bash(git stash:*)",
+      "Bash(find:*)"
     ]
   },
   "enabledPlugins": {

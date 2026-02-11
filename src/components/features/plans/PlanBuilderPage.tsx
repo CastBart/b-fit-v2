@@ -8,8 +8,9 @@
 
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { ArrowLeft, Save, Plus, FileDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FloatingActionButton } from '@/components/ui/floating-action-button'
@@ -58,6 +59,7 @@ interface PlanBuilderPageProps {
 
 export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPageProps) {
   const router = useRouter()
+  const { data: authSession } = useSession()
   const queryClient = useQueryClient()
 
   // Fetch plan data
@@ -76,6 +78,14 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
   const [exerciseConfigOpen, setExerciseConfigOpen] = useState(false)
   const [supersetManagerOpen, setSupersetManagerOpen] = useState(false)
   const [copyFromWorkoutOpen, setCopyFromWorkoutOpen] = useState(false)
+
+  // If PT is editing a client's plan, navigate back to client page
+  const clientContextId = useMemo(() => {
+    if (plan && authSession?.user?.id && plan.createdBy.id !== authSession.user.id) {
+      return plan.createdBy.id
+    }
+    return null
+  }, [plan, authSession?.user?.id])
 
   // Superset manager
   const supersetManager = new SupersetManager<WorkoutExercise>()
@@ -430,7 +440,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
       { planId, days: daysPayload },
       {
         onSuccess: () => {
-          router.push(`/plans/${planId}`)
+          router.push(clientContextId ? `/clients/${clientContextId}` : `/plans/${planId}`)
         },
       }
     )
@@ -476,7 +486,13 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
       <div className="border-b bg-background px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => router.push(`/plans/${planId}`)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                router.push(clientContextId ? `/clients/${clientContextId}` : `/plans/${planId}`)
+              }
+            >
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
