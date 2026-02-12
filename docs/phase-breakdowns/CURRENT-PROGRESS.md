@@ -2,13 +2,37 @@
 
 **Last Updated**: 2026-02-12
 **Current Phase**: Phase 4 - Payments & Subscriptions
-**Recently Completed**: Chunk 2 - Stripe Products & Pricing Page
-**Next Tasks**: Chunk 3 - Checkout Flow
+**Recently Completed**: Chunk 3 - Checkout Flow
+**Next Tasks**: Chunk 4 - Webhooks
 **Branch**: `feature/payments`
 
 ---
 
 ## Phase 4: Payments & Subscriptions (In Progress)
+
+### Chunk 3: Checkout Flow ✅
+
+- **Checkout server action**: `src/server/actions/stripe.ts` — `createCheckoutSession()` gets/creates Stripe customer, blocks existing ACTIVE/TRIALING subscriptions, creates checkout with 14-day trial, stores `userId` in metadata
+- **Checkout mutation hook**: `src/hooks/mutations/useSubscriptionMutations.ts` — `useCreateCheckout()` calls server action and redirects to Stripe Checkout URL on success
+- **Pricing page wiring**: PricingCard now accepts `onSubscribe` and `isLoading` props; pricing page uses `useCreateCheckout` to initiate checkout; unauthenticated users redirected to `/login?callbackUrl=/pricing`
+- **Checkout feedback**: Dashboard detects `?checkout=success` and shows success toast; pricing page detects `?checkout=canceled` and shows info toast
+- **Suspense fix**: Extracted `PricingContent` client component, wrapped with `Suspense` in page (required for `useSearchParams` in static pages)
+
+### New Files
+
+```
+src/server/actions/stripe.ts                             - Checkout server action
+src/hooks/mutations/useSubscriptionMutations.ts          - Checkout mutation hook
+src/components/features/pricing/PricingContent.tsx       - Pricing page client content
+```
+
+### Modified Files
+
+```
+src/components/features/pricing/PricingCard.tsx          - Added onSubscribe/isLoading props
+src/app/pricing/page.tsx                                 - Server component with Suspense wrapper
+src/app/(dashboard)/dashboard/page.tsx                   - Checkout success toast
+```
 
 ### Chunk 2: Stripe Products & Pricing Page ✅
 

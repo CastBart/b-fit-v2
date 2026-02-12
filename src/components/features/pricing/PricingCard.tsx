@@ -30,6 +30,8 @@ interface PricingCardProps {
   isCurrentTier: boolean
   isPopular?: boolean
   isAuthenticated: boolean
+  onSubscribe?: () => void
+  isLoading?: boolean
 }
 
 export function PricingCard({
@@ -38,6 +40,8 @@ export function PricingCard({
   isCurrentTier,
   isPopular,
   isAuthenticated,
+  onSubscribe,
+  isLoading,
 }: PricingCardProps) {
   const price = billingPeriod === 'monthly' ? tier.monthlyPrice : tier.annualPrice
   const periodLabel = billingPeriod === 'monthly' ? '/mo' : '/yr'
@@ -72,7 +76,9 @@ export function PricingCard({
             Current Plan
           </Button>
         ) : isAuthenticated ? (
-          <Button className="w-full">Subscribe</Button>
+          <Button className="w-full" onClick={onSubscribe} disabled={isLoading}>
+            {isLoading ? 'Redirecting...' : 'Subscribe'}
+          </Button>
         ) : (
           <Button asChild className="w-full">
             <Link href="/login?callbackUrl=/pricing">Subscribe</Link>

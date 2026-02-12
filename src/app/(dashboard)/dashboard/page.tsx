@@ -1,7 +1,10 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -110,7 +113,14 @@ function ClientsQuickCard() {
 
 export default function DashboardPage() {
   const { data: session } = useSession()
+  const searchParams = useSearchParams()
   const userRole = session?.user?.role
+
+  useEffect(() => {
+    if (searchParams.get('checkout') === 'success') {
+      toast.success('Subscription activated! Welcome to your new plan.')
+    }
+  }, [searchParams])
 
   return (
     <div className="space-y-6">

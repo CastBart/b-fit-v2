@@ -89,37 +89,37 @@
 
 ---
 
-## Chunk 3: Checkout Flow
+## Chunk 3: Checkout Flow ✅
 
 **Priority**: Critical
-**Status**: Not Started
+**Status**: Complete
 
 ### Sub-tasks
 
 1. **Create checkout server action**
-   - [ ] `createCheckoutSession(priceId)` in `src/server/actions/stripe.ts`
-   - [ ] Get or create Stripe customer (save `stripeCustomerId` on User)
-   - [ ] Block if user already has ACTIVE/TRIALING subscription
-   - [ ] 14-day trial via `subscription_data.trial_period_days: 14`
-   - [ ] Store `userId` in metadata
+   - [x] `createCheckoutSession(priceId)` in `src/server/actions/stripe.ts`
+   - [x] Get or create Stripe customer (save `stripeCustomerId` on User)
+   - [x] Block if user already has ACTIVE/TRIALING subscription
+   - [x] 14-day trial via `subscription_data.trial_period_days: 14`
+   - [x] Store `userId` in metadata
 
 2. **Create checkout mutation hook**
-   - [ ] `useCreateCheckout()` in `src/hooks/mutations/useSubscriptionMutations.ts`
+   - [x] `useCreateCheckout()` in `src/hooks/mutations/useSubscriptionMutations.ts`
 
 3. **Wire up pricing page**
-   - [ ] Connect PricingCard Subscribe to `useCreateCheckout`
-   - [ ] If not authenticated: redirect to `/login?callbackUrl=/pricing`
+   - [x] Connect PricingCard Subscribe to `useCreateCheckout`
+   - [x] If not authenticated: redirect to `/login?callbackUrl=/pricing`
 
 4. **Handle checkout success/cancel**
-   - [ ] Dashboard: detect `?checkout=success`, show toast
-   - [ ] Pricing: detect `?checkout=canceled`, show toast
+   - [x] Dashboard: detect `?checkout=success`, show toast
+   - [x] Pricing: detect `?checkout=canceled`, show toast
 
 **Acceptance Criteria**:
 
-- Subscribe while logged in → Stripe Checkout page
-- Complete with test card → dashboard with success toast
-- Cancel on Stripe → pricing page with info toast
-- Existing subscription → error message
+- [x] Subscribe while logged in → Stripe Checkout page
+- [x] Complete with test card → dashboard with success toast
+- [x] Cancel on Stripe → pricing page with info toast
+- [x] Existing subscription → error message
 
 ---
 
