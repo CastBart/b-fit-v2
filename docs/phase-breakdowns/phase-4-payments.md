@@ -123,34 +123,34 @@
 
 ---
 
-## Chunk 4: Webhooks
+## Chunk 4: Webhooks ✅
 
 **Priority**: Critical
-**Status**: Not Started
+**Status**: Complete
 
 ### Sub-tasks
 
 1. **Create webhook route**
-   - [ ] `src/app/api/webhooks/stripe/route.ts`
-   - [ ] Read raw body with `req.text()`, verify signature
-   - [ ] Handle events (all idempotent with upsert):
+   - [x] `src/app/api/webhooks/stripe/route.ts`
+   - [x] Read raw body with `req.text()`, verify signature
+   - [x] Handle events (all idempotent with upsert):
      - `checkout.session.completed` — upsert Subscription, update User tier/capacity/role
      - `customer.subscription.updated` — update status/tier/capacity/periodEnd
      - `customer.subscription.deleted` — mark CANCELED, clear tier/capacity
      - `invoice.payment_failed` — set PAST_DUE status
 
 2. **Role upgrade logic**
-   - [ ] When PERSONAL user subscribes to PT tier, upgrade `role` to PT
+   - [x] When PERSONAL user subscribes to PT tier, upgrade `role` to PT
 
 3. **Local testing setup**
-   - [ ] `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
+   - [x] `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
 
 **Acceptance Criteria**:
 
-- Checkout completion creates Subscription record + updates User
-- `stripe trigger customer.subscription.updated` → DB updated
-- `stripe trigger customer.subscription.deleted` → CANCELED
-- `stripe trigger invoice.payment_failed` → PAST_DUE
+- [x] Checkout completion creates Subscription record + updates User
+- [x] `stripe trigger customer.subscription.updated` → DB updated
+- [x] `stripe trigger customer.subscription.deleted` → CANCELED
+- [x] `stripe trigger invoice.payment_failed` → PAST_DUE
 
 ---
 

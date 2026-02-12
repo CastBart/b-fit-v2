@@ -2,13 +2,31 @@
 
 **Last Updated**: 2026-02-12
 **Current Phase**: Phase 4 - Payments & Subscriptions
-**Recently Completed**: Chunk 3 - Checkout Flow
-**Next Tasks**: Chunk 4 - Webhooks
+**Recently Completed**: Chunk 4 - Webhooks
+**Next Tasks**: Chunk 5 - Subscription Management (Portal & Billing Page)
 **Branch**: `feature/payments`
 
 ---
 
 ## Phase 4: Payments & Subscriptions (In Progress)
+
+### Chunk 4: Webhooks ✅
+
+- **Webhook route**: `src/app/api/webhooks/stripe/route.ts` — signature verification with `constructEvent`, raw body via `req.text()`
+- **Events handled**:
+  - `checkout.session.completed` — upserts Subscription record, updates User tier/capacity, upgrades PERSONAL→PT role
+  - `customer.subscription.updated` — syncs status, tier, capacity, period end, cancellation state
+  - `customer.subscription.deleted` — marks CANCELED, clears tier/capacity
+  - `invoice.payment_failed` — sets PAST_DUE status
+- **Stripe SDK v20 adaptations**: `current_period_end` read from `items.data[0]`, `invoice.subscription` accessed via `parent.subscription_details`
+- **All handlers idempotent** using upsert and updateMany patterns
+- **Local testing**: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
+
+### New Files
+
+```
+src/app/api/webhooks/stripe/route.ts  - Stripe webhook endpoint
+```
 
 ### Chunk 3: Checkout Flow ✅
 
