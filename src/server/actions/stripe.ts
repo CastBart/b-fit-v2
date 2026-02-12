@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db/prisma'
 import { getServerSession } from '@/lib/auth/auth'
 import { stripe } from '@/lib/stripe/stripe'
 import { createCheckoutSchema, type CreateCheckoutInput } from '@/lib/validations/subscription'
+import type { SubscriptionInfo } from '@/types/subscription'
 
 // ============================================================================
 // Types
@@ -104,5 +105,102 @@ export async function createCheckoutSession(
   } catch (error) {
     console.error('createCheckoutSession error:', error)
     return { success: false, error: 'Failed to create checkout session' }
+  }
+}
+
+// ============================================================================
+// Portal
+// ============================================================================
+
+/**
+ * Create a Stripe Customer Portal session for managing billing.
+ */
+export async function createPortalSession(): Promise<ActionResponse<{ url: string }>> {
+  try {
+    const session = await getServerSession()
+    if (!session?.user?.id) {
+      return { success: false, error: 'You must be logged in' }
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { stripeCustomerId: true },
+    })
+
+    if (!user?.stripeCustomerId) {
+      return { success: false, error: 'No billing account found' }
+    }
+
+    const headersList = await headers()
+    const origin = headersList.get('origin') || 'http://localhost:3000'
+
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: user.stripeCustomerId,
+      return_url: `${origin}/settings/billing`,
+    })
+
+    return { success: true, data: { url: portalSession.url } }
+  } catch (error) {
+    console.error('createPortalSession error:', error)
+    return { success: false, error: 'Failed to open billing portal' }
+  }
+}
+
+// ============================================================================
+// Subscription Query
+// ============================================================================
+
+/**
+ * Get the current user's subscription info with client usage.
+ */
+export async function getSubscription(): Promise<ActionResponse<SubscriptionInfo | null>> {
+  try {
+    const session = await getServerSession()
+    if (!session?.user?.id) {
+      return { success: false, error: 'You must be logged in' }
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        subscriptionTier: true,
+        clientCapacity: true,
+        subscription: {
+          select: {
+            id: true,
+            status: true,
+            stripeCurrentPeriodEnd: true,
+            cancelAtPeriodEnd: true,
+          },
+        },
+        _count: {
+          select: {
+            ptRelationships: {
+              where: { status: 'ACTIVE' },
+            },
+          },
+        },
+      },
+    })
+
+    if (!user?.subscription || !user.subscriptionTier) {
+      return { success: true, data: null }
+    }
+
+    return {
+      success: true,
+      data: {
+        id: user.subscription.id,
+        status: user.subscription.status,
+        tier: user.subscriptionTier,
+        currentPeriodEnd: user.subscription.stripeCurrentPeriodEnd,
+        cancelAtPeriodEnd: user.subscription.cancelAtPeriodEnd,
+        clientCapacity: user.clientCapacity,
+        clientCount: user._count.ptRelationships,
+      },
+    }
+  } catch (error) {
+    console.error('getSubscription error:', error)
+    return { success: false, error: 'Failed to fetch subscription' }
   }
 }

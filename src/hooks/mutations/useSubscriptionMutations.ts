@@ -4,7 +4,7 @@
 
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { createCheckoutSession } from '@/server/actions/stripe'
+import { createCheckoutSession, createPortalSession } from '@/server/actions/stripe'
 import type { CreateCheckoutInput } from '@/lib/validations/subscription'
 
 // ============================================================================
@@ -22,6 +22,28 @@ export function useCreateCheckout() {
     },
     onSuccess: (data) => {
       // Redirect to Stripe Checkout
+      window.location.href = data.url
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+// ============================================================================
+// Manage Billing (Portal)
+// ============================================================================
+
+export function useManageBilling() {
+  return useMutation({
+    mutationFn: async () => {
+      const result = await createPortalSession()
+      if (!result.success || !result.data) {
+        throw new Error(result.error || 'Failed to open billing portal')
+      }
+      return result.data
+    },
+    onSuccess: (data) => {
       window.location.href = data.url
     },
     onError: (error: Error) => {

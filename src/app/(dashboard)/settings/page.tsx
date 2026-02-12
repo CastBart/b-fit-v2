@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
-import { Settings, User, Shield, ArrowUpCircle } from 'lucide-react'
+import Link from 'next/link'
+import { Settings, User, Shield, ArrowUpCircle, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -202,6 +203,24 @@ export default function SettingsPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Billing Card */}
+        {(profile.role === 'PT' || profile.role === 'PERSONAL') && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Billing
+              </CardTitle>
+              <CardDescription>Manage your subscription and payment details</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild variant="outline">
+                <Link href="/settings/billing">View Billing</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Upgrade Confirmation Dialog */}

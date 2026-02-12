@@ -2,13 +2,38 @@
 
 **Last Updated**: 2026-02-12
 **Current Phase**: Phase 4 - Payments & Subscriptions
-**Recently Completed**: Chunk 4 - Webhooks
-**Next Tasks**: Chunk 5 - Subscription Management (Portal & Billing Page)
+**Recently Completed**: Chunk 5 - Subscription Management (Portal & Billing Page)
+**Next Tasks**: Chunk 6 - Guards, Capacity Enforcement & Upgrade Flow Migration
 **Branch**: `feature/payments`
 
 ---
 
 ## Phase 4: Payments & Subscriptions (In Progress)
+
+### Chunk 5: Subscription Management (Portal & Billing Page) ✅
+
+- **Server actions**: Added `createPortalSession()` (opens Stripe Customer Portal) and `getSubscription()` (returns subscription info with active client count) to `src/server/actions/stripe.ts`
+- **Query hook**: `src/hooks/queries/useSubscription.ts` — `useSubscription()` with 5-min staleTime
+- **Mutation hook**: Added `useManageBilling()` to `src/hooks/mutations/useSubscriptionMutations.ts` — redirects to Stripe portal
+- **BillingInfo component**: `src/components/features/billing/BillingInfo.tsx` — shows tier name, status badge, period end, client usage bar, "Manage Billing" button; "No subscription" state links to /pricing
+- **Billing page**: `src/app/(dashboard)/settings/billing/page.tsx` — back link + BillingInfo
+- **Settings page**: Added billing card with "View Billing" link for PT and PERSONAL roles
+
+### New Files
+
+```
+src/hooks/queries/useSubscription.ts                     - Subscription query hook
+src/components/features/billing/BillingInfo.tsx           - Billing info card component
+src/app/(dashboard)/settings/billing/page.tsx             - Billing settings page
+```
+
+### Modified Files
+
+```
+src/server/actions/stripe.ts                             - Added portal + subscription actions
+src/hooks/mutations/useSubscriptionMutations.ts          - Added useManageBilling
+src/app/(dashboard)/settings/page.tsx                    - Added billing card
+```
 
 ### Chunk 4: Webhooks ✅
 

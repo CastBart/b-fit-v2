@@ -154,42 +154,42 @@
 
 ---
 
-## Chunk 5: Subscription Management (Portal & Billing Page)
+## Chunk 5: Subscription Management (Portal & Billing Page) ✅
 
 **Priority**: High
-**Status**: Not Started
+**Status**: Complete
 
 ### Sub-tasks
 
 1. **Configure Stripe Customer Portal (manual)**
-   - [ ] Enable: update payment method, view invoices, cancel at period end
-   - [ ] Disable: plan switching between products
+   - [x] Enable: update payment method, view invoices, cancel at period end
+   - [x] Disable: plan switching between products
 
 2. **Add server actions**
-   - [ ] `createPortalSession()` in stripe.ts — returns portal URL
-   - [ ] `getSubscription()` in stripe.ts — returns subscription info with client count
+   - [x] `createPortalSession()` in stripe.ts — returns portal URL
+   - [x] `getSubscription()` in stripe.ts — returns subscription info with client count
 
 3. **Create subscription query hook**
-   - [ ] `useSubscription()` in `src/hooks/queries/useSubscription.ts`
+   - [x] `useSubscription()` in `src/hooks/queries/useSubscription.ts`
 
 4. **Create BillingInfo component**
-   - [ ] `src/components/features/billing/BillingInfo.tsx` — plan display, usage bar, portal button
+   - [x] `src/components/features/billing/BillingInfo.tsx` — plan display, usage bar, portal button
 
 5. **Create billing page**
-   - [ ] `src/app/(dashboard)/settings/billing/page.tsx`
+   - [x] `src/app/(dashboard)/settings/billing/page.tsx`
 
 6. **Add portal mutation hook**
-   - [ ] `useManageBilling()` in subscription mutations
+   - [x] `useManageBilling()` in subscription mutations
 
 7. **Add billing card to settings page**
-   - [ ] Update `src/app/(dashboard)/settings/page.tsx`
+   - [x] Update `src/app/(dashboard)/settings/page.tsx`
 
 **Acceptance Criteria**:
 
-- `/settings/billing` shows subscription info or "No subscription" prompt
-- "Manage Billing" → Stripe Customer Portal → returns to billing page
-- Trial status shows correct end date
-- Client usage display accurate
+- [x] `/settings/billing` shows subscription info or "No subscription" prompt
+- [x] "Manage Billing" → Stripe Customer Portal → returns to billing page
+- [x] Trial status shows correct end date
+- [x] Client usage display accurate
 
 ---
 
