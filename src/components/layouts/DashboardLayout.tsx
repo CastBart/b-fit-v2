@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Navbar } from './Navbar'
 import { Sidebar } from './Sidebar'
+import { SubscriptionStatusBanner } from '@/components/features/billing/SubscriptionStatusBanner'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -23,7 +24,10 @@ export function DashboardLayout({ children, userRole = 'PERSONAL' }: DashboardLa
 
         {/* Main Content */}
         <main className="flex-1 min-w-0 p-2">
-          <div className="mx-auto ">{children}</div>
+          <div className="mx-auto ">
+            <SubscriptionStatusBanner />
+            {children}
+          </div>
         </main>
       </div>
     </div>

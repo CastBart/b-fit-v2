@@ -256,41 +256,41 @@
 
 ---
 
-## Chunk 8: Polish (Banners, Trial Display, Cleanup)
+## Chunk 8: Polish (Banners, Trial Display, Cleanup) ✅
 
 **Priority**: Medium
-**Status**: Not Started
+**Status**: Complete
 
 ### Sub-tasks
 
 1. **Create SubscriptionStatusBanner**
-   - [ ] `src/components/features/billing/SubscriptionStatusBanner.tsx`
-   - [ ] TRIALING: "X days remaining" info banner
-   - [ ] PAST_DUE: "Payment failed" destructive banner
-   - [ ] CANCELED: "Access until [date]" warning banner
-   - [ ] PT + no subscription: "Subscribe to manage clients" banner
+   - [x] `src/components/features/billing/SubscriptionStatusBanner.tsx`
+   - [x] TRIALING: "X days remaining" info banner with "Manage Billing" link
+   - [x] PAST_DUE: "Payment failed" destructive banner with "Update Payment" link
+   - [x] CANCELED: "Access until [date]" warning banner with "Resubscribe" link
+   - [x] PT + no subscription: "Subscribe to manage clients" banner with "View Plans" link
 
 2. **Add banner to dashboard layout**
-   - [ ] Fetch subscription data in `src/app/(dashboard)/layout.tsx`
-   - [ ] Pass through `DashboardLayout` → render banner above content
+   - [x] SubscriptionStatusBanner self-fetches via `useSubscription` hook (React Query deduplicates)
+   - [x] Rendered above content in `DashboardLayout`
 
 3. **Sidebar subscription info**
-   - [ ] Add tier name / "Trial: X days" badge below role badge in Sidebar
+   - [x] Added `SubscriptionBadge` component to Sidebar — shows tier name and "Trial: Xd" badge for trialing users below role badge (PT only)
 
 4. **Checkout success toast**
-   - [ ] Dashboard page detects `?checkout=success` param
+   - [x] Already implemented in Chunk 3 — dashboard page detects `?checkout=success` param
 
 5. **Update documentation**
-   - [ ] Update CURRENT-PROGRESS.md
-   - [ ] Mark phase-4 tasks complete
+   - [x] Update CURRENT-PROGRESS.md
+   - [x] Mark phase-4 tasks complete
 
 **Acceptance Criteria**:
 
-- Trial banner shows with correct days remaining
-- PAST_DUE banner with payment method link
-- Canceled banner with period end date
-- Existing PT without subscription sees subscribe banner
-- Sidebar shows tier/trial info
+- [x] Trial banner shows with correct days remaining
+- [x] PAST_DUE banner with payment method link
+- [x] Canceled banner with period end date
+- [x] Existing PT without subscription sees subscribe banner
+- [x] Sidebar shows tier/trial info
 
 ---
 
@@ -298,22 +298,22 @@
 
 ### Stripe Integration
 
-- [ ] Stripe SDK installed and configured
-- [ ] Database migration with Subscription model and User fields
-- [ ] Products and prices created in Stripe Dashboard
-- [ ] Checkout flow with 14-day free trial
-- [ ] Webhook endpoint handling all lifecycle events
+- [x] Stripe SDK installed and configured
+- [x] Database migration with Subscription model and User fields
+- [x] Products and prices created in Stripe Dashboard
+- [x] Checkout flow with 14-day free trial
+- [x] Webhook endpoint handling all lifecycle events
 
 ### Subscription Management
 
-- [ ] Customer portal integrated
-- [ ] Billing settings page
-- [ ] Subscription status checks on client invites
-- [ ] Client capacity enforcement
-- [ ] Auto-upgrade logic with confirmation
-- [ ] Free upgrade flow migrated to pricing page
-- [ ] Status banners (trial, past_due, canceled)
-- [ ] Documentation updated
+- [x] Customer portal integrated
+- [x] Billing settings page
+- [x] Subscription status checks on client invites
+- [x] Client capacity enforcement
+- [x] Auto-upgrade logic with confirmation
+- [x] Free upgrade flow migrated to pricing page
+- [x] Status banners (trial, past_due, canceled)
+- [x] Documentation updated
 
 ---
 

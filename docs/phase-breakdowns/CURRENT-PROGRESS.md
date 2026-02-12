@@ -1,14 +1,35 @@
 # B-Fit Project - Current Progress
 
 **Last Updated**: 2026-02-12
-**Current Phase**: Phase 4 - Payments & Subscriptions
-**Recently Completed**: Chunk 7 - Auto-Upgrade
-**Next Tasks**: Chunk 8 - Polish (Banners, Trial Display, Cleanup)
+**Current Phase**: Phase 4 - Payments & Subscriptions (Complete)
+**Recently Completed**: Chunk 8 - Polish (Banners, Trial Display, Cleanup)
+**Next Tasks**: Phase 5 - Advanced Features
 **Branch**: `feature/payments`
 
 ---
 
-## Phase 4: Payments & Subscriptions (In Progress)
+## Phase 4: Payments & Subscriptions (Complete)
+
+### Chunk 8: Polish (Banners, Trial Display, Cleanup) ✅
+
+- **SubscriptionStatusBanner**: `src/components/features/billing/SubscriptionStatusBanner.tsx` — self-fetching client component with banners for TRIALING (days remaining), PAST_DUE (payment failed), CANCELED (access until date), and PT without subscription (subscribe prompt)
+- **Dashboard layout**: Banner rendered above page content in `DashboardLayout`, uses `useSubscription` hook (React Query deduplicates)
+- **Sidebar tier info**: Added `SubscriptionBadge` component below role badge — shows tier name and "Trial: Xd" badge for PT users
+- **Alert component**: Added shadcn `alert.tsx` UI component
+
+### New Files
+
+```
+src/components/features/billing/SubscriptionStatusBanner.tsx - Subscription status banners
+src/components/ui/alert.tsx                                  - shadcn Alert component
+```
+
+### Modified Files
+
+```
+src/components/layouts/DashboardLayout.tsx                - Added SubscriptionStatusBanner
+src/components/layouts/Sidebar.tsx                        - Added SubscriptionBadge with tier info
+```
 
 ### Chunk 7: Auto-Upgrade ✅
 
