@@ -2,13 +2,36 @@
 
 **Last Updated**: 2026-02-12
 **Current Phase**: Phase 4 - Payments & Subscriptions
-**Recently Completed**: Chunk 5 - Subscription Management (Portal & Billing Page)
-**Next Tasks**: Chunk 6 - Guards, Capacity Enforcement & Upgrade Flow Migration
+**Recently Completed**: Chunk 6 - Guards, Capacity Enforcement & Upgrade Flow Migration
+**Next Tasks**: Chunk 7 - Auto-Upgrade
 **Branch**: `feature/payments`
 
 ---
 
 ## Phase 4: Payments & Subscriptions (In Progress)
+
+### Chunk 6: Guards, Capacity Enforcement & Upgrade Flow Migration ✅
+
+- **Subscription check helpers**: `src/lib/stripe/subscription.ts` — `checkActiveSubscription()` checks ACTIVE/TRIALING, `checkClientCapacity()` counts ACTIVE+PENDING relationships against capacity
+- **Invite guards**: `inviteClient()` in `src/server/actions/clients.ts` now checks subscription status and capacity before creating invites
+- **Deprecated free upgrade**: `upgradeToPT()` in users.ts now returns error directing to /pricing
+- **Removed `useUpgradeToPT`** from `src/hooks/mutations/useUserMutations.ts`
+- **Settings page**: Removed upgrade dialog and free upgrade button, replaced with "View Plans" link to /pricing for PERSONAL users
+
+### New Files
+
+```
+src/lib/stripe/subscription.ts                           - Subscription check helpers
+```
+
+### Modified Files
+
+```
+src/server/actions/clients.ts                            - Added subscription + capacity guards
+src/server/actions/users.ts                              - Deprecated upgradeToPT
+src/hooks/mutations/useUserMutations.ts                  - Removed useUpgradeToPT
+src/app/(dashboard)/settings/page.tsx                    - Replaced upgrade dialog with View Plans
+```
 
 ### Chunk 5: Subscription Management (Portal & Billing Page) ✅
 

@@ -104,45 +104,12 @@ export async function updateUserProfile(
 // Upgrade to PT
 // ============================================================================
 
+/**
+ * @deprecated Free upgrade removed. PT upgrade now requires a subscription via /pricing.
+ */
 export async function upgradeToPT(): Promise<ActionResponse> {
-  try {
-    const session = await getServerSession()
-    if (!session?.user?.id) {
-      return { success: false, error: 'Authentication required' }
-    }
-
-    // Only PERSONAL users can upgrade to PT
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { role: true },
-    })
-
-    if (!user) {
-      return { success: false, error: 'User not found' }
-    }
-
-    if (user.role !== 'PERSONAL') {
-      return {
-        success: false,
-        error:
-          user.role === 'PT'
-            ? 'You are already a Personal Trainer'
-            : 'Only Personal users can upgrade to Personal Trainer',
-      }
-    }
-
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: { role: 'PT' },
-    })
-
-    revalidatePath('/')
-    return { success: true }
-  } catch (error) {
-    console.error('Failed to upgrade to PT:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to upgrade to Personal Trainer',
-    }
+  return {
+    success: false,
+    error: 'Free PT upgrade is no longer available. Please subscribe to a PT plan at /pricing.',
   }
 }

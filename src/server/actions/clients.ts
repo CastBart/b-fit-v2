@@ -18,6 +18,7 @@ import {
 } from '@/lib/validations/client'
 import type { ClientRelationshipWithClient, ClientListItem, InvitationView } from '@/types/client'
 import type { TrainingSessionWithDetails } from '@/types/session'
+import { checkActiveSubscription, checkClientCapacity } from '@/lib/stripe/subscription'
 
 // ============================================================================
 // Types
@@ -237,6 +238,24 @@ export async function inviteClient(
     const auth = await requireRole('PT')
     if (!auth.success) {
       return { success: false, error: auth.error }
+    }
+
+    // Check subscription is active
+    const { hasSubscription } = await checkActiveSubscription(auth.userId)
+    if (!hasSubscription) {
+      return {
+        success: false,
+        error: 'An active subscription is required to invite clients. Visit /pricing to subscribe.',
+      }
+    }
+
+    // Check client capacity
+    const { atCapacity, currentCount, capacity } = await checkClientCapacity(auth.userId)
+    if (atCapacity) {
+      return {
+        success: false,
+        error: `You have reached your client capacity (${currentCount}/${capacity}). Upgrade your plan to add more clients.`,
+      }
     }
 
     const validated = input ? inviteClientSchema.parse(input) : {}

@@ -193,35 +193,35 @@
 
 ---
 
-## Chunk 6: Guards, Capacity Enforcement & Upgrade Flow Migration
+## Chunk 6: Guards, Capacity Enforcement & Upgrade Flow Migration ✅
 
 **Priority**: High
-**Status**: Not Started
+**Status**: Complete
 
 ### Sub-tasks
 
 1. **Create subscription check helpers**
-   - [ ] `src/lib/stripe/subscription.ts`
-   - [ ] `checkActiveSubscription(userId)` — checks ACTIVE or TRIALING
-   - [ ] `checkClientCapacity(userId)` — counts ACTIVE + PENDING relationships
+   - [x] `src/lib/stripe/subscription.ts`
+   - [x] `checkActiveSubscription(userId)` — checks ACTIVE or TRIALING
+   - [x] `checkClientCapacity(userId)` — counts ACTIVE + PENDING relationships
 
 2. **Add capacity check to inviteClient**
-   - [ ] Modify `src/server/actions/clients.ts` — check subscription + capacity before invite
+   - [x] Modify `src/server/actions/clients.ts` — check subscription + capacity before invite
 
 3. **Deprecate upgradeToPT**
-   - [ ] Change `upgradeToPT()` in users.ts to return error directing to /pricing
-   - [ ] Expand `getUserProfile()` to include subscription data
+   - [x] Change `upgradeToPT()` in users.ts to return error directing to /pricing
+   - [x] getUserProfile() unchanged (subscription data available via useSubscription)
 
 4. **Update settings page**
-   - [ ] Remove free upgrade dialog, replace with "View Plans" link to /pricing
-   - [ ] Remove `useUpgradeToPT` from `useUserMutations.ts`
+   - [x] Remove free upgrade dialog, replace with "View Plans" link to /pricing
+   - [x] Remove `useUpgradeToPT` from `useUserMutations.ts`
 
 **Acceptance Criteria**:
 
-- PT without subscription → "subscription required" error on invite
-- PT at capacity → "capacity reached" error
-- PT with room → invite works normally
-- Settings shows "View Plans" link (no free upgrade button)
+- [x] PT without subscription → "subscription required" error on invite
+- [x] PT at capacity → "capacity reached" error
+- [x] PT with room → invite works normally
+- [x] Settings shows "View Plans" link (no free upgrade button)
 
 ---
 
