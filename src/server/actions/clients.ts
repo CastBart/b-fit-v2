@@ -19,6 +19,7 @@ import {
 import type { ClientRelationshipWithClient, ClientListItem, InvitationView } from '@/types/client'
 import type { TrainingSessionWithDetails } from '@/types/session'
 import { checkActiveSubscription, checkClientCapacity } from '@/lib/stripe/subscription'
+import { autoUpgradeTier } from '@/server/actions/stripe'
 
 // ============================================================================
 // Types
@@ -249,16 +250,25 @@ export async function inviteClient(
       }
     }
 
+    const validated = input ? inviteClientSchema.parse(input) : {}
+
     // Check client capacity
     const { atCapacity, currentCount, capacity } = await checkClientCapacity(auth.userId)
     if (atCapacity) {
-      return {
-        success: false,
-        error: `You have reached your client capacity (${currentCount}/${capacity}). Upgrade your plan to add more clients.`,
+      // If user confirmed upgrade, attempt auto-upgrade
+      if (validated.confirmUpgrade) {
+        const upgradeResult = await autoUpgradeTier(auth.userId)
+        if (!upgradeResult.success) {
+          return { success: false, error: upgradeResult.error }
+        }
+        // Capacity now increased — continue with invite
+      } else {
+        return {
+          success: false,
+          error: `CAPACITY_REACHED:${currentCount}:${capacity}`,
+        }
       }
     }
-
-    const validated = input ? inviteClientSchema.parse(input) : {}
 
     // Deduplicate: if there's already a PENDING invite for this email, return it
     if (validated.clientEmail) {

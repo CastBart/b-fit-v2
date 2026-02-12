@@ -3,6 +3,7 @@ import { RelationshipStatus } from '@prisma/client'
 
 export const inviteClientSchema = z.object({
   clientEmail: z.string().email().optional(),
+  confirmUpgrade: z.boolean().optional(),
 })
 
 export const acceptInvitationSchema = z.object({

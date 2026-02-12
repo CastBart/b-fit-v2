@@ -5,6 +5,12 @@ import { prisma } from '@/lib/db/prisma'
 import { getServerSession } from '@/lib/auth/auth'
 import { stripe } from '@/lib/stripe/stripe'
 import { createCheckoutSchema, type CreateCheckoutInput } from '@/lib/validations/subscription'
+import {
+  getNextTier,
+  isAnnualPrice,
+  SUBSCRIPTION_TIERS,
+  type SubscriptionTierKey,
+} from '@/lib/stripe/config'
 import type { SubscriptionInfo } from '@/types/subscription'
 
 // ============================================================================
@@ -202,5 +208,81 @@ export async function getSubscription(): Promise<ActionResponse<SubscriptionInfo
   } catch (error) {
     console.error('getSubscription error:', error)
     return { success: false, error: 'Failed to fetch subscription' }
+  }
+}
+
+// ============================================================================
+// Auto-Upgrade
+// ============================================================================
+
+/**
+ * Auto-upgrade a user's subscription to the next tier.
+ * Preserves billing cycle (monthly/annual) and applies proration.
+ */
+export async function autoUpgradeTier(
+  userId: string
+): Promise<ActionResponse<{ newTier: SubscriptionTierKey; newCapacity: number }>> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        subscriptionTier: true,
+        subscription: {
+          select: { stripeSubscriptionId: true, stripePriceId: true },
+        },
+      },
+    })
+
+    if (!user?.subscriptionTier || !user.subscription) {
+      return { success: false, error: 'No active subscription to upgrade' }
+    }
+
+    const currentTier = user.subscriptionTier as SubscriptionTierKey
+    const nextTierKey = getNextTier(currentTier)
+
+    if (!nextTierKey) {
+      return { success: false, error: 'Already on the maximum tier' }
+    }
+
+    const nextTier = SUBSCRIPTION_TIERS[nextTierKey]
+    const annual = isAnnualPrice(user.subscription.stripePriceId)
+    const newPriceId = annual ? nextTier.annualPriceId : nextTier.monthlyPriceId
+
+    // Retrieve the Stripe subscription to get the item ID
+    const stripeSub = await stripe.subscriptions.retrieve(user.subscription.stripeSubscriptionId)
+    const itemId = stripeSub.items.data[0]?.id
+
+    if (!itemId) {
+      return { success: false, error: 'Failed to find subscription item' }
+    }
+
+    // Update the Stripe subscription with proration
+    await stripe.subscriptions.update(user.subscription.stripeSubscriptionId, {
+      items: [{ id: itemId, price: newPriceId }],
+      proration_behavior: 'create_prorations',
+    })
+
+    // Update local DB immediately (webhook will also fire but this gives instant feedback)
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: userId },
+        data: {
+          subscriptionTier: nextTierKey,
+          clientCapacity: nextTier.clientCapacity,
+        },
+      }),
+      prisma.subscription.update({
+        where: { userId },
+        data: { stripePriceId: newPriceId },
+      }),
+    ])
+
+    return {
+      success: true,
+      data: { newTier: nextTierKey, newCapacity: nextTier.clientCapacity },
+    }
+  } catch (error) {
+    console.error('autoUpgradeTier error:', error)
+    return { success: false, error: 'Failed to upgrade subscription' }
   }
 }

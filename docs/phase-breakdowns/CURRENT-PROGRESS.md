@@ -2,13 +2,29 @@
 
 **Last Updated**: 2026-02-12
 **Current Phase**: Phase 4 - Payments & Subscriptions
-**Recently Completed**: Chunk 6 - Guards, Capacity Enforcement & Upgrade Flow Migration
-**Next Tasks**: Chunk 7 - Auto-Upgrade
+**Recently Completed**: Chunk 7 - Auto-Upgrade
+**Next Tasks**: Chunk 8 - Polish (Banners, Trial Display, Cleanup)
 **Branch**: `feature/payments`
 
 ---
 
 ## Phase 4: Payments & Subscriptions (In Progress)
+
+### Chunk 7: Auto-Upgrade ✅
+
+- **Auto-upgrade function**: `autoUpgradeTier()` in `src/server/actions/stripe.ts` — determines next tier, preserves billing cycle (monthly/annual), updates Stripe subscription with proration, updates local DB immediately
+- **Confirmation flow**: `inviteClient()` now returns `CAPACITY_REACHED:count:max` error when at capacity; with `confirmUpgrade: true` it auto-upgrades then proceeds
+- **InviteClientDrawer**: Rewritten to parse `CAPACITY_REACHED` error, show AlertDialog with upgrade confirmation, re-call invite on confirm
+- **Schema update**: Added `confirmUpgrade: z.boolean().optional()` to `inviteClientSchema`
+
+### Modified Files
+
+```
+src/server/actions/stripe.ts                             - Added autoUpgradeTier()
+src/server/actions/clients.ts                            - Added confirmUpgrade flow
+src/lib/validations/client.ts                            - Added confirmUpgrade to schema
+src/components/features/clients/InviteClientDrawer.tsx   - Upgrade confirmation dialog
+```
 
 ### Chunk 6: Guards, Capacity Enforcement & Upgrade Flow Migration ✅
 

@@ -225,34 +225,34 @@
 
 ---
 
-## Chunk 7: Auto-Upgrade
+## Chunk 7: Auto-Upgrade ✅
 
 **Priority**: High
-**Status**: Not Started
+**Status**: Complete
 
 ### Sub-tasks
 
 1. **Create autoUpgradeTier function**
-   - [ ] In `src/server/actions/stripe.ts` — determines next tier, preserves billing cycle, updates Stripe subscription with proration
+   - [x] In `src/server/actions/stripe.ts` — determines next tier, preserves billing cycle (monthly/annual), updates Stripe subscription with proration, updates local DB immediately
 
 2. **Add confirmation flow to inviteClient**
-   - [ ] Add `confirmUpgrade` param to invite schema
-   - [ ] At capacity + no confirm: return `CAPACITY_REACHED` error with upgrade info
-   - [ ] At capacity + confirm: auto-upgrade then proceed
+   - [x] Add `confirmUpgrade` param to invite schema (`src/lib/validations/client.ts`)
+   - [x] At capacity + no confirm: return `CAPACITY_REACHED:count:max` error string
+   - [x] At capacity + confirm: call `autoUpgradeTier()` then proceed with invite
 
 3. **Update InviteClientDrawer**
-   - [ ] Handle `CAPACITY_REACHED` error → show upgrade confirmation dialog
-   - [ ] On confirm: re-call invite with `confirmUpgrade: true`
+   - [x] Handle `CAPACITY_REACHED` error → parse count/max, show AlertDialog with upgrade info
+   - [x] On confirm: re-call invite with `confirmUpgrade: true`
 
 4. **Auto-upgrade notification**
-   - [ ] Show info toast on successful upgrade in invite mutation
+   - [x] Show info toast "Plan upgraded successfully! Invite created." on successful upgrade
 
 **Acceptance Criteria**:
 
-- PT Starter at 10 clients invites 11th → upgrade confirmation dialog
-- Confirms → auto-upgrades to PT Pro, invite succeeds
-- PT Elite at 100 → "maximum tier" error
-- Stripe shows updated subscription + proration invoice
+- [x] PT Starter at 10 clients invites 11th → upgrade confirmation dialog
+- [x] Confirms → auto-upgrades to PT Pro, invite succeeds
+- [x] PT Elite at 100 → "maximum tier" error
+- [x] Stripe shows updated subscription + proration invoice
 
 ---
 
