@@ -1,10 +1,67 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-11
-**Current Phase**: Phase 3 - Multi-Role Features (COMPLETE) + PT-Client Relationship Improvements
-**Recently Completed**: PT-Client relationship improvements (role-based UI hiding, client workout/plan display, PT write access, create-for-client flows)
-**Next Tasks**: Phase 4 planning (or merge Phase 3 to main)
-**Branch**: `feature/phase-3-multi-role`
+**Last Updated**: 2026-02-12
+**Current Phase**: Phase 4 - Payments & Subscriptions
+**Recently Completed**: Chunk 2 - Stripe Products & Pricing Page
+**Next Tasks**: Chunk 3 - Checkout Flow
+**Branch**: `feature/payments`
+
+---
+
+## Phase 4: Payments & Subscriptions (In Progress)
+
+### Chunk 2: Stripe Products & Pricing Page ✅
+
+- **Stripe products/prices**: Created 3 products with 6 prices (monthly + annual) in Stripe Dashboard, metadata set
+- **Env vars**: 6 price ID env vars added to `.env.local`
+- **PricingToggle**: `src/components/features/pricing/PricingToggle.tsx` — shadcn Tabs with monthly/annual toggle and "Save 17%" badge
+- **PricingCard**: `src/components/features/pricing/PricingCard.tsx` — tier card with name, price, features list, client capacity, CTA button, "Most Popular" badge on PT Pro
+- **Pricing page**: `src/app/pricing/page.tsx` — public page with billing toggle, 3-column responsive grid, auth-aware nav (login/signup vs dashboard), subscribe redirects unauthenticated users to login
+- **Landing page**: Added "View Pricing" ghost button to hero section of `src/app/page.tsx`
+
+### New Files
+
+```
+src/components/features/pricing/PricingToggle.tsx  - Monthly/Annual billing toggle
+src/components/features/pricing/PricingCard.tsx    - Subscription tier card
+src/app/pricing/page.tsx                           - Public pricing page
+```
+
+### Modified Files
+
+```
+src/app/page.tsx                                   - Added "View Pricing" link
+```
+
+### Chunk 1: Foundation (SDK, Schema, Stripe Utilities) ✅
+
+- **Stripe SDK**: Installed `stripe` (server) and `@stripe/stripe-js` (client)
+- **Stripe singleton**: `src/lib/stripe/stripe.ts` — singleton pattern matching Prisma setup
+- **Tier config**: `src/lib/stripe/config.ts` — 3 PT tiers with price mappings, capacity limits, helpers (`getTierFromPriceId`, `getNextTier`, `isAnnualPrice`, `formatPrice`)
+- **Types**: `src/types/subscription.ts` — `SubscriptionInfo`, `UserSubscriptionData`
+- **Validations**: `src/lib/validations/subscription.ts` — `createCheckoutSchema`
+- **Schema migration**: `20260212120000_add_subscription_model`
+  - `SubscriptionTier` enum: `PT_STARTER`, `PT_PRO`, `PT_ELITE`
+  - `SubscriptionStatus` enum: `ACTIVE`, `PAST_DUE`, `CANCELED`, `TRIALING`
+  - User fields: `stripeCustomerId` (unique), `subscriptionTier`, `clientCapacity`
+  - `Subscription` model with Stripe data, status, cancellation fields
+
+### New Files
+
+```
+src/lib/stripe/stripe.ts                    - Stripe SDK singleton
+src/lib/stripe/config.ts                    - Tier definitions, price mappings, helpers
+src/types/subscription.ts                   - TypeScript interfaces
+src/lib/validations/subscription.ts         - Zod schemas
+prisma/migrations/20260212120000_.../        - Migration SQL
+```
+
+### Modified Files
+
+```
+prisma/schema.prisma                        - Added enums, User fields, Subscription model
+package.json                                - Added stripe, @stripe/stripe-js
+```
 
 ---
 
