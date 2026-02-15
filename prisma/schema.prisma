@@ -45,6 +45,12 @@ model User {
   ptRelationships     ClientRelationship[] @relation("PTRelationships")
   clientRelationships ClientRelationship[] @relation("ClientRelationships")
 
+  // Organisation relations
+  organisationId       String?
+  organisation         Organisation?          @relation("OrgMembers", fields: [organisationId], references: [id], onDelete: SetNull)
+  ownedOrganisation    Organisation?          @relation("OrgOwner")
+  orgPTMemberships     OrgPTRelationship[]    @relation("OrgPTUser")
+
   // Subscription relation
   subscription  Subscription?
 
@@ -52,6 +58,7 @@ model User {
   @@index([role])
   @@index([isActive])
   @@index([stripeCustomerId])
+  @@index([organisationId])
 }
 
 // NextAuth models for authentication
@@ -116,9 +123,12 @@ enum UserRole {
 
 // Subscription enums
 enum SubscriptionTier {
-  PT_STARTER  // $29.99/mo, 10 clients
-  PT_PRO      // $49.99/mo, 25 clients
-  PT_ELITE    // $99.99/mo, 100 clients
+  PT_STARTER   // $29.99/mo, 10 clients
+  PT_PRO       // $49.99/mo, 25 clients
+  PT_ELITE     // $99.99/mo, 100 clients
+  ORG_STARTER  // $79.99/mo, 5 PT seats
+  ORG_PRO      // $149.99/mo, 15 PT seats
+  ORG_ELITE    // $299.99/mo, 50 PT seats
 }
 
 enum SubscriptionStatus {
@@ -612,4 +622,84 @@ model Subscription {
 
   @@index([userId])
   @@index([status])
+}
+
+// ============================================================================
+// ORGANISATIONS
+// ============================================================================
+
+model Organisation {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+
+  // Owner (the ORG user who created this)
+  ownerId String @unique
+  owner   User   @relation("OrgOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  // PT seat capacity (driven by subscription tier)
+  ptSeatCapacity Int @default(5)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  branding OrganisationBranding?
+  members  User[]                @relation("OrgMembers")
+  ptLinks  OrgPTRelationship[]
+
+  @@index([ownerId])
+}
+
+model OrganisationBranding {
+  id String @id @default(cuid())
+
+  // Parent organisation
+  organisationId String       @unique
+  organisation   Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+
+  // Branding assets
+  logoUrl        String?
+  primaryColor   String? // hex color, e.g. "#3b82f6"
+  secondaryColor String? // hex color
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Organisation-PT relationship (mirrors ClientRelationship pattern)
+enum OrgPTStatus {
+  PENDING  // Invite sent, not yet accepted
+  ACTIVE   // PT has accepted, relationship is active
+  ENDED    // Relationship has been terminated
+}
+
+model OrgPTRelationship {
+  id String @id @default(cuid())
+
+  // Organisation that owns the relationship
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+
+  // PT (null while PENDING - set when invite is accepted)
+  ptId    String?
+  pt      User?    @relation("OrgPTUser", fields: [ptId], references: [id], onDelete: Cascade)
+
+  // Relationship state
+  status     OrgPTStatus @default(PENDING)
+  inviteCode String      @unique
+  ptEmail    String?     // Optional: ORG can record intended PT email
+  expiresAt  DateTime?   // Invite expiration
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organisationId, ptId])
+  @@index([organisationId])
+  @@index([ptId])
+  @@index([status])
+  @@index([inviteCode])
 }

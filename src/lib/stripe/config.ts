@@ -42,6 +42,57 @@ export const SUBSCRIPTION_TIERS = {
     annualPriceId: process.env.STRIPE_PRICE_PT_ELITE_ANNUAL ?? '',
     features: ['All PT Pro features', 'Up to 100 clients', 'Priority support'],
   },
+  ORG_STARTER: {
+    name: 'Org Starter',
+    description: 'For small organisations',
+    monthlyPrice: 7999,
+    annualPrice: 79900,
+    clientCapacity: 0,
+    ptSeatCapacity: 5,
+    requiredRole: 'ORG' as const,
+    monthlyPriceId: process.env.STRIPE_PRICE_ORG_STARTER_MONTHLY ?? '',
+    annualPriceId: process.env.STRIPE_PRICE_ORG_STARTER_ANNUAL ?? '',
+    features: [
+      'Up to 5 personal trainers',
+      'Organisation dashboard',
+      'Aggregate analytics',
+      'Branding customisation',
+    ],
+  },
+  ORG_PRO: {
+    name: 'Org Pro',
+    description: 'For growing organisations',
+    monthlyPrice: 14999,
+    annualPrice: 149900,
+    clientCapacity: 0,
+    ptSeatCapacity: 15,
+    requiredRole: 'ORG' as const,
+    monthlyPriceId: process.env.STRIPE_PRICE_ORG_PRO_MONTHLY ?? '',
+    annualPriceId: process.env.STRIPE_PRICE_ORG_PRO_ANNUAL ?? '',
+    features: [
+      'All Org Starter features',
+      'Up to 15 personal trainers',
+      'Advanced analytics',
+      'Priority support',
+    ],
+  },
+  ORG_ELITE: {
+    name: 'Org Elite',
+    description: 'For large organisations',
+    monthlyPrice: 29999,
+    annualPrice: 299900,
+    clientCapacity: 0,
+    ptSeatCapacity: 50,
+    requiredRole: 'ORG' as const,
+    monthlyPriceId: process.env.STRIPE_PRICE_ORG_ELITE_MONTHLY ?? '',
+    annualPriceId: process.env.STRIPE_PRICE_ORG_ELITE_ANNUAL ?? '',
+    features: [
+      'All Org Pro features',
+      'Up to 50 personal trainers',
+      'White-label branding',
+      'Dedicated support',
+    ],
+  },
 } as const
 
 export type SubscriptionTierKey = keyof typeof SUBSCRIPTION_TIERS
@@ -66,6 +117,9 @@ export function getNextTier(currentTier: SubscriptionTierKey): SubscriptionTierK
     PT_STARTER: 'PT_PRO',
     PT_PRO: 'PT_ELITE',
     PT_ELITE: null,
+    ORG_STARTER: 'ORG_PRO',
+    ORG_PRO: 'ORG_ELITE',
+    ORG_ELITE: null,
   }
   return upgradeMap[currentTier] ?? null
 }
@@ -82,6 +136,21 @@ export function isAnnualPrice(priceId: string): boolean {
  */
 export function getTierCapacity(tier: SubscriptionTierKey): number {
   return SUBSCRIPTION_TIERS[tier].clientCapacity
+}
+
+/**
+ * Get the PT seat capacity for a given ORG tier. Returns 0 for PT tiers.
+ */
+export function getPTSeatCapacity(tier: SubscriptionTierKey): number {
+  const config = SUBSCRIPTION_TIERS[tier]
+  return 'ptSeatCapacity' in config ? config.ptSeatCapacity : 0
+}
+
+/**
+ * Check if a tier is an ORG tier.
+ */
+export function isOrgTier(tier: SubscriptionTierKey): boolean {
+  return tier.startsWith('ORG_')
 }
 
 /**

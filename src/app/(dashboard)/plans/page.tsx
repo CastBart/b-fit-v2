@@ -127,7 +127,7 @@ export default function PlansPage() {
           <p className="mt-1 text-muted-foreground">Create and manage your training plans</p>
         </div>
         {!isClient && (
-          <Button onClick={() => router.push('/plans/create')} size="lg">
+          <Button onClick={() => router.push('/plans/create')} className="cursor-pointer">
             <Plus className="mr-2 h-4 w-4" />
             Create Plan
           </Button>

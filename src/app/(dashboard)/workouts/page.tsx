@@ -64,7 +64,7 @@ export default function WorkoutsPage() {
           <p className="mt-1 text-muted-foreground">Create and manage your workout routines</p>
         </div>
         {!isClient && (
-          <Button onClick={() => router.push('/workouts/builder')} size="lg">
+          <Button onClick={() => router.push('/workouts/builder')} className="cursor-pointer">
             <Plus className="mr-2 h-4 w-4" />
             Create Workout
           </Button>

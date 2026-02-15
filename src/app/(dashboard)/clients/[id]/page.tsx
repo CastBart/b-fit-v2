@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import {
   ArrowLeft,
+  BarChart3,
   Dumbbell,
   CalendarDays,
   History,
@@ -58,6 +59,7 @@ import type { TrainingSessionWithDetails } from '@/types/session'
 import { AssignWorkoutDrawer } from '@/components/features/clients/AssignWorkoutDrawer'
 import { AssignPlanDrawer } from '@/components/features/clients/AssignPlanDrawer'
 import { EndRelationshipDialog } from '@/components/features/clients/EndRelationshipDialog'
+import { ClientAnalyticsTab } from '@/components/features/analytics/ClientAnalyticsTab'
 
 export default function ClientDetailPage() {
   const params = useParams<{ id: string }>()
@@ -436,6 +438,10 @@ function ActiveClientView({ client, clientId }: ActiveClientViewProps) {
             <CalendarDays className="mr-1.5 h-4 w-4" />
             Plans
           </TabsTrigger>
+          <TabsTrigger value="analytics">
+            <BarChart3 className="mr-1.5 h-4 w-4" />
+            Analytics
+          </TabsTrigger>
         </TabsList>
 
         {/* Sessions Tab */}
@@ -706,6 +712,11 @@ function ActiveClientView({ client, clientId }: ActiveClientViewProps) {
               ))}
             </div>
           )}
+        </TabsContent>
+
+        {/* Analytics Tab */}
+        <TabsContent value="analytics" className="mt-6">
+          {client.clientId && <ClientAnalyticsTab clientId={client.clientId} />}
         </TabsContent>
       </Tabs>
 

@@ -1,10 +1,212 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-13
-**Current Phase**: Phase 4 - Payments & Subscriptions (Complete + Fixes)
-**Recently Completed**: Navbar session fix, Pending invitation management (cancel/refresh/detail view)
-**Next Tasks**: Phase 5 - Advanced Features
-**Branch**: `feature/payments`
+**Last Updated**: 2026-02-15
+**Current Phase**: Phase 5 - Advanced Features (Organisation)
+**Recently Completed**: Chunk O1 — Prisma Schema Changes for Organisation
+**Next Tasks**: Organisation Feature — Chunk O2
+**Branch**: `development`
+
+---
+
+## Phase 5: Organisation Feature (In Progress)
+
+### Chunk O1: Prisma Schema Changes ✅
+
+- **Organisation model**: Added `Organisation` (name, description, ownerId unique, ptSeatCapacity, timestamps)
+- **OrganisationBranding model**: Added (logoUrl, primaryColor, secondaryColor, linked to Organisation)
+- **OrgPTRelationship model**: Added (mirrors ClientRelationship pattern — organisationId, ptId, status, inviteCode, ptEmail, expiresAt)
+- **OrgPTStatus enum**: `PENDING | ACTIVE | ENDED`
+- **SubscriptionTier enum**: Added `ORG_STARTER`, `ORG_PRO`, `ORG_ELITE`
+- **User model**: Added `organisationId?`, `organisation` relation (OrgMembers), `ownedOrganisation` relation (OrgOwner), `orgPTMemberships` relation
+- **Stripe config**: Added ORG tier configs with `ptSeatCapacity` (5, 15, 50), `getNextTier` includes ORG upgrade paths, added `getPTSeatCapacity()` and `isOrgTier()` helpers
+- **Subscription validation**: Updated `createCheckoutSchema` to accept ORG tier keys
+- **Migration**: `20260215171311_add_organisation_models` applied successfully
+
+### New/Modified Files
+
+```
+prisma/schema.prisma                              - Organisation, OrganisationBranding, OrgPTRelationship models + OrgPTStatus enum + ORG tiers
+prisma/migrations/20260215171311_add_organisation_models/migration.sql
+src/lib/stripe/config.ts                           - ORG tier configs, getPTSeatCapacity(), isOrgTier(), getNextTier() updated
+src/lib/validations/subscription.ts                - Added ORG tier keys to createCheckoutSchema
+```
+
+---
+
+## Phase 5: Analytics Feature (Complete)
+
+### Chunk A1: Install Recharts + Analytics Types + Date Utilities ✅
+
+- **Recharts**: Installed `recharts` charting library (27 packages)
+- **Analytics types**: Created `src/types/analytics.ts` — `DateRangePreset`, `VolumeDataPoint`, `MuscleGroupDistribution`, `FrequencyStats`, `AdherenceStats`, `PRSummary`, `AnalyticsOverview`, `ExerciseComparisonData`, `OrgAnalyticsOverview`
+- **Date utilities**: Created `src/lib/analytics/date-utils.ts` — `getDateRange(preset)`, `getWeekKey(date)`, `getISOWeekNumber(date)`, `formatWeekLabel(weekKey)`
+- **Validation schemas**: Created `src/lib/validations/analytics.ts` — `analyticsFiltersSchema`, `exerciseComparisonSchema`, `clientAnalyticsFiltersSchema`
+
+### New Files
+
+```
+src/types/analytics.ts                  - All analytics type definitions
+src/lib/analytics/date-utils.ts         - Date range presets, ISO week utilities
+src/lib/validations/analytics.ts        - Zod schemas for analytics inputs
+```
+
+### Chunk A2: Volume Progression + Muscle Group Distribution ✅
+
+- **Volume progression**: Added `getVolumeProgression(userId, startDate, endDate, exerciseId?)` to `src/lib/analytics/volume.ts` — raw SQL with `DATE_TRUNC('week', ...)` grouping, optional exercise filter, returns `VolumeDataPoint[]`
+- **Muscle group distribution**: Added `getVolumeByMuscleGroup(userId, startDate, endDate)` — joins SessionSet → SessionExercise → Exercise, groups by `primaryMuscleGroup`, calculates percentages
+
+### Modified Files
+
+```
+src/lib/analytics/volume.ts             - Added getVolumeProgression, getVolumeByMuscleGroup
+```
+
+### Chunk A3: Adherence + Frequency + Consistency ✅
+
+- **Adherence**: Created `calculateAdherence(userId, startDate, endDate)` — queries PlanWeek + PlanDayCompletion data, calculates completed vs expected plan days, returns null if no plan data
+- **Frequency**: Created `calculateSessionFrequency(userId, startDate, endDate)` — sessions/week average, total sessions, consistency score (% of weeks with >=1 session)
+
+### New Files
+
+```
+src/lib/analytics/adherence.ts          - calculateAdherence, calculateSessionFrequency
+```
+
+### Chunk A4: Enhanced PR Detection (All Metric Types) ✅
+
+- **Extended PR types**: Updated `PRDetectionResult` and `SessionPR` to use `PRType` union (`'WEIGHT' | 'DURATION' | 'DISTANCE' | 'REPS' | 'VOLUME'`)
+- **All metric PR counting**: Added `getAllPRCount(userId, startDate, endDate)` — counts weight, duration, distance, and bodyweight reps PRs via generic `countMetricPRs` helper
+- **Enhanced session PRs**: Added `detectSessionPRsEnhanced(userId, sessionId)` — detects all PR types in a session (weight, duration, distance, bodyweight reps)
+- **PR summary**: Created `src/lib/analytics/pr-summary.ts` with `getPRSummary(userId, startDate, endDate)` — returns total count + top 10 recent PRs with exercise names and dates
+
+### Modified Files
+
+```
+src/lib/analytics/pr-detection.ts       - Added getAllPRCount, detectSessionPRsEnhanced, multi-metric helpers
+```
+
+### New Files
+
+```
+src/lib/analytics/pr-summary.ts         - getPRSummary with detailed PR list
+```
+
+### Chunk A5: Analytics Server Actions ✅
+
+- **`getAnalyticsOverview(filters)`**: Full analytics for current user — runs 9 queries in parallel (workouts, sessions, volume, PRs, volume progression, muscle groups, frequency, adherence, PR summary)
+- **`getVolumeProgressionData(filters)`**: Standalone volume time-series with optional exercise filter
+- **`getExerciseComparisonData(input)`**: Volume progression for multiple exercises (up to 5), fetches names + data in parallel
+- **`getClientAnalytics(input)`**: Same as overview but for a client — requires PT role + active relationship verification
+
+### New Files
+
+```
+src/server/actions/analytics.ts         - getAnalyticsOverview, getVolumeProgressionData, getExerciseComparisonData, getClientAnalytics
+```
+
+### Chunk A6: Analytics Query Hooks ✅
+
+- **`useAnalyticsOverview(dateRange)`** — queryKey `['analytics', 'overview', dateRange]`, staleTime 5min
+- **`useVolumeProgression(dateRange, exerciseId?)`** — standalone volume chart data
+- **`useExerciseComparison(exerciseIds[], dateRange)`** — enabled when exerciseIds.length > 0
+- **`useClientAnalytics(clientId, dateRange)`** — enabled when clientId present
+
+### New Files
+
+```
+src/hooks/queries/useAnalytics.ts       - useAnalyticsOverview, useVolumeProgression, useExerciseComparison, useClientAnalytics
+```
+
+### Chunk A7: Chart Components ✅
+
+- **VolumeChart**: Recharts AreaChart with gradient fill, weekly labels via `formatWeekLabel`, custom tooltip, skeleton/empty states
+- **MuscleGroupChart**: Horizontal BarChart with color-coded muscle groups, percentage + volume tooltip
+- **FrequencyCard**: Sessions/week stat, consistency progress bar, plan adherence bar (shown if active plan), total sessions summary
+- **PRSummaryCard**: Total PRs count with trophy icon, top 5 recent PRs with exercise name, date, value, and PR type badge
+- **DateRangeSelector**: Shadcn Select with 5 presets (7d, 30d, 90d, 1y, all)
+- **ExerciseFilter**: Searchable exercise dropdown using `useExercises` hook, "All exercises" default
+
+### New Files
+
+```
+src/components/features/analytics/DateRangeSelector.tsx   - Date range preset selector
+src/components/features/analytics/ExerciseFilter.tsx      - Exercise dropdown filter
+src/components/features/analytics/VolumeChart.tsx         - Volume progression area chart
+src/components/features/analytics/MuscleGroupChart.tsx    - Muscle group horizontal bar chart
+src/components/features/analytics/FrequencyCard.tsx       - Frequency + consistency + adherence card
+src/components/features/analytics/PRSummaryCard.tsx       - PR summary with recent PRs list
+```
+
+### Chunk A8: Analytics Page ✅
+
+- **Analytics page**: Created `src/app/(dashboard)/analytics/page.tsx` — full analytics dashboard with date range selector, StatsGrid (reused), volume chart with exercise filter, muscle group distribution, frequency/adherence card, PR summary
+- **Exercise filter integration**: Uses `useVolumeProgression` for exercise-specific filtering, falls back to overview data when no filter active
+- **Middleware**: Added `/analytics` to protected routes and matcher in `src/middleware.ts`
+- **Compare link**: Button linking to `/analytics/compare` (Chunk A10)
+
+### New Files
+
+```
+src/app/(dashboard)/analytics/page.tsx  - Analytics dashboard page
+```
+
+### Modified Files
+
+```
+src/middleware.ts                       - Added /analytics to protected routes + matcher
+```
+
+### Chunk A9: Client Analytics Tab ✅
+
+- **ClientAnalyticsTab component**: Created `src/components/features/analytics/ClientAnalyticsTab.tsx` — self-contained tab with date range selector, mini stats grid (workouts, sessions, volume, PRs), volume chart, muscle group chart, frequency card, PR summary
+- **Client detail page**: Added "Analytics" tab (4th tab) to `ActiveClientView` in `src/app/(dashboard)/clients/[id]/page.tsx` — uses `useClientAnalytics` hook, renders only when `clientId` is present
+
+### New Files
+
+```
+src/components/features/analytics/ClientAnalyticsTab.tsx  - Client analytics tab component
+```
+
+### Modified Files
+
+```
+src/app/(dashboard)/clients/[id]/page.tsx                 - Added Analytics tab trigger + content
+```
+
+### Chunk A10: Exercise Comparison Page ✅
+
+- **ExerciseMultiSelect**: Created `src/components/features/analytics/ExerciseMultiSelect.tsx` — checkbox list with search, selected badges, max 5 limit, clear all button
+- **ComparisonChart**: Created `src/components/features/analytics/ComparisonChart.tsx` — multi-line Recharts LineChart with unified time axis, color-coded lines, legend, custom tooltip
+- **Comparison page**: Created `src/app/(dashboard)/analytics/compare/page.tsx` — two-column layout (selector | chart), back link to `/analytics`, date range selector
+
+### New Files
+
+```
+src/components/features/analytics/ExerciseMultiSelect.tsx  - Multi-select exercise picker
+src/components/features/analytics/ComparisonChart.tsx      - Multi-line comparison chart
+src/app/(dashboard)/analytics/compare/page.tsx             - Exercise comparison page
+```
+
+---
+
+### Analytics Feature Summary
+
+All 10 chunks complete. Files created/modified:
+
+**New files (17)**:
+
+- `src/types/analytics.ts`
+- `src/lib/analytics/date-utils.ts`, `adherence.ts`, `pr-summary.ts`
+- `src/lib/validations/analytics.ts`
+- `src/server/actions/analytics.ts`
+- `src/hooks/queries/useAnalytics.ts`
+- `src/components/features/analytics/` (8 components: DateRangeSelector, ExerciseFilter, VolumeChart, MuscleGroupChart, FrequencyCard, PRSummaryCard, ClientAnalyticsTab, ExerciseMultiSelect, ComparisonChart)
+- `src/app/(dashboard)/analytics/page.tsx`, `src/app/(dashboard)/analytics/compare/page.tsx`
+
+**Modified files (3)**:
+
+- `src/lib/analytics/volume.ts`, `src/lib/analytics/pr-detection.ts`
+- `src/middleware.ts`, `src/app/(dashboard)/clients/[id]/page.tsx`
 
 ---
 
