@@ -1,10 +1,221 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-11
-**Current Phase**: Phase 3 - Multi-Role Features (COMPLETE) + PT-Client Relationship Improvements
-**Recently Completed**: PT-Client relationship improvements (role-based UI hiding, client workout/plan display, PT write access, create-for-client flows)
-**Next Tasks**: Phase 4 planning (or merge Phase 3 to main)
-**Branch**: `feature/phase-3-multi-role`
+**Last Updated**: 2026-02-13
+**Current Phase**: Phase 4 - Payments & Subscriptions (Complete + Fixes)
+**Recently Completed**: Navbar session fix, Pending invitation management (cancel/refresh/detail view)
+**Next Tasks**: Phase 5 - Advanced Features
+**Branch**: `feature/payments`
+
+---
+
+## Post-Phase 4: Bug Fixes & Invitation Management
+
+### Navbar Session Hydration Fix
+
+- **SignupForm.tsx**: Replaced `router.push()` + `router.refresh()` with client-side `signIn()` from `next-auth/react` after successful signup. This ensures the `SessionProvider` hydrates immediately so the navbar shows the user's name instead of "Guest".
+
+### Pending Invitation Management (Cancel & Refresh)
+
+- **Server actions**: Added `cancelInvitation()`, `refreshInvitation()`, and `getInvitationDetail()` in `src/server/actions/clients.ts`
+- **Validation schemas**: Added `cancelInvitationSchema` and `refreshInvitationSchema` in `src/lib/validations/client.ts`
+- **Mutation hooks**: Added `useCancelInvitation()` and `useRefreshInvitation()` in `src/hooks/mutations/useClientMutations.ts`
+- **Query hook**: Added `useInvitationDetail()` in `src/hooks/queries/useClientDetail.ts`
+- **Client detail page**: Refactored into `ActiveClientView` and `PendingInvitationView` components. When clicking a pending invitation card from the clients list, the page now shows invitation details (invite link, expiry, email) with Copy Link, Refresh (for expired), and Cancel actions instead of "Client not found".
+
+### Modified Files
+
+```
+src/components/features/auth/SignupForm.tsx          - Client-side signIn after signup
+src/server/actions/clients.ts                        - cancelInvitation, refreshInvitation, getInvitationDetail
+src/lib/validations/client.ts                        - Cancel/refresh schemas
+src/hooks/mutations/useClientMutations.ts            - useCancelInvitation, useRefreshInvitation
+src/hooks/queries/useClientDetail.ts                 - useInvitationDetail
+src/app/(dashboard)/clients/[id]/page.tsx            - Pending invitation view with fallback logic
+```
+
+---
+
+## Phase 4: Payments & Subscriptions (Complete)
+
+### Chunk 8: Polish (Banners, Trial Display, Cleanup) ✅
+
+- **SubscriptionStatusBanner**: `src/components/features/billing/SubscriptionStatusBanner.tsx` — self-fetching client component with banners for TRIALING (days remaining), PAST_DUE (payment failed), CANCELED (access until date), and PT without subscription (subscribe prompt)
+- **Dashboard layout**: Banner rendered above page content in `DashboardLayout`, uses `useSubscription` hook (React Query deduplicates)
+- **Sidebar tier info**: Added `SubscriptionBadge` component below role badge — shows tier name and "Trial: Xd" badge for PT users
+- **Alert component**: Added shadcn `alert.tsx` UI component
+
+### New Files
+
+```
+src/components/features/billing/SubscriptionStatusBanner.tsx - Subscription status banners
+src/components/ui/alert.tsx                                  - shadcn Alert component
+```
+
+### Modified Files
+
+```
+src/components/layouts/DashboardLayout.tsx                - Added SubscriptionStatusBanner
+src/components/layouts/Sidebar.tsx                        - Added SubscriptionBadge with tier info
+```
+
+### Chunk 7: Auto-Upgrade ✅
+
+- **Auto-upgrade function**: `autoUpgradeTier()` in `src/server/actions/stripe.ts` — determines next tier, preserves billing cycle (monthly/annual), updates Stripe subscription with proration, updates local DB immediately
+- **Confirmation flow**: `inviteClient()` now returns `CAPACITY_REACHED:count:max` error when at capacity; with `confirmUpgrade: true` it auto-upgrades then proceeds
+- **InviteClientDrawer**: Rewritten to parse `CAPACITY_REACHED` error, show AlertDialog with upgrade confirmation, re-call invite on confirm
+- **Schema update**: Added `confirmUpgrade: z.boolean().optional()` to `inviteClientSchema`
+
+### Modified Files
+
+```
+src/server/actions/stripe.ts                             - Added autoUpgradeTier()
+src/server/actions/clients.ts                            - Added confirmUpgrade flow
+src/lib/validations/client.ts                            - Added confirmUpgrade to schema
+src/components/features/clients/InviteClientDrawer.tsx   - Upgrade confirmation dialog
+```
+
+### Chunk 6: Guards, Capacity Enforcement & Upgrade Flow Migration ✅
+
+- **Subscription check helpers**: `src/lib/stripe/subscription.ts` — `checkActiveSubscription()` checks ACTIVE/TRIALING, `checkClientCapacity()` counts ACTIVE+PENDING relationships against capacity
+- **Invite guards**: `inviteClient()` in `src/server/actions/clients.ts` now checks subscription status and capacity before creating invites
+- **Deprecated free upgrade**: `upgradeToPT()` in users.ts now returns error directing to /pricing
+- **Removed `useUpgradeToPT`** from `src/hooks/mutations/useUserMutations.ts`
+- **Settings page**: Removed upgrade dialog and free upgrade button, replaced with "View Plans" link to /pricing for PERSONAL users
+
+### New Files
+
+```
+src/lib/stripe/subscription.ts                           - Subscription check helpers
+```
+
+### Modified Files
+
+```
+src/server/actions/clients.ts                            - Added subscription + capacity guards
+src/server/actions/users.ts                              - Deprecated upgradeToPT
+src/hooks/mutations/useUserMutations.ts                  - Removed useUpgradeToPT
+src/app/(dashboard)/settings/page.tsx                    - Replaced upgrade dialog with View Plans
+```
+
+### Chunk 5: Subscription Management (Portal & Billing Page) ✅
+
+- **Server actions**: Added `createPortalSession()` (opens Stripe Customer Portal) and `getSubscription()` (returns subscription info with active client count) to `src/server/actions/stripe.ts`
+- **Query hook**: `src/hooks/queries/useSubscription.ts` — `useSubscription()` with 5-min staleTime
+- **Mutation hook**: Added `useManageBilling()` to `src/hooks/mutations/useSubscriptionMutations.ts` — redirects to Stripe portal
+- **BillingInfo component**: `src/components/features/billing/BillingInfo.tsx` — shows tier name, status badge, period end, client usage bar, "Manage Billing" button; "No subscription" state links to /pricing
+- **Billing page**: `src/app/(dashboard)/settings/billing/page.tsx` — back link + BillingInfo
+- **Settings page**: Added billing card with "View Billing" link for PT and PERSONAL roles
+
+### New Files
+
+```
+src/hooks/queries/useSubscription.ts                     - Subscription query hook
+src/components/features/billing/BillingInfo.tsx           - Billing info card component
+src/app/(dashboard)/settings/billing/page.tsx             - Billing settings page
+```
+
+### Modified Files
+
+```
+src/server/actions/stripe.ts                             - Added portal + subscription actions
+src/hooks/mutations/useSubscriptionMutations.ts          - Added useManageBilling
+src/app/(dashboard)/settings/page.tsx                    - Added billing card
+```
+
+### Chunk 4: Webhooks ✅
+
+- **Webhook route**: `src/app/api/webhooks/stripe/route.ts` — signature verification with `constructEvent`, raw body via `req.text()`
+- **Events handled**:
+  - `checkout.session.completed` — upserts Subscription record, updates User tier/capacity, upgrades PERSONAL→PT role
+  - `customer.subscription.updated` — syncs status, tier, capacity, period end, cancellation state
+  - `customer.subscription.deleted` — marks CANCELED, clears tier/capacity
+  - `invoice.payment_failed` — sets PAST_DUE status
+- **Stripe SDK v20 adaptations**: `current_period_end` read from `items.data[0]`, `invoice.subscription` accessed via `parent.subscription_details`
+- **All handlers idempotent** using upsert and updateMany patterns
+- **Local testing**: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
+
+### New Files
+
+```
+src/app/api/webhooks/stripe/route.ts  - Stripe webhook endpoint
+```
+
+### Chunk 3: Checkout Flow ✅
+
+- **Checkout server action**: `src/server/actions/stripe.ts` — `createCheckoutSession()` gets/creates Stripe customer, blocks existing ACTIVE/TRIALING subscriptions, creates checkout with 14-day trial, stores `userId` in metadata
+- **Checkout mutation hook**: `src/hooks/mutations/useSubscriptionMutations.ts` — `useCreateCheckout()` calls server action and redirects to Stripe Checkout URL on success
+- **Pricing page wiring**: PricingCard now accepts `onSubscribe` and `isLoading` props; pricing page uses `useCreateCheckout` to initiate checkout; unauthenticated users redirected to `/login?callbackUrl=/pricing`
+- **Checkout feedback**: Dashboard detects `?checkout=success` and shows success toast; pricing page detects `?checkout=canceled` and shows info toast
+- **Suspense fix**: Extracted `PricingContent` client component, wrapped with `Suspense` in page (required for `useSearchParams` in static pages)
+
+### New Files
+
+```
+src/server/actions/stripe.ts                             - Checkout server action
+src/hooks/mutations/useSubscriptionMutations.ts          - Checkout mutation hook
+src/components/features/pricing/PricingContent.tsx       - Pricing page client content
+```
+
+### Modified Files
+
+```
+src/components/features/pricing/PricingCard.tsx          - Added onSubscribe/isLoading props
+src/app/pricing/page.tsx                                 - Server component with Suspense wrapper
+src/app/(dashboard)/dashboard/page.tsx                   - Checkout success toast
+```
+
+### Chunk 2: Stripe Products & Pricing Page ✅
+
+- **Stripe products/prices**: Created 3 products with 6 prices (monthly + annual) in Stripe Dashboard, metadata set
+- **Env vars**: 6 price ID env vars added to `.env.local`
+- **PricingToggle**: `src/components/features/pricing/PricingToggle.tsx` — shadcn Tabs with monthly/annual toggle and "Save 17%" badge
+- **PricingCard**: `src/components/features/pricing/PricingCard.tsx` — tier card with name, price, features list, client capacity, CTA button, "Most Popular" badge on PT Pro
+- **Pricing page**: `src/app/pricing/page.tsx` — public page with billing toggle, 3-column responsive grid, auth-aware nav (login/signup vs dashboard), subscribe redirects unauthenticated users to login
+- **Landing page**: Added "View Pricing" ghost button to hero section of `src/app/page.tsx`
+
+### New Files
+
+```
+src/components/features/pricing/PricingToggle.tsx  - Monthly/Annual billing toggle
+src/components/features/pricing/PricingCard.tsx    - Subscription tier card
+src/app/pricing/page.tsx                           - Public pricing page
+```
+
+### Modified Files
+
+```
+src/app/page.tsx                                   - Added "View Pricing" link
+```
+
+### Chunk 1: Foundation (SDK, Schema, Stripe Utilities) ✅
+
+- **Stripe SDK**: Installed `stripe` (server) and `@stripe/stripe-js` (client)
+- **Stripe singleton**: `src/lib/stripe/stripe.ts` — singleton pattern matching Prisma setup
+- **Tier config**: `src/lib/stripe/config.ts` — 3 PT tiers with price mappings, capacity limits, helpers (`getTierFromPriceId`, `getNextTier`, `isAnnualPrice`, `formatPrice`)
+- **Types**: `src/types/subscription.ts` — `SubscriptionInfo`, `UserSubscriptionData`
+- **Validations**: `src/lib/validations/subscription.ts` — `createCheckoutSchema`
+- **Schema migration**: `20260212120000_add_subscription_model`
+  - `SubscriptionTier` enum: `PT_STARTER`, `PT_PRO`, `PT_ELITE`
+  - `SubscriptionStatus` enum: `ACTIVE`, `PAST_DUE`, `CANCELED`, `TRIALING`
+  - User fields: `stripeCustomerId` (unique), `subscriptionTier`, `clientCapacity`
+  - `Subscription` model with Stripe data, status, cancellation fields
+
+### New Files
+
+```
+src/lib/stripe/stripe.ts                    - Stripe SDK singleton
+src/lib/stripe/config.ts                    - Tier definitions, price mappings, helpers
+src/types/subscription.ts                   - TypeScript interfaces
+src/lib/validations/subscription.ts         - Zod schemas
+prisma/migrations/20260212120000_.../        - Migration SQL
+```
+
+### Modified Files
+
+```
+prisma/schema.prisma                        - Added enums, User fields, Subscription model
+package.json                                - Added stripe, @stripe/stripe-js
+```
 
 ---
 

@@ -23,6 +23,11 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // Subscription fields
+  stripeCustomerId  String?           @unique
+  subscriptionTier  SubscriptionTier?
+  clientCapacity    Int               @default(0)
+
   // NextAuth relations
   accounts      Account[]
   sessions      Session[]
@@ -40,9 +45,13 @@ model User {
   ptRelationships     ClientRelationship[] @relation("PTRelationships")
   clientRelationships ClientRelationship[] @relation("ClientRelationships")
 
+  // Subscription relation
+  subscription  Subscription?
+
   @@index([email])
   @@index([role])
   @@index([isActive])
+  @@index([stripeCustomerId])
 }
 
 // NextAuth models for authentication
@@ -103,6 +112,20 @@ enum UserRole {
   PT        // Personal Trainer (trains themselves + manages clients)
   CLIENT    // Client (assigned to a PT)
   ORG       // Organisation (manages PTs)
+}
+
+// Subscription enums
+enum SubscriptionTier {
+  PT_STARTER  // $29.99/mo, 10 clients
+  PT_PRO      // $49.99/mo, 25 clients
+  PT_ELITE    // $99.99/mo, 100 clients
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIALING
 }
 
 // Client relationship status
@@ -562,4 +585,31 @@ model ClientRelationship {
   @@index([clientId])
   @@index([status])
   @@index([inviteCode])
+}
+
+// ============================================================================
+// SUBSCRIPTIONS
+// ============================================================================
+
+model Subscription {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Stripe data
+  stripeSubscriptionId   String             @unique
+  stripePriceId          String
+  stripeCurrentPeriodEnd DateTime
+  status                 SubscriptionStatus
+
+  // Cancellation
+  cancelAtPeriodEnd Boolean   @default(false)
+  canceledAt        DateTime?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }

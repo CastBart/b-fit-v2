@@ -3,6 +3,7 @@ import { RelationshipStatus } from '@prisma/client'
 
 export const inviteClientSchema = z.object({
   clientEmail: z.string().email().optional(),
+  confirmUpgrade: z.boolean().optional(),
 })
 
 export const acceptInvitationSchema = z.object({
@@ -15,6 +16,14 @@ export const rejectInvitationSchema = z.object({
 
 export const endRelationshipSchema = z.object({
   relationshipId: z.string().cuid('Invalid relationship ID'),
+})
+
+export const cancelInvitationSchema = z.object({
+  relationshipId: z.string().min(1, 'Relationship ID is required'),
+})
+
+export const refreshInvitationSchema = z.object({
+  relationshipId: z.string().min(1, 'Relationship ID is required'),
 })
 
 export const clientFiltersSchema = z.object({
@@ -41,6 +50,8 @@ export type InviteClientInput = z.infer<typeof inviteClientSchema>
 export type AcceptInvitationInput = z.infer<typeof acceptInvitationSchema>
 export type RejectInvitationInput = z.infer<typeof rejectInvitationSchema>
 export type EndRelationshipInput = z.infer<typeof endRelationshipSchema>
+export type CancelInvitationInput = z.infer<typeof cancelInvitationSchema>
+export type RefreshInvitationInput = z.infer<typeof refreshInvitationSchema>
 export type ClientFiltersInput = z.infer<typeof clientFiltersSchema>
 export type AssignWorkoutToClientInput = z.infer<typeof assignWorkoutToClientSchema>
 export type AssignPlanToClientInput = z.infer<typeof assignPlanToClientSchema>

@@ -60,14 +60,20 @@ export const authConfig = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, trigger, session: updateSession }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id
         token.role = user.role as UserRole
       }
-      // Handle session.update() calls from client (e.g., after role change)
-      if (trigger === 'update' && updateSession?.role) {
-        token.role = updateSession.role as UserRole
+      // On session.update() calls, refresh role from DB
+      if (trigger === 'update' && token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true },
+        })
+        if (dbUser) {
+          token.role = dbUser.role as UserRole
+        }
       }
       return token
     },

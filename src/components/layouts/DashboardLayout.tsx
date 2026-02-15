@@ -23,7 +23,10 @@ export function DashboardLayout({ children, userRole = 'PERSONAL' }: DashboardLa
 
         {/* Main Content */}
         <main className="flex-1 min-w-0 p-2">
-          <div className="mx-auto ">{children}</div>
+          <div className="mx-auto ">
+            {/* <SubscriptionStatusBanner /> */}
+            {children}
+          </div>
         </main>
       </div>
     </div>

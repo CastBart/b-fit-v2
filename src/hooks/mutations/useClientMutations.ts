@@ -9,6 +9,8 @@ import {
   acceptInvitation,
   rejectInvitation,
   endRelationship,
+  cancelInvitation,
+  refreshInvitation,
 } from '@/server/actions/clients'
 import { assignWorkoutToClient } from '@/server/actions/workouts'
 import { assignPlanToClient } from '@/server/actions/plans'
@@ -105,6 +107,59 @@ export function useEndRelationship() {
       queryClient.invalidateQueries({ queryKey: ['clients'] })
       queryClient.invalidateQueries({ queryKey: ['client'] })
       toast.success('Client relationship ended')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+// ============================================================================
+// Cancel Invitation
+// ============================================================================
+
+export function useCancelInvitation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (relationshipId: string) => {
+      const result = await cancelInvitation({ relationshipId })
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to cancel invitation')
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] })
+      queryClient.invalidateQueries({ queryKey: ['client'] })
+      queryClient.invalidateQueries({ queryKey: ['invitation-detail'] })
+      toast.success('Invitation cancelled')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+// ============================================================================
+// Refresh Invitation
+// ============================================================================
+
+export function useRefreshInvitation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (relationshipId: string) => {
+      const result = await refreshInvitation({ relationshipId })
+      if (!result.success || !result.data) {
+        throw new Error(result.error || 'Failed to refresh invitation')
+      }
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] })
+      queryClient.invalidateQueries({ queryKey: ['client'] })
+      queryClient.invalidateQueries({ queryKey: ['invitation-detail'] })
+      toast.success('Invitation refreshed with new link and extended expiry')
     },
     onError: (error: Error) => {
       toast.error(error.message)

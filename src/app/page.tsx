@@ -33,6 +33,9 @@ export default function Home() {
               <Button asChild variant="outline" size="lg">
                 <Link href="/login">Log In</Link>
               </Button>
+              <Button asChild variant="ghost" size="lg">
+                <Link href="/pricing">View Pricing</Link>
+              </Button>
             </div>
           </div>
         </section>
