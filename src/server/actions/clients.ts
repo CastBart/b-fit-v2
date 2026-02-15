@@ -9,11 +9,15 @@ import {
   acceptInvitationSchema,
   rejectInvitationSchema,
   endRelationshipSchema,
+  cancelInvitationSchema,
+  refreshInvitationSchema,
   clientFiltersSchema,
   type InviteClientInput,
   type AcceptInvitationInput,
   type RejectInvitationInput,
   type EndRelationshipInput,
+  type CancelInvitationInput,
+  type RefreshInvitationInput,
   type ClientFiltersInput,
 } from '@/lib/validations/client'
 import type { ClientRelationshipWithClient, ClientListItem, InvitationView } from '@/types/client'
@@ -304,6 +308,152 @@ export async function inviteClient(
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create invitation',
+    }
+  }
+}
+
+/**
+ * Cancel a pending invitation (PT only)
+ */
+export async function cancelInvitation(input: CancelInvitationInput): Promise<ActionResponse> {
+  try {
+    const auth = await requireRole('PT')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
+    }
+
+    const validated = cancelInvitationSchema.parse(input)
+
+    const relationship = await prisma.clientRelationship.findUnique({
+      where: { id: validated.relationshipId },
+    })
+
+    if (!relationship) {
+      return { success: false, error: 'Invitation not found' }
+    }
+
+    if (relationship.ptId !== auth.userId) {
+      return { success: false, error: 'You do not own this invitation' }
+    }
+
+    if (relationship.status !== 'PENDING') {
+      return { success: false, error: 'Only pending invitations can be cancelled' }
+    }
+
+    await prisma.clientRelationship.update({
+      where: { id: validated.relationshipId },
+      data: { status: 'ENDED' },
+    })
+
+    revalidatePath('/clients')
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to cancel invitation:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to cancel invitation',
+    }
+  }
+}
+
+/**
+ * Refresh an expired pending invitation with a new code and extended expiry (PT only)
+ */
+export async function refreshInvitation(
+  input: RefreshInvitationInput
+): Promise<ActionResponse<{ inviteCode: string }>> {
+  try {
+    const auth = await requireRole('PT')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
+    }
+
+    const validated = refreshInvitationSchema.parse(input)
+
+    const relationship = await prisma.clientRelationship.findUnique({
+      where: { id: validated.relationshipId },
+    })
+
+    if (!relationship) {
+      return { success: false, error: 'Invitation not found' }
+    }
+
+    if (relationship.ptId !== auth.userId) {
+      return { success: false, error: 'You do not own this invitation' }
+    }
+
+    if (relationship.status !== 'PENDING') {
+      return { success: false, error: 'Only pending invitations can be refreshed' }
+    }
+
+    const newInviteCode = crypto.randomUUID().replace(/-/g, '').substring(0, 12)
+
+    await prisma.clientRelationship.update({
+      where: { id: validated.relationshipId },
+      data: {
+        inviteCode: newInviteCode,
+        expiresAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days
+      },
+    })
+
+    revalidatePath('/clients')
+    return { success: true, data: { inviteCode: newInviteCode } }
+  } catch (error) {
+    console.error('Failed to refresh invitation:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to refresh invitation',
+    }
+  }
+}
+
+/**
+ * Get invitation detail by relationship ID (PT only)
+ * Used for the client detail page when the [id] param is a relationship ID for a pending invite
+ */
+export async function getInvitationDetail(
+  relationshipId: string
+): Promise<ActionResponse<InvitationView & { expiresAt: Date | null }>> {
+  try {
+    const auth = await requireRole('PT')
+    if (!auth.success) {
+      return { success: false, error: auth.error }
+    }
+
+    const relationship = await prisma.clientRelationship.findFirst({
+      where: {
+        id: relationshipId,
+        ptId: auth.userId,
+        status: 'PENDING',
+      },
+      include: {
+        pt: {
+          select: { id: true, name: true, email: true, image: true },
+        },
+      },
+    })
+
+    if (!relationship) {
+      return { success: false, error: 'Invitation not found' }
+    }
+
+    return {
+      success: true,
+      data: {
+        id: relationship.id,
+        inviteCode: relationship.inviteCode,
+        status: relationship.status,
+        clientEmail: relationship.clientEmail,
+        expiresAt: relationship.expiresAt,
+        createdAt: relationship.createdAt,
+        pt: relationship.pt,
+      },
+    }
+  } catch (error) {
+    console.error('Failed to get invitation detail:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get invitation detail',
     }
   }
 }

@@ -77,8 +77,10 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    // flex items-center flex-col
+    <div className="container mx-auto p-6 ">
       {/* Header */}
+      {/* <div> */}
       <div className="mb-8">
         <div className="flex items-center gap-2">
           <Settings className="h-7 w-7" />
@@ -200,6 +202,7 @@ export default function SettingsPage() {
           </Card>
         )}
       </div>
+      {/* </div> */}
     </div>
   )
 }

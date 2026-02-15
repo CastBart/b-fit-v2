@@ -1,7 +1,8 @@
 import { z } from 'zod'
 
 export const createCheckoutSchema = z.object({
-  priceId: z.string().min(1, 'Price ID is required'),
+  tierKey: z.enum(['PT_STARTER', 'PT_PRO', 'PT_ELITE']),
+  billingPeriod: z.enum(['monthly', 'annual']),
 })
 
 export type CreateCheckoutInput = z.infer<typeof createCheckoutSchema>

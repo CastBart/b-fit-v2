@@ -2,19 +2,18 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { BarChart3, Dumbbell, PlayCircle, Users, UserCheck } from 'lucide-react'
+import { BarChart3, Dumbbell, PlayCircle, UserCheck } from 'lucide-react'
 import { ActivePlanSection } from '@/components/features/plans/ActivePlanSection'
 import { StatsGrid } from '@/components/features/dashboard/StatsGrid'
 import { RecentSessions } from '@/components/features/dashboard/RecentSessions'
 import { useMyPT } from '@/hooks/queries/useMyPT'
-import { useClients } from '@/hooks/queries/useClients'
 
 function TrainerCard() {
   const { data: ptData, isLoading } = useMyPT()
@@ -70,57 +69,20 @@ function TrainerCard() {
   )
 }
 
-function ClientsQuickCard() {
-  const { data, isLoading } = useClients({ status: 'ACTIVE', page: 1, limit: 5 })
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-5 w-32" />
-          <Skeleton className="h-4 w-48" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-10 w-full" />
-        </CardContent>
-      </Card>
-    )
-  }
-
-  const activeCount = data?.total ?? 0
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          My Clients
-        </CardTitle>
-        <CardDescription>
-          {activeCount === 0
-            ? 'Invite clients to get started'
-            : `${activeCount} active client${activeCount !== 1 ? 's' : ''}`}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button asChild variant="outline" className="w-full">
-          <Link href="/clients">Manage Clients</Link>
-        </Button>
-      </CardContent>
-    </Card>
-  )
-}
-
 export default function DashboardPage() {
-  const { data: session } = useSession()
+  const { data: session, update } = useSession()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const userRole = session?.user?.role
 
   useEffect(() => {
     if (searchParams.get('checkout') === 'success') {
       toast.success('Subscription activated! Welcome to your new plan.')
+      // Refresh the JWT to pick up the new role from the DB, then
+      // re-render the server layout so sidebar/navbar reflect the change
+      update().then(() => router.refresh())
     }
-  }, [searchParams])
+  }, [searchParams, update, router])
 
   return (
     <div className="space-y-6">
@@ -134,7 +96,7 @@ export default function DashboardPage() {
 
       {/* Role-Specific Card */}
       {userRole === 'CLIENT' && <TrainerCard />}
-      {userRole === 'PT' && <ClientsQuickCard />}
+      {/* {userRole === 'PT' && <ClientsQuickCard />} */}
 
       {/* Stats Grid */}
       <StatsGrid />

@@ -29,9 +29,7 @@ export function PricingContent() {
   }, [searchParams])
 
   function handleSubscribe(tierKey: SubscriptionTierKey) {
-    const tier = SUBSCRIPTION_TIERS[tierKey]
-    const priceId = billingPeriod === 'monthly' ? tier.monthlyPriceId : tier.annualPriceId
-    checkout.mutate({ priceId })
+    checkout.mutate({ tierKey, billingPeriod })
   }
 
   return (

@@ -1,10 +1,37 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-12
-**Current Phase**: Phase 4 - Payments & Subscriptions (Complete)
-**Recently Completed**: Chunk 8 - Polish (Banners, Trial Display, Cleanup)
+**Last Updated**: 2026-02-13
+**Current Phase**: Phase 4 - Payments & Subscriptions (Complete + Fixes)
+**Recently Completed**: Navbar session fix, Pending invitation management (cancel/refresh/detail view)
 **Next Tasks**: Phase 5 - Advanced Features
 **Branch**: `feature/payments`
+
+---
+
+## Post-Phase 4: Bug Fixes & Invitation Management
+
+### Navbar Session Hydration Fix
+
+- **SignupForm.tsx**: Replaced `router.push()` + `router.refresh()` with client-side `signIn()` from `next-auth/react` after successful signup. This ensures the `SessionProvider` hydrates immediately so the navbar shows the user's name instead of "Guest".
+
+### Pending Invitation Management (Cancel & Refresh)
+
+- **Server actions**: Added `cancelInvitation()`, `refreshInvitation()`, and `getInvitationDetail()` in `src/server/actions/clients.ts`
+- **Validation schemas**: Added `cancelInvitationSchema` and `refreshInvitationSchema` in `src/lib/validations/client.ts`
+- **Mutation hooks**: Added `useCancelInvitation()` and `useRefreshInvitation()` in `src/hooks/mutations/useClientMutations.ts`
+- **Query hook**: Added `useInvitationDetail()` in `src/hooks/queries/useClientDetail.ts`
+- **Client detail page**: Refactored into `ActiveClientView` and `PendingInvitationView` components. When clicking a pending invitation card from the clients list, the page now shows invitation details (invite link, expiry, email) with Copy Link, Refresh (for expired), and Cancel actions instead of "Client not found".
+
+### Modified Files
+
+```
+src/components/features/auth/SignupForm.tsx          - Client-side signIn after signup
+src/server/actions/clients.ts                        - cancelInvitation, refreshInvitation, getInvitationDetail
+src/lib/validations/client.ts                        - Cancel/refresh schemas
+src/hooks/mutations/useClientMutations.ts            - useCancelInvitation, useRefreshInvitation
+src/hooks/queries/useClientDetail.ts                 - useInvitationDetail
+src/app/(dashboard)/clients/[id]/page.tsx            - Pending invitation view with fallback logic
+```
 
 ---
 

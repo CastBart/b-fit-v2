@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { SessionProvider } from '@/components/providers/SessionProvider'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import ReduxProvider from '@/components/providers/ReduxProvider'
+import { auth } from '@/lib/auth/auth.config'
 import './globals.css'
 
 const inter = Inter({
@@ -48,15 +49,17 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await auth()
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <SessionProvider>
+        <SessionProvider session={session}>
           <ReduxProvider>
             <QueryProvider>
               <ThemeProvider

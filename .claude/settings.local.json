@@ -58,7 +58,8 @@
       "Bash(cmd /c \"taskkill /PID 5752 /F\")",
       "Bash(cmd /c:*)",
       "Bash(git stash:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebSearch"
     ]
   },
   "enabledPlugins": {

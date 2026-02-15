@@ -158,10 +158,13 @@ function ExercisesContent() {
 
   /* ---------- render ---------- */
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header with Create button */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Exercises</h1>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Exercises</h1>
+          <p className="mt-1 text-muted-foreground">Create and manage your exercise library</p>
+        </div>
         {canCreate && (
           <Button onClick={() => setCreateDrawerOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />

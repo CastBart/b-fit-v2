@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 import { signupSchema, type SignupInput } from '@/lib/validations/auth'
 import { signup } from '@/server/actions/auth'
 import { Button } from '@/components/ui/button'
@@ -21,7 +22,6 @@ import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 export function SignupForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -50,9 +50,15 @@ export function SignupForm() {
 
       if (result.success) {
         toast.success(result.message || 'Account created successfully!')
-        // For invite signups, always go to dashboard (relationship already activated)
-        router.push(inviteCode ? '/dashboard' : callbackUrl)
-        router.refresh()
+        // Use client-side signIn to ensure SessionProvider hydrates immediately
+        const redirectTo = inviteCode ? '/dashboard' : callbackUrl
+        await signIn('credentials', {
+          email: data.email,
+          password: data.password,
+          callbackUrl: redirectTo,
+          redirect: true,
+        })
+        return // signIn with redirect:true will navigate away
       } else {
         toast.error(result.error || 'Failed to create account')
       }

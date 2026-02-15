@@ -65,18 +65,32 @@ export async function createCheckoutSession(
   input: CreateCheckoutInput
 ): Promise<ActionResponse<{ url: string }>> {
   try {
+    console.log('[checkout] Step 1: checking session')
     const session = await getServerSession()
     if (!session?.user?.id) {
       return { success: false, error: 'You must be logged in' }
     }
+    console.log('[checkout] Step 2: user', session.user.id)
 
     const validated = createCheckoutSchema.parse(input)
+    console.log('[checkout] Step 3: validated input', validated)
+
+    // Resolve price ID server-side (env vars aren't available on the client)
+    const tierConfig = SUBSCRIPTION_TIERS[validated.tierKey]
+    const priceId =
+      validated.billingPeriod === 'monthly' ? tierConfig.monthlyPriceId : tierConfig.annualPriceId
+    console.log('[checkout] Step 4: resolved priceId', priceId)
+
+    if (!priceId) {
+      return { success: false, error: 'Price not configured for this tier' }
+    }
 
     // Check for existing active subscription
     const existingSub = await prisma.subscription.findUnique({
       where: { userId: session.user.id },
       select: { status: true },
     })
+    console.log('[checkout] Step 5: existing sub', existingSub)
 
     if (existingSub && (existingSub.status === 'ACTIVE' || existingSub.status === 'TRIALING')) {
       return {
@@ -85,15 +99,19 @@ export async function createCheckoutSession(
       }
     }
 
+    console.log('[checkout] Step 6: getting/creating stripe customer')
     const customerId = await getOrCreateStripeCustomer(session.user.id)
+    console.log('[checkout] Step 7: customerId', customerId)
 
     const headersList = await headers()
     const origin = headersList.get('origin') || 'http://localhost:3000'
+    console.log('[checkout] Step 8: origin', origin)
 
+    console.log('[checkout] Step 9: creating stripe checkout session')
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
-      line_items: [{ price: validated.priceId, quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       subscription_data: {
         trial_period_days: 14,
         metadata: { userId: session.user.id },
@@ -102,6 +120,7 @@ export async function createCheckoutSession(
       cancel_url: `${origin}/pricing?checkout=canceled`,
       metadata: { userId: session.user.id },
     })
+    console.log('[checkout] Step 10: checkout url', checkoutSession.url)
 
     if (!checkoutSession.url) {
       return { success: false, error: 'Failed to create checkout session' }
@@ -109,7 +128,7 @@ export async function createCheckoutSession(
 
     return { success: true, data: { url: checkoutSession.url } }
   } catch (error) {
-    console.error('createCheckoutSession error:', error)
+    console.error('[checkout] ERROR at:', error)
     return { success: false, error: 'Failed to create checkout session' }
   }
 }
