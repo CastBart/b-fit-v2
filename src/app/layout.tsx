@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { SessionProvider } from '@/components/providers/SessionProvider'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import ReduxProvider from '@/components/providers/ReduxProvider'
@@ -68,7 +69,7 @@ export default async function RootLayout({
                 enableSystem
                 disableTransitionOnChange
               >
-                {children}
+                <TooltipProvider>{children}</TooltipProvider>
                 <Toaster />
               </ThemeProvider>
             </QueryProvider>

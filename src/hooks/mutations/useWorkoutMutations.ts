@@ -16,6 +16,7 @@ import {
   copyWorkout,
   addMultipleExercisesToWorkout,
   syncWorkoutExercises,
+  duplicateWorkout,
 } from '@/server/actions/workouts'
 import type {
   CreateWorkoutInput,
@@ -327,6 +328,31 @@ export function useCreateWorkoutForClient() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
       toast.success('Workout created for client')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+// ============================================================================
+// Duplicate Workout
+// ============================================================================
+
+export function useDuplicateWorkout() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (workoutId: string) => {
+      const result = await duplicateWorkout(workoutId)
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to duplicate workout')
+      }
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workouts'] })
+      toast.success('Workout duplicated')
     },
     onError: (error: Error) => {
       toast.error(error.message)

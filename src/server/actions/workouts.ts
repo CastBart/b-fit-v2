@@ -1078,3 +1078,83 @@ export async function assignWorkoutToClient(input: {
     return { success: false, error: 'Failed to assign workout to client' }
   }
 }
+
+// ============================================================================
+// Duplicate Workout
+// ============================================================================
+
+/**
+ * Duplicate a workout for the current user.
+ * Creates a deep copy of the workout and all its exercises, owned by the same user.
+ */
+export async function duplicateWorkout(
+  workoutId: string
+): Promise<ActionResponse<WorkoutWithDetails>> {
+  try {
+    const session = await getServerSession()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Authentication required' }
+    }
+
+    // Validate workout ID
+    const { workoutId: validatedId } = workoutIdSchema.parse({ workoutId })
+
+    // Fetch the original workout with exercises
+    const original = await prisma.workout.findUnique({
+      where: { id: validatedId },
+      include: {
+        exercises: {
+          orderBy: { order: 'asc' },
+        },
+      },
+    })
+
+    if (!original) {
+      return { success: false, error: 'Workout not found' }
+    }
+
+    // Only the owner can duplicate
+    if (original.createdById !== session.user.id) {
+      return { success: false, error: 'You can only duplicate your own workouts' }
+    }
+
+    // Create the duplicate
+    const duplicate = await prisma.workout.create({
+      data: {
+        name: `${original.name} (Copy)`,
+        description: original.description,
+        createdById: session.user.id,
+        isTemplate: original.isTemplate,
+        exercises: {
+          create: original.exercises.map((exercise) => ({
+            exerciseId: exercise.exerciseId,
+            order: exercise.order,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            weight: exercise.weight,
+            restSeconds: exercise.restSeconds,
+            notes: exercise.notes,
+            groupId: exercise.groupId,
+          })),
+        },
+      },
+      include: {
+        createdBy: { select: { id: true, name: true, email: true } },
+        exercises: {
+          include: { exercise: true },
+          orderBy: { order: 'asc' },
+        },
+        copiedFrom: { select: { id: true, name: true } },
+      },
+    })
+
+    revalidatePath('/workouts')
+    return { success: true, data: duplicate }
+  } catch (error) {
+    console.error('Error duplicating workout:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to duplicate workout' }
+  }
+}
