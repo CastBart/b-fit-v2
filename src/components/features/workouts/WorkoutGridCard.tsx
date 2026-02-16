@@ -47,6 +47,7 @@ interface WorkoutGridCardProps {
   isClient: boolean
   isPinned: boolean
   isStarting?: boolean
+  showPin?: boolean
   onStart: (id: string) => void
   onEdit: (id: string) => void
   onClick: (id: string) => void
@@ -60,6 +61,7 @@ export function WorkoutGridCard({
   isClient,
   isPinned,
   isStarting,
+  showPin = true,
   onStart,
   onEdit,
   onClick,
@@ -76,21 +78,23 @@ export function WorkoutGridCard({
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2 flex-1 min-w-0">
             {/* Pin Toggle */}
-            <button
-              type="button"
-              className={`shrink-0 transition-colors ${
-                isPinned
-                  ? 'text-yellow-500 hover:text-muted-foreground'
-                  : 'text-muted-foreground hover:text-yellow-500'
-              }`}
-              onClick={(e) => {
-                e.stopPropagation()
-                onTogglePin(workout.id)
-              }}
-              aria-label={isPinned ? 'Unpin workout' : 'Pin workout'}
-            >
-              <Star className={`h-4 w-4 ${isPinned ? 'fill-yellow-500' : ''}`} />
-            </button>
+            {showPin && (
+              <button
+                type="button"
+                className={`shrink-0 transition-colors ${
+                  isPinned
+                    ? 'text-yellow-500 hover:text-muted-foreground'
+                    : 'text-muted-foreground hover:text-yellow-500'
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onTogglePin(workout.id)
+                }}
+                aria-label={isPinned ? 'Unpin workout' : 'Pin workout'}
+              >
+                <Star className={`h-4 w-4 ${isPinned ? 'fill-yellow-500' : ''}`} />
+              </button>
+            )}
             <div className="flex-1 min-w-0">
               <CardTitle className="line-clamp-1">{workout.name}</CardTitle>
               {workout.description && (
@@ -147,19 +151,21 @@ export function WorkoutGridCard({
                     <Copy className="mr-2 h-4 w-4" />
                     Duplicate
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onTogglePin(workout.id)}>
-                    {isPinned ? (
-                      <>
-                        <PinOff className="mr-2 h-4 w-4" />
-                        Unpin
-                      </>
-                    ) : (
-                      <>
-                        <Pin className="mr-2 h-4 w-4" />
-                        Pin
-                      </>
-                    )}
-                  </DropdownMenuItem>
+                  {showPin && (
+                    <DropdownMenuItem onClick={() => onTogglePin(workout.id)}>
+                      {isPinned ? (
+                        <>
+                          <PinOff className="mr-2 h-4 w-4" />
+                          Unpin
+                        </>
+                      ) : (
+                        <>
+                          <Pin className="mr-2 h-4 w-4" />
+                          Pin
+                        </>
+                      )}
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive"

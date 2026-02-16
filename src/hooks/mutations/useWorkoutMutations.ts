@@ -99,6 +99,7 @@ export function useDeleteWorkout() {
     },
     onSuccess: (workoutId) => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] })
+      queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
       queryClient.removeQueries({ queryKey: ['workout', workoutId] })
       toast.success('Workout deleted successfully')
     },
@@ -352,6 +353,7 @@ export function useDuplicateWorkout() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workouts'] })
+      queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
       toast.success('Workout duplicated')
     },
     onError: (error: Error) => {

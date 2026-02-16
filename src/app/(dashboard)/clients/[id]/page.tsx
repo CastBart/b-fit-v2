@@ -11,8 +11,8 @@ import {
   History,
   UserX,
   Plus,
-  Eye,
   Edit,
+  Eye,
   Zap,
   ZapOff,
   Copy,
@@ -43,7 +43,6 @@ import {
 import {
   useClientDetail,
   useClientSessions,
-  useClientWorkouts,
   useClientPlans,
   useInvitationDetail,
 } from '@/hooks/queries/useClientDetail'
@@ -59,6 +58,7 @@ import type { TrainingSessionWithDetails } from '@/types/session'
 import { AssignWorkoutDrawer } from '@/components/features/clients/AssignWorkoutDrawer'
 import { AssignPlanDrawer } from '@/components/features/clients/AssignPlanDrawer'
 import { EndRelationshipDialog } from '@/components/features/clients/EndRelationshipDialog'
+import { ClientWorkoutsTab } from '@/components/features/clients/ClientWorkoutsTab'
 import { ClientAnalyticsTab } from '@/components/features/analytics/ClientAnalyticsTab'
 
 export default function ClientDetailPage() {
@@ -373,7 +373,6 @@ function ActiveClientView({ client, clientId }: ActiveClientViewProps) {
     clientId,
     sessionsPage
   )
-  const { data: clientWorkouts, isLoading: workoutsLoading } = useClientWorkouts(clientId)
   const { data: clientPlans, isLoading: plansLoading } = useClientPlans(clientId)
   const activatePlanMutation = useActivatePlan()
   const deactivatePlanMutation = useDeactivatePlan()
@@ -514,86 +513,11 @@ function ActiveClientView({ client, clientId }: ActiveClientViewProps) {
 
         {/* Workouts Tab */}
         <TabsContent value="workouts" className="mt-6">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm text-muted-foreground">{clientName}&apos;s workouts</p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => router.push(`/clients/${clientId}/workouts/create`)}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Create Workout
-              </Button>
-              <Button onClick={() => setAssignWorkoutOpen(true)}>
-                <Dumbbell className="mr-2 h-4 w-4" />
-                Assign Workout
-              </Button>
-            </div>
-          </div>
-
-          {workoutsLoading && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i}>
-                  <CardContent className="p-4 space-y-3">
-                    <Skeleton className="h-5 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          {!workoutsLoading && (!clientWorkouts || clientWorkouts.length === 0) && (
-            <Card className="border-dashed">
-              <CardContent className="flex flex-col items-center py-12">
-                <Dumbbell className="mb-3 h-10 w-10 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
-                  No workouts yet. Assign or create a workout for {clientName}.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-
-          {!workoutsLoading && clientWorkouts && clientWorkouts.length > 0 && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {clientWorkouts.map((workout) => (
-                <Card key={workout.id} className="group transition-all hover:shadow-md">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold truncate">{workout.name}</h3>
-                      {workout.copiedFrom && (
-                        <Badge variant="secondary" className="ml-2 shrink-0 text-xs">
-                          Assigned
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      {workout.exerciseCount} exercise{workout.exerciseCount !== 1 ? 's' : ''}
-                    </p>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => router.push(`/workouts/${workout.id}`)}
-                      >
-                        <Eye className="mr-1 h-3 w-3" />
-                        View
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => router.push(`/workouts/builder/${workout.id}`)}
-                      >
-                        <Edit className="mr-1 h-3 w-3" />
-                        Edit
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          <ClientWorkoutsTab
+            clientId={clientId}
+            clientName={clientName}
+            onAssignWorkout={() => setAssignWorkoutOpen(true)}
+          />
         </TabsContent>
 
         {/* Plans Tab */}

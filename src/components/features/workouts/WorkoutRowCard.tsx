@@ -40,6 +40,7 @@ interface WorkoutRowCardProps {
   isClient: boolean
   isPinned: boolean
   isStarting?: boolean
+  showPin?: boolean
   onStart: (id: string) => void
   onEdit: (id: string) => void
   onClick: (id: string) => void
@@ -53,6 +54,7 @@ export function WorkoutRowCard({
   isClient,
   isPinned,
   isStarting,
+  showPin = true,
   onStart,
   onEdit,
   onClick,
@@ -67,17 +69,19 @@ export function WorkoutRowCard({
     >
       <div className="flex items-center gap-4 p-4">
         {/* Pin Toggle */}
-        <button
-          type="button"
-          className="shrink-0 text-muted-foreground hover:text-yellow-500 transition-colors"
-          onClick={(e) => {
-            e.stopPropagation()
-            onTogglePin(workout.id)
-          }}
-          aria-label={isPinned ? 'Unpin workout' : 'Pin workout'}
-        >
-          <Star className={`h-4 w-4 ${isPinned ? 'fill-yellow-500 text-yellow-500' : ''}`} />
-        </button>
+        {showPin && (
+          <button
+            type="button"
+            className="shrink-0 text-muted-foreground hover:text-yellow-500 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation()
+              onTogglePin(workout.id)
+            }}
+            aria-label={isPinned ? 'Unpin workout' : 'Pin workout'}
+          >
+            <Star className={`h-4 w-4 ${isPinned ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+          </button>
+        )}
 
         {/* Left: Name + Description */}
         <div className="min-w-0 flex-1">
@@ -177,19 +181,21 @@ export function WorkoutRowCard({
                     <Copy className="mr-2 h-4 w-4" />
                     Duplicate
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onTogglePin(workout.id)}>
-                    {isPinned ? (
-                      <>
-                        <PinOff className="mr-2 h-4 w-4" />
-                        Unpin
-                      </>
-                    ) : (
-                      <>
-                        <Pin className="mr-2 h-4 w-4" />
-                        Pin
-                      </>
-                    )}
-                  </DropdownMenuItem>
+                  {showPin && (
+                    <DropdownMenuItem onClick={() => onTogglePin(workout.id)}>
+                      {isPinned ? (
+                        <>
+                          <PinOff className="mr-2 h-4 w-4" />
+                          Unpin
+                        </>
+                      ) : (
+                        <>
+                          <Pin className="mr-2 h-4 w-4" />
+                          Pin
+                        </>
+                      )}
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive"
