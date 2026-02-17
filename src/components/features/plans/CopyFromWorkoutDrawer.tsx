@@ -78,7 +78,7 @@ export function CopyFromWorkoutDrawer({
 
   return (
     <Drawer open={open} onOpenChange={handleClose}>
-      <DrawerContent className="max-h-[85vh]">
+      <DrawerContent className="custom-drawer-no-height justify-self-center">
         <DrawerHeader>
           <DrawerTitle>Copy From Workout</DrawerTitle>
         </DrawerHeader>

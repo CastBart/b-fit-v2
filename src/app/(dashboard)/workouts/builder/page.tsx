@@ -26,6 +26,7 @@ import { ExerciseSelectorDrawer } from '@/components/features/workouts/ExerciseS
 import { ExerciseConfigDrawer } from '@/components/features/workouts/ExerciseConfigDrawer'
 import { CreateWorkoutDialog } from '@/components/features/workouts/CreateWorkoutDialog'
 import { SupersetManagerDrawer } from '@/components/features/workouts/SupersetManagerDrawer'
+import { MuscleGroupBody } from '@/components/features/workouts/MuscleGroupBody'
 import {
   useCreateWorkout,
   useCreateWorkoutForClient,
@@ -458,6 +459,19 @@ export default function WorkoutBuilderPage({
 
         {/* Center: Workout Exercises List - Full width on mobile, flex-1 on desktop */}
         <div className="w-full flex-1 overflow-y-auto lg:w-auto">
+          {exercises.length > 0 && (
+            <div className="flex justify-center border-b bg-muted/5 py-4">
+              <MuscleGroupBody
+                exercises={exercises
+                  .filter((ex) => ex.exercise)
+                  .map((ex) => ({
+                    primaryMuscleGroup: ex.exercise!.primaryMuscleGroup,
+                    secondaryMuscleGroups: ex.exercise!.secondaryMuscleGroups ?? [],
+                  }))}
+                size="md"
+              />
+            </div>
+          )}
           <WorkoutExercisesList
             exercises={exercises}
             selectedIndex={selectedExerciseIndex}

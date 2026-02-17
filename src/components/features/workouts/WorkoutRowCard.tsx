@@ -24,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { MuscleGroupBody } from '@/components/features/workouts/MuscleGroupBody'
 
 interface WorkoutWithExerciseCount {
   id: string
@@ -33,6 +34,13 @@ interface WorkoutWithExerciseCount {
   isTemplate: boolean
   copiedFrom?: { id: string; name: string } | null
   updatedAt: Date | string
+  exercises?: Array<{
+    id: string
+    exercise: {
+      primaryMuscleGroup: string
+      secondaryMuscleGroups: string[]
+    }
+  }>
 }
 
 interface WorkoutRowCardProps {
@@ -68,6 +76,19 @@ export function WorkoutRowCard({
       onClick={() => onClick(workout.id)}
     >
       <div className="flex items-center gap-4 p-4">
+        {/* Muscle body map thumbnail (hidden on mobile) */}
+        {workout.exercises && workout.exercises.length > 0 && (
+          <div className="hidden sm:block shrink-0">
+            <MuscleGroupBody
+              exercises={workout.exercises.map((we) => ({
+                primaryMuscleGroup: we.exercise.primaryMuscleGroup,
+                secondaryMuscleGroups: we.exercise.secondaryMuscleGroups ?? [],
+              }))}
+              size="sm"
+            />
+          </div>
+        )}
+
         {/* Pin Toggle */}
         {showPin && (
           <button

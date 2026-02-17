@@ -33,6 +33,13 @@ interface WorkoutWithExerciseCount {
   isTemplate: boolean
   copiedFrom?: { id: string; name: string } | null
   updatedAt: Date | string
+  exercises?: Array<{
+    id: string
+    exercise: {
+      primaryMuscleGroup: string
+      secondaryMuscleGroups: string[]
+    }
+  }>
 }
 
 interface ClientWorkoutsTabProps {

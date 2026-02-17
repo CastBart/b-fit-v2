@@ -136,15 +136,23 @@ export interface ExerciseFormData {
  */
 export const MuscleGroupLabels: Record<MuscleGroup, string> = {
   CHEST: 'Chest',
-  BACK: 'Back',
-  SHOULDERS: 'Shoulders',
+  UPPER_BACK: 'Upper Back',
+  LATS: 'Lats',
+  LOWER_BACK: 'Lower Back',
+  TRAPS: 'Traps',
+  FRONT_DELTS: 'Front Delts',
+  SIDE_DELTS: 'Side Delts',
+  REAR_DELTS: 'Rear Delts',
   BICEPS: 'Biceps',
   TRICEPS: 'Triceps',
+  FOREARMS: 'Forearms',
   QUADS: 'Quads',
   HAMSTRINGS: 'Hamstrings',
   GLUTES: 'Glutes',
   CALVES: 'Calves',
   CORE: 'Core',
+  ABDUCTORS: 'Abductors',
+  ADDUCTORS: 'Adductors',
   FULL_BODY: 'Full Body',
 }
 

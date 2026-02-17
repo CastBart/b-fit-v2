@@ -92,7 +92,14 @@ export async function getWorkouts(filters?: WorkoutFiltersInput): Promise<
       Prisma.WorkoutGetPayload<{
         include: {
           createdBy: { select: { id: true; name: true; email: true } }
-          exercises: true
+          exercises: {
+            select: {
+              id: true
+              exercise: {
+                select: { primaryMuscleGroup: true; secondaryMuscleGroups: true }
+              }
+            }
+          }
           copiedFrom: true
         }
       }> & { exerciseCount: number }
@@ -150,6 +157,12 @@ export async function getWorkouts(filters?: WorkoutFiltersInput): Promise<
         exercises: {
           select: {
             id: true,
+            exercise: {
+              select: {
+                primaryMuscleGroup: true,
+                secondaryMuscleGroups: true,
+              },
+            },
           },
         },
         copiedFrom: {
@@ -979,7 +992,14 @@ export async function getClientWorkouts(clientId: string): Promise<
     Array<
       Prisma.WorkoutGetPayload<{
         include: {
-          exercises: { select: { id: true } }
+          exercises: {
+            select: {
+              id: true
+              exercise: {
+                select: { primaryMuscleGroup: true; secondaryMuscleGroups: true }
+              }
+            }
+          }
           copiedFrom: { select: { id: true; name: true } }
         }
       }> & { exerciseCount: number }
@@ -1008,7 +1028,17 @@ export async function getClientWorkouts(clientId: string): Promise<
     const workouts = await prisma.workout.findMany({
       where: { createdById: clientId },
       include: {
-        exercises: { select: { id: true } },
+        exercises: {
+          select: {
+            id: true,
+            exercise: {
+              select: {
+                primaryMuscleGroup: true,
+                secondaryMuscleGroups: true,
+              },
+            },
+          },
+        },
         copiedFrom: { select: { id: true, name: true } },
       },
       orderBy: { createdAt: 'desc' },

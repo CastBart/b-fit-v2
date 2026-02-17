@@ -31,6 +31,8 @@ import { useAppDispatch } from '@/store/hooks'
 import { startWorkoutSession } from '@/lib/utils/session-navigation'
 import { SupersetManager } from '@/lib/superset-manager'
 import type { WorkoutExerciseWithExercise } from '@/types/workout'
+import { MuscleGroupLabels } from '@/types/exercise'
+import { MuscleGroupBody } from '@/components/features/workouts/MuscleGroupBody'
 import { cn } from '@/lib/utils'
 
 interface WorkoutDetailPageProps {
@@ -222,6 +224,19 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
         </div>
       </div>
 
+      {/* Muscle Group Body Map */}
+      {hasExercises && (
+        <div className="flex justify-center py-6">
+          <MuscleGroupBody
+            exercises={workout.exercises.map((we) => ({
+              primaryMuscleGroup: we.exercise.primaryMuscleGroup,
+              secondaryMuscleGroups: we.exercise.secondaryMuscleGroups ?? [],
+            }))}
+            size="lg"
+          />
+        </div>
+      )}
+
       {/* Exercises List */}
       {hasExercises ? (
         <div className="space-y-3">
@@ -267,7 +282,9 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                         <div>
                           <h3 className="text-lg font-semibold">{workoutExercise.exercise.name}</h3>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span>{workoutExercise.exercise.primaryMuscleGroup}</span>
+                            <span>
+                              {MuscleGroupLabels[workoutExercise.exercise.primaryMuscleGroup]}
+                            </span>
                             <span>•</span>
                             <span>{workoutExercise.exercise.equipmentType}</span>
                           </div>

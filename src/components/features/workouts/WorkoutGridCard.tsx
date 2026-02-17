@@ -31,6 +31,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { MuscleGroupBody } from '@/components/features/workouts/MuscleGroupBody'
 
 interface WorkoutWithExerciseCount {
   id: string
@@ -40,6 +41,13 @@ interface WorkoutWithExerciseCount {
   isTemplate: boolean
   copiedFrom?: { id: string; name: string } | null
   updatedAt: Date | string
+  exercises?: Array<{
+    id: string
+    exercise: {
+      primaryMuscleGroup: string
+      secondaryMuscleGroups: string[]
+    }
+  }>
 }
 
 interface WorkoutGridCardProps {
@@ -183,6 +191,18 @@ export function WorkoutGridCard({
       </CardHeader>
 
       <CardContent className="space-y-3">
+        {/* Muscle body map thumbnail */}
+        {workout.exercises && workout.exercises.length > 0 && (
+          <div className="flex justify-center py-1">
+            <MuscleGroupBody
+              exercises={workout.exercises.map((we) => ({
+                primaryMuscleGroup: we.exercise.primaryMuscleGroup,
+                secondaryMuscleGroups: we.exercise.secondaryMuscleGroups ?? [],
+              }))}
+              size="sm"
+            />
+          </div>
+        )}
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Dumbbell className="h-4 w-4" />

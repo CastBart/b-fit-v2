@@ -533,7 +533,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
         </div>
 
         {/* Center: Exercises List */}
-        <div className="w-full flex-1 overflow-y-auto lg:w-auto">
+        <div className="w-full relative flex-1 overflow-y-auto lg:w-auto">
           {/* Copy from Workout button */}
 
           <Button
