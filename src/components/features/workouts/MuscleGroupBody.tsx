@@ -15,13 +15,15 @@ import { cn } from '@/lib/utils'
 
 interface MuscleGroupBodyProps {
   exercises: ExerciseWithMuscles[]
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'smd' | 'md' | 'lmd' | 'lg'
   className?: string
 }
 
 const SIZE_CLASSES = {
   sm: 'w-24',
+  smd: 'w-32',
   md: 'w-48',
+  lmd: 'w-56',
   lg: 'w-64',
 }
 

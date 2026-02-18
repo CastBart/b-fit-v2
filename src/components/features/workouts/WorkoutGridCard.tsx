@@ -31,7 +31,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MuscleGroupBody } from '@/components/features/workouts/MuscleGroupBody'
+import { MuscleGroupLabels } from '@/types/exercise'
+import type { MuscleGroup } from '@prisma/client'
 
 interface WorkoutWithExerciseCount {
   id: string
@@ -191,17 +192,21 @@ export function WorkoutGridCard({
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {/* Muscle body map thumbnail */}
+        {/* Muscle groups as muted text */}
         {workout.exercises && workout.exercises.length > 0 && (
-          <div className="flex justify-center py-1">
-            <MuscleGroupBody
-              exercises={workout.exercises.map((we) => ({
-                primaryMuscleGroup: we.exercise.primaryMuscleGroup,
-                secondaryMuscleGroups: we.exercise.secondaryMuscleGroups ?? [],
-              }))}
-              size="sm"
-            />
-          </div>
+          <p className="text-xs text-muted-foreground line-clamp-1">
+            {(() => {
+              const counts = new Map<string, number>()
+              for (const we of workout.exercises ?? []) {
+                const mg = we.exercise.primaryMuscleGroup
+                counts.set(mg, (counts.get(mg) ?? 0) + 1)
+              }
+              return Array.from(counts.entries())
+                .sort((a, b) => b[1] - a[1])
+                .map(([mg]) => MuscleGroupLabels[mg as MuscleGroup] ?? mg)
+                .join(' · ')
+            })()}
+          </p>
         )}
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">

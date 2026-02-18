@@ -175,71 +175,89 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
       </Button>
 
       {/* Workout Header */}
-      <div className="mb-8">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold mb-2">{workout.name}</h1>
-            {workout.description && <p className="text-muted-foreground">{workout.description}</p>}
+      <div className="mb-8 flex flex-col justify-start lg:flex-row lg:justify-between gap-6">
+        <div className="">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold mb-2">{workout.name}</h1>
+              {workout.description && (
+                <p className="text-muted-foreground">{workout.description}</p>
+              )}
+            </div>
+            <div className="flex gap-2 ml-4">
+              {workout.isTemplate && <Badge variant="outline">Template</Badge>}
+              {workout.copiedFrom && (
+                <Badge variant="secondary">From: {workout.copiedFrom.name}</Badge>
+              )}
+            </div>
           </div>
-          <div className="flex gap-2 ml-4">
-            {workout.isTemplate && <Badge variant="outline">Template</Badge>}
-            {workout.copiedFrom && (
-              <Badge variant="secondary">From: {workout.copiedFrom.name}</Badge>
+
+          {/* Metadata */}
+          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Dumbbell className="h-4 w-4" />
+              <span>
+                {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              <span>Updated {new Date(workout.updatedAt).toLocaleDateString()}</span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-3 mt-6">
+            <Button onClick={handleStartWorkout} size="lg" disabled={!hasExercises}>
+              <Play className="h-4 w-4 mr-2" />
+              Start Workout
+            </Button>
+            {userRole !== 'CLIENT' && (
+              <>
+                <Button onClick={handleEdit} variant="outline" size="lg">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+                <Button onClick={() => setDeleteDialogOpen(true)} variant="destructive" size="lg">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </Button>
+              </>
             )}
           </div>
         </div>
-
-        {/* Metadata */}
-        <div className="flex items-center gap-6 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Dumbbell className="h-4 w-4" />
-            <span>
-              {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
-            </span>
+        {/* Muscle Group Body Map */}
+        {hasExercises && (
+          <div className="flex flex-col justify-center items-center">
+            <h2 className="text-xl font-semibold mb-4">Body Map</h2>
+            <MuscleGroupBody
+              exercises={workout.exercises.map((we) => ({
+                primaryMuscleGroup: we.exercise.primaryMuscleGroup,
+                secondaryMuscleGroups: we.exercise.secondaryMuscleGroups ?? [],
+              }))}
+              size="smd"
+            />
           </div>
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>Updated {new Date(workout.updatedAt).toLocaleDateString()}</span>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-3 mt-6">
-          <Button onClick={handleStartWorkout} size="lg" disabled={!hasExercises}>
-            <Play className="h-4 w-4 mr-2" />
-            Start Workout
-          </Button>
-          {userRole !== 'CLIENT' && (
-            <>
-              <Button onClick={handleEdit} variant="outline" size="lg">
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-              <Button onClick={() => setDeleteDialogOpen(true)} variant="destructive" size="lg">
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
-              </Button>
-            </>
-          )}
-        </div>
+        )}
       </div>
-
+      {/* <div className="flex flex-col lg:flex-row gap-6"> */}
       {/* Muscle Group Body Map */}
-      {hasExercises && (
-        <div className="flex justify-center py-6">
-          <MuscleGroupBody
-            exercises={workout.exercises.map((we) => ({
-              primaryMuscleGroup: we.exercise.primaryMuscleGroup,
-              secondaryMuscleGroups: we.exercise.secondaryMuscleGroups ?? [],
-            }))}
-            size="lg"
-          />
-        </div>
-      )}
+      {/* {hasExercises && (
+          <div className="flex flex-col justify-start ">
+            <h2 className="text-xl font-semibold mb-4">Body Map</h2>
+            <MuscleGroupBody
+              exercises={workout.exercises.map((we) => ({
+                primaryMuscleGroup: we.exercise.primaryMuscleGroup,
+                secondaryMuscleGroups: we.exercise.secondaryMuscleGroups ?? [],
+              }))}
+              size="md"
+            />
+          </div>
+        )} */}
 
       {/* Exercises List */}
       {hasExercises ? (
-        <div className="space-y-3">
+        <div className="space-y-3 w-full">
           <h2 className="text-xl font-semibold mb-4">Exercises</h2>
           {workout.exercises.map((workoutExercise, index) => {
             const supersetInfo = supersetManager.getSupersetInfo(workout.exercises, index)
@@ -353,6 +371,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           </CardContent>
         </Card>
       )}
+      {/* </div> */}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
