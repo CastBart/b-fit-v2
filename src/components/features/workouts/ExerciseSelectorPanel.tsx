@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Checkbox } from '@/components/ui/checkbox'
 import { CreateExerciseDrawer } from '@/components/features/exercises/CreateExerciseDrawer'
 import { useExercises } from '@/hooks/queries/useExercises'
 import { useCanCreateExercise } from '@/hooks/useCanCreateExercise'
@@ -219,24 +218,17 @@ export function ExerciseSelectorPanel({
                   key={exercise.id}
                   onClick={() => handleExerciseClick(exercise)}
                   disabled={disabled}
-                  className="w-full rounded-lg border bg-card p-3 text-left transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+                  className={`w-full rounded-lg border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                    isSelected
+                      ? 'border-primary bg-primary/10 hover:bg-primary/15'
+                      : 'bg-card hover:bg-accent'
+                  }`}
                 >
-                  <div className="flex items-start gap-3">
-                    {mode === 'multi' && (
-                      <Checkbox
-                        checked={isSelected}
-                        className="mt-0.5 pointer-events-none"
-                        aria-label={`Select ${exercise.name}`}
-                      />
-                    )}
-                    <div className="flex-1">
-                      <div className="font-medium">{exercise.name}</div>
-                      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>{MuscleGroupLabels[exercise.primaryMuscleGroup as MuscleGroup]}</span>
-                        <span>•</span>
-                        <span>{EquipmentTypeLabels[exercise.equipmentType as EquipmentType]}</span>
-                      </div>
-                    </div>
+                  <div className="font-medium">{exercise.name}</div>
+                  <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>{MuscleGroupLabels[exercise.primaryMuscleGroup as MuscleGroup]}</span>
+                    <span>•</span>
+                    <span>{EquipmentTypeLabels[exercise.equipmentType as EquipmentType]}</span>
                   </div>
                 </button>
               )
