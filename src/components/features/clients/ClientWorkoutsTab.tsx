@@ -162,7 +162,7 @@ export function ClientWorkoutsTab({
       {/* Toolbar */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-muted-foreground">{clientName}&apos;s workouts</p>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
             onClick={() => router.push(`/clients/${clientId}/workouts/create`)}

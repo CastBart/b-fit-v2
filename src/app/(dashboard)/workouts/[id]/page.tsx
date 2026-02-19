@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useSmartBack } from '@/hooks/useSmartBack'
 import { useWorkout } from '@/hooks/queries/useWorkout'
 import { useDeleteWorkout } from '@/hooks/mutations/useWorkoutMutations'
 import { useAppDispatch } from '@/store/hooks'
@@ -51,6 +52,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const deleteWorkout = useDeleteWorkout()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
+  const goBack = useSmartBack('/workouts')
   const supersetManager = new SupersetManager<WorkoutExerciseWithExercise>()
 
   // Handle delete confirmation
@@ -95,7 +97,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   if (error || !workout) {
     return (
       <div className="container mx-auto max-w-5xl py-8 px-4">
-        <Button variant="ghost" onClick={() => router.push('/workouts')} className="mb-6">
+        <Button variant="ghost" onClick={goBack} className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Workouts
         </Button>
@@ -107,7 +109,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => router.push('/workouts')}>Go to Workouts</Button>
+            <Button onClick={goBack}>Go to Workouts</Button>
           </CardContent>
         </Card>
       </div>
@@ -169,9 +171,8 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   return (
     <div className="container mx-auto max-w-5xl py-8 px-4">
       {/* Header with back button */}
-      <Button variant="ghost" onClick={() => router.push('/workouts')} className="mb-6">
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Workouts
+      <Button variant="ghost" onClick={goBack} className="mb-6">
+        <ArrowLeft className="h-4 w-4" />
       </Button>
 
       {/* Workout Header */}

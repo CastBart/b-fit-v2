@@ -44,6 +44,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useSmartBack } from '@/hooks/useSmartBack'
 import { usePlan } from '@/hooks/queries/usePlan'
 import {
   useDeletePlan,
@@ -88,6 +89,7 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
   // Copy form state
   const [copyName, setCopyName] = useState('')
 
+  const goBack = useSmartBack('/plans')
   const supersetManager = new SupersetManager<PlanDayExerciseWithExercise>()
 
   const handleDelete = async () => {
@@ -163,7 +165,7 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
   if (error || !plan) {
     return (
       <div className="container mx-auto max-w-5xl py-8 px-4">
-        <Button variant="ghost" onClick={() => router.push('/plans')} className="mb-6">
+        <Button variant="ghost" onClick={goBack} className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Plans
         </Button>
@@ -176,7 +178,7 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => router.push('/plans')}>Go to Plans</Button>
+            <Button onClick={goBack}>Go to Plans</Button>
           </CardContent>
         </Card>
       </div>
@@ -209,7 +211,7 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
   return (
     <div className="container mx-auto max-w-5xl py-8 px-4">
       {/* Header with back button */}
-      <Button variant="ghost" onClick={() => router.push('/plans')} className="mb-6">
+      <Button variant="ghost" onClick={goBack} className="mb-6">
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to Plans
       </Button>
@@ -286,7 +288,7 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
                 Activate Plan
               </Button>
             )}
-            <Button onClick={() => router.push(`/plans/${id}/builder`)} variant="outline" size="lg">
+            <Button onClick={() => router.push(`/plans/builder/${id}`)} variant="outline" size="lg">
               <Edit className="h-4 w-4 mr-2" />
               Edit Days
             </Button>

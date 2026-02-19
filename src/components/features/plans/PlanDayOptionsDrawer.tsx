@@ -51,7 +51,7 @@ export function PlanDayOptionsDrawer({
   }
 
   const handleEditPlan = () => {
-    router.push(`/plans/${planId}/builder?day=${dayNumber}`)
+    router.push(`/plans/builder/${planId}?day=${dayNumber}`)
     onClose()
   }
 
