@@ -41,7 +41,7 @@ export default function CreatePlanForClientPage({ params }: CreatePlanForClientP
       {
         onSuccess: (data) => {
           if (data) {
-            router.push(`/plans/${data.id}/builder`)
+            router.push(`/plans/builder/${data.id}`)
           }
         },
       }
@@ -50,7 +50,11 @@ export default function CreatePlanForClientPage({ params }: CreatePlanForClientP
 
   return (
     <div className="container mx-auto max-w-lg py-8 px-4">
-      <Button variant="ghost" className="mb-6" onClick={() => router.push(`/clients/${clientId}`)}>
+      <Button
+        variant="ghost"
+        className="mb-6"
+        onClick={() => router.push(`/clients/${clientId}?tab=plans`)}
+      >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Client
       </Button>
@@ -140,7 +144,7 @@ export default function CreatePlanForClientPage({ params }: CreatePlanForClientP
             <Button
               variant="outline"
               className="flex-1"
-              onClick={() => router.push(`/clients/${clientId}`)}
+              onClick={() => router.push(`/clients/${clientId}?tab=plans`)}
             >
               Cancel
             </Button>

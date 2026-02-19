@@ -59,7 +59,8 @@
       "Bash(cmd /c:*)",
       "Bash(git stash:*)",
       "Bash(find:*)",
-      "WebSearch"
+      "WebSearch",
+      "mcp__ide__getDiagnostics"
     ]
   },
   "enabledPlugins": {

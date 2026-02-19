@@ -15,6 +15,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSmartBack } from '@/hooks/useSmartBack'
 import { useSession } from 'next-auth/react'
 import { ArrowLeft, Save, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -108,6 +109,14 @@ export default function WorkoutBuilderPage({
     }
     return null
   }, [forClientId, isEditMode, existingWorkout, authSession?.user?.id])
+
+  // Compute back fallback based on context
+  const backFallback = clientContextId
+    ? `/clients/${clientContextId}?tab=workouts`
+    : isEditMode
+      ? `/workouts/${workoutId}`
+      : '/workouts'
+  const goBack = useSmartBack(backFallback)
 
   // Instantiate SupersetManager
   const supersetManager = new SupersetManager<WorkoutExercise>()
@@ -361,7 +370,11 @@ export default function WorkoutBuilderPage({
         },
         {
           onSuccess: () => {
-            router.push(clientContextId ? `/clients/${clientContextId}` : `/workouts/${workoutId}`)
+            router.push(
+              clientContextId
+                ? `/clients/${clientContextId}?tab=workouts`
+                : `/workouts/${workoutId}`
+            )
           },
         }
       )
@@ -383,7 +396,7 @@ export default function WorkoutBuilderPage({
         },
         {
           onSuccess: () => {
-            router.push(clientContextId ? `/clients/${clientContextId}` : '/workouts')
+            router.push(clientContextId ? `/clients/${clientContextId}?tab=workouts` : '/workouts')
           },
         }
       )
@@ -417,17 +430,7 @@ export default function WorkoutBuilderPage({
       <div className="border-b bg-background px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                if (clientContextId) {
-                  router.push(`/clients/${clientContextId}`)
-                } else {
-                  router.push(isEditMode ? `/workouts/${workoutId}` : '/workouts')
-                }
-              }}
-            >
+            <Button variant="ghost" size="icon" onClick={goBack}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
@@ -458,6 +461,20 @@ export default function WorkoutBuilderPage({
 
         {/* Center: Workout Exercises List - Full width on mobile, flex-1 on desktop */}
         <div className="w-full flex-1 overflow-y-auto lg:w-auto">
+          {/* TODO: Muscle Group Body Map */}
+          {/* {exercises.length > 0 && (
+            <div className="flex justify-center border-b bg-muted/5 py-4">
+              <MuscleGroupBody
+                exercises={exercises
+                  .filter((ex) => ex.exercise)
+                  .map((ex) => ({
+                    primaryMuscleGroup: ex.exercise!.primaryMuscleGroup,
+                    secondaryMuscleGroups: ex.exercise!.secondaryMuscleGroups ?? [],
+                  }))}
+                size="md"
+              />
+            </div>
+          )} */}
           <WorkoutExercisesList
             exercises={exercises}
             selectedIndex={selectedExerciseIndex}
@@ -500,6 +517,7 @@ export default function WorkoutBuilderPage({
           onOpenChange={setExerciseSelectorOpen}
           onExerciseSelect={(exercises) => handleAddExercises(exercises.map((ex) => ex.id))}
           disabled={!workoutId}
+          multiSelect={true}
         />
       </div>
 
@@ -542,7 +560,7 @@ export default function WorkoutBuilderPage({
           onOpenChange={(nextOpen) => {
             // If user closes the dialog before creating a workout, leave the builder.
             if (!nextOpen && !workoutId) {
-              router.push(forClientId ? `/clients/${forClientId}` : '/workouts')
+              router.push(forClientId ? `/clients/${forClientId}?tab=workouts` : '/workouts')
               return
             }
             setShowCreateDialog(nextOpen)

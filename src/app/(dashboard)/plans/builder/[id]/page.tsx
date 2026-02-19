@@ -3,7 +3,7 @@
  *
  * Wraps the PlanBuilderPage component with the plan ID from the URL.
  * Supports ?day=N query param to preselect a specific day.
- * URL: /plans/[id]/builder?day=1
+ * URL: /plans/builder/[id]?day=1
  */
 
 'use client'

@@ -48,7 +48,7 @@ export default function CreatePlanPage() {
       {
         onSuccess: (data) => {
           if (data) {
-            router.push(`/plans/${data.id}/builder`)
+            router.push(`/plans/builder/${data.id}`)
           }
         },
       }

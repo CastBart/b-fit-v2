@@ -10,6 +10,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSmartBack } from '@/hooks/useSmartBack'
 import { useSession } from 'next-auth/react'
 import { ArrowLeft, Save, Plus, FileDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -86,6 +87,12 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
     }
     return null
   }, [plan, authSession?.user?.id])
+
+  // Back navigation — smart back with fallback to plan detail (or client detail in client context)
+  const backFallback = clientContextId
+    ? `/clients/${clientContextId}?tab=plans`
+    : `/plans/${planId}`
+  const goBack = useSmartBack(backFallback)
 
   // Superset manager
   const supersetManager = new SupersetManager<WorkoutExercise>()
@@ -440,7 +447,9 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
       { planId, days: daysPayload },
       {
         onSuccess: () => {
-          router.push(clientContextId ? `/clients/${clientContextId}` : `/plans/${planId}`)
+          router.push(
+            clientContextId ? `/clients/${clientContextId}?tab=plans` : `/plans/${planId}`
+          )
         },
       }
     )
@@ -486,13 +495,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
       <div className="border-b bg-background px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() =>
-                router.push(clientContextId ? `/clients/${clientContextId}` : `/plans/${planId}`)
-              }
-            >
+            <Button variant="ghost" size="icon" onClick={goBack}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
@@ -533,7 +536,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
         </div>
 
         {/* Center: Exercises List */}
-        <div className="w-full flex-1 overflow-y-auto lg:w-auto">
+        <div className="w-full relative flex-1 overflow-y-auto lg:w-auto">
           {/* Copy from Workout button */}
 
           <Button
