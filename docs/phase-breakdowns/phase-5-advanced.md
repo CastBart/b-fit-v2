@@ -152,146 +152,165 @@
 
 ## Week 13: Advanced Analytics
 
-### Task 13.1: Volume Calculation Logic (PARTIALLY COMPLETE)
+### Pre-Task: Analytics Foundation (Chunk A1) ✅ (2026-02-15)
+
+- [x] Install `recharts` charting library
+- [x] Create `src/types/analytics.ts` with all analytics types (DateRangePreset, VolumeDataPoint, FrequencyStats, PRSummary, AnalyticsOverview, ExerciseComparisonData, OrgAnalyticsOverview)
+- [x] Create `src/lib/analytics/date-utils.ts` with date range presets and ISO week utilities
+- [x] Create `src/lib/validations/analytics.ts` with Zod schemas for analytics filters, exercise comparison, client analytics
+
+### Task 13.1: Volume Calculation Logic ✅
 
 **Priority**: Critical
 **Estimated Effort**: 5-6 hours
-**Status**: Core utility created in dashboard integration (2026-02-09)
+**Status**: Complete (2026-02-15)
 
 #### Sub-tasks:
 
 1. **Create Analytics Utilities**
    - [x] Create `src/lib/analytics/volume.ts`
    - [x] `getTotalVolume(userId)` - Total volume using raw SQL SUM(weight\*reps)
-   - [ ] `calculateExerciseVolume(exerciseId, dateRange)` - Volume over time (remaining)
+   - [x] `getVolumeProgression(userId, startDate, endDate, exerciseId?)` - Weekly volume time-series via DATE_TRUNC
+   - [x] `getVolumeByMuscleGroup(userId, startDate, endDate)` - Volume distribution by primaryMuscleGroup
 
 2. **Aggregate on Session Completion**
-   - [ ] Update ExerciseHistory volumeHistory on session complete (remaining)
+   - N/A — All analytics computed on-the-fly from SessionSet data (no ExerciseHistory model needed)
 
 **Acceptance Criteria**:
 
 - ✅ Volume calculated correctly
-- ⬜ Volume history updated (remaining)
+- ✅ Volume progression over time (weekly)
+- ✅ Volume by muscle group with percentages
 
 ---
 
-### Task 13.2: Volume Progression Charts
+### Task 13.2: Volume Progression Charts ✅
 
 **Priority**: High
 **Estimated Effort**: 6-7 hours
+**Status**: Complete (2026-02-15)
 
 #### Sub-tasks:
 
 1. **Install Recharts**
-   - [ ] Install: `npm install recharts`
+   - [x] Install: `npm install recharts`
 
-2. **Create Volume Chart Component**
-   - [ ] Create `src/components/features/analytics/VolumeChart.tsx`
-   - [ ] Line chart showing volume over time
-   - [ ] Filter by exercise
+2. **Create Chart Components**
+   - [x] `VolumeChart.tsx` — AreaChart with gradient, weekly labels, custom tooltip
+   - [x] `MuscleGroupChart.tsx` — horizontal BarChart, color-coded, percentage tooltip
+   - [x] `FrequencyCard.tsx` — sessions/week, consistency bar, plan adherence bar
+   - [x] `PRSummaryCard.tsx` — total PRs, top 5 recent PRs list
+   - [x] `DateRangeSelector.tsx` — preset selector (7d, 30d, 90d, 1y, all)
+   - [x] `ExerciseFilter.tsx` — exercise dropdown with "All exercises" default
 
 **Acceptance Criteria**:
 
 - ✅ Chart displays volume progression
 - ✅ Can filter by exercise
-- ✅ Responsive chart
+- ✅ Responsive charts
+- ✅ All analytics widget components created
 
 ---
 
-### Task 13.3: PR Detection Algorithm (PARTIALLY COMPLETE)
+### Task 13.3: PR Detection Algorithm ✅
 
 **Priority**: High
 **Estimated Effort**: 5-6 hours
-**Status**: Weight PR detection created in dashboard integration (2026-02-09)
+**Status**: Complete (2026-02-15)
 
 #### Sub-tasks:
 
 1. **Enhance PR Detection**
    - [x] Create `src/lib/analytics/pr-detection.ts` with `getMonthlyPRCount(userId)`
    - [x] Detect weight PRs (max weight per exercise this month vs all-time prior)
-   - [ ] Detect PRs for remaining metric types (remaining):
-     - Duration
-     - Distance
-     - Total volume
-   - [ ] Store in ExerciseHistory.personalRecords JSON (remaining)
+   - [x] `getAllPRCount(userId, startDate, endDate)` — counts weight, duration, distance, reps PRs
+   - [x] `detectSessionPRsEnhanced(userId, sessionId)` — detects all PR types per session
+   - [x] `getPRSummary(userId, startDate, endDate)` — detailed PR list with exercise names
+   - N/A — PRs computed on-the-fly (no ExerciseHistory model needed)
 
 **Acceptance Criteria**:
 
-- ⬜ PRs detected for all metric types (weight PRs done, others remaining)
-- ⬜ PRs stored correctly (remaining)
-- ⬜ PRs displayed in session summary (remaining)
+- ✅ PRs detected for all metric types (weight, duration, distance, reps)
+- ✅ PR summary with recent PRs list
+- ✅ Enhanced session PR detection available
 
 ---
 
-### Task 13.4: Adherence Calculation
+### Task 13.4: Adherence Calculation (PARTIALLY COMPLETE)
 
 **Priority**: Medium
 **Estimated Effort**: 4-5 hours
+**Status**: Calculation logic complete (2026-02-15), UI remaining
 
 #### Sub-tasks:
 
 1. **Calculate Adherence**
-   - [ ] Create `src/lib/analytics/adherence.ts`
-   - [ ] Calculate % of scheduled workouts completed
-   - [ ] Calculate workout frequency (sessions/week)
+   - [x] Create `src/lib/analytics/adherence.ts`
+   - [x] `calculateAdherence(userId, startDate, endDate)` — plan day completions vs expected
+   - [x] `calculateSessionFrequency(userId, startDate, endDate)` — sessions/week, consistency score
 
 2. **Display Adherence**
-   - [ ] Add adherence widget to dashboard
+   - [ ] Add adherence widget to analytics page (remaining — Chunk A7/A8)
    - [ ] Show weekly/monthly adherence %
 
 **Acceptance Criteria**:
 
 - ✅ Adherence calculated correctly
-- ✅ Displayed in dashboard
+- ⬜ Displayed in analytics page (remaining)
 
 ---
 
-### Task 13.5: Analytics Dashboard (PARTIALLY COMPLETE)
+### Task 13.5: Analytics Dashboard (IN PROGRESS)
 
 **Priority**: High
 **Estimated Effort**: 7-8 hours
-**Status**: Dashboard stats widgets created in dashboard integration (2026-02-09)
+**Status**: Server actions complete (2026-02-15), UI remaining
 
 #### Sub-tasks:
 
 1. **Create Personal Analytics Page**
    - [x] Dashboard stats widgets (total workouts, sessions, volume, PRs) with real data
    - [x] `getDashboardStats()` server action reusable by analytics page
-   - [ ] Create `src/app/analytics/page.tsx` (remaining)
-   - [ ] Additional widgets (remaining):
-     - Volume progression chart (Recharts)
-     - Workout frequency
-   - [ ] Recent sessions with CompletedSessionDrawer (done on dashboard)
+   - [x] `getAnalyticsOverview(filters)` — full analytics with date range filtering
+   - [x] `getVolumeProgressionData(filters)` — standalone volume chart data
+   - [x] `getExerciseComparisonData(input)` — multi-exercise comparison data
+   - [ ] Create `src/app/analytics/page.tsx` (remaining — Chunk A8)
+   - [ ] Chart components with Recharts (remaining — Chunk A7)
 
 2. **PT Client Analytics View**
-   - [ ] Create `src/app/pt/clients/[id]/analytics/page.tsx` (remaining)
-   - [ ] Show client's analytics (remaining)
-   - [ ] Compare client performance over time (remaining)
+   - [x] `getClientAnalytics(input)` — PT views client analytics with relationship check
+   - [ ] Create `src/app/(dashboard)/clients/[id]/analytics/page.tsx` (remaining — Chunk A9)
+
+   - [x] Create `src/app/(dashboard)/analytics/page.tsx` with full layout
+   - [x] Volume chart with exercise filter, muscle group chart, frequency card, PR summary
+   - [x] Added `/analytics` to middleware protected routes
 
 **Acceptance Criteria**:
 
-- ⬜ Personal analytics page complete (dashboard stats done, full page remaining)
-- ⬜ PT can view client analytics (remaining)
-- ⬜ Charts and widgets functional (remaining)
+- ✅ Personal analytics page complete
+- ✅ PT can view client analytics (Analytics tab in client detail page)
+- ✅ Charts and widgets functional
 
 ---
 
-### Task 13.6: Exercise Comparison View
+### Task 13.6: Exercise Comparison View ✅
 
 **Priority**: Medium
 **Estimated Effort**: 5-6 hours
+**Status**: Complete (2026-02-15)
 
 #### Sub-tasks:
 
 1. **Create Comparison Page**
-   - [ ] Create `src/app/analytics/compare/page.tsx`
-   - [ ] Select multiple exercises
-   - [ ] Display volume charts side-by-side
+   - [x] Create `src/app/(dashboard)/analytics/compare/page.tsx`
+   - [x] `ExerciseMultiSelect` component — checkbox list with search, max 5
+   - [x] `ComparisonChart` component — multi-line LineChart with unified time axis
+   - [x] Two-column layout (selector | chart), date range selector
 
 **Acceptance Criteria**:
 
-- ✅ Can compare exercises
-- ✅ Charts display correctly
+- ✅ Can compare exercises (up to 5)
+- ✅ Charts display correctly with color-coded lines
 
 ---
 
@@ -383,16 +402,29 @@
 
 ---
 
+### Pre-Task: Organisation Schema + Config (Chunk O1) ✅ (2026-02-15)
+
+- [x] Added `Organisation` model (name, description, ownerId unique, ptSeatCapacity)
+- [x] Added `OrganisationBranding` model (logoUrl, primaryColor, secondaryColor)
+- [x] Added `OrgPTRelationship` model (mirrors ClientRelationship: organisationId, ptId, status, inviteCode, ptEmail, expiresAt)
+- [x] Added `OrgPTStatus` enum (PENDING, ACTIVE, ENDED)
+- [x] Added `ORG_STARTER`, `ORG_PRO`, `ORG_ELITE` to `SubscriptionTier` enum
+- [x] Added User fields: `organisationId?`, organisation relations, orgPTMemberships
+- [x] Updated `src/lib/stripe/config.ts` with ORG tier configs (ptSeatCapacity: 5/15/50)
+- [x] Updated `src/lib/validations/subscription.ts` to accept ORG tier keys
+- [x] Migration `20260215171311_add_organisation_models` applied
+
 ### Task 14.5: Organisation User Role
 
 **Priority**: Medium
 **Estimated Effort**: 6-7 hours
+**Status**: Schema complete (2026-02-15), dashboard remaining
 
 #### Sub-tasks:
 
 1. **Add Organisation Model**
-   - [ ] Add Organisation and OrganisationBranding models
-   - [ ] Run migration
+   - [x] Add Organisation and OrganisationBranding models
+   - [x] Run migration
 
 2. **Organisation Dashboard**
    - [ ] Create `src/app/org/dashboard/page.tsx`

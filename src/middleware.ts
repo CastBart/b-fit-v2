@@ -14,6 +14,7 @@ export default auth((req) => {
     nextUrl.pathname.startsWith('/sessions') ||
     nextUrl.pathname.startsWith('/plans') ||
     nextUrl.pathname.startsWith('/clients') ||
+    nextUrl.pathname.startsWith('/analytics') ||
     nextUrl.pathname.startsWith('/settings')
 
   // Redirect logged-in users away from auth pages
@@ -40,6 +41,7 @@ export const config = {
     '/sessions/:path*',
     '/plans/:path*',
     '/clients/:path*',
+    '/analytics/:path*',
     '/settings/:path*',
     // Auth routes (to redirect logged-in users)
     '/login',

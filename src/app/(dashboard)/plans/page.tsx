@@ -1,38 +1,19 @@
 /**
  * Plans List Page
  *
- * Displays user's training plans with active plan card, search, and pagination.
+ * Displays user's training plans with search, view toggle, and pagination.
  */
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Plus,
-  ClipboardList,
-  Calendar,
-  Dumbbell,
-  ChevronRight,
-  Zap,
-  MoreVertical,
-  Copy,
-  Trash2,
-  Edit,
-} from 'lucide-react'
+import { Plus, ClipboardList, LayoutGrid, List } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -41,12 +22,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -57,23 +32,50 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { usePlans } from '@/hooks/queries/usePlans'
 import { useDeletePlan, useActivatePlan, useCopyPlan } from '@/hooks/mutations/usePlanMutations'
-import { formatPlanDuration, getCurrentWeek, getPlanProgress } from '@/lib/utils/plan-utils'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
+import { PlanGridCard } from '@/components/features/plans/PlanGridCard'
+import { PlanRowCard } from '@/components/features/plans/PlanRowCard'
+
+// ============================================================================
+// Types & Constants
+// ============================================================================
+
+type ViewMode = 'list' | 'grid'
+
+const VIEW_MODE_KEY = 'plans-view-mode'
+
+// ============================================================================
+// Page
+// ============================================================================
 
 export default function PlansPage() {
   const router = useRouter()
   const { data: session } = useSession()
   const isClient = session?.user?.role === 'CLIENT'
+
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [viewMode, setViewMode] = useState<ViewMode>('list')
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [planToDelete, setPlanToDelete] = useState<{ id: string; name: string } | null>(null)
   const [copyDialogOpen, setCopyDialogOpen] = useState(false)
   const [planToCopy, setPlanToCopy] = useState<{ id: string; name: string } | null>(null)
   const [copyName, setCopyName] = useState('')
+
+  // Init view mode from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(VIEW_MODE_KEY)
+      if (stored === 'grid' || stored === 'list') {
+        setViewMode(stored)
+      }
+    }
+  }, [])
 
   const { data, isLoading, error } = usePlans({ search, page, limit: 12 })
   const deletePlan = useDeletePlan()
@@ -82,6 +84,13 @@ export default function PlansPage() {
 
   if (error) {
     toast.error('Failed to load plans')
+  }
+
+  const handleViewModeChange = (value: string) => {
+    if (value === 'list' || value === 'grid') {
+      setViewMode(value)
+      localStorage.setItem(VIEW_MODE_KEY, value)
+    }
   }
 
   const handleDelete = () => {
@@ -118,6 +127,43 @@ export default function PlansPage() {
     )
   }
 
+  // Shared card props factory
+  const cardProps = (plan: NonNullable<typeof data>['plans'][number]) => ({
+    plan,
+    isClient,
+    onView: (id: string) => router.push(`/plans/${id}`),
+    onEdit: (id: string) => router.push(`/plans/builder/${id}`),
+    onActivate: (id: string) => activatePlan.mutate(id),
+    isActivating: activatePlan.isPending,
+    ...(isClient
+      ? {}
+      : {
+          onCopy: handleOpenCopyDialog,
+          onDelete: (id: string, name: string) => {
+            setPlanToDelete({ id, name })
+            setDeleteDialogOpen(true)
+          },
+        }),
+  })
+
+  const renderPlanList = () => {
+    if (!data || data.plans.length === 0) return null
+
+    return viewMode === 'grid' ? (
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {data.plans.map((plan) => (
+          <PlanGridCard key={plan.id} {...cardProps(plan)} />
+        ))}
+      </div>
+    ) : (
+      <div className="space-y-2">
+        {data.plans.map((plan) => (
+          <PlanRowCard key={plan.id} {...cardProps(plan)} />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="container mx-auto p-6">
       {/* Header */}
@@ -127,15 +173,15 @@ export default function PlansPage() {
           <p className="mt-1 text-muted-foreground">Create and manage your training plans</p>
         </div>
         {!isClient && (
-          <Button onClick={() => router.push('/plans/create')} size="lg">
+          <Button onClick={() => router.push('/plans/create')} className="cursor-pointer">
             <Plus className="mr-2 h-4 w-4" />
             Create Plan
           </Button>
         )}
       </div>
 
-      {/* Search */}
-      <div className="mb-6">
+      {/* Toolbar: Search + View Toggle */}
+      <div className="mb-6 flex items-center gap-4">
         <Input
           type="search"
           placeholder="Search plans..."
@@ -146,10 +192,23 @@ export default function PlansPage() {
           }}
           className="max-w-md"
         />
+        <ToggleGroup
+          type="single"
+          value={viewMode}
+          onValueChange={handleViewModeChange}
+          className="ml-auto"
+        >
+          <ToggleGroupItem value="list" aria-label="List view" className="px-2.5">
+            <List className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="grid" aria-label="Grid view" className="px-2.5">
+            <LayoutGrid className="h-4 w-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
       {/* Loading State */}
-      {isLoading && (
+      {isLoading && viewMode === 'grid' && (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
@@ -160,6 +219,20 @@ export default function PlansPage() {
               <CardContent>
                 <Skeleton className="h-4 w-1/2" />
               </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+      {isLoading && viewMode === 'list' && (
+        <div className="space-y-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} className="flex items-center gap-4 p-4">
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-5 w-1/3" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-8 w-20" />
             </Card>
           ))}
         </div>
@@ -186,167 +259,10 @@ export default function PlansPage() {
         </Card>
       )}
 
-      {/* Plans Grid */}
+      {/* Plans List */}
       {!isLoading && data && data.plans.length > 0 && (
         <>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {data.plans.map((plan) => {
-              const currentWeek = plan.isActive ? getCurrentWeek(plan.activatedAt) : 0
-              const progress = plan.isActive
-                ? getPlanProgress(plan.activatedAt, plan.durationWeeks)
-                : 0
-
-              return (
-                <Card
-                  key={plan.id}
-                  className={`group flex flex-col h-full cursor-pointer transition-all hover:shadow-lg ${
-                    plan.isActive ? 'border-primary ring-1 ring-primary/20' : ''
-                  }`}
-                  onClick={() => router.push(`/plans/${plan.id}`)}
-                >
-                  <CardHeader className="flex-1">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <CardTitle className="line-clamp-1">{plan.name}</CardTitle>
-                          {plan.isActive && (
-                            <Badge className="bg-primary text-primary-foreground">
-                              <Zap className="mr-1 h-3 w-3" />
-                              Active
-                            </Badge>
-                          )}
-                        </div>
-                        {plan.description && (
-                          <CardDescription className="mt-1 line-clamp-2">
-                            {plan.description}
-                          </CardDescription>
-                        )}
-                      </div>
-                      {!isClient && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 opacity-0 group-hover:opacity-100"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                            <DropdownMenuItem
-                              onClick={() => router.push(`/plans/${plan.id}/builder`)}
-                            >
-                              <Edit className="mr-2 h-4 w-4" />
-                              Edit Days
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleOpenCopyDialog(plan.id, plan.name)}
-                            >
-                              <Copy className="mr-2 h-4 w-4" />
-                              Copy Plan
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => {
-                                setPlanToDelete({ id: plan.id, name: plan.name })
-                                setDeleteDialogOpen(true)
-                              }}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>{plan.daysPerWeek} days/week</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Dumbbell className="h-4 w-4" />
-                        <span>{plan.totalExerciseCount} exercises</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">
-                        {formatPlanDuration(plan.durationWeeks)}
-                      </span>
-                      {plan.copiedFrom && (
-                        <Badge variant="outline" className="text-xs">
-                          Assigned
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Active plan progress */}
-                    {plan.isActive && plan.durationWeeks > 0 && (
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-xs">
-                          <span>
-                            Week {currentWeek} of {plan.durationWeeks}
-                          </span>
-                          <span>{progress}%</span>
-                        </div>
-                        <div className="h-1.5 w-full rounded-full bg-muted">
-                          <div
-                            className="h-full rounded-full bg-primary transition-all"
-                            style={{ width: `${Math.min(progress, 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                  <CardFooter className="gap-2">
-                    {!plan.isActive && !isClient ? (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="flex-1"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          activatePlan.mutate(plan.id)
-                        }}
-                      >
-                        <Zap className="mr-2 h-3 w-3" />
-                        Activate
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          router.push(`/plans/${plan.id}`)
-                        }}
-                      >
-                        <ChevronRight className="mr-2 h-3 w-3" />
-                        View Plan
-                      </Button>
-                    )}
-                    {!isClient && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          router.push(`/plans/${plan.id}/builder`)
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    )}
-                  </CardFooter>
-                </Card>
-              )
-            })}
-          </div>
+          {renderPlanList()}
 
           {/* Pagination */}
           {data.totalPages > 1 && (

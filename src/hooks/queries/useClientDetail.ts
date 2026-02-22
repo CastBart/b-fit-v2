@@ -3,7 +3,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import { getClientDetail, getClientSessions } from '@/server/actions/clients'
+import { getClientDetail, getClientSessions, getInvitationDetail } from '@/server/actions/clients'
 import { getClientWorkouts } from '@/server/actions/workouts'
 import { getClientPlans } from '@/server/actions/plans'
 
@@ -19,6 +19,23 @@ export function useClientDetail(clientId?: string) {
     },
     staleTime: 1000 * 60 * 10, // 10 minutes
     enabled: !!clientId,
+    retry: false,
+  })
+}
+
+export function useInvitationDetail(relationshipId?: string, enabled = false) {
+  return useQuery({
+    queryKey: ['invitation-detail', relationshipId],
+    queryFn: async () => {
+      const result = await getInvitationDetail(relationshipId!)
+      if (!result.success || !result.data) {
+        throw new Error(result.error || 'Failed to fetch invitation detail')
+      }
+      return result.data
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: !!relationshipId && enabled,
+    retry: false,
   })
 }
 

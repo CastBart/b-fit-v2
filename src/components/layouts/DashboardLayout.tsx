@@ -3,10 +3,12 @@
 import { useState } from 'react'
 import { Navbar } from './Navbar'
 import { Sidebar } from './Sidebar'
+import { BottomNav } from './BottomNav'
+import type { UserRole } from '@/lib/nav-items'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
-  userRole?: 'PERSONAL' | 'PT' | 'CLIENT' | 'ORG'
+  userRole?: UserRole
 }
 
 export function DashboardLayout({ children, userRole = 'PERSONAL' }: DashboardLayoutProps) {
@@ -22,10 +24,16 @@ export function DashboardLayout({ children, userRole = 'PERSONAL' }: DashboardLa
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} userRole={userRole} />
 
         {/* Main Content */}
-        <main className="flex-1 min-w-0 p-2">
-          <div className="mx-auto ">{children}</div>
+        <main className="flex-1 min-w-0 p-2 pb-16 md:pb-2">
+          <div className="mx-auto ">
+            {/* <SubscriptionStatusBanner /> */}
+            {children}
+          </div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <BottomNav userRole={userRole} />
     </div>
   )
 }

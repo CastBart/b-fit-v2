@@ -15,29 +15,40 @@ import {
   DrawerFooter,
 } from '@/components/ui/drawer'
 import { useWorkouts } from '@/hooks/queries/useWorkouts'
-import { useAssignWorkout } from '@/hooks/mutations/useClientMutations'
+import { MuscleGroupLabels } from '@/types/exercise'
+import type { MuscleGroup } from '@prisma/client'
 
 interface AssignWorkoutDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  clientId: string
   clientName: string
+  onSelectWorkout: (workoutId: string) => void
 }
 
 export function AssignWorkoutDrawer({
   open,
   onOpenChange,
-  clientId,
   clientName,
+  onSelectWorkout,
 }: AssignWorkoutDrawerProps) {
   const [search, setSearch] = useState('')
 
   const { data, isLoading } = useWorkouts({ search: search || undefined })
-  const assignMutation = useAssignWorkout()
 
-  const handleAssign = async (workoutId: string) => {
-    await assignMutation.mutateAsync({ workoutId, clientId })
-    onOpenChange(false)
+  function getMuscleGroupLabels(
+    exercises:
+      | Array<{ exercise: { primaryMuscleGroup: string; secondaryMuscleGroups: string[] } }>
+      | undefined
+  ): string[] {
+    if (!exercises || exercises.length === 0) return []
+    const counts = new Map<string, number>()
+    for (const we of exercises) {
+      const mg = we.exercise.primaryMuscleGroup
+      counts.set(mg, (counts.get(mg) ?? 0) + 1)
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([mg]) => MuscleGroupLabels[mg as MuscleGroup] ?? mg)
   }
 
   return (
@@ -83,27 +94,24 @@ export function AssignWorkoutDrawer({
             )}
 
             {!isLoading &&
-              data?.workouts.map((workout) => (
-                <Card
-                  key={workout.id}
-                  className="cursor-pointer transition-colors hover:bg-accent"
-                  onClick={() => handleAssign(workout.id)}
-                >
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium">{workout.name}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {workout.exercises?.length ?? 0} exercises
-                        </p>
-                      </div>
-                      {assignMutation.isPending && (
-                        <span className="text-xs text-muted-foreground">Assigning...</span>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              data?.workouts.map((workout) => {
+                const muscleLabels = getMuscleGroupLabels(workout.exercises)
+                return (
+                  <Card
+                    key={workout.id}
+                    className="cursor-pointer transition-colors hover:bg-accent"
+                    onClick={() => onSelectWorkout(workout.id)}
+                  >
+                    <CardContent className="p-3">
+                      <h4 className="font-medium leading-none">{workout.name}</h4>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        {workout.exercises?.length ?? 0} exercises
+                        {muscleLabels.length > 0 && <> · {muscleLabels.join(', ')}</>}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )
+              })}
           </div>
         </div>
 

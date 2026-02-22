@@ -2,9 +2,11 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { SessionProvider } from '@/components/providers/SessionProvider'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import ReduxProvider from '@/components/providers/ReduxProvider'
+import { auth } from '@/lib/auth/auth.config'
 import './globals.css'
 
 const inter = Inter({
@@ -48,15 +50,17 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await auth()
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <SessionProvider>
+        <SessionProvider session={session}>
           <ReduxProvider>
             <QueryProvider>
               <ThemeProvider
@@ -65,7 +69,7 @@ export default function RootLayout({
                 enableSystem
                 disableTransitionOnChange
               >
-                {children}
+                <TooltipProvider>{children}</TooltipProvider>
                 <Toaster />
               </ThemeProvider>
             </QueryProvider>

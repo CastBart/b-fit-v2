@@ -2,91 +2,47 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import {
-  Home,
-  Dumbbell,
-  ListChecks,
-  ClipboardList,
-  PlayCircle,
-  BarChart3,
-  Users,
-  Building2,
-  Settings,
-  X,
-} from 'lucide-react'
+import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { useSubscription } from '@/hooks/queries/useSubscription'
+import { SUBSCRIPTION_TIERS } from '@/lib/stripe/config'
+import { navItems, type UserRole } from '@/lib/nav-items'
 
 interface SidebarProps {
   isOpen?: boolean
   onClose?: () => void
-  userRole?: 'PERSONAL' | 'PT' | 'CLIENT' | 'ORG'
+  userRole?: UserRole
 }
 
-interface NavItem {
-  title: string
-  href: string
-  icon: React.ComponentType<{ className?: string }>
-  roles: Array<'PERSONAL' | 'PT' | 'CLIENT' | 'ORG'>
-}
+function SubscriptionBadge() {
+  const { data: subscription } = useSubscription()
 
-const navItems: NavItem[] = [
-  {
-    title: 'Dashboard',
-    href: '/dashboard',
-    icon: Home,
-    roles: ['PERSONAL', 'PT', 'CLIENT', 'ORG'],
-  },
-  {
-    title: 'Exercises',
-    href: '/exercises',
-    icon: Dumbbell,
-    roles: ['PERSONAL', 'PT'],
-  },
-  {
-    title: 'Workouts',
-    href: '/workouts',
-    icon: ListChecks,
-    roles: ['PERSONAL', 'PT', 'CLIENT'],
-  },
-  {
-    title: 'Plans',
-    href: '/plans',
-    icon: ClipboardList,
-    roles: ['PERSONAL', 'PT', 'CLIENT'],
-  },
-  {
-    title: 'Sessions',
-    href: '/sessions',
-    icon: PlayCircle,
-    roles: ['PERSONAL', 'PT', 'CLIENT'],
-  },
-  {
-    title: 'Analytics',
-    href: '/analytics',
-    icon: BarChart3,
-    roles: ['PERSONAL', 'PT', 'ORG'],
-  },
-  {
-    title: 'Clients',
-    href: '/clients',
-    icon: Users,
-    roles: ['PT', 'ORG'],
-  },
-  {
-    title: 'Trainers',
-    href: '/trainers',
-    icon: Building2,
-    roles: ['ORG'],
-  },
-  {
-    title: 'Settings',
-    href: '/settings',
-    icon: Settings,
-    roles: ['PERSONAL', 'PT', 'CLIENT', 'ORG'],
-  },
-]
+  if (!subscription) return null
+
+  const tierConfig = SUBSCRIPTION_TIERS[subscription.tier]
+
+  if (subscription.status === 'TRIALING') {
+    const daysLeft = Math.max(
+      0,
+      Math.ceil(
+        (new Date(subscription.currentPeriodEnd).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      )
+    )
+    return (
+      <div className="mt-1 flex items-center gap-1.5">
+        <span className="text-xs text-muted-foreground">{tierConfig.name}</span>
+        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+          Trial: {daysLeft}d
+        </Badge>
+      </div>
+    )
+  }
+
+  return <p className="mt-1 text-xs text-muted-foreground">{tierConfig.name}</p>
+}
 
 export function Sidebar({ isOpen = true, onClose, userRole = 'PERSONAL' }: SidebarProps) {
   const pathname = usePathname()
@@ -157,6 +113,7 @@ export function Sidebar({ isOpen = true, onClose, userRole = 'PERSONAL' }: Sideb
                 {userRole === 'CLIENT' && 'Client'}
                 {userRole === 'ORG' && 'Organization'}
               </p>
+              {userRole === 'PT' && <SubscriptionBadge />}
             </div>
           </nav>
 

@@ -4,14 +4,20 @@ import { Suspense, useCallback, useMemo, useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { ExerciseCard } from '@/components/features/exercises/ExerciseCard'
-import { ExerciseFilters } from '@/components/features/exercises/ExerciseFilters'
+import { ExerciseFilterBar } from '@/components/features/exercises/ExerciseFilterBar'
 import { ExerciseDrawer } from '@/components/features/exercises/ExerciseDrawer'
 import { CreateExerciseDrawer } from '@/components/features/exercises/CreateExerciseDrawer'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useExercises } from '@/hooks/queries/useExercises'
 import { useCanCreateExercise } from '@/hooks/useCanCreateExercise'
-import type { MuscleGroup, EquipmentType, DifficultyLevel } from '@/types/exercise'
+import type {
+  MuscleGroup,
+  EquipmentType,
+  DifficultyLevel,
+  ExerciseType,
+  MovementPattern,
+} from '@/types/exercise'
 import { toast } from 'sonner'
 
 /* ---------------- helpers ---------------- */
@@ -47,13 +53,20 @@ function ExercisesContent() {
   const search = searchParams.get('search') || ''
 
   const muscleGroupsParam = searchParams.get('muscleGroups')
+  const exerciseTypesParam = searchParams.get('exerciseTypes')
   const equipmentTypesParam = searchParams.get('equipmentTypes')
   const difficultyLevelsParam = searchParams.get('difficultyLevels')
+  const movementPatternsParam = searchParams.get('movementPatterns')
 
   /* ---------- parsed & memoized filters ---------- */
   const muscleGroups = useMemo(
     () => normalizeArray(parseCsvParam<MuscleGroup>(muscleGroupsParam)),
     [muscleGroupsParam]
+  )
+
+  const exerciseTypes = useMemo(
+    () => normalizeArray(parseCsvParam<ExerciseType>(exerciseTypesParam)),
+    [exerciseTypesParam]
   )
 
   const equipmentTypes = useMemo(
@@ -66,17 +79,32 @@ function ExercisesContent() {
     [difficultyLevelsParam]
   )
 
+  const movementPatterns = useMemo(
+    () => normalizeArray(parseCsvParam<MovementPattern>(movementPatternsParam)),
+    [movementPatternsParam]
+  )
+
   /* ---------- params passed to server ---------- */
   const filterParams = useMemo(
     () => ({
       search: search || undefined,
       primaryMuscleGroups: muscleGroups.length ? muscleGroups : undefined,
+      exerciseTypes: exerciseTypes.length ? exerciseTypes : undefined,
       equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
       difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
+      movementPatterns: movementPatterns.length ? movementPatterns : undefined,
       page: currentPage,
       limit: 20,
     }),
-    [search, muscleGroups, equipmentTypes, difficultyLevels, currentPage]
+    [
+      search,
+      muscleGroups,
+      exerciseTypes,
+      equipmentTypes,
+      difficultyLevels,
+      movementPatterns,
+      currentPage,
+    ]
   )
 
   /* ---------- STABLE QUERY KEY ---------- */
@@ -85,12 +113,22 @@ function ExercisesContent() {
       JSON.stringify({
         search,
         muscleGroups,
+        exerciseTypes,
         equipmentTypes,
         difficultyLevels,
+        movementPatterns,
         page: currentPage,
         limit: 20,
       }),
-    [search, muscleGroups, equipmentTypes, difficultyLevels, currentPage]
+    [
+      search,
+      muscleGroups,
+      exerciseTypes,
+      equipmentTypes,
+      difficultyLevels,
+      movementPatterns,
+      currentPage,
+    ]
   )
 
   /* ---------- fetch exercises ---------- */
@@ -158,75 +196,90 @@ function ExercisesContent() {
 
   /* ---------- render ---------- */
   return (
-    <div className="space-y-6">
-      {/* Header with Create button */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Exercises</h1>
+    <div className="container mx-auto space-y-0 pb-6">
+      {/* Page header */}
+      <div className="flex items-center justify-between px-0 pt-6 pb-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Exercises</h1>
+          <p className="mt-1 text-muted-foreground">Create and manage your exercise library</p>
+        </div>
         {canCreate && (
-          <Button onClick={() => setCreateDrawerOpen(true)}>
+          <Button onClick={() => setCreateDrawerOpen(true)} className="cursor-pointer">
             <Plus className="mr-2 h-4 w-4" />
             Create Exercise
           </Button>
         )}
       </div>
 
-      <ExerciseFilters
-        search={search}
-        muscleGroups={muscleGroups}
-        equipmentTypes={equipmentTypes}
-        difficultyLevels={difficultyLevels}
-        onSearchChange={(v) => updateFilters({ search: v || undefined })}
-        onMuscleGroupsChange={(v) => updateFilters({ muscleGroups: v })}
-        onEquipmentTypesChange={(v) => updateFilters({ equipmentTypes: v })}
-        onDifficultyLevelsChange={(v) => updateFilters({ difficultyLevels: v })}
-        onClearFilters={handleClearFilters}
-      />
+      {/* Sticky filter bar — sits below the sticky navbar (h-16 = top-16) */}
+      <div className="sticky top-16 z-40 -mx-2 bg-background px-2 py-3">
+        <ExerciseFilterBar
+          search={search}
+          muscleGroups={muscleGroups}
+          exerciseTypes={exerciseTypes}
+          equipmentTypes={equipmentTypes}
+          difficultyLevels={difficultyLevels}
+          movementPatterns={movementPatterns}
+          onSearchChange={(v) => updateFilters({ search: v || undefined })}
+          onMuscleGroupsChange={(v) => updateFilters({ muscleGroups: v })}
+          onExerciseTypesChange={(v) => updateFilters({ exerciseTypes: v })}
+          onEquipmentTypesChange={(v) => updateFilters({ equipmentTypes: v })}
+          onDifficultyLevelsChange={(v) => updateFilters({ difficultyLevels: v })}
+          onMovementPatternsChange={(v) => updateFilters({ movementPatterns: v })}
+          onClearAll={handleClearFilters}
+        />
+        <div className="mt-3 border-b" />
+      </div>
 
-      {!isLoading && (
-        <p className="text-sm text-muted-foreground">
-          Showing {exercises.length} of {total}
-        </p>
-      )}
+      {/* Exercise grid */}
+      <div className="pt-4">
+        {!isLoading && (
+          <p className="mb-4 text-sm text-muted-foreground">
+            Showing {exercises.length} of {total}
+          </p>
+        )}
 
-      {isLoading ? (
-        <Skeleton className="h-48 w-full" />
-      ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {exercises.map((exercise) => (
-            <ExerciseCard
-              key={exercise.id}
-              exercise={exercise}
-              onClick={() => handleExerciseClick(exercise.id)}
-            />
-          ))}
-        </div>
-      )}
+        {isLoading ? (
+          <Skeleton className="h-48 w-full" />
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {exercises.map((exercise) => (
+              <ExerciseCard
+                key={exercise.id}
+                exercise={exercise}
+                onClick={() => handleExerciseClick(exercise.id)}
+              />
+            ))}
+          </div>
+        )}
 
-      {/* Pagination */}
-      {!isLoading && (data?.totalPages ?? 0) > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPage === 1}
-            onClick={() => updateFilters({ page: String(currentPage - 1) })}
-          >
-            Previous
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {data?.totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPage >= (data?.totalPages ?? 1)}
-            onClick={() => updateFilters({ page: String(currentPage + 1) })}
-          >
-            Next
-          </Button>
-        </div>
-      )}
+        {/* Pagination */}
+        {!isLoading && (data?.totalPages ?? 0) > 1 && (
+          <div className="mt-6 flex items-center justify-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => updateFilters({ page: String(currentPage - 1) })}
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Page {currentPage} of {data?.totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage >= (data?.totalPages ?? 1)}
+              onClick={() => updateFilters({ page: String(currentPage + 1) })}
+            >
+              Next
+            </Button>
+          </div>
+        )}
+      </div>
 
+      {/* Drawers */}
       <ExerciseDrawer
         exerciseId={selectedExerciseId}
         open={drawerOpen}

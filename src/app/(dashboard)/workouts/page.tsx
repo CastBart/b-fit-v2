@@ -1,31 +1,39 @@
 /**
  * Workouts List Page
  *
- * Displays user's workouts with options to create, edit, view, and start workouts.
+ * Displays user's workouts with switchable Grid/List view,
+ * pinned favorites, hover-revealed quick actions, and delete confirmation.
  */
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { Plus, Dumbbell, Calendar, ChevronRight } from 'lucide-react'
+import { Plus, Dumbbell, LayoutGrid, List, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Badge } from '@/components/ui/badge'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { WorkoutRowCard } from '@/components/features/workouts/WorkoutRowCard'
+import { WorkoutGridCard } from '@/components/features/workouts/WorkoutGridCard'
+import { DeleteWorkoutDialog } from '@/components/features/workouts/DeleteWorkoutDialog'
 import { useWorkouts } from '@/hooks/queries/useWorkouts'
+import { useDeleteWorkout, useDuplicateWorkout } from '@/hooks/mutations/useWorkoutMutations'
+import { getWorkoutById } from '@/server/actions/workouts'
+import { startWorkoutSession } from '@/lib/utils/session-navigation'
+import { useAppDispatch } from '@/store/hooks'
 import { toast } from 'sonner'
-// import { startWorkoutSession } from '@/lib/utils/session-navigation'
-// import { useAppDispatch } from '@/store/hooks'
+
+// ============================================================================
+// Types & Constants
+// ============================================================================
+
+type ViewMode = 'list' | 'grid'
+
+const VIEW_MODE_KEY = 'workouts-view-mode'
+const PINNED_KEY = 'pinned-workouts'
 
 interface WorkoutWithExerciseCount {
   id: string
@@ -35,25 +43,212 @@ interface WorkoutWithExerciseCount {
   isTemplate: boolean
   copiedFrom?: { id: string; name: string } | null
   updatedAt: Date | string
+  exercises?: Array<{
+    id: string
+    exercise: {
+      primaryMuscleGroup: string
+      secondaryMuscleGroups: string[]
+    }
+  }>
 }
+
+// ============================================================================
+// LocalStorage Helpers
+// ============================================================================
+
+function getStoredViewMode(): ViewMode {
+  if (typeof window === 'undefined') return 'list'
+  const stored = localStorage.getItem(VIEW_MODE_KEY)
+  return stored === 'grid' || stored === 'list' ? stored : 'list'
+}
+
+function getStoredPinnedIds(): Set<string> {
+  if (typeof window === 'undefined') return new Set()
+  try {
+    const stored = localStorage.getItem(PINNED_KEY)
+    if (!stored) return new Set()
+    const parsed = JSON.parse(stored)
+    return new Set(Array.isArray(parsed) ? parsed : [])
+  } catch {
+    return new Set()
+  }
+}
+
+// ============================================================================
+// Page Component
+// ============================================================================
 
 export default function WorkoutsPage() {
   const router = useRouter()
+  const dispatch = useAppDispatch()
   const { data: session } = useSession()
   const isClient = session?.user?.role === 'CLIENT'
-  // const dispatch = useAppDispatch()
+
+  // Search & pagination
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
 
-  const { data, isLoading, error } = useWorkouts({
-    search,
-    page,
-    limit: 12,
-  })
+  // View mode (grid/list)
+  const [viewMode, setViewMode] = useState<ViewMode>('list')
+
+  // Pinned workouts
+  const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set())
+
+  // Start session state
+  const [startingWorkoutId, setStartingWorkoutId] = useState<string | null>(null)
+
+  // Delete state
+  const [deleteTarget, setDeleteTarget] = useState<WorkoutWithExerciseCount | null>(null)
+
+  // Initialize from localStorage
+  useEffect(() => {
+    setViewMode(getStoredViewMode())
+    setPinnedIds(getStoredPinnedIds())
+  }, [])
+
+  // Data fetching
+  const { data, isLoading, error } = useWorkouts({ search, page, limit: 12 })
+
+  // Mutations
+  const deleteWorkout = useDeleteWorkout()
+  const duplicateWorkoutMutation = useDuplicateWorkout()
 
   if (error) {
     toast.error('Failed to load workouts')
   }
+
+  // ---- Handlers ----
+
+  const handleViewModeChange = (value: string) => {
+    if (value === 'list' || value === 'grid') {
+      setViewMode(value)
+      localStorage.setItem(VIEW_MODE_KEY, value)
+    }
+  }
+
+  const handleStart = useCallback(
+    async (workoutId: string) => {
+      if (startingWorkoutId) return
+      setStartingWorkoutId(workoutId)
+      try {
+        const result = await getWorkoutById(workoutId)
+        if (!result.success || !result.data) {
+          toast.error(result.error || 'Failed to load workout')
+          return
+        }
+        startWorkoutSession(result.data, dispatch, router)
+      } catch {
+        toast.error('Failed to start session')
+      } finally {
+        setStartingWorkoutId(null)
+      }
+    },
+    [startingWorkoutId, dispatch, router]
+  )
+
+  const handleTogglePin = useCallback((workoutId: string) => {
+    setPinnedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(workoutId)) {
+        next.delete(workoutId)
+      } else {
+        next.add(workoutId)
+      }
+      localStorage.setItem(PINNED_KEY, JSON.stringify([...next]))
+      return next
+    })
+  }, [])
+
+  const handleDeleteRequest = useCallback(
+    (workoutId: string) => {
+      const workout = data?.workouts.find((w: WorkoutWithExerciseCount) => w.id === workoutId)
+      if (workout) setDeleteTarget(workout)
+    },
+    [data?.workouts]
+  )
+
+  const handleDeleteConfirm = useCallback(() => {
+    if (!deleteTarget) return
+    deleteWorkout.mutate(deleteTarget.id, {
+      onSuccess: () => setDeleteTarget(null),
+    })
+  }, [deleteTarget, deleteWorkout])
+
+  const handleDuplicate = useCallback(
+    (workoutId: string) => {
+      duplicateWorkoutMutation.mutate(workoutId)
+    },
+    [duplicateWorkoutMutation]
+  )
+
+  // ---- Derived State ----
+
+  const showPinnedSection = !search && pinnedIds.size > 0
+
+  const { pinnedWorkouts, unpinnedWorkouts } = useMemo(() => {
+    if (!data?.workouts) return { pinnedWorkouts: [], unpinnedWorkouts: [] }
+    if (!showPinnedSection) return { pinnedWorkouts: [], unpinnedWorkouts: data.workouts }
+
+    const pinned: WorkoutWithExerciseCount[] = []
+    const unpinned: WorkoutWithExerciseCount[] = []
+    for (const w of data.workouts) {
+      if (pinnedIds.has(w.id)) {
+        pinned.push(w)
+      } else {
+        unpinned.push(w)
+      }
+    }
+    return { pinnedWorkouts: pinned, unpinnedWorkouts: unpinned }
+  }, [data?.workouts, pinnedIds, showPinnedSection])
+
+  // Shared card props factory
+  const cardProps = useCallback(
+    (workout: WorkoutWithExerciseCount, pinned: boolean) => ({
+      workout,
+      isClient,
+      isPinned: pinned,
+      isStarting: startingWorkoutId === workout.id,
+      onStart: handleStart,
+      onEdit: (id: string) => router.push(`/workouts/builder/${id}`),
+      onClick: (id: string) => router.push(`/workouts/${id}`),
+      onTogglePin: handleTogglePin,
+      onDuplicate: handleDuplicate,
+      onDelete: handleDeleteRequest,
+    }),
+    [
+      isClient,
+      startingWorkoutId,
+      handleStart,
+      router,
+      handleTogglePin,
+      handleDuplicate,
+      handleDeleteRequest,
+    ]
+  )
+
+  // ---- Render helpers ----
+
+  const renderWorkoutList = (workouts: WorkoutWithExerciseCount[], pinned: boolean) => {
+    if (viewMode === 'grid') {
+      return (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {workouts.map((workout) => (
+            <WorkoutGridCard key={workout.id} {...cardProps(workout, pinned)} />
+          ))}
+        </div>
+      )
+    }
+
+    return (
+      <div className="space-y-2">
+        {workouts.map((workout) => (
+          <WorkoutRowCard key={workout.id} {...cardProps(workout, pinned)} />
+        ))}
+      </div>
+    )
+  }
+
+  // ---- Render ----
 
   return (
     <div className="container mx-auto p-6">
@@ -64,15 +259,15 @@ export default function WorkoutsPage() {
           <p className="mt-1 text-muted-foreground">Create and manage your workout routines</p>
         </div>
         {!isClient && (
-          <Button onClick={() => router.push('/workouts/builder')} size="lg">
+          <Button onClick={() => router.push('/workouts/builder')} className="cursor-pointer">
             <Plus className="mr-2 h-4 w-4" />
             Create Workout
           </Button>
         )}
       </div>
 
-      {/* Search */}
-      <div className="mb-6">
+      {/* Toolbar: Search + View Toggle */}
+      <div className="mb-6 flex items-center gap-4">
         <Input
           type="search"
           placeholder="Search workouts..."
@@ -83,10 +278,23 @@ export default function WorkoutsPage() {
           }}
           className="max-w-md"
         />
+        <ToggleGroup
+          type="single"
+          value={viewMode}
+          onValueChange={handleViewModeChange}
+          className="ml-auto"
+        >
+          <ToggleGroupItem value="list" aria-label="List view" className="px-2.5">
+            <List className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="grid" aria-label="Grid view" className="px-2.5">
+            <LayoutGrid className="h-4 w-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
       {/* Loading State */}
-      {isLoading && (
+      {isLoading && viewMode === 'grid' && (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
@@ -97,6 +305,20 @@ export default function WorkoutsPage() {
               <CardContent>
                 <Skeleton className="h-4 w-1/2" />
               </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+      {isLoading && viewMode === 'list' && (
+        <div className="space-y-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} className="flex items-center gap-4 p-4">
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-5 w-1/3" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-8 w-20" />
             </Card>
           ))}
         </div>
@@ -123,79 +345,33 @@ export default function WorkoutsPage() {
         </Card>
       )}
 
-      {/* Workouts Grid */}
+      {/* Workouts */}
       {!isLoading && data && data.workouts.length > 0 && (
         <>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {data.workouts.map((workout: WorkoutWithExerciseCount) => (
-              <Card
-                key={workout.id}
-                className="group flex flex-col h-full cursor-pointer transition-all hover:shadow-lg"
-                onClick={() => router.push(`/workouts/${workout.id}`)}
-              >
-                <CardHeader className="flex-1">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="line-clamp-1">{workout.name}</CardTitle>
-                      {workout.description && (
-                        <CardDescription className="mt-1 line-clamp-2">
-                          {workout.description}
-                        </CardDescription>
-                      )}
-                    </div>
-                    <ChevronRight className="ml-2 h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1" />
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Dumbbell className="h-4 w-4" />
-                      <span>{workout.exerciseCount} exercises</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{new Date(workout.updatedAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  {workout.isTemplate && (
-                    <Badge variant="secondary" className="text-xs">
-                      Template
-                    </Badge>
-                  )}
-                  {workout.copiedFrom && (
-                    <Badge variant="outline" className="text-xs">
-                      Assigned
-                    </Badge>
-                  )}
-                </CardContent>
-                <CardFooter className="gap-2">
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="flex-1"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      router.push(`/workouts/${workout.id}`)
-                    }}
-                  >
-                    Start Workout
-                  </Button>
-                  {!isClient && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        router.push(`/workouts/builder/${workout.id}`)
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  )}
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
+          {/* Pinned Section */}
+          {showPinnedSection && pinnedWorkouts.length > 0 && (
+            <div className="mb-6">
+              <div className="mb-3 flex items-center gap-2">
+                <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                <h2 className="text-sm font-semibold text-muted-foreground">
+                  Pinned ({pinnedWorkouts.length})
+                </h2>
+              </div>
+              {renderWorkoutList(pinnedWorkouts, true)}
+            </div>
+          )}
+
+          {/* "All Workouts" header (only when pinned section is visible) */}
+          {showPinnedSection && pinnedWorkouts.length > 0 && unpinnedWorkouts.length > 0 && (
+            <div className="mb-3">
+              <h2 className="text-sm font-semibold text-muted-foreground">
+                All Workouts ({unpinnedWorkouts.length})
+              </h2>
+            </div>
+          )}
+
+          {/* Main Workout List */}
+          {renderWorkoutList(unpinnedWorkouts, false)}
 
           {/* Pagination */}
           {data.totalPages > 1 && (
@@ -217,6 +393,17 @@ export default function WorkoutsPage() {
           )}
         </>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteWorkoutDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null)
+        }}
+        workoutName={deleteTarget?.name ?? ''}
+        onConfirm={handleDeleteConfirm}
+        isPending={deleteWorkout.isPending}
+      />
     </div>
   )
 }

@@ -1,20 +1,16 @@
 'use client'
 
-import { useState } from 'react'
-import { History } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { History, LayoutGrid, List, Play } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useSessions } from '@/hooks/queries/useSessions'
 import { SessionHistoryCard } from '@/components/features/sessions/SessionHistoryCard'
+import { SessionRowCard } from '@/components/features/sessions/SessionRowCard'
 import {
   CompletedSessionDrawer,
   type CompletedSessionData,
@@ -23,17 +19,43 @@ import { mapSessionToCompletedData } from '@/lib/utils/session-mappers'
 import { SessionStatus } from '@/types/session'
 import type { TrainingSessionWithDetails } from '@/types/session'
 import { toast } from 'sonner'
+import { useAppDispatch } from '@/store/hooks'
+import { startStandaloneSession } from '@/lib/utils/session-navigation'
+
+// ============================================================================
+// Types & Constants
+// ============================================================================
 
 type StatusFilter = 'ALL' | 'COMPLETED' | 'ABANDONED'
+type ViewMode = 'list' | 'grid'
+
+const VIEW_MODE_KEY = 'sessions-view-mode'
+
+// ============================================================================
+// Page
+// ============================================================================
 
 export default function SessionHistoryPage() {
+  const router = useRouter()
+  const dispatch = useAppDispatch()
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL')
+  const [statusFilter] = useState<StatusFilter>('ALL')
   const [page, setPage] = useState(1)
+  const [viewMode, setViewMode] = useState<ViewMode>('list')
 
   // Drawer state
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedSession, setSelectedSession] = useState<CompletedSessionData | null>(null)
+
+  // Init view mode from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(VIEW_MODE_KEY)
+      if (stored === 'grid' || stored === 'list') {
+        setViewMode(stored)
+      }
+    }
+  }, [])
 
   const { data, isLoading, error } = useSessions({
     search: search || undefined,
@@ -46,6 +68,13 @@ export default function SessionHistoryPage() {
     toast.error('Failed to load sessions')
   }
 
+  const handleViewModeChange = (value: string) => {
+    if (value === 'list' || value === 'grid') {
+      setViewMode(value)
+      localStorage.setItem(VIEW_MODE_KEY, value)
+    }
+  }
+
   const handleSessionClick = (session: TrainingSessionWithDetails) => {
     const mappedData = mapSessionToCompletedData(session)
     setSelectedSession(mappedData)
@@ -55,13 +84,19 @@ export default function SessionHistoryPage() {
   return (
     <div className="container mx-auto p-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Session History</h1>
-        <p className="mt-1 text-muted-foreground">Browse your past workout sessions</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Session History</h1>
+          <p className="mt-1 text-muted-foreground">Browse your past workout sessions</p>
+        </div>
+        <Button onClick={() => startStandaloneSession(dispatch, router)}>
+          <Play className="mr-2 h-4 w-4" />
+          Start Standalone Session
+        </Button>
       </div>
 
-      {/* Filters */}
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+      {/* Filters + View Toggle */}
+      <div className="mb-6 flex gap-4 items-center">
         <Input
           type="search"
           placeholder="Search sessions..."
@@ -72,26 +107,23 @@ export default function SessionHistoryPage() {
           }}
           className="max-w-md"
         />
-        <Select
-          value={statusFilter}
-          onValueChange={(value: StatusFilter) => {
-            setStatusFilter(value)
-            setPage(1)
-          }}
+        <ToggleGroup
+          type="single"
+          value={viewMode}
+          onValueChange={handleViewModeChange}
+          className="ml-auto"
         >
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All Sessions</SelectItem>
-            <SelectItem value="COMPLETED">Completed</SelectItem>
-            <SelectItem value="ABANDONED">Abandoned</SelectItem>
-          </SelectContent>
-        </Select>
+          <ToggleGroupItem value="list" aria-label="List view" className="px-2.5">
+            <List className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="grid" aria-label="Grid view" className="px-2.5">
+            <LayoutGrid className="h-4 w-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
       {/* Loading State */}
-      {isLoading && (
+      {isLoading && viewMode === 'grid' && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
@@ -100,6 +132,20 @@ export default function SessionHistoryPage() {
                 <Skeleton className="h-4 w-1/2" />
                 <Skeleton className="h-4 w-full" />
               </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+      {isLoading && viewMode === 'list' && (
+        <div className="space-y-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} className="flex items-center gap-4 p-4">
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-5 w-1/3" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+              <Skeleton className="h-5 w-16" />
+              <Skeleton className="h-4 w-24" />
             </Card>
           ))}
         </div>
@@ -120,18 +166,30 @@ export default function SessionHistoryPage() {
         </Card>
       )}
 
-      {/* Sessions Grid */}
+      {/* Sessions List */}
       {!isLoading && data && data.sessions.length > 0 && (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {data.sessions.map((session) => (
-              <SessionHistoryCard
-                key={session.id}
-                session={session}
-                onClick={() => handleSessionClick(session)}
-              />
-            ))}
-          </div>
+          {viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {data.sessions.map((session) => (
+                <SessionHistoryCard
+                  key={session.id}
+                  session={session}
+                  onClick={() => handleSessionClick(session)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {data.sessions.map((session) => (
+                <SessionRowCard
+                  key={session.id}
+                  session={session}
+                  onClick={() => handleSessionClick(session)}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Pagination */}
           {data.totalPages > 1 && (
