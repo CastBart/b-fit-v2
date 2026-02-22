@@ -12,7 +12,10 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "type-check": "tsc --noEmit",
     "postinstall": "prisma generate",
-    "prepare": "husky"
+    "prepare": "husky",
+    "seed:exercises:v2": "tsx prisma/seed-exercises-v2.ts",
+    "seed:exercises:v2b": "tsx prisma/seed-exercises-v2b.ts",
+    "seed:exercises:v2c": "tsx prisma/seed-exercises-v2c.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",

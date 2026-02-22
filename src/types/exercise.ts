@@ -77,11 +77,11 @@ export type ExerciseInstructions = string[]
  */
 export interface ExerciseFilters {
   search?: string
-  primaryMuscleGroup?: MuscleGroup
-  equipmentType?: EquipmentType
-  exerciseType?: ExerciseType
-  difficultyLevel?: DifficultyLevel
-  movementPattern?: MovementPattern
+  primaryMuscleGroups?: MuscleGroup[]
+  equipmentTypes?: EquipmentType[]
+  exerciseTypes?: ExerciseType[]
+  difficultyLevels?: DifficultyLevel[]
+  movementPatterns?: MovementPattern[]
   isDefault?: boolean
   isPublic?: boolean
   createdById?: string
