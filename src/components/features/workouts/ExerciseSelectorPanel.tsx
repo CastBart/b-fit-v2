@@ -8,24 +8,20 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Dumbbell, Plus } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import { Dumbbell, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CreateExerciseDrawer } from '@/components/features/exercises/CreateExerciseDrawer'
+import { ExerciseFilterBar } from '@/components/features/exercises/ExerciseFilterBar'
 import { useExercises } from '@/hooks/queries/useExercises'
 import { useCanCreateExercise } from '@/hooks/useCanCreateExercise'
 import {
   MuscleGroup,
   EquipmentType,
+  ExerciseType,
+  DifficultyLevel,
+  MovementPattern,
   MuscleGroupLabels,
   EquipmentTypeLabels,
 } from '@/types/exercise'
@@ -51,35 +47,41 @@ export function ExerciseSelectorPanel({
   nestedDrawer = false,
 }: ExerciseSelectorPanelProps) {
   const [search, setSearch] = useState('')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [muscleGroup, setMuscleGroup] = useState<MuscleGroup | undefined>(undefined)
-  const [equipment, setEquipment] = useState<EquipmentType | undefined>(undefined)
+  const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([])
+  const [exerciseTypes, setExerciseTypes] = useState<ExerciseType[]>([])
+  const [equipmentTypes, setEquipmentTypes] = useState<EquipmentType[]>([])
+  const [difficultyLevels, setDifficultyLevels] = useState<DifficultyLevel[]>([])
+  const [movementPatterns, setMovementPatterns] = useState<MovementPattern[]>([])
   const [exerciseMap, setExerciseMap] = useState<Map<string, Exercise>>(new Map())
   const [createDrawerOpen, setCreateDrawerOpen] = useState(false)
 
   const { canCreate } = useCanCreateExercise()
 
-  // Clear exercise map when filters change (exercises list changes)
+  // Clear exercise map when filters change
   useEffect(() => {
     setExerciseMap(new Map())
-  }, [debouncedSearch, muscleGroup, equipment])
+  }, [search, muscleGroups, exerciseTypes, equipmentTypes, difficultyLevels, movementPatterns])
 
-  // Debounce search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search)
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [search])
+  const filterKey = JSON.stringify({
+    search,
+    muscleGroups,
+    exerciseTypes,
+    equipmentTypes,
+    difficultyLevels,
+    movementPatterns,
+  })
 
   const { data, isLoading } = useExercises(
     {
-      search: debouncedSearch,
-      primaryMuscleGroups: muscleGroup ? [muscleGroup] : undefined,
-      equipmentTypes: equipment ? [equipment] : undefined,
+      search: search || undefined,
+      primaryMuscleGroups: muscleGroups.length ? muscleGroups : undefined,
+      exerciseTypes: exerciseTypes.length ? exerciseTypes : undefined,
+      equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
+      difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
+      movementPatterns: movementPatterns.length ? movementPatterns : undefined,
       limit: 50,
     },
-    `selector-${debouncedSearch}-${muscleGroup}-${equipment}`
+    `selector-${filterKey}`
   )
 
   const exercises = data?.exercises || []
@@ -88,7 +90,6 @@ export function ExerciseSelectorPanel({
     if (disabled) return
 
     if (mode === 'multi' && onSelectionChange) {
-      // Multi-select mode: toggle selection
       const newSelectedIds = new Set(selectedIds)
       const newExerciseMap = new Map(exerciseMap)
 
@@ -103,9 +104,17 @@ export function ExerciseSelectorPanel({
       setExerciseMap(newExerciseMap)
       onSelectionChange(newSelectedIds, newExerciseMap)
     } else {
-      // Single-select mode: immediately call onExerciseSelect
       onExerciseSelect(exercise)
     }
+  }
+
+  const handleClearAll = () => {
+    setSearch('')
+    setMuscleGroups([])
+    setExerciseTypes([])
+    setEquipmentTypes([])
+    setDifficultyLevels([])
+    setMovementPatterns([])
   }
 
   return (
@@ -133,62 +142,24 @@ export function ExerciseSelectorPanel({
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="space-y-3 border-b p-4">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search exercises..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-            disabled={disabled}
-          />
-        </div>
-
-        {/* Muscle Group Filter */}
-        <Select
-          value={muscleGroup}
-          onValueChange={(value) =>
-            setMuscleGroup(value === 'all' ? undefined : (value as MuscleGroup))
-          }
-          disabled={disabled}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="All Muscle Groups" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Muscle Groups</SelectItem>
-            {Object.entries(MuscleGroupLabels).map(([value, label]) => (
-              <SelectItem key={value} value={value}>
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        {/* Equipment Filter */}
-        <Select
-          value={equipment}
-          onValueChange={(value) =>
-            setEquipment(value === 'all' ? undefined : (value as EquipmentType))
-          }
-          disabled={disabled}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="All Equipment" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Equipment</SelectItem>
-            {Object.entries(EquipmentTypeLabels).map(([value, label]) => (
-              <SelectItem key={value} value={value}>
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Filters — always visible above the scrollable list */}
+      <div className="border-b p-3">
+        <ExerciseFilterBar
+          search={search}
+          muscleGroups={muscleGroups}
+          exerciseTypes={exerciseTypes}
+          equipmentTypes={equipmentTypes}
+          difficultyLevels={difficultyLevels}
+          movementPatterns={movementPatterns}
+          onSearchChange={setSearch}
+          onMuscleGroupsChange={setMuscleGroups}
+          onExerciseTypesChange={setExerciseTypes}
+          onEquipmentTypesChange={setEquipmentTypes}
+          onDifficultyLevelsChange={setDifficultyLevels}
+          onMovementPatternsChange={setMovementPatterns}
+          onClearAll={handleClearAll}
+          nested={nestedDrawer}
+        />
       </div>
 
       {/* Exercise List */}
@@ -243,7 +214,6 @@ export function ExerciseSelectorPanel({
           onOpenChange={setCreateDrawerOpen}
           nested={nestedDrawer}
           onExerciseCreated={(exercise) => {
-            // In single mode, select the newly created exercise
             if (mode === 'single') {
               onExerciseSelect(exercise)
             }

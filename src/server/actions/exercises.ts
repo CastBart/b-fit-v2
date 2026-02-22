@@ -34,9 +34,9 @@ export async function getExercises(filters?: ExerciseFiltersInput) {
       search,
       primaryMuscleGroups,
       equipmentTypes,
-      exerciseType,
+      exerciseTypes,
       difficultyLevels,
-      movementPattern,
+      movementPatterns,
       isDefault,
       isPublic,
       createdById,
@@ -92,8 +92,15 @@ export async function getExercises(filters?: ExerciseFiltersInput) {
       ]
     }
 
-    if (exerciseType) {
-      where.AND = [...(where.AND || []), { exerciseType }]
+    if (exerciseTypes && exerciseTypes.length > 0) {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          exerciseType: {
+            in: exerciseTypes,
+          },
+        },
+      ]
     }
 
     if (difficultyLevels && difficultyLevels.length > 0) {
@@ -107,8 +114,15 @@ export async function getExercises(filters?: ExerciseFiltersInput) {
       ]
     }
 
-    if (movementPattern) {
-      where.AND = [...(where.AND || []), { movementPattern }]
+    if (movementPatterns && movementPatterns.length > 0) {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          movementPattern: {
+            in: movementPatterns,
+          },
+        },
+      ]
     }
 
     if (typeof isDefault === 'boolean') {
