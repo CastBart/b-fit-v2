@@ -85,7 +85,7 @@ export default function DashboardPage() {
   }, [searchParams, update, router])
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto space-y-6 p-6">
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>

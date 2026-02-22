@@ -196,9 +196,9 @@ function ExercisesContent() {
 
   /* ---------- render ---------- */
   return (
-    <div className="container mx-auto space-y-0 pb-6">
+    <div className="container mx-auto space-y-0 p-6">
       {/* Page header */}
-      <div className="flex items-center justify-between px-0 pt-6 pb-4">
+      <div className="flex items-center justify-between px-0  pb-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Exercises</h1>
           <p className="mt-1 text-muted-foreground">Create and manage your exercise library</p>
