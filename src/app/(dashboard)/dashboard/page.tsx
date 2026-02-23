@@ -14,6 +14,8 @@ import { ActivePlanSection } from '@/components/features/plans/ActivePlanSection
 import { StatsGrid } from '@/components/features/dashboard/StatsGrid'
 import { RecentSessions } from '@/components/features/dashboard/RecentSessions'
 import { useMyPT } from '@/hooks/queries/useMyPT'
+import { useAppDispatch } from '@/store/hooks'
+import { startStandaloneSession } from '@/lib/utils/session-navigation'
 
 function TrainerCard() {
   const { data: ptData, isLoading } = useMyPT()
@@ -73,6 +75,7 @@ export default function DashboardPage() {
   const { data: session, update } = useSession()
   const searchParams = useSearchParams()
   const router = useRouter()
+  const dispatch = useAppDispatch()
   const userRole = session?.user?.role
 
   useEffect(() => {
@@ -114,11 +117,15 @@ export default function DashboardPage() {
             <CardDescription>Start your workout or manage your training</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button asChild className="w-full" size="lg">
-              <Link href="/workouts">
-                <PlayCircle className="mr-2 h-5 w-5" />
-                Start New Session
-              </Link>
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={() => startStandaloneSession(dispatch, router)}
+            >
+              {/* <Link href="/workouts"> */}
+              <PlayCircle className="mr-2 h-5 w-5" />
+              Start New Standalone Session
+              {/* </Link> */}
             </Button>
             <Button asChild variant="outline" className="w-full">
               <Link href="/workouts">
