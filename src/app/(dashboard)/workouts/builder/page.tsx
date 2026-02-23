@@ -13,7 +13,7 @@
 
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSmartBack } from '@/hooks/useSmartBack'
 import { useSession } from 'next-auth/react'
@@ -66,12 +66,10 @@ export default function WorkoutBuilderPage({
 }: WorkoutBuilderPageProps) {
   const router = useRouter()
   const { data: authSession } = useSession()
-  // const searchParams = useSearchParams()
   const queryClient = useQueryClient()
 
   // Determine mode
   const isEditMode = !!editWorkoutId
-  // const mode = isEditMode ? 'edit' : 'create'
 
   // Workout state
   const [workoutId, setWorkoutId] = useState<string | null>(editWorkoutId || null)
@@ -174,76 +172,88 @@ export default function WorkoutBuilderPage({
   }
 
   // Handle exercise selection from library (desktop single-select)
-  const handleExerciseSelect = (exercise: Exercise) => {
-    if (!workoutId) {
-      toast.error('Please create a workout first')
-      return
-    }
+  const handleExerciseSelect = useCallback(
+    (exercise: Exercise) => {
+      if (!workoutId) {
+        toast.error('Please create a workout first')
+        return
+      }
 
-    // Add exercise to the list with default parameters
-    const newExercise: WorkoutExercise = {
-      instanceId: crypto.randomUUID(),
-      exerciseId: exercise.id,
-      order: exercises.length,
-      sets: 3,
-      reps: 10,
-      restSeconds: 60,
-      exercise,
-    }
+      // Add exercise to the list with default parameters
+      const newExercise: WorkoutExercise = {
+        instanceId: crypto.randomUUID(),
+        exerciseId: exercise.id,
+        order: 0, // Will be set correctly below
+        sets: 3,
+        reps: 10,
+        restSeconds: 60,
+        exercise,
+      }
 
-    setExercises([...exercises, newExercise])
-    setSelectedExerciseIndex(exercises.length)
-  }
+      setExercises((prev) => {
+        newExercise.order = prev.length
+        setSelectedExerciseIndex(prev.length)
+        return [...prev, newExercise]
+      })
+    },
+    [workoutId]
+  )
 
   // Handle multiple exercise addition from mobile drawer
-  const handleAddExercises = (exerciseIds: string[]) => {
-    if (!workoutId) {
-      toast.error('Please create a workout first')
-      return
-    }
-
-    // Get exercises from React Query cache
-    const exercisesData = queryClient.getQueryCache().findAll({
-      queryKey: ['exercises'],
-    })
-
-    // Collect all exercises from cache
-    const allExercises: Exercise[] = []
-    exercisesData.forEach((query) => {
-      const data = query.state.data as { exercises?: Exercise[] } | undefined
-      if (data?.exercises) {
-        allExercises.push(...data.exercises)
+  const handleAddExercises = useCallback(
+    (exerciseIds: string[]) => {
+      if (!workoutId) {
+        toast.error('Please create a workout first')
+        return
       }
-    })
 
-    // Filter to selected exercises
-    const selectedExercises = exerciseIds
-      .map((id) => allExercises.find((ex) => ex.id === id))
-      .filter((ex): ex is Exercise => ex !== undefined)
+      // Get exercises from React Query cache and build an index for O(1) lookups
+      const exercisesData = queryClient.getQueryCache().findAll({
+        queryKey: ['exercises'],
+      })
 
-    if (selectedExercises.length === 0) {
-      toast.error('Selected exercises not found')
-      return
-    }
+      const exerciseIndex = new Map<string, Exercise>()
+      exercisesData.forEach((query) => {
+        const data = query.state.data as { exercises?: Exercise[] } | undefined
+        if (data?.exercises) {
+          data.exercises.forEach((ex) => exerciseIndex.set(ex.id, ex))
+        }
+      })
 
-    // Create WorkoutExercise objects with default values
-    const newExercises: WorkoutExercise[] = selectedExercises.map((exercise, idx) => ({
-      instanceId: crypto.randomUUID(),
-      exerciseId: exercise.id,
-      order: exercises.length + idx,
-      sets: 3,
-      reps: 10,
-      restSeconds: 60,
-      exercise,
-    }))
+      // Filter to selected exercises using the index
+      const selectedExercises = exerciseIds
+        .map((id) => exerciseIndex.get(id))
+        .filter((ex): ex is Exercise => ex !== undefined)
 
-    // Add to exercises array
-    setExercises([...exercises, ...newExercises])
-    // Select last added exercise
-    setSelectedExerciseIndex(exercises.length + newExercises.length - 1)
+      if (selectedExercises.length === 0) {
+        toast.error('Selected exercises not found')
+        return
+      }
 
-    toast.success(`Added ${newExercises.length} exercise${newExercises.length > 1 ? 's' : ''}`)
-  }
+      // Create WorkoutExercise objects with default values
+      const newExercises: WorkoutExercise[] = selectedExercises.map((exercise, idx) => ({
+        instanceId: crypto.randomUUID(),
+        exerciseId: exercise.id,
+        order: idx, // Will be corrected in updater
+        sets: 3,
+        reps: 10,
+        restSeconds: 60,
+        exercise,
+      }))
+
+      setExercises((prev) => {
+        const updated = newExercises.map((ex, idx) => ({ ...ex, order: prev.length + idx }))
+        const result = [...prev, ...updated]
+        setSelectedExerciseIndex(result.length - 1)
+        return result
+      })
+
+      toast.success(
+        `Added ${selectedExercises.length} exercise${selectedExercises.length > 1 ? 's' : ''}`
+      )
+    },
+    [workoutId, queryClient]
+  )
 
   // Open exercise selector drawer (mobile)
   const handleOpenExerciseSelector = () => {
@@ -254,14 +264,14 @@ export default function WorkoutBuilderPage({
     setExerciseSelectorOpen(true)
   }
 
-  // Handle exercise selection (mobile: open config drawer)
-  const handleExerciseSelectMobile = (index: number) => {
+  // Handle exercise selection from the exercises list (desktop + mobile)
+  const handleExerciseSelectFromList = useCallback((index: number) => {
     setSelectedExerciseIndex(index)
     // Only open drawer on mobile/tablet (< 1024px)
     if (typeof window !== 'undefined' && window.innerWidth < 1024) {
       setExerciseConfigOpen(true)
     }
-  }
+  }, [])
 
   // Handle exercise configuration update
   const handleExerciseUpdate = (index: number, updates: Partial<WorkoutExercise>) => {
@@ -461,29 +471,10 @@ export default function WorkoutBuilderPage({
 
         {/* Center: Workout Exercises List - Full width on mobile, flex-1 on desktop */}
         <div className="w-full flex-1 overflow-y-auto lg:w-auto">
-          {/* TODO: Muscle Group Body Map */}
-          {/* {exercises.length > 0 && (
-            <div className="flex justify-center border-b bg-muted/5 py-4">
-              <MuscleGroupBody
-                exercises={exercises
-                  .filter((ex) => ex.exercise)
-                  .map((ex) => ({
-                    primaryMuscleGroup: ex.exercise!.primaryMuscleGroup,
-                    secondaryMuscleGroups: ex.exercise!.secondaryMuscleGroups ?? [],
-                  }))}
-                size="md"
-              />
-            </div>
-          )} */}
           <WorkoutExercisesList
             exercises={exercises}
             selectedIndex={selectedExerciseIndex}
-            onExerciseSelect={(index) => {
-              // Desktop: Just update selected index (right panel updates)
-              setSelectedExerciseIndex(index)
-              // Mobile: Also open drawer (hidden on desktop via CSS)
-              handleExerciseSelectMobile(index)
-            }}
+            onExerciseSelect={handleExerciseSelectFromList}
             onExerciseRemove={handleExerciseRemove}
             onExerciseReorder={handleExerciseReorder}
           />
