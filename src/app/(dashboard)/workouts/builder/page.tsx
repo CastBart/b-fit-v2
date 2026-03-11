@@ -14,6 +14,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { generateId } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { useSmartBack } from '@/hooks/useSmartBack'
 import { useSession } from 'next-auth/react'
@@ -182,7 +183,7 @@ export default function WorkoutBuilderPage({
 
     // Add exercise to the list with default parameters
     const newExercise: WorkoutExercise = {
-      instanceId: crypto.randomUUID(),
+      instanceId: generateId(),
       exerciseId: exercise.id,
       order: exercises.length,
       sets: 3,
@@ -228,7 +229,7 @@ export default function WorkoutBuilderPage({
 
     // Create WorkoutExercise objects with default values
     const newExercises: WorkoutExercise[] = selectedExercises.map((exercise, idx) => ({
-      instanceId: crypto.randomUUID(),
+      instanceId: generateId(),
       exerciseId: exercise.id,
       order: exercises.length + idx,
       sets: 3,

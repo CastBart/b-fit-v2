@@ -10,7 +10,7 @@
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { ArrowLeft, Play, Edit, Trash2, Calendar, Dumbbell } from 'lucide-react'
+import { ArrowLeft, Play, Edit, Trash2, Calendar, Dumbbell, MoreHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -23,6 +23,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSmartBack } from '@/hooks/useSmartBack'
@@ -208,22 +215,33 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap gap-3 mt-6">
+          <div className="flex gap-3 mt-6 items-center">
             <Button onClick={handleStartWorkout} size="lg" disabled={!hasExercises}>
               <Play className="h-4 w-4 mr-2" />
               Start Workout
             </Button>
             {userRole !== 'CLIENT' && (
-              <>
-                <Button onClick={handleEdit} variant="outline" size="lg">
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
-                <Button onClick={() => setDeleteDialogOpen(true)} variant="destructive" size="lg">
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
-                </Button>
-              </>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleEdit}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => setDeleteDialogOpen(true)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
         </div>

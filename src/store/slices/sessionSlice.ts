@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { generateId } from '@/lib/utils'
 import type {
   SessionState,
   SessionExerciseEntry,
@@ -160,7 +161,7 @@ const sessionSlice = createSlice({
     ) => {
       const { workoutId, workoutName, exercises } = action.payload
 
-      state.sessionId = crypto.randomUUID()
+      state.sessionId = generateId()
       state.workoutId = workoutId
       state.workoutName = workoutName
       state.planId = action.payload.planId ?? null
@@ -201,7 +202,7 @@ const sessionSlice = createSlice({
      * Start a free session (no workout)
      */
     startFreeSession: (state, action: PayloadAction<{ name: string }>) => {
-      state.sessionId = crypto.randomUUID()
+      state.sessionId = generateId()
       state.workoutId = null
       state.workoutName = action.payload.name
       state.planId = null

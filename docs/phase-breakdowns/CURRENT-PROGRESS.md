@@ -1,10 +1,40 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-15
+**Last Updated**: 2026-03-11
 **Current Phase**: Phase 5 - Advanced Features (Organisation)
-**Recently Completed**: Chunk O1 — Prisma Schema Changes for Organisation
+**Recently Completed**: Mobile UX Fixes (Plan Builder Save Button, Drawer Keyboard & Back Button)
 **Next Tasks**: Organisation Feature — Chunk O2
 **Branch**: `development`
+
+---
+
+## Mobile UX Fixes (2026-03-11) ✅
+
+### Fix 1: Plan Builder Save Button
+
+- Header layout now wraps on mobile (`flex-col` → `flex-row` at `sm:` breakpoint)
+- Save button is full-width on mobile, inline on desktop
+
+### Fix 2: Drawer Keyboard Behavior
+
+- Changed `height` → `max-height` and `vh` → `dvh` in mobile drawer CSS media queries
+- Added `viewport` export with `interactiveWidget: 'resizes-content'` in root layout
+- Drawers now track actual visible space when mobile keyboard opens/closes
+
+### Fix 3: Drawer Back Button
+
+- Enhanced `Drawer` wrapper with browser history management (`pushState`/`popstate`)
+- Module-level `drawerStack` ensures nested drawers close innermost-first
+- Guards against duplicate entries, double-back loops, and proper cleanup on unmount
+
+### Modified Files
+
+```
+src/components/features/plans/PlanBuilderPage.tsx  - Header flex-wrap for mobile save button
+src/app/globals.css                                 - max-height + dvh for drawer classes
+src/app/layout.tsx                                  - Viewport interactiveWidget export
+src/components/ui/drawer.tsx                        - History management for back button
+```
 
 ---
 

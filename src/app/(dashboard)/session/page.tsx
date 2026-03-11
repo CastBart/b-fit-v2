@@ -14,6 +14,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { generateId } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
@@ -309,7 +310,7 @@ export default function SessionPage() {
 
     // Transform Exercise[] to SessionExerciseEntry[]
     const sessionExercises = selectedExercises.map((exercise, index) => ({
-      instanceId: crypto.randomUUID(),
+      instanceId: generateId(),
       exerciseId: exercise.id,
       name: exercise.name,
       order: exercises.length + index, // Append to existing exercises

@@ -19,6 +19,7 @@ import {
   ZapOff,
   Copy,
   Settings,
+  MoreHorizontal,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -42,6 +43,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSmartBack } from '@/hooks/useSmartBack'
@@ -267,7 +275,7 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
 
         {/* Action Buttons */}
         {session?.user?.role !== 'CLIENT' && (
-          <div className="flex gap-3 mt-6 flex-wrap">
+          <div className="flex gap-3 mt-6 items-center">
             {plan.isActive ? (
               <Button
                 onClick={() => deactivatePlan.mutate(id)}
@@ -288,27 +296,35 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
                 Activate Plan
               </Button>
             )}
-            <Button onClick={() => router.push(`/plans/builder/${id}`)} variant="outline" size="lg">
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Days
-            </Button>
-            <Button onClick={handleOpenEditDialog} variant="outline" size="lg">
-              <Settings className="h-4 w-4 mr-2" />
-              Edit Plan
-            </Button>
-            <Button
-              onClick={handleOpenCopyDialog}
-              variant="outline"
-              size="lg"
-              disabled={copyPlan.isPending}
-            >
-              <Copy className="h-4 w-4 mr-2" />
-              Copy
-            </Button>
-            <Button onClick={() => setDeleteDialogOpen(true)} variant="destructive" size="lg">
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => router.push(`/plans/builder/${id}`)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Days
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleOpenEditDialog}>
+                  <Settings className="h-4 w-4 mr-2" />
+                  Edit Plan
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleOpenCopyDialog} disabled={copyPlan.isPending}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setDeleteDialogOpen(true)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
       </div>

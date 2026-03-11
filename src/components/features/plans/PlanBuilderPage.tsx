@@ -12,6 +12,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSmartBack } from '@/hooks/useSmartBack'
 import { useSession } from 'next-auth/react'
+import { generateId } from '@/lib/utils'
 import { ArrowLeft, Save, Plus, FileDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FloatingActionButton } from '@/components/ui/floating-action-button'
@@ -147,7 +148,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
       toast.error('Plan cannot exceed 7 days')
       return
     }
-    const uid = crypto.randomUUID()
+    const uid = generateId()
     const newDayNumber = localDays.length + 1
     setLocalDays((prev) => [...prev, { uid, dayNumber: newDayNumber }])
     setDayExercises((prev) => {
@@ -228,7 +229,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
       const sourceDay = localDays[dayIndex]
       if (!sourceDay) return
 
-      const uid = crypto.randomUUID()
+      const uid = generateId()
       const newDayNumber = localDays.length + 1
       const sourceExercises = dayExercises.get(sourceDay.uid) || []
 
@@ -236,7 +237,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
       const copiedExercises: WorkoutExercise[] = sourceExercises.map((ex) => ({
         ...ex,
         workoutExerciseId: undefined,
-        instanceId: crypto.randomUUID(),
+        instanceId: generateId(),
       }))
 
       setLocalDays((prev) => [
@@ -262,7 +263,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
   // Handle exercise selection from library (desktop single-select)
   const handleExerciseSelect = (exercise: Exercise) => {
     const newExercise: WorkoutExercise = {
-      instanceId: crypto.randomUUID(),
+      instanceId: generateId(),
       exerciseId: exercise.id,
       order: exercises.length,
       sets: 3,
@@ -299,7 +300,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
     }
 
     const newExercises: WorkoutExercise[] = selectedExercises.map((exercise, idx) => ({
-      instanceId: crypto.randomUUID(),
+      instanceId: generateId(),
       exerciseId: exercise.id,
       order: exercises.length + idx,
       sets: 3,
@@ -493,7 +494,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
     <div className="flex h-[calc(100vh-8rem)] flex-col">
       {/* Header */}
       <div className="border-b bg-background px-6 py-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={goBack}>
               <ArrowLeft className="h-4 w-4" />
@@ -506,6 +507,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
             </div>
           </div>
           <Button
+            className="w-full sm:w-auto"
             onClick={handleSave}
             disabled={localDays.length === 0 || savePlanAllDays.isPending}
           >

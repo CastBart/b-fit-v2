@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/sonner'
@@ -14,6 +14,10 @@ const inter = Inter({
   display: 'swap',
   variable: '--font-inter',
 })
+
+export const viewport: Viewport = {
+  interactiveWidget: 'resizes-content',
+}
 
 export const metadata: Metadata = {
   title: {

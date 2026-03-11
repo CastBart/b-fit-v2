@@ -5,12 +5,95 @@ import { Drawer as DrawerPrimitive } from 'vaul'
 
 import { cn } from '@/lib/utils'
 
+// Module-level drawer stack for nested drawer support.
+// Only the topmost drawer should respond to a popstate event.
+const drawerStack: string[] = []
+
 const Drawer = ({
   shouldScaleBackground = true,
+  open,
+  onOpenChange,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
-  <DrawerPrimitive.Root shouldScaleBackground={shouldScaleBackground} {...props} />
-)
+}: React.ComponentProps<typeof DrawerPrimitive.Root>) => {
+  const drawerId = React.useId()
+  const historyPushed = React.useRef(false)
+  const closedByBack = React.useRef(false)
+
+  React.useEffect(() => {
+    if (open) {
+      // Guard against duplicate registration from React effect reruns
+      if (!historyPushed.current) {
+        if (!drawerStack.includes(drawerId)) {
+          drawerStack.push(drawerId)
+        }
+        history.pushState({ drawer: true }, '')
+        historyPushed.current = true
+        closedByBack.current = false
+      }
+    }
+  }, [open, drawerId])
+
+  React.useEffect(() => {
+    if (!open) return
+
+    const handlePopState = () => {
+      // Only the drawer on top of the stack should close
+      if (drawerStack[drawerStack.length - 1] !== drawerId) return
+
+      // Remove from stack defensively
+      const idx = drawerStack.indexOf(drawerId)
+      if (idx !== -1) drawerStack.splice(idx, 1)
+
+      closedByBack.current = true
+      historyPushed.current = false
+      onOpenChange?.(false)
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [open, drawerId, onOpenChange])
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      const idx = drawerStack.indexOf(drawerId)
+      if (idx !== -1) drawerStack.splice(idx, 1)
+    }
+  }, [drawerId])
+
+  const handleOpenChange = React.useCallback(
+    (newOpen: boolean) => {
+      if (!newOpen && !closedByBack.current) {
+        // Normal close (swipe, overlay tap, programmatic)
+        const idx = drawerStack.indexOf(drawerId)
+        if (idx !== -1) drawerStack.splice(idx, 1)
+
+        // Pop the history entry we pushed
+        if (historyPushed.current) {
+          historyPushed.current = false
+          history.back()
+        }
+      }
+      // Reset for next open cycle
+      if (!newOpen) {
+        closedByBack.current = false
+      }
+      onOpenChange?.(newOpen)
+    },
+    [drawerId, onOpenChange]
+  )
+
+  return (
+    <DrawerPrimitive.Root
+      shouldScaleBackground={shouldScaleBackground}
+      open={open}
+      onOpenChange={handleOpenChange}
+      {...props}
+    />
+  )
+}
 Drawer.displayName = 'Drawer'
 
 const DrawerTrigger = DrawerPrimitive.Trigger

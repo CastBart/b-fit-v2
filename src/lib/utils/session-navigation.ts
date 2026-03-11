@@ -5,6 +5,7 @@
  */
 
 import type { AppDispatch } from '@/store/store'
+import { generateId } from '@/lib/utils'
 import { startSession, startFreeSession } from '@/store/slices/sessionSlice'
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import type { SessionExerciseEntry } from '@/types/session'
@@ -68,7 +69,7 @@ export function startWorkoutSession(
   const exercises: SessionExerciseEntry[] = workout.exercises
     .sort((a, b) => a.order - b.order) // Ensure correct order
     .map((we, index) => ({
-      instanceId: crypto.randomUUID(),
+      instanceId: generateId(),
       exerciseId: we.exerciseId,
       name: we.exercise.name,
       order: index,
@@ -160,7 +161,7 @@ export function startPlanDaySession(
   const exercises: SessionExerciseEntry[] = planDay.exercises
     .sort((a, b) => a.order - b.order)
     .map((pde, index) => ({
-      instanceId: crypto.randomUUID(),
+      instanceId: generateId(),
       exerciseId: pde.exerciseId,
       name: pde.exercise.name,
       order: index,
