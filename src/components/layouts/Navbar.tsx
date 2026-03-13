@@ -68,7 +68,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
               </svg>
             </Button>
           )}
-          <Link href="/" className="flex items-center gap-2 font-semibold">
+          <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
             <Dumbbell className="h-6 w-6 text-primary" />
             <span className="text-xl">B-Fit</span>
           </Link>

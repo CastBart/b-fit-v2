@@ -78,7 +78,7 @@ export const exerciseFiltersSchema = z.object({
   isPublic: z.boolean().optional(),
   createdById: z.string().optional(),
   page: z.number().int().min(1).optional().default(1),
-  limit: z.number().int().min(1).max(100).optional().default(20),
+  limit: z.number().int().min(1).max(500).optional().default(20),
 })
 
 export type ExerciseFiltersInput = z.infer<typeof exerciseFiltersSchema>

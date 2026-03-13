@@ -16,7 +16,6 @@ import {
   DrawerTitle,
   DrawerFooter,
 } from '@/components/ui/drawer'
-// import { ScrollArea } from '@/components/ui/scroll-area'
 import { ExerciseSelectorPanel } from './ExerciseSelectorPanel'
 import type { Exercise } from '@prisma/client'
 
@@ -39,10 +38,16 @@ export function ExerciseSelectorDrawer({
   const [selectedExercises, setSelectedExercises] = useState<Map<string, Exercise>>(new Map())
 
   const handleSelectionChange = useCallback(
-    (newSelectedIds: Set<string>, exerciseMap?: Map<string, Exercise>) => {
+    (newSelectedIds: Set<string>, changed?: { exercise: Exercise; selected: boolean }) => {
       setSelectedIds(newSelectedIds)
-      if (exerciseMap) {
-        setSelectedExercises(exerciseMap)
+
+      if (changed) {
+        setSelectedExercises((prev) => {
+          const next = new Map(prev)
+          if (changed.selected) next.set(changed.exercise.id, changed.exercise)
+          else next.delete(changed.exercise.id)
+          return next
+        })
       }
     },
     []
@@ -85,7 +90,6 @@ export function ExerciseSelectorDrawer({
           <DrawerTitle>Exercise Library</DrawerTitle>
         </DrawerHeader>
 
-        {/* <ScrollArea className="flex-1"> */}
         <div className="min-h-0 flex-1 overflow-hidden">
           <ExerciseSelectorPanel
             mode={multiSelect ? 'multi' : 'single'}
@@ -96,7 +100,6 @@ export function ExerciseSelectorDrawer({
             nestedDrawer={true}
           />
         </div>
-        {/* </ScrollArea> */}
 
         {multiSelect && (
           <DrawerFooter>
