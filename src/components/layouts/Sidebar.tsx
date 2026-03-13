@@ -2,14 +2,24 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { X } from 'lucide-react'
+import { useSession, signOut } from 'next-auth/react'
+import { useTheme } from 'next-themes'
+import { X, Dumbbell, Moon, Sun, LogOut, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useSubscription } from '@/hooks/queries/useSubscription'
 import { SUBSCRIPTION_TIERS } from '@/lib/stripe/config'
 import { navItems, type UserRole } from '@/lib/nav-items'
+import { toast } from 'sonner'
 
 interface SidebarProps {
   isOpen?: boolean
@@ -32,7 +42,7 @@ function SubscriptionBadge() {
       )
     )
     return (
-      <div className="mt-1 flex items-center gap-1.5">
+      <div className="flex items-center gap-1.5">
         <span className="text-xs text-muted-foreground">{tierConfig.name}</span>
         <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
           Trial: {daysLeft}d
@@ -41,14 +51,36 @@ function SubscriptionBadge() {
     )
   }
 
-  return <p className="mt-1 text-xs text-muted-foreground">{tierConfig.name}</p>
+  return <p className="text-xs text-muted-foreground">{tierConfig.name}</p>
 }
 
 export function Sidebar({ isOpen = true, onClose, userRole = 'PERSONAL' }: SidebarProps) {
   const pathname = usePathname()
+  const { data: session } = useSession()
+  const { theme, setTheme } = useTheme()
 
-  // Filter navigation items based on user role
   const visibleNavItems = navItems.filter((item) => item.roles.includes(userRole))
+
+  const userInitials = session?.user?.name
+    ? session.user.name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+    : 'U'
+
+  const handleLogout = async () => {
+    try {
+      await signOut({
+        callbackUrl: '/login',
+        redirect: true,
+      })
+      toast.success('Logged out successfully')
+    } catch (error) {
+      console.error('Logout error:', error)
+      toast.error('Failed to logout')
+    }
+  }
 
   return (
     <>
@@ -63,15 +95,22 @@ export function Sidebar({ isOpen = true, onClose, userRole = 'PERSONAL' }: Sideb
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-50 h-full w-64 border-r border-border bg-card transition-transform duration-200 md:sticky md:top-16 md:z-0 md:h-[calc(100vh-4rem)] md:translate-x-0',
+          'fixed left-0 top-0 z-50 h-full w-64 border-r border-border bg-card transition-transform duration-200 md:sticky md:top-0 md:z-0 md:h-screen md:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         <div className="flex h-full flex-col">
-          {/* Mobile header */}
-          <div className="flex h-16 items-center justify-between border-b border-border px-4 md:hidden">
-            <span className="text-lg font-semibold">Menu</span>
-            <Button variant="ghost" size="icon" onClick={onClose}>
+          {/* Header */}
+          <div className="flex h-16 items-center justify-between border-b border-border px-4">
+            <Link
+              href="/"
+              className="flex items-center gap-2 font-semibold"
+              onClick={() => onClose?.()}
+            >
+              <Dumbbell className="h-6 w-6 text-primary" />
+              <span className="text-xl">B-Fit</span>
+            </Link>
+            <Button variant="ghost" size="icon" onClick={onClose} className="md:hidden">
               <X className="h-5 w-5" />
             </Button>
           </div>
@@ -101,25 +140,55 @@ export function Sidebar({ isOpen = true, onClose, userRole = 'PERSONAL' }: Sideb
                 )
               })}
             </div>
-
-            <Separator className="my-4" />
-
-            {/* Role badge */}
-            <div className="rounded-lg bg-muted px-3 py-2">
-              <p className="text-xs font-medium text-muted-foreground">Current Role</p>
-              <p className="text-sm font-semibold">
-                {userRole === 'PERSONAL' && 'Personal User'}
-                {userRole === 'PT' && 'Personal Trainer'}
-                {userRole === 'CLIENT' && 'Client'}
-                {userRole === 'ORG' && 'Organization'}
-              </p>
-              {userRole === 'PT' && <SubscriptionBadge />}
-            </div>
           </nav>
 
-          {/* Footer */}
+          {/* User Menu */}
           <div className="border-t border-border p-4">
-            <p className="text-xs text-muted-foreground">B-Fit v2.0</p>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex w-full items-center gap-3 rounded-lg p-2 text-left hover:bg-accent transition-colors">
+                  <Avatar className="h-10 w-10 shrink-0">
+                    <AvatarImage src={session?.user?.image || undefined} alt="User avatar" />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {userInitials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{session?.user?.name || 'Guest'}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {session?.user?.email || 'Not logged in'}
+                    </p>
+                    <div className="mt-0.5">
+                      {userRole === 'PT' ? (
+                        <SubscriptionBadge />
+                      ) : (
+                        <p className="text-xs text-muted-foreground">
+                          {userRole === 'PERSONAL' && 'Personal User'}
+                          {userRole === 'CLIENT' && 'Client'}
+                          {userRole === 'ORG' && 'Organization'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <ChevronsUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="start" className="w-56">
+                <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+                  <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span className="ml-1">{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </aside>

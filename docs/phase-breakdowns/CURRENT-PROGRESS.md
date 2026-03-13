@@ -1,28 +1,61 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-02-23
+**Last Updated**: 2026-03-13
 **Current Phase**: Phase 5 - Advanced Features (Organisation)
-**Recently Completed**: Home Page Redesign & Logo Navigation Fix
+**Recently Completed**: ScrollArea Fix — Restored Shadcn default + Created VirtualizedScrollArea
 **Next Tasks**: Organisation Feature — Chunk O2
-**Branch**: `main`
+**Branch**: `development`
 
 ---
 
-## UI Polish: Home Page Redesign & Logo Navigation Fix (Complete)
+## ScrollArea Fix (2026-03-13) ✅
 
-- **Logo link fix**: Changed dashboard Navbar logo href from `/` to `/dashboard` so logged-in users stay in the app
-- **Auth redirect**: Added server-side session check to home page — authenticated users are redirected to `/dashboard`
-- **Landing page redesign**: Replaced demo/scaffold cards with a proper landing page featuring:
-  - Hero section with updated tagline and CTAs (Get Started / Log In)
-  - Feature cards for Personal Users, Personal Trainers, and Organisations (coming soon badge)
-  - "How It Works" 3-step section
-  - Clean footer with copyright
+### Problem
+
+The virtualisation of ExerciseSelectorPanel (commit `6261141`) modified the shared Shadcn ScrollArea component, breaking scrolling in 15+ other files.
+
+### Solution
+
+- **Restored** `scroll-area.tsx` to Shadcn default (`'use client'`, original Radix API names, no `viewportRef`)
+- **Created** `virtualized-scroll-area.tsx` — dedicated component with `viewportRef` prop for `@tanstack/react-virtual`
+- **Updated** ExerciseSelectorPanel to import `VirtualizedScrollArea` instead of `ScrollArea`
 
 ### Modified Files
 
 ```
-src/components/layouts/Navbar.tsx    - Logo href: "/" → "/dashboard"
-src/app/page.tsx                     - Full redesign with auth redirect + landing page
+src/components/ui/scroll-area.tsx                              - Restored to Shadcn default
+src/components/ui/virtualized-scroll-area.tsx                  - NEW: Dedicated virtualised scroll component
+src/components/features/workouts/ExerciseSelectorPanel.tsx     - Uses VirtualizedScrollArea
+```
+
+---
+
+## Mobile UX Fixes (2026-03-11) ✅
+
+### Fix 1: Plan Builder Save Button
+
+- Header layout now wraps on mobile (`flex-col` → `flex-row` at `sm:` breakpoint)
+- Save button is full-width on mobile, inline on desktop
+
+### Fix 2: Drawer Keyboard Behavior
+
+- Changed `height` → `max-height` and `vh` → `dvh` in mobile drawer CSS media queries
+- Added `viewport` export with `interactiveWidget: 'resizes-content'` in root layout
+- Drawers now track actual visible space when mobile keyboard opens/closes
+
+### Fix 3: Drawer Back Button
+
+- Enhanced `Drawer` wrapper with browser history management (`pushState`/`popstate`)
+- Module-level `drawerStack` ensures nested drawers close innermost-first
+- Guards against duplicate entries, double-back loops, and proper cleanup on unmount
+
+### Modified Files
+
+```
+src/components/features/plans/PlanBuilderPage.tsx  - Header flex-wrap for mobile save button
+src/app/globals.css                                 - max-height + dvh for drawer classes
+src/app/layout.tsx                                  - Viewport interactiveWidget export
+src/components/ui/drawer.tsx                        - History management for back button
 ```
 
 ---

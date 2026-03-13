@@ -14,6 +14,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import { generateId } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { useSmartBack } from '@/hooks/useSmartBack'
 import { useSession } from 'next-auth/react'
@@ -181,9 +182,9 @@ export default function WorkoutBuilderPage({
 
       // Add exercise to the list with default parameters
       const newExercise: WorkoutExercise = {
-        instanceId: crypto.randomUUID(),
+        instanceId: generateId(),
         exerciseId: exercise.id,
-        order: 0, // Will be set correctly below
+        order: exercises.length,
         sets: 3,
         reps: 10,
         restSeconds: 60,
@@ -232,9 +233,9 @@ export default function WorkoutBuilderPage({
 
       // Create WorkoutExercise objects with default values
       const newExercises: WorkoutExercise[] = selectedExercises.map((exercise, idx) => ({
-        instanceId: crypto.randomUUID(),
+        instanceId: generateId(),
         exerciseId: exercise.id,
-        order: idx, // Will be corrected in updater
+        order: exercises.length + idx,
         sets: 3,
         reps: 10,
         restSeconds: 60,
@@ -417,10 +418,10 @@ export default function WorkoutBuilderPage({
   if (isEditMode && isLoadingWorkout) {
     return (
       <div className="flex h-[calc(100vh-8rem)] flex-col">
-        <div className="border-b bg-background px-6 py-4">
+        <div className="border-b bg-background px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center justify-between">
             <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-9 w-9 sm:h-10 sm:w-32" />
           </div>
         </div>
         <div className="flex flex-1 gap-4 p-6">
@@ -435,29 +436,42 @@ export default function WorkoutBuilderPage({
   const isSaving = isEditMode ? syncExercises.isPending : addMultipleExercises.isPending
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col">
+    <div className="flex h-[calc(100vh-4rem)] flex-col">
       {/* Header */}
-      <div className="border-b bg-background px-6 py-4">
+      <div className="border-b bg-background px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={goBack}>
+          <div className="flex items-center gap-4 min-w-0 flex-1">
+            <Button variant="ghost" size="icon" onClick={goBack} className="shrink-0">
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold">
-                {isEditMode ? `Edit: ${workoutName}` : workoutName || 'New Workout'}
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">
+                {isEditMode ? (
+                  <>
+                    <span className="hidden sm:inline">Edit: </span>
+                    {workoutName}
+                  </>
+                ) : (
+                  workoutName || 'New Workout'
+                )}
               </h1>
               {workoutDescription && (
-                <p className="text-sm text-muted-foreground">{workoutDescription}</p>
+                <p className="hidden sm:block text-sm text-muted-foreground">
+                  {workoutDescription}
+                </p>
               )}
             </div>
           </div>
           <Button
             onClick={handleSaveWorkout}
             disabled={!workoutId || exercises.length === 0 || isSaving}
+            className="shrink-0 h-9 w-9 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
+            size="icon"
           >
-            <Save className="mr-2 h-4 w-4" />
-            {isSaving ? 'Saving...' : isEditMode ? 'Update Workout' : 'Save Workout'}
+            <Save className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">
+              {isSaving ? 'Saving...' : isEditMode ? 'Update Workout' : 'Save Workout'}
+            </span>
           </Button>
         </div>
       </div>

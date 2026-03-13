@@ -101,54 +101,63 @@
   }
 }
 
-@media (min-width: 1024px) {
-  /* Desktop */
-  .custom-drawer {
-    height: 75vh;
-    width: 600px;
-  }
-  .custom-drawer-no-height {
-    width: 600px;
-  }
-  .custom-dialog {
-    width: 600px;
-    height: auto;
-  }
+/* Default mobile/tablet drawer sizing */
+.custom-drawer {
+  width: 100vw;
+  height: 90dvh;
+  max-height: 90dvh;
 }
 
-@media (max-width: 640px) and (orientation: portrait) {
-  /* Mobile Portrait */
-  .custom-drawer {
-    height: 90vh;
-    width: 100vw;
-  }
-  .custom-drawer-no-height {
-    width: 100vw;
-  }
-  .custom-dialog {
-    width: 100vw;
-    max-height: 90vh;
-  }
+.custom-drawer-no-height {
+  width: 100vw;
 }
 
-@media (max-width: 1024px) and (orientation: landscape) {
-  /* Mobile Landscape */
+.custom-dialog {
+  width: 100vw;
+  max-height: 90dvh;
+}
+
+/* Mobile/tablet landscape */
+@media (max-width: 1023px) and (orientation: landscape) {
   .custom-drawer {
-    height: 100vh;
     width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
   }
+
   .custom-drawer-no-height {
-    height: 100vh;
     width: 100vw;
+    max-height: 100dvh;
   }
+
   .custom-dialog {
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
   }
 
   .custom-dialog .grid-container {
     max-height: 70vh;
     overflow-y: auto;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .custom-drawer {
+    width: 600px;
+    height: 75dvh;
+    max-height: 75dvh;
+  }
+
+  .custom-drawer-no-height {
+    width: 600px;
+  }
+
+  .custom-dialog {
+    width: 600px;
+    height: auto;
+    max-height: 90dvh;
   }
 }
 

@@ -8,6 +8,7 @@
 'use client'
 
 import { useState } from 'react'
+import { generateId } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -52,7 +53,7 @@ export function CopyFromWorkoutDrawer({
     if (!selectedWorkout) return
 
     const exercises: PlanDayExerciseFormData[] = selectedWorkout.exercises.map((we, idx) => ({
-      instanceId: crypto.randomUUID(),
+      instanceId: generateId(),
       exerciseId: we.exerciseId,
       order: currentExerciseCount + idx,
       sets: we.sets,

@@ -19,7 +19,9 @@ import {
   ZapOff,
   Copy,
   Settings,
+  MoreHorizontal,
 } from 'lucide-react'
+// test merge
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -42,6 +44,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSmartBack } from '@/hooks/useSmartBack'
@@ -148,7 +157,7 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
   // Loading state
   if (isLoading) {
     return (
-      <div className="container mx-auto max-w-5xl py-8 px-4">
+      <div className="container mx-auto max-w-5xl pt-4 sm:pt-6 px-4">
         <Skeleton className="h-8 w-32 mb-6" />
         <Skeleton className="h-12 w-2/3 mb-4" />
         <Skeleton className="h-6 w-full mb-8" />
@@ -164,10 +173,9 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
   // Error state
   if (error || !plan) {
     return (
-      <div className="container mx-auto max-w-5xl py-8 px-4">
-        <Button variant="ghost" onClick={goBack} className="mb-6">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Plans
+      <div className="container mx-auto max-w-5xl pt-4 sm:pt-6 px-4">
+        <Button variant="ghost" size="icon" onClick={goBack} className="mb-6">
+          <ArrowLeft className="h-4 w-4" />
         </Button>
         <Card>
           <CardHeader>
@@ -209,33 +217,30 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
   ]
 
   return (
-    <div className="container mx-auto max-w-5xl py-8 px-4">
-      {/* Header with back button */}
-      <Button variant="ghost" onClick={goBack} className="mb-6">
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Plans
-      </Button>
-
-      {/* Plan Header */}
-      <div className="mb-8">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold">{plan.name}</h1>
-              {plan.isActive && (
-                <Badge className="bg-primary text-primary-foreground">
-                  <Zap className="mr-1 h-3 w-3" />
-                  Active
-                </Badge>
-              )}
-            </div>
-            {plan.description && <p className="text-muted-foreground">{plan.description}</p>}
-          </div>
-          {plan.copiedFrom && <Badge variant="secondary">From: {plan.copiedFrom.name}</Badge>}
+    <div className="container mx-auto max-w-5xl pt-4 sm:pt-6 px-4">
+      {/* Header row: back + title + active badge */}
+      <div className="mb-4 flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={goBack} className="shrink-0">
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">{plan.name}</h1>
+          {plan.isActive && (
+            <Badge className="bg-primary text-primary-foreground shrink-0">
+              <Zap className="mr-1 h-3 w-3" />
+              Active
+            </Badge>
+          )}
         </div>
+      </div>
 
-        {/* Metadata */}
-        <div className="flex items-center gap-6 text-sm text-muted-foreground">
+      {/* Metadata */}
+      <div className="mb-4 space-y-2">
+        {plan.description && (
+          <p className="hidden sm:block text-muted-foreground">{plan.description}</p>
+        )}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+          {plan.copiedFrom && <Badge variant="secondary">From: {plan.copiedFrom.name}</Badge>}
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             <span>{plan.daysPerWeek} days/week</span>
@@ -267,7 +272,7 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
 
         {/* Action Buttons */}
         {session?.user?.role !== 'CLIENT' && (
-          <div className="flex gap-3 mt-6 flex-wrap">
+          <div className="flex gap-3 mt-4 items-center">
             {plan.isActive ? (
               <Button
                 onClick={() => deactivatePlan.mutate(id)}
@@ -288,27 +293,35 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
                 Activate Plan
               </Button>
             )}
-            <Button onClick={() => router.push(`/plans/builder/${id}`)} variant="outline" size="lg">
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Days
-            </Button>
-            <Button onClick={handleOpenEditDialog} variant="outline" size="lg">
-              <Settings className="h-4 w-4 mr-2" />
-              Edit Plan
-            </Button>
-            <Button
-              onClick={handleOpenCopyDialog}
-              variant="outline"
-              size="lg"
-              disabled={copyPlan.isPending}
-            >
-              <Copy className="h-4 w-4 mr-2" />
-              Copy
-            </Button>
-            <Button onClick={() => setDeleteDialogOpen(true)} variant="destructive" size="lg">
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => router.push(`/plans/builder/${id}`)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Days
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleOpenEditDialog}>
+                  <Settings className="h-4 w-4 mr-2" />
+                  Edit Plan
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleOpenCopyDialog} disabled={copyPlan.isPending}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setDeleteDialogOpen(true)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
       </div>

@@ -18,6 +18,7 @@ import type {
   ExerciseType,
   MovementPattern,
 } from '@/types/exercise'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
 
 /* ---------------- helpers ---------------- */
@@ -196,23 +197,28 @@ function ExercisesContent() {
 
   /* ---------- render ---------- */
   return (
-    <div className="container mx-auto space-y-0 p-6">
+    <div className="container mx-auto flex h-[calc(100dvh-4.5rem)] flex-col px-4 pt-4 sm:px-6 sm:pt-6 md:h-[calc(100dvh-1rem)]">
       {/* Page header */}
-      <div className="flex items-center justify-between px-0  pb-4">
+      <div className="mb-4 shrink-0 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Exercises</h1>
-          <p className="mt-1 text-muted-foreground">Create and manage your exercise library</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Exercises</h1>
+          <p className="hidden sm:block mt-1 text-muted-foreground">
+            Create and manage your exercise library
+          </p>
         </div>
         {canCreate && (
-          <Button onClick={() => setCreateDrawerOpen(true)} className="cursor-pointer">
-            <Plus className="mr-2 h-4 w-4" />
-            Create Exercise
+          <Button
+            onClick={() => setCreateDrawerOpen(true)}
+            className="cursor-pointer h-9 w-9 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
+          >
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Create Exercise</span>
           </Button>
         )}
       </div>
 
-      {/* Sticky filter bar — sits below the sticky navbar (h-16 = top-16) */}
-      <div className="sticky top-16 z-40 -mx-2 bg-background px-2 py-3">
+      {/* Filter bar */}
+      <div className="shrink-0 py-3">
         <ExerciseFilterBar
           search={search}
           muscleGroups={muscleGroups}
@@ -231,53 +237,55 @@ function ExercisesContent() {
         <div className="mt-3 border-b" />
       </div>
 
-      {/* Exercise grid */}
-      <div className="pt-4">
-        {!isLoading && (
-          <p className="mb-4 text-sm text-muted-foreground">
-            Showing {exercises.length} of {total}
-          </p>
-        )}
+      {/* Scrollable content */}
+      <ScrollArea className="flex-1 min-h-0">
+        <div className="pt-4">
+          {!isLoading && (
+            <p className="mb-4 text-sm text-muted-foreground">
+              Showing {exercises.length} of {total}
+            </p>
+          )}
 
-        {isLoading ? (
-          <Skeleton className="h-48 w-full" />
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {exercises.map((exercise) => (
-              <ExerciseCard
-                key={exercise.id}
-                exercise={exercise}
-                onClick={() => handleExerciseClick(exercise.id)}
-              />
-            ))}
-          </div>
-        )}
+          {isLoading ? (
+            <Skeleton className="h-48 w-full" />
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {exercises.map((exercise) => (
+                <ExerciseCard
+                  key={exercise.id}
+                  exercise={exercise}
+                  onClick={() => handleExerciseClick(exercise.id)}
+                />
+              ))}
+            </div>
+          )}
 
-        {/* Pagination */}
-        {!isLoading && (data?.totalPages ?? 0) > 1 && (
-          <div className="mt-6 flex items-center justify-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage === 1}
-              onClick={() => updateFilters({ page: String(currentPage - 1) })}
-            >
-              Previous
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Page {currentPage} of {data?.totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage >= (data?.totalPages ?? 1)}
-              onClick={() => updateFilters({ page: String(currentPage + 1) })}
-            >
-              Next
-            </Button>
-          </div>
-        )}
-      </div>
+          {/* Pagination */}
+          {!isLoading && (data?.totalPages ?? 0) > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage === 1}
+                onClick={() => updateFilters({ page: String(currentPage - 1) })}
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Page {currentPage} of {data?.totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage >= (data?.totalPages ?? 1)}
+                onClick={() => updateFilters({ page: String(currentPage + 1) })}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+        </div>
+      </ScrollArea>
 
       {/* Drawers */}
       <ExerciseDrawer

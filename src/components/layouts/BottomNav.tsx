@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation'
 import { MoreHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { navItems, bottomNavPriority, type UserRole, type NavItem } from '@/lib/nav-items'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 function useScrollDirection() {
   const [visible, setVisible] = useState(true)
@@ -35,6 +34,8 @@ function useScrollDirection() {
 
 interface BottomNavProps {
   userRole?: UserRole
+  onMoreClick?: () => void
+  sidebarOpen?: boolean
 }
 
 function NavButton({ item, isActive }: { item: NavItem; isActive: boolean }) {
@@ -53,10 +54,9 @@ function NavButton({ item, isActive }: { item: NavItem; isActive: boolean }) {
   )
 }
 
-export function BottomNav({ userRole = 'PERSONAL' }: BottomNavProps) {
+export function BottomNav({ userRole = 'PERSONAL', onMoreClick, sidebarOpen }: BottomNavProps) {
   const pathname = usePathname()
   const visible = useScrollDirection()
-  const [moreOpen, setMoreOpen] = useState(false)
 
   const roleItems = navItems.filter((item) => item.roles.includes(userRole))
   const priorityHrefs = bottomNavPriority[userRole]
@@ -77,7 +77,7 @@ export function BottomNav({ userRole = 'PERSONAL' }: BottomNavProps) {
         'fixed bottom-0 left-0 right-0 z-40 border-t bg-card md:hidden transition-transform duration-200'
       )}
       style={{
-        transform: visible ? 'translateY(0)' : 'translateY(100%)',
+        transform: visible && !sidebarOpen ? 'translateY(0)' : 'translateY(100%)',
       }}
     >
       <div className="flex items-center justify-around h-14 px-2 pb-[env(safe-area-inset-bottom)]">
@@ -86,41 +86,16 @@ export function BottomNav({ userRole = 'PERSONAL' }: BottomNavProps) {
         ))}
 
         {overflowItems.length > 0 && (
-          <Popover open={moreOpen} onOpenChange={setMoreOpen}>
-            <PopoverTrigger asChild>
-              <button
-                className={cn(
-                  'flex flex-1 flex-col items-center justify-center gap-0.5 py-1',
-                  moreIsActive ? 'text-primary' : 'text-muted-foreground'
-                )}
-              >
-                <MoreHorizontal className="h-5 w-5" />
-                <span className="text-[10px] leading-tight">More</span>
-              </button>
-            </PopoverTrigger>
-            <PopoverContent side="top" align="end" className="w-48 p-1">
-              {overflowItems.map((item) => {
-                const Icon = item.icon
-                const active = isActive(item.href)
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMoreOpen(false)}
-                    className={cn(
-                      'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
-                      active
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                    )}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                  </Link>
-                )
-              })}
-            </PopoverContent>
-          </Popover>
+          <button
+            onClick={onMoreClick}
+            className={cn(
+              'flex flex-1 flex-col items-center justify-center gap-0.5 py-1',
+              moreIsActive ? 'text-primary' : 'text-muted-foreground'
+            )}
+          >
+            <MoreHorizontal className="h-5 w-5" />
+            <span className="text-[10px] leading-tight">More</span>
+          </button>
         )}
       </div>
     </nav>

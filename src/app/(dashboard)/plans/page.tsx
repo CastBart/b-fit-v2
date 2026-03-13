@@ -35,6 +35,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { usePlans } from '@/hooks/queries/usePlans'
 import { useDeletePlan, useActivatePlan, useCopyPlan } from '@/hooks/mutations/usePlanMutations'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
 import { PlanGridCard } from '@/components/features/plans/PlanGridCard'
@@ -165,23 +166,28 @@ export default function PlansPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto flex h-[calc(100dvh-4.5rem)] flex-col px-4 pt-4 sm:px-6 sm:pt-6 md:h-[calc(100dvh-1rem)]">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-4 shrink-0 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">My Plans</h1>
-          <p className="mt-1 text-muted-foreground">Create and manage your training plans</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">My Plans</h1>
+          <p className="hidden sm:block mt-1 text-muted-foreground">
+            Create and manage your training plans
+          </p>
         </div>
         {!isClient && (
-          <Button onClick={() => router.push('/plans/create')} className="cursor-pointer">
-            <Plus className="mr-2 h-4 w-4" />
-            Create Plan
+          <Button
+            onClick={() => router.push('/plans/create')}
+            className="cursor-pointer h-9 w-9 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
+          >
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Create Plan</span>
           </Button>
         )}
       </div>
 
       {/* Toolbar: Search + View Toggle */}
-      <div className="mb-6 flex items-center gap-4">
+      <div className="mb-4 shrink-0 flex items-center gap-4">
         <Input
           type="search"
           placeholder="Search plans..."
@@ -207,83 +213,90 @@ export default function PlansPage() {
         </ToggleGroup>
       </div>
 
-      {/* Loading State */}
-      {isLoading && viewMode === 'grid' && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i}>
-              <CardHeader>
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="mt-2 h-4 w-full" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-4 w-1/2" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-      {isLoading && viewMode === 'list' && (
-        <div className="space-y-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="flex items-center gap-4 p-4">
-              <div className="flex-1 space-y-2">
-                <Skeleton className="h-5 w-1/3" />
-                <Skeleton className="h-4 w-2/3" />
+      {/* Scrollable content */}
+      <ScrollArea className="flex-1 min-h-0">
+        {/* Loading State */}
+        {isLoading && viewMode === 'grid' && (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="mt-2 h-4 w-full" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-4 w-1/2" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+        {isLoading && viewMode === 'list' && (
+          <div className="space-y-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i} className="flex items-center gap-4 p-4">
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-5 w-1/3" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-8 w-20" />
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && data?.plans.length === 0 && (
+          <Card className="border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <ClipboardList className="mb-4 h-16 w-16 text-muted-foreground" />
+              <h3 className="mb-2 text-lg font-semibold">No plans yet</h3>
+              <p className="mb-6 text-center text-sm text-muted-foreground">
+                {search
+                  ? 'No plans match your search.'
+                  : 'Create your first training plan to get started.'}
+              </p>
+              {!search && !isClient && (
+                <Button onClick={() => router.push('/plans/create')}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Your First Plan
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Plans List */}
+        {!isLoading && data && data.plans.length > 0 && (
+          <>
+            {renderPlanList()}
+
+            {/* Pagination */}
+            {data.totalPages > 1 && (
+              <div className="mt-8 flex items-center justify-center gap-2">
+                <Button
+                  variant="outline"
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  Previous
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  Page {data.page} of {data.totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  disabled={page >= data.totalPages}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next
+                </Button>
               </div>
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-8 w-20" />
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* Empty State */}
-      {!isLoading && data?.plans.length === 0 && (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <ClipboardList className="mb-4 h-16 w-16 text-muted-foreground" />
-            <h3 className="mb-2 text-lg font-semibold">No plans yet</h3>
-            <p className="mb-6 text-center text-sm text-muted-foreground">
-              {search
-                ? 'No plans match your search.'
-                : 'Create your first training plan to get started.'}
-            </p>
-            {!search && !isClient && (
-              <Button onClick={() => router.push('/plans/create')}>
-                <Plus className="mr-2 h-4 w-4" />
-                Create Your First Plan
-              </Button>
             )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Plans List */}
-      {!isLoading && data && data.plans.length > 0 && (
-        <>
-          {renderPlanList()}
-
-          {/* Pagination */}
-          {data.totalPages > 1 && (
-            <div className="mt-8 flex items-center justify-center gap-2">
-              <Button variant="outline" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-                Previous
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                Page {data.page} of {data.totalPages}
-              </span>
-              <Button
-                variant="outline"
-                disabled={page >= data.totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Next
-              </Button>
-            </div>
-          )}
-        </>
-      )}
+          </>
+        )}
+      </ScrollArea>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

@@ -1,4 +1,5 @@
 import type { SupersetGroupInfo, SupersetStats, SupersetValidation } from './types'
+import { generateId } from '@/lib/utils'
 
 /**
  * SupersetManager - Centralized superset logic for workout exercises
@@ -146,7 +147,7 @@ export class SupersetManager<T extends { groupId?: string | null }> {
     }
 
     // Scenario 4: Neither has group → create new group
-    const newGroupId = crypto.randomUUID()
+    const newGroupId = generateId()
     return exercises.map((ex, i) =>
       i === index || i === index + 1 ? { ...ex, groupId: newGroupId } : ex
     )
@@ -185,7 +186,7 @@ export class SupersetManager<T extends { groupId?: string | null }> {
     }
 
     // Scenario 4: Neither has group → create new group
-    const newGroupId = crypto.randomUUID()
+    const newGroupId = generateId()
     return exercises.map((ex, i) =>
       i === index || i === index - 1 ? { ...ex, groupId: newGroupId } : ex
     )
@@ -220,7 +221,7 @@ export class SupersetManager<T extends { groupId?: string | null }> {
 
     // If either side has < 2 exercises, dissolve that side
     const leftGroupId = leftIndices.length >= 2 ? targetGroupId : null
-    const rightGroupId = rightIndices.length >= 2 ? crypto.randomUUID() : null
+    const rightGroupId = rightIndices.length >= 2 ? generateId() : null
 
     return exercises.map((ex, i) => {
       if (leftIndices.includes(i)) {
@@ -262,7 +263,7 @@ export class SupersetManager<T extends { groupId?: string | null }> {
 
     // If either side has < 2 exercises, dissolve that side
     const leftGroupId = leftIndices.length >= 2 ? targetGroupId : null
-    const rightGroupId = rightIndices.length >= 2 ? crypto.randomUUID() : null
+    const rightGroupId = rightIndices.length >= 2 ? generateId() : null
 
     return exercises.map((ex, i) => {
       if (leftIndices.includes(i)) {
@@ -457,7 +458,7 @@ export class SupersetManager<T extends { groupId?: string | null }> {
           } else {
             // Multi-member chunk - assign groupId
             // First chunk keeps original groupId, others get new ones
-            const newGroupId = chunkIndex === 0 ? groupId : crypto.randomUUID()
+            const newGroupId = chunkIndex === 0 ? groupId : generateId()
 
             chunk.forEach((index) => {
               result[index] = { ...result[index], groupId: newGroupId } as T
