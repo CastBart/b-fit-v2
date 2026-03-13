@@ -61,8 +61,7 @@
       "Bash(find:*)",
       "WebSearch",
       "mcp__ide__getDiagnostics",
-      "Bash(grep:*)",
-      "Bash(cat:*)"
+      "Bash(grep:*)"
     ]
   },
   "enabledPlugins": {

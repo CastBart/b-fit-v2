@@ -3,15 +3,14 @@
  *
  * Left panel for selecting exercises from the library.
  * Includes search and filters.
- * Uses virtualization for performance with large exercise lists.
  */
 
 'use client'
 
-import { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react'
-import { useVirtualizer } from '@tanstack/react-virtual'
+import { useState, useEffect } from 'react'
 import { Dumbbell, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CreateExerciseDrawer } from '@/components/features/exercises/CreateExerciseDrawer'
 import { ExerciseFilterBar } from '@/components/features/exercises/ExerciseFilterBar'
@@ -27,54 +26,14 @@ import {
   EquipmentTypeLabels,
 } from '@/types/exercise'
 import type { Exercise } from '@prisma/client'
-import { ScrollArea } from '@/components/ui/scroll-area'
-
-const EMPTY_SET = new Set<string>()
-
-interface ExerciseButtonProps {
-  exercise: Exercise
-  isSelected: boolean
-  disabled?: boolean
-  onClick: (exercise: Exercise) => void
-}
-
-const ExerciseButton = memo(
-  function ExerciseButton({ exercise, isSelected, disabled, onClick }: ExerciseButtonProps) {
-    return (
-      <button
-        onClick={() => onClick(exercise)}
-        disabled={disabled}
-        className={`w-full rounded-lg border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-          isSelected
-            ? 'border-primary bg-primary/10 hover:bg-primary/15'
-            : 'bg-card hover:bg-accent'
-        }`}
-      >
-        <div className="font-medium">{exercise.name}</div>
-        <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-          <span>{MuscleGroupLabels[exercise.primaryMuscleGroup as MuscleGroup]}</span>
-          <span>•</span>
-          <span>{EquipmentTypeLabels[exercise.equipmentType as EquipmentType]}</span>
-        </div>
-      </button>
-    )
-  },
-  (prev, next) =>
-    prev.exercise.id === next.exercise.id &&
-    prev.isSelected === next.isSelected &&
-    prev.disabled === next.disabled
-  // onClick intentionally ignored — stable via ref-based callback
-)
 
 interface ExerciseSelectorPanelProps {
   onExerciseSelect: (exercise: Exercise) => void
   disabled?: boolean
+  // Optional multi-select props
   mode?: 'single' | 'multi'
   selectedIds?: Set<string>
-  onSelectionChange?: (
-    ids: Set<string>,
-    changed?: { exercise: Exercise; selected: boolean }
-  ) => void
+  onSelectionChange?: (ids: Set<string>, exercises?: Map<string, Exercise>) => void
   /** If true, the create drawer will be nested (for use inside another drawer) */
   nestedDrawer?: boolean
 }
@@ -83,7 +42,7 @@ export function ExerciseSelectorPanel({
   onExerciseSelect,
   disabled,
   mode = 'single',
-  selectedIds = EMPTY_SET,
+  selectedIds = new Set(),
   onSelectionChange,
   nestedDrawer = false,
 }: ExerciseSelectorPanelProps) {
@@ -93,29 +52,24 @@ export function ExerciseSelectorPanel({
   const [equipmentTypes, setEquipmentTypes] = useState<EquipmentType[]>([])
   const [difficultyLevels, setDifficultyLevels] = useState<DifficultyLevel[]>([])
   const [movementPatterns, setMovementPatterns] = useState<MovementPattern[]>([])
+  const [exerciseMap, setExerciseMap] = useState<Map<string, Exercise>>(new Map())
   const [createDrawerOpen, setCreateDrawerOpen] = useState(false)
 
   const { canCreate } = useCanCreateExercise()
 
-  // Ref-based stable callback: sync selectedIds into a ref so handleExerciseClick
-  // doesn't need it in its dependency array → callback stays stable across selections
-  const selectedIdsRef = useRef(selectedIds)
+  // Clear exercise map when filters change
   useEffect(() => {
-    selectedIdsRef.current = selectedIds
-  }, [selectedIds])
+    setExerciseMap(new Map())
+  }, [search, muscleGroups, exerciseTypes, equipmentTypes, difficultyLevels, movementPatterns])
 
-  const filterKey = useMemo(
-    () =>
-      JSON.stringify({
-        search,
-        muscleGroups,
-        exerciseTypes,
-        equipmentTypes,
-        difficultyLevels,
-        movementPatterns,
-      }),
-    [search, muscleGroups, exerciseTypes, equipmentTypes, difficultyLevels, movementPatterns]
-  )
+  const filterKey = JSON.stringify({
+    search,
+    muscleGroups,
+    exerciseTypes,
+    equipmentTypes,
+    difficultyLevels,
+    movementPatterns,
+  })
 
   const { data, isLoading } = useExercises(
     {
@@ -125,53 +79,43 @@ export function ExerciseSelectorPanel({
       equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
       difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
       movementPatterns: movementPatterns.length ? movementPatterns : undefined,
-      limit: 500,
+      limit: 50,
     },
     `selector-${filterKey}`
   )
 
   const exercises = data?.exercises || []
 
-  // Stable callback — reads selectedIds from ref instead of prop
-  const handleExerciseClick = useCallback(
-    (exercise: Exercise) => {
-      if (disabled) return
+  const handleExerciseClick = (exercise: Exercise) => {
+    if (disabled) return
 
-      if (mode === 'multi' && onSelectionChange) {
-        const currentIds = selectedIdsRef.current
-        const nextIds = new Set(currentIds)
-        const isNowSelected = !nextIds.has(exercise.id)
+    if (mode === 'multi' && onSelectionChange) {
+      const newSelectedIds = new Set(selectedIds)
+      const newExerciseMap = new Map(exerciseMap)
 
-        if (isNowSelected) nextIds.add(exercise.id)
-        else nextIds.delete(exercise.id)
-
-        onSelectionChange(nextIds, { exercise, selected: isNowSelected })
-        return
+      if (newSelectedIds.has(exercise.id)) {
+        newSelectedIds.delete(exercise.id)
+        newExerciseMap.delete(exercise.id)
+      } else {
+        newSelectedIds.add(exercise.id)
+        newExerciseMap.set(exercise.id, exercise)
       }
 
+      setExerciseMap(newExerciseMap)
+      onSelectionChange(newSelectedIds, newExerciseMap)
+    } else {
       onExerciseSelect(exercise)
-    },
-    [disabled, mode, onSelectionChange, onExerciseSelect]
-  )
+    }
+  }
 
-  const handleClearAll = useCallback(() => {
+  const handleClearAll = () => {
     setSearch('')
     setMuscleGroups([])
     setExerciseTypes([])
     setEquipmentTypes([])
     setDifficultyLevels([])
     setMovementPatterns([])
-  }, [])
-
-  // Virtualization
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-
-  const virtualizer = useVirtualizer({
-    count: exercises.length,
-    getScrollElement: () => scrollContainerRef.current,
-    estimateSize: () => 74, // ~70px button + 4px gap
-    overscan: 5,
-  })
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -219,51 +163,49 @@ export function ExerciseSelectorPanel({
       </div>
 
       {/* Exercise List */}
-      {isLoading && (
+      <ScrollArea className="flex-1">
         <div className="space-y-1 p-2">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="rounded-lg border bg-card p-3">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="mt-2 h-3 w-1/2" />
+          {isLoading &&
+            Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="rounded-lg border bg-card p-3">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="mt-2 h-3 w-1/2" />
+              </div>
+            ))}
+
+          {!isLoading && exercises.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Dumbbell className="mb-2 h-12 w-12 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">No exercises found</p>
             </div>
-          ))}
-        </div>
-      )}
+          )}
 
-      {!isLoading && exercises.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <Dumbbell className="mb-2 h-12 w-12 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">No exercises found</p>
-        </div>
-      )}
+          {!isLoading &&
+            exercises.map((exercise: Exercise) => {
+              const isSelected = mode === 'multi' && selectedIds.has(exercise.id)
 
-      {!isLoading && exercises.length > 0 && (
-        <ScrollArea viewportRef={scrollContainerRef} className="flex-1 overflow-y-auto ">
-          <div className="relative w-full p-2" style={{ height: virtualizer.getTotalSize() }}>
-            {virtualizer.getVirtualItems().map((virtualItem) => {
-              const exercise = exercises[virtualItem.index]
-              if (!exercise) return null
               return (
-                <div
+                <button
                   key={exercise.id}
-                  className="absolute left-0 w-full px-2"
-                  style={{
-                    height: virtualItem.size,
-                    transform: `translateY(${virtualItem.start}px)`,
-                  }}
+                  onClick={() => handleExerciseClick(exercise)}
+                  disabled={disabled}
+                  className={`w-full rounded-lg border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                    isSelected
+                      ? 'border-primary bg-primary/10 hover:bg-primary/15'
+                      : 'bg-card hover:bg-accent'
+                  }`}
                 >
-                  <ExerciseButton
-                    exercise={exercise}
-                    isSelected={mode === 'multi' && selectedIds.has(exercise.id)}
-                    disabled={disabled}
-                    onClick={handleExerciseClick}
-                  />
-                </div>
+                  <div className="font-medium">{exercise.name}</div>
+                  <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>{MuscleGroupLabels[exercise.primaryMuscleGroup as MuscleGroup]}</span>
+                    <span>•</span>
+                    <span>{EquipmentTypeLabels[exercise.equipmentType as EquipmentType]}</span>
+                  </div>
+                </button>
               )
             })}
-          </div>
-        </ScrollArea>
-      )}
+        </div>
+      </ScrollArea>
 
       {/* Create Exercise Drawer */}
       {canCreate && (

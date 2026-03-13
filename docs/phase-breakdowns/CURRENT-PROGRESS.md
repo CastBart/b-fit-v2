@@ -4,26 +4,7 @@
 **Current Phase**: Phase 5 - Advanced Features (Organisation)
 **Recently Completed**: Mobile UX Fixes (Plan Builder Save Button, Drawer Keyboard & Back Button)
 **Next Tasks**: Organisation Feature — Chunk O2
-**Branch**: `main`
-
----
-
-## UI Polish: Home Page Redesign & Logo Navigation Fix (Complete)
-
-- **Logo link fix**: Changed dashboard Navbar logo href from `/` to `/dashboard` so logged-in users stay in the app
-- **Auth redirect**: Added server-side session check to home page — authenticated users are redirected to `/dashboard`
-- **Landing page redesign**: Replaced demo/scaffold cards with a proper landing page featuring:
-  - Hero section with updated tagline and CTAs (Get Started / Log In)
-  - Feature cards for Personal Users, Personal Trainers, and Organisations (coming soon badge)
-  - "How It Works" 3-step section
-  - Clean footer with copyright
-
-### Modified Files
-
-```
-src/components/layouts/Navbar.tsx    - Logo href: "/" → "/dashboard"
-src/app/page.tsx                     - Full redesign with auth redirect + landing page
-```
+**Branch**: `development`
 
 ---
 
