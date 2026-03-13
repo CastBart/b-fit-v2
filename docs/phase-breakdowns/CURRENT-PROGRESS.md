@@ -1,10 +1,32 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-03-11
+**Last Updated**: 2026-03-13
 **Current Phase**: Phase 5 - Advanced Features (Organisation)
-**Recently Completed**: Mobile UX Fixes (Plan Builder Save Button, Drawer Keyboard & Back Button)
+**Recently Completed**: ScrollArea Fix — Restored Shadcn default + Created VirtualizedScrollArea
 **Next Tasks**: Organisation Feature — Chunk O2
 **Branch**: `development`
+
+---
+
+## ScrollArea Fix (2026-03-13) ✅
+
+### Problem
+
+The virtualisation of ExerciseSelectorPanel (commit `6261141`) modified the shared Shadcn ScrollArea component, breaking scrolling in 15+ other files.
+
+### Solution
+
+- **Restored** `scroll-area.tsx` to Shadcn default (`'use client'`, original Radix API names, no `viewportRef`)
+- **Created** `virtualized-scroll-area.tsx` — dedicated component with `viewportRef` prop for `@tanstack/react-virtual`
+- **Updated** ExerciseSelectorPanel to import `VirtualizedScrollArea` instead of `ScrollArea`
+
+### Modified Files
+
+```
+src/components/ui/scroll-area.tsx                              - Restored to Shadcn default
+src/components/ui/virtualized-scroll-area.tsx                  - NEW: Dedicated virtualised scroll component
+src/components/features/workouts/ExerciseSelectorPanel.tsx     - Uses VirtualizedScrollArea
+```
 
 ---
 

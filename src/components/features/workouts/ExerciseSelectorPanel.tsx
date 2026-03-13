@@ -27,7 +27,7 @@ import {
   EquipmentTypeLabels,
 } from '@/types/exercise'
 import type { Exercise } from '@prisma/client'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { VirtualizedScrollArea } from '@/components/ui/virtualized-scroll-area'
 
 const EMPTY_SET = new Set<string>()
 
@@ -238,7 +238,7 @@ export function ExerciseSelectorPanel({
       )}
 
       {!isLoading && exercises.length > 0 && (
-        <ScrollArea viewportRef={scrollContainerRef} className="flex-1 overflow-y-auto ">
+        <VirtualizedScrollArea viewportRef={scrollContainerRef} className="flex-1 overflow-y-auto">
           <div className="relative w-full p-2" style={{ height: virtualizer.getTotalSize() }}>
             {virtualizer.getVirtualItems().map((virtualItem) => {
               const exercise = exercises[virtualItem.index]
@@ -262,7 +262,7 @@ export function ExerciseSelectorPanel({
               )
             })}
           </div>
-        </ScrollArea>
+        </VirtualizedScrollArea>
       )}
 
       {/* Create Exercise Drawer */}
