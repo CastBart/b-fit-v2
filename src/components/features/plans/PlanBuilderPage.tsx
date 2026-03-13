@@ -8,14 +8,13 @@
 
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSmartBack } from '@/hooks/useSmartBack'
 import { useSession } from 'next-auth/react'
 import { generateId } from '@/lib/utils'
-import { ArrowLeft, Save, Plus, FileDown } from 'lucide-react'
+import { ArrowLeft, Save, Plus, FileDown, MoreHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { FloatingActionButton } from '@/components/ui/floating-action-button'
 import { ExerciseSelectorPanel } from '@/components/features/workouts/ExerciseSelectorPanel'
 import { WorkoutExercisesList } from '@/components/features/workouts/WorkoutExercisesList'
 import { ExerciseConfigPanel } from '@/components/features/workouts/ExerciseConfigPanel'
@@ -23,6 +22,7 @@ import { ExerciseSelectorDrawer } from '@/components/features/workouts/ExerciseS
 import { ExerciseConfigDrawer } from '@/components/features/workouts/ExerciseConfigDrawer'
 import { SupersetManagerDrawer } from '@/components/features/workouts/SupersetManagerDrawer'
 import { DayCarousel } from '@/components/features/plans/DayCarousel'
+import { DayBuilderOptionsDrawer } from '@/components/features/plans/DayBuilderOptionsDrawer'
 import { CopyFromWorkoutDrawer } from '@/components/features/plans/CopyFromWorkoutDrawer'
 import { usePlan } from '@/hooks/queries/usePlan'
 import { useSavePlanAllDays } from '@/hooks/mutations/usePlanMutations'
@@ -80,6 +80,12 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
   const [exerciseConfigOpen, setExerciseConfigOpen] = useState(false)
   const [supersetManagerOpen, setSupersetManagerOpen] = useState(false)
   const [copyFromWorkoutOpen, setCopyFromWorkoutOpen] = useState(false)
+  const [dayOptionsOpen, setDayOptionsOpen] = useState(false)
+
+  // Inline rename state
+  const [isRenaming, setIsRenaming] = useState(false)
+  const [renameValue, setRenameValue] = useState('')
+  const renameInputRef = useRef<HTMLInputElement>(null)
 
   // If PT is editing a client's plan, navigate back to client page
   const clientContextId = useMemo(() => {
@@ -131,6 +137,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
   // Current day's exercises (keyed by stable uid)
   const currentDayUid = localDays[currentDayIndex]?.uid ?? ''
   const exercises = dayExercises.get(currentDayUid) || []
+  const currentDay = localDays[currentDayIndex]
 
   // Update exercises for the current day
   const setCurrentDayExercises = (updater: (prev: WorkoutExercise[]) => WorkoutExercise[]) => {
@@ -161,7 +168,6 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
   }, [localDays.length])
 
   // Reorder a day (drag-and-drop: fromIndex -> toIndex)
-  // Exercise map is keyed by stable uid, so no remapping needed — just reorder and renumber
   const handleReorderDay = useCallback(
     (fromIndex: number, toIndex: number) => {
       if (fromIndex === toIndex) return
@@ -393,6 +399,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
   const handleDayChange = (index: number) => {
     setCurrentDayIndex(index)
     setSelectedExerciseIndex(null)
+    setIsRenaming(false)
   }
 
   // Handle copy from workout
@@ -462,12 +469,35 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
     dayNumber: day.dayNumber,
     dayId: day.dayId,
     label: day.label,
-    exerciseCount: (dayExercises.get(day.uid) || []).length,
   }))
 
   // Handle day label update (local only, saved with plan save)
   const handleDayLabelUpdate = (dayIndex: number, label: string | null) => {
     setLocalDays((prev) => prev.map((day, i) => (i === dayIndex ? { ...day, label } : day)))
+  }
+
+  // Rename handlers
+  const handleStartRename = () => {
+    setRenameValue(currentDay?.label || '')
+    setIsRenaming(true)
+    // Focus after render
+    setTimeout(() => renameInputRef.current?.focus(), 50)
+  }
+
+  const handleConfirmRename = () => {
+    const trimmed = renameValue.trim()
+    handleDayLabelUpdate(currentDayIndex, trimmed || null)
+    setIsRenaming(false)
+    setRenameValue('')
+  }
+
+  const handleRenameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleConfirmRename()
+    } else if (e.key === 'Escape') {
+      setIsRenaming(false)
+      setRenameValue('')
+    }
   }
 
   // Loading state
@@ -477,10 +507,11 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
         <div className="border-b bg-background px-6 py-4">
           <div className="flex items-center justify-between">
             <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-32 hidden lg:block" />
           </div>
         </div>
-        <Skeleton className="h-16 mx-4 mt-3" />
+        <Skeleton className="h-12 mx-4 mt-3" />
+        <Skeleton className="h-8 mx-4 mt-2" />
         <div className="flex flex-1 gap-4 p-6">
           <Skeleton className="h-full w-80 hidden lg:block" />
           <Skeleton className="h-full flex-1" />
@@ -507,7 +538,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
             </div>
           </div>
           <Button
-            className="w-full sm:w-auto"
+            className="hidden lg:flex"
             onClick={handleSave}
             disabled={localDays.length === 0 || savePlanAllDays.isPending}
           >
@@ -522,13 +553,44 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
         days={dayInfos}
         currentDayIndex={currentDayIndex}
         onDaySelect={handleDayChange}
-        onDayLabelUpdate={handleDayLabelUpdate}
         onAddDay={handleAddDay}
         onReorderDay={handleReorderDay}
-        onCopyDay={handleCopyDay}
-        onDeleteDay={handleDeleteDay}
         maxDays={7}
       />
+
+      {/* Day Info Section */}
+      {currentDay && (
+        <div className="flex items-center justify-between border-b bg-background px-4 py-2">
+          {isRenaming ? (
+            <input
+              ref={renameInputRef}
+              type="text"
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              onKeyDown={handleRenameKeyDown}
+              onBlur={handleConfirmRename}
+              placeholder="e.g. Push Day"
+              maxLength={100}
+              className="flex-1 rounded-md border bg-transparent px-3 py-1 text-sm outline-none focus:border-primary"
+            />
+          ) : (
+            <div className="text-sm font-medium">
+              Day {currentDay.dayNumber}
+              {currentDay.label && (
+                <span className="text-muted-foreground"> — {currentDay.label}</span>
+              )}
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 shrink-0 ml-2"
+            onClick={() => setDayOptionsOpen(true)}
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Three-column layout */}
       <div className="flex flex-1 overflow-hidden">
@@ -540,7 +602,6 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
         {/* Center: Exercises List */}
         <div className="w-full relative flex-1 overflow-y-auto lg:w-auto">
           {/* Copy from Workout button */}
-
           <Button
             variant="outline"
             size="sm"
@@ -561,6 +622,18 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
             onExerciseRemove={handleExerciseRemove}
             onExerciseReorder={handleExerciseReorder}
           />
+
+          {/* Add Exercise button - Mobile only */}
+          <div className="px-4 pb-4 lg:hidden">
+            <Button
+              variant="outline"
+              className={`w-full ${exercises.length === 0 ? 'border-dashed border-2' : ''}`}
+              onClick={() => setExerciseSelectorOpen(true)}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Exercise
+            </Button>
+          </div>
         </div>
 
         {/* Right: Configuration Panel - Hidden on mobile */}
@@ -577,11 +650,29 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
         </div>
       </div>
 
-      {/* Floating Action Button - Mobile only */}
-      <FloatingActionButton
-        onClick={() => setExerciseSelectorOpen(true)}
-        icon={<Plus className="h-6 w-6" />}
-        label="Add exercises"
+      {/* Sticky Save Button - Mobile/Tablet only */}
+      <div className="sticky bottom-0 z-40 border-t bg-background p-4 lg:hidden">
+        <Button
+          className="w-full"
+          size="lg"
+          onClick={handleSave}
+          disabled={localDays.length === 0 || savePlanAllDays.isPending}
+        >
+          <Save className="mr-2 h-4 w-4" />
+          {savePlanAllDays.isPending ? 'Saving...' : 'Save Plan'}
+        </Button>
+      </div>
+
+      {/* Day Builder Options Drawer */}
+      <DayBuilderOptionsDrawer
+        open={dayOptionsOpen}
+        onOpenChange={setDayOptionsOpen}
+        dayNumber={currentDay?.dayNumber ?? 1}
+        canDuplicate={localDays.length < 7}
+        canDelete={localDays.length > 1}
+        onRename={handleStartRename}
+        onDuplicate={() => handleCopyDay(currentDayIndex)}
+        onDelete={() => handleDeleteDay(currentDayIndex)}
       />
 
       {/* Exercise Selector Drawer - Mobile only */}

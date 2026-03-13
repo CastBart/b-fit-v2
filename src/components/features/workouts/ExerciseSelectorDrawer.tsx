@@ -16,7 +16,7 @@ import {
   DrawerTitle,
   DrawerFooter,
 } from '@/components/ui/drawer'
-import { ScrollArea } from '@/components/ui/scroll-area'
+// import { ScrollArea } from '@/components/ui/scroll-area'
 import { ExerciseSelectorPanel } from './ExerciseSelectorPanel'
 import type { Exercise } from '@prisma/client'
 
@@ -85,7 +85,8 @@ export function ExerciseSelectorDrawer({
           <DrawerTitle>Exercise Library</DrawerTitle>
         </DrawerHeader>
 
-        <ScrollArea className="flex-1">
+        {/* <ScrollArea className="flex-1"> */}
+        <div className="min-h-0 flex-1 overflow-hidden">
           <ExerciseSelectorPanel
             mode={multiSelect ? 'multi' : 'single'}
             selectedIds={selectedIds}
@@ -94,7 +95,8 @@ export function ExerciseSelectorDrawer({
             disabled={disabled}
             nestedDrawer={true}
           />
-        </ScrollArea>
+        </div>
+        {/* </ScrollArea> */}
 
         {multiSelect && (
           <DrawerFooter>

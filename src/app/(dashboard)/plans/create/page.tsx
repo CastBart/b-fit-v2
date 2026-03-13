@@ -56,24 +56,26 @@ export default function CreatePlanPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-2xl p-6">
+    <div className="container mx-auto max-w-2xl px-4 pt-4 pb-6 sm:px-6 sm:pt-6">
       {/* Header */}
-      <div className="mb-8">
-        <Button
-          variant="ghost"
-          onClick={() => {
-            if (step > 1) {
-              setStep(step - 1)
-            } else {
-              router.push('/plans')
-            }
-          }}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          {step > 1 ? 'Back' : 'Cancel'}
-        </Button>
-        <h1 className="text-3xl font-bold">Create Plan</h1>
+      <div className="mb-4">
+        <div className="flex items-center gap-3 mb-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              if (step > 1) {
+                setStep(step - 1)
+              } else {
+                router.push('/plans')
+              }
+            }}
+            className="shrink-0"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Create Plan</h1>
+        </div>
         <p className="mt-1 text-muted-foreground">Step {step} of 3</p>
         {/* Step indicator */}
         <div className="flex gap-2 mt-4">

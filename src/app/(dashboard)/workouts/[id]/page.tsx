@@ -87,7 +87,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   // Loading state
   if (isLoading) {
     return (
-      <div className="container mx-auto max-w-5xl py-8 px-4">
+      <div className="container mx-auto max-w-5xl pt-4 sm:pt-6 px-4">
         <Skeleton className="h-8 w-32 mb-6" />
         <Skeleton className="h-12 w-2/3 mb-4" />
         <Skeleton className="h-6 w-full mb-8" />
@@ -103,10 +103,9 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   // Error state
   if (error || !workout) {
     return (
-      <div className="container mx-auto max-w-5xl py-8 px-4">
-        <Button variant="ghost" onClick={goBack} className="mb-6">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Workouts
+      <div className="container mx-auto max-w-5xl pt-4 sm:pt-6 px-4">
+        <Button variant="ghost" size="icon" onClick={goBack} className="mb-6">
+          <ArrowLeft className="h-4 w-4" />
         </Button>
         <Card>
           <CardHeader>
@@ -176,46 +175,43 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   }
 
   return (
-    <div className="container mx-auto max-w-5xl py-8 px-4">
-      {/* Header with back button */}
-      <Button variant="ghost" onClick={goBack} className="mb-6">
-        <ArrowLeft className="h-4 w-4" />
-      </Button>
+    <div className="container mx-auto max-w-5xl pt-4 sm:pt-6 px-4">
+      {/* Header row: back + title */}
+      <div className="mb-4 flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={goBack} className="shrink-0">
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate min-w-0 flex-1">
+          {workout.name}
+        </h1>
+      </div>
+
+      {/* Metadata: description + badges + stats */}
+      <div className="mb-4 space-y-2">
+        {workout.description && (
+          <p className="hidden sm:block text-muted-foreground">{workout.description}</p>
+        )}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+          {workout.isTemplate && <Badge variant="outline">Template</Badge>}
+          {workout.copiedFrom && <Badge variant="secondary">From: {workout.copiedFrom.name}</Badge>}
+          <div className="flex items-center gap-2">
+            <Dumbbell className="h-4 w-4" />
+            <span>
+              {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span>Updated {new Date(workout.updatedAt).toLocaleDateString()}</span>
+          </div>
+        </div>
+      </div>
 
       {/* Workout Header */}
-      <div className="mb-8 flex flex-col justify-start lg:flex-row lg:justify-between gap-6">
-        <div className="">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold mb-2">{workout.name}</h1>
-              {workout.description && (
-                <p className="text-muted-foreground">{workout.description}</p>
-              )}
-            </div>
-            <div className="flex gap-2 ml-4">
-              {workout.isTemplate && <Badge variant="outline">Template</Badge>}
-              {workout.copiedFrom && (
-                <Badge variant="secondary">From: {workout.copiedFrom.name}</Badge>
-              )}
-            </div>
-          </div>
-
-          {/* Metadata */}
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Dumbbell className="h-4 w-4" />
-              <span>
-                {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              <span>Updated {new Date(workout.updatedAt).toLocaleDateString()}</span>
-            </div>
-          </div>
-
+      <div className="mb-4 flex flex-col justify-start lg:flex-row lg:justify-between gap-6">
+        <div>
           {/* Action Buttons */}
-          <div className="flex gap-3 mt-6 items-center">
+          <div className="flex gap-3 mt-4 items-center">
             <Button onClick={handleStartWorkout} size="lg" disabled={!hasExercises}>
               <Play className="h-4 w-4 mr-2" />
               Start Workout

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Navbar } from './Navbar'
 import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
 import type { UserRole } from '@/lib/nav-items'
@@ -16,9 +15,6 @@ export function DashboardLayout({ children, userRole = 'PERSONAL' }: DashboardLa
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navbar */}
-      <Navbar onMenuClick={() => setSidebarOpen(true)} />
-
       <div className="md:flex">
         {/* Sidebar */}
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} userRole={userRole} />
@@ -33,7 +29,11 @@ export function DashboardLayout({ children, userRole = 'PERSONAL' }: DashboardLa
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <BottomNav userRole={userRole} />
+      <BottomNav
+        userRole={userRole}
+        onMoreClick={() => setSidebarOpen(true)}
+        sidebarOpen={sidebarOpen}
+      />
     </div>
   )
 }
