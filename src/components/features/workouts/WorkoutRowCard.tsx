@@ -260,7 +260,7 @@ export function WorkoutRowCard({
           <Button
             variant="default"
             size="sm"
-            className="shrink-0 h-7 px-2 text-xs"
+            className="shrink-0 h-7 px-2 text-xs whitespace-nowrap"
             disabled={isStarting}
             onClick={(e) => {
               e.stopPropagation()
@@ -340,7 +340,9 @@ export function WorkoutRowCard({
           {muscleGroups.length > 0 && (
             <>
               <span className="shrink-0">·</span>
-              <span className="truncate">{muscleGroups.join(', ')}</span>
+              <span className="text-xs text-muted-foreground leading-relaxed break-words">
+                {muscleGroups.join(', ')}
+              </span>
             </>
           )}
         </div>

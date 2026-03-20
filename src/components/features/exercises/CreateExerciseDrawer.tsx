@@ -58,8 +58,14 @@ export function CreateExerciseDrawer({
   }, [onOpenChange])
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} nested={nested}>
-      <DrawerContent className="custom-drawer  justify-self-center">
+    <Drawer
+      open={open}
+      onOpenChange={onOpenChange}
+      nested={nested}
+      handleOnly={true}
+      repositionInputs={false}
+    >
+      <DrawerContent className="custom-drawer-fullscreen  justify-self-center">
         <DrawerHeader>
           <DrawerTitle>Create Exercise</DrawerTitle>
           <DrawerDescription>Add a new custom exercise to your library</DrawerDescription>

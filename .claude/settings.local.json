@@ -62,7 +62,9 @@
       "WebSearch",
       "mcp__ide__getDiagnostics",
       "Bash(grep:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:vaul.emilkowal.ski)"
     ]
   },
   "enabledPlugins": {

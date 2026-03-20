@@ -84,10 +84,10 @@ export function ExerciseSelectorDrawer({
   }
 
   return (
-    <Drawer open={open} onOpenChange={handleOpenChange}>
-      <DrawerContent className="custom-drawer justify-self-center">
+    <Drawer open={open} onOpenChange={handleOpenChange} handleOnly={true} repositionInputs={false}>
+      <DrawerContent className="custom-drawer-fullscreen justify-self-center">
         <DrawerHeader>
-          <DrawerTitle>Exercise Library</DrawerTitle>
+          <DrawerTitle className="hidden">Exercise Library</DrawerTitle>
         </DrawerHeader>
 
         <div className="min-h-0 flex-1 overflow-hidden">
