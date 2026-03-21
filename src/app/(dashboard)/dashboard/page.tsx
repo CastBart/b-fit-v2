@@ -16,6 +16,7 @@ import { RecentSessions } from '@/components/features/dashboard/RecentSessions'
 import { useMyPT } from '@/hooks/queries/useMyPT'
 import { useAppDispatch } from '@/store/hooks'
 import { startStandaloneSession } from '@/lib/utils/session-navigation'
+import { useActiveSessionGuard } from '@/hooks/useActiveSessionGuard'
 
 function TrainerCard() {
   const { data: ptData, isLoading } = useMyPT()
@@ -76,6 +77,7 @@ export default function DashboardPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const dispatch = useAppDispatch()
+  const { guardedStart } = useActiveSessionGuard()
   const userRole = session?.user?.role
 
   useEffect(() => {
@@ -101,7 +103,7 @@ export default function DashboardPage() {
       {userRole === 'CLIENT' && <TrainerCard />}
       {/* {userRole === 'PT' && <ClientsQuickCard />} */}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 ">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick Actions */}
         <Card>
           <CardHeader>
@@ -114,7 +116,7 @@ export default function DashboardPage() {
             <Button
               className="w-full"
               size="lg"
-              onClick={() => startStandaloneSession(dispatch, router)}
+              onClick={() => guardedStart(() => startStandaloneSession(dispatch, router))}
             >
               {/* <Link href="/workouts"> */}
               <PlayCircle className="mr-2 h-5 w-5" />

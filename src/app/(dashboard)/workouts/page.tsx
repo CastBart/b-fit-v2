@@ -24,6 +24,7 @@ import { useDeleteWorkout, useDuplicateWorkout } from '@/hooks/mutations/useWork
 import { getWorkoutById } from '@/server/actions/workouts'
 import { startWorkoutSession } from '@/lib/utils/session-navigation'
 import { useAppDispatch } from '@/store/hooks'
+import { useActiveSessionGuard } from '@/hooks/useActiveSessionGuard'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
 
@@ -82,6 +83,7 @@ function getStoredPinnedIds(): Set<string> {
 export default function WorkoutsPage() {
   const router = useRouter()
   const dispatch = useAppDispatch()
+  const { guardedStart } = useActiveSessionGuard()
   const { data: session } = useSession()
   const isClient = session?.user?.role === 'CLIENT'
 
@@ -128,23 +130,25 @@ export default function WorkoutsPage() {
   }
 
   const handleStart = useCallback(
-    async (workoutId: string) => {
+    (workoutId: string) => {
       if (startingWorkoutId) return
-      setStartingWorkoutId(workoutId)
-      try {
-        const result = await getWorkoutById(workoutId)
-        if (!result.success || !result.data) {
-          toast.error(result.error || 'Failed to load workout')
-          return
+      guardedStart(async () => {
+        setStartingWorkoutId(workoutId)
+        try {
+          const result = await getWorkoutById(workoutId)
+          if (!result.success || !result.data) {
+            toast.error(result.error || 'Failed to load workout')
+            return
+          }
+          startWorkoutSession(result.data, dispatch, router)
+        } catch {
+          toast.error('Failed to start session')
+        } finally {
+          setStartingWorkoutId(null)
         }
-        startWorkoutSession(result.data, dispatch, router)
-      } catch {
-        toast.error('Failed to start session')
-      } finally {
-        setStartingWorkoutId(null)
-      }
+      })
     },
-    [startingWorkoutId, dispatch, router]
+    [startingWorkoutId, dispatch, router, guardedStart]
   )
 
   const handleTogglePin = useCallback((workoutId: string) => {

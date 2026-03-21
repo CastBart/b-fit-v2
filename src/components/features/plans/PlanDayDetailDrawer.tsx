@@ -27,6 +27,7 @@ import {
 } from 'lucide-react'
 import { useAppDispatch } from '@/store/hooks'
 import { startPlanDaySession } from '@/lib/utils/session-navigation'
+import { useActiveSessionGuard } from '@/hooks/useActiveSessionGuard'
 import { useSession } from '@/hooks/queries/useSession'
 import { PlanDayOptionsDrawer } from '@/components/features/plans/PlanDayOptionsDrawer'
 import { formatDuration } from '@/lib/utils/format-time'
@@ -57,6 +58,7 @@ export function PlanDayDetailDrawer({
 }: PlanDayDetailDrawerProps) {
   const router = useRouter()
   const dispatch = useAppDispatch()
+  const { guardedStart } = useActiveSessionGuard()
   const [optionsOpen, setOptionsOpen] = useState(false)
 
   const isCompleted = completion?.status === 'COMPLETED'
@@ -77,17 +79,19 @@ export function PlanDayDetailDrawer({
   const totalSets = day.exercises.reduce((sum, e) => sum + e.sets, 0)
 
   const handleStart = () => {
-    startPlanDaySession(
-      {
-        planId,
-        planDayId: day.id,
-        sessionName: dayLabel,
-        exercises: day.exercises,
-      },
-      dispatch,
-      router
-    )
-    onOpenChange(false)
+    guardedStart(() => {
+      startPlanDaySession(
+        {
+          planId,
+          planDayId: day.id,
+          sessionName: dayLabel,
+          exercises: day.exercises,
+        },
+        dispatch,
+        router
+      )
+      onOpenChange(false)
+    })
   }
 
   const handleClose = () => {

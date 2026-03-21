@@ -218,7 +218,7 @@ function ExercisesContent() {
       </div>
 
       {/* Filter bar */}
-      <div className="shrink-0 py-3">
+      <div className="shrink-0 ">
         <ExerciseFilterBar
           search={search}
           muscleGroups={muscleGroups}

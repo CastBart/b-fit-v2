@@ -37,6 +37,7 @@ import { useWorkout } from '@/hooks/queries/useWorkout'
 import { useDeleteWorkout } from '@/hooks/mutations/useWorkoutMutations'
 import { useAppDispatch } from '@/store/hooks'
 import { startWorkoutSession } from '@/lib/utils/session-navigation'
+import { useActiveSessionGuard } from '@/hooks/useActiveSessionGuard'
 import { SupersetManager } from '@/lib/superset-manager'
 import type { WorkoutExerciseWithExercise } from '@/types/workout'
 import { MuscleGroupLabels } from '@/types/exercise'
@@ -53,6 +54,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const router = useRouter()
   const { data: session } = useSession()
   const dispatch = useAppDispatch()
+  const { guardedStart } = useActiveSessionGuard()
   const { id } = use(params)
   const userRole = session?.user?.role
   const { data: workout, isLoading, error } = useWorkout(id)
@@ -76,7 +78,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   // Handle start workout
   const handleStartWorkout = () => {
     if (!workout) return
-    startWorkoutSession(workout, dispatch, router)
+    guardedStart(() => startWorkoutSession(workout, dispatch, router))
   }
 
   // Handle edit
