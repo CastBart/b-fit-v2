@@ -108,6 +108,12 @@
   max-height: 90dvh;
 }
 
+.custom-drawer-fullscreen {
+  width: 100vw;
+  height: 98dvh;
+  max-height: 98dvh;
+}
+
 .custom-drawer-no-height {
   width: 100vw;
 }
@@ -124,7 +130,11 @@
     height: 100dvh;
     max-height: 100dvh;
   }
-
+  .custom-drawer-fullscreen {
+    width: 100vw;
+    height: 98dvh;
+    max-height: 98dvh;
+  }
   .custom-drawer-no-height {
     width: 100vw;
     max-height: 100dvh;
@@ -149,7 +159,11 @@
     height: 75dvh;
     max-height: 75dvh;
   }
-
+  .custom-drawer-fullscreen {
+    width: 100vw;
+    height: 75dvh;
+    max-height: 75dvh;
+  }
   .custom-drawer-no-height {
     width: 600px;
   }

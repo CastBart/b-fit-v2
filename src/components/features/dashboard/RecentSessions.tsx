@@ -41,7 +41,9 @@ export function RecentSessions() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Recent Sessions</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl lg:text-2xl tracking-tight">
+            Recent Sessions
+          </CardTitle>
           <CardDescription>Your last 5 workout sessions</CardDescription>
         </CardHeader>
         <CardContent>

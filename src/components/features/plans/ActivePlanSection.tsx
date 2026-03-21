@@ -70,7 +70,7 @@ export function ActivePlanSection() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl lg:text-2xl tracking-tight">
               <ClipboardList className="h-5 w-5" />
               Active Plan
             </CardTitle>
@@ -108,7 +108,7 @@ export function ActivePlanSection() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-3 overflow-x-auto pb-1">
+          <div className="flex flex-col gap-3 sm:flex-row sm:overflow-x-auto sm:pb-1">
             {days.map((day, index) => {
               const completion = getCompletionForDay(day.id)
               return (

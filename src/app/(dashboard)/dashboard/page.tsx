@@ -88,10 +88,10 @@ export default function DashboardPage() {
   }, [searchParams, update, router])
 
   return (
-    <div className="container mx-auto space-y-6 px-4 pt-4 sm:px-6 sm:pt-6">
+    <div className="container mx-auto space-y-6 p-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">
           Welcome back! Here&apos;s an overview of your fitness journey.
         </p>
@@ -101,19 +101,13 @@ export default function DashboardPage() {
       {userRole === 'CLIENT' && <TrainerCard />}
       {/* {userRole === 'PT' && <ClientsQuickCard />} */}
 
-      {/* Stats Grid */}
-      <StatsGrid />
-
-      {/* Active Plan Section */}
-      <ActivePlanSection />
-
-      {/* Recent Activity */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <RecentSessions />
-
+      <div className="grid grid-cols-1 lg:grid-cols-2 ">
+        {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle className="text-xl sm:text-2xl lg:text-2xl tracking-tight">
+              Quick Actions
+            </CardTitle>
             <CardDescription>Start your workout or manage your training</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -124,7 +118,7 @@ export default function DashboardPage() {
             >
               {/* <Link href="/workouts"> */}
               <PlayCircle className="mr-2 h-5 w-5" />
-              Start New Standalone Session
+              Start Session
               {/* </Link> */}
             </Button>
             <Button asChild variant="outline" className="w-full">
@@ -141,7 +135,18 @@ export default function DashboardPage() {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Active Plan Section */}
+        <ActivePlanSection />
       </div>
+
+      {/* Stats Grid */}
+      <StatsGrid />
+
+      {/* Recent Activity */}
+      {/* <div className="grid gap-4 md:grid-cols-2"> */}
+      <RecentSessions />
     </div>
+    // </div>
   )
 }

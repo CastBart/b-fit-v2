@@ -70,6 +70,7 @@ export function PlanRowCard({
       <Button
         variant="default"
         size="sm"
+        className="text-xs h-7"
         disabled={isActivating}
         onClick={(e) => {
           e.stopPropagation()
@@ -87,6 +88,7 @@ export function PlanRowCard({
       <Button
         variant="outline"
         size="sm"
+        className="text-xs h-7"
         onClick={(e) => {
           e.stopPropagation()
           onView(plan.id)
@@ -257,7 +259,7 @@ export function PlanRowCard({
             {plan.isActive && onDeactivate && (
               <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
                 className="h-7 w-7"
                 disabled={isDeactivating}
                 onClick={(e) => {
