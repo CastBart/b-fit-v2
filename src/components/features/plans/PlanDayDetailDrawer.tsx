@@ -100,7 +100,7 @@ export function PlanDayDetailDrawer({
 
   return (
     <>
-      <Drawer open={open} onOpenChange={onOpenChange}>
+      <Drawer open={open} onOpenChange={onOpenChange} handleOnly repositionInputs={false}>
         <DrawerContent className="custom-drawer justify-self-center">
           <DrawerHeader>
             <div className="flex items-center justify-between">

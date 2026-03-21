@@ -154,15 +154,15 @@ export function CompletedSessionDrawer({
   const startDate = new Date(data.startTime)
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="custom-drawer justify-self-center">
+    <Drawer open={open} onOpenChange={onOpenChange} handleOnly repositionInputs={false}>
+      <DrawerContent className="custom-drawer-fullscreen justify-self-center">
         <DrawerHeader className="text-center pb-2">
-          <div className="flex justify-center mb-2">
+          <div className="flex justify-center">
             <div className="rounded-full bg-green-100 dark:bg-green-900 p-3">
-              <Trophy className="h-8 w-8 text-green-600 dark:text-green-400" />
+              <Trophy className="h-4 w-4 text-green-600 dark:text-green-400" />
             </div>
           </div>
-          <DrawerTitle className="text-2xl">Workout Complete!</DrawerTitle>
+          <DrawerTitle className="text-xl">Workout Complete!</DrawerTitle>
           <DrawerDescription className="text-base">{data.workoutName}</DrawerDescription>
         </DrawerHeader>
 
@@ -265,7 +265,7 @@ export function CompletedSessionDrawer({
         </ScrollArea>
 
         <DrawerFooter className="pt-4">
-          <Button onClick={handleAction} size="lg" className="w-full">
+          <Button onClick={handleAction} className="w-full">
             {actionLabel}
           </Button>
           <DrawerClose asChild>
@@ -292,7 +292,7 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, className }: StatCardProps) {
   return (
-    <div className={cn('flex items-center gap-3 rounded-lg border bg-muted/30 p-3', className)}>
+    <div className={cn('flex items-center gap-3 rounded-lg border bg-muted/30 p-2', className)}>
       <div className="text-muted-foreground">{icon}</div>
       <div>
         <p className="text-xs text-muted-foreground">{label}</p>
