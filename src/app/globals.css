@@ -7,48 +7,97 @@
 /* Your existing CSS variables (these are fine) */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 199.5 89.3% 48.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 271.5 81.3% 55.9%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 199.5 89.3% 48.2%;
-    --radius: 0.5rem;
+    --background: 210 70% 86%; /* Light blue background */
+    --foreground: 210 20% 20%; /* Darker blue-gray for text and contrast */
+
+    --card: 210 70% 96%; /* Slightly lighter blue for cards */
+    --card-foreground: 210 20% 20%; /* Same as foreground for text in cards */
+
+    --popover: 210 70% 96%; /* Matches card for consistency */
+    --popover-foreground: 210 20% 20%; /* Same as foreground */
+
+    --primary: 210 90% 50%; /* Bright blue for primary actions */
+    --primary-foreground: 210 30% 96%; /* Light contrast text on primary */
+
+    --secondary: 210 40% 80%; /* Softer blue for secondary elements */
+    --secondary-foreground: 210 25% 30%; /* Darker text for secondary elements */
+
+    --muted: 210 30% 92%; /* Very light blue-gray for muted elements */
+    --muted-foreground: 210 15% 45%; /* Subtle text for muted content */
+
+    --accent: 210 70% 76%; /* Light blue for accents */
+    --accent-foreground: 210 20% 20%; /* Matches foreground for consistency */
+
+    --destructive: 0 70% 60%; /* Soft red for destructive actions */
+    --destructive-foreground: 210 30% 96%; /* Light text on destructive elements */
+
+    --border: 210 30% 80%; /* Muted blue for borders */
+    --input: 210 30% 92%; /* Light blue for input backgrounds */
+
+    --ring: 210 80% 60%; /* Vibrant blue for focus rings */
+    --radius: 0.5rem; /* Consistent border radius */
+
+    --chart-1: 210 90% 50%; /* Vibrant blue */
+    --chart-2: 120 70% 40%; /* Green for contrast */
+    --chart-3: 300 60% 50%; /* Purple for variety */
+    --chart-4: 45 90% 55%; /* Yellow for contrast */
+    --chart-5: 0 70% 60%; /* Soft red */
+
+    --sidebar-background: 0 0% 98%; /* Medium light blue for sidebar */
+    --sidebar-foreground: 240 5.3% 26.1%; /* Dark blue-gray text in sidebar */
+    --sidebar-primary: 240 5.9% 10%; /* Deep blue for sidebar primary elements */
+    --sidebar-primary-foreground: 0 0% 98%; /* Light text on primary elements */
+    --sidebar-accent: 240 4.8% 95.9%; /* Light accent blue for sidebar */
+    --sidebar-accent-foreground: 240 5.9% 10%; /* Darker text for accents */
+    --sidebar-border: 220 13% 91%; /* Subtle blue border */
+    --sidebar-ring: 217.2 91.2% 59.8%; /* Vibrant blue for focus */
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 199.5 89.3% 48.2%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 271.5 81.3% 55.9%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 199.5 89.3% 48.2%;
+    --background: 222.2 84% 4.9%; /* Deep navy background */
+    --foreground: 210 40% 98%; /* Light blue-gray text for contrast */
+
+    --card: 222.2 84% 4.9%; /* Matches background for card consistency */
+    --card-foreground: 210 40% 98%; /* Same as foreground for readability */
+
+    --popover: 222.2 84% 4.9%; /* Matches card for uniformity */
+    --popover-foreground: 210 40% 98%; /* Same as foreground */
+
+    --primary: 217.2 91.2% 59.8%; /* Bright blue for primary actions */
+    --primary-foreground: 222.2 47.4% 11.2%; /* Dark text for contrast on primary */
+
+    --secondary: 217.2 32.6% 17.5%; /* Dark muted blue for secondary elements */
+    --secondary-foreground: 210 40% 98%; /* Light text for readability */
+
+    --muted: 217.2 32.6% 17.5%; /* Darker muted blue-gray for subtle elements */
+    --muted-foreground: 215 20.2% 65.1%; /* Slightly brighter gray for muted text */
+
+    --accent: 217.2 32.6% 17.5%; /* Soft dark blue accent */
+    --accent-foreground: 210 40% 98%; /* Light text for contrast */
+
+    --destructive: 0 62.8% 30.6%; /* Dark red for destructive actions */
+    --destructive-foreground: 210 40% 98%; /* Light text on destructive elements */
+
+    --border: 217.2 32.6% 17.5%; /* Subtle blue-gray border */
+    --input: 217.2 32.6% 17.5%; /* Dark muted blue for input fields */
+
+    --ring: 224.3 76.3% 48%; /* Bright blue for focus rings */
+    --radius: 0.5rem; /* Consistent border radius */
+
+    --chart-1: 220 70% 50%; /* Vibrant blue for charts */
+    --chart-2: 160 60% 45%; /* Green for contrast */
+    --chart-3: 30 80% 55%; /* Orange for variety */
+    --chart-4: 280 65% 60%; /* Purple for uniqueness */
+    --chart-5: 340 75% 55%; /* Reddish pink for emphasis */
+
+    --sidebar-background: 240 5.9% 10%; /* Dark sidebar background */
+    --sidebar-foreground: 240 4.8% 95.9%; /* Light text in sidebar */
+    --sidebar-primary: 224.3 76.3% 48%; /* Vibrant blue for primary elements */
+    --sidebar-primary-foreground: 0 0% 100%; /* White text on primary */
+    --sidebar-accent: 240 3.7% 15.9%; /* Dark accent for sidebar */
+    --sidebar-accent-foreground: 240 4.8% 95.9%; /* Light text for contrast */
+    --sidebar-border: 240 3.7% 15.9%; /* Subtle blue-gray border */
+    --sidebar-ring: 217.2 91.2% 59.8%; /* Bright blue focus ring */
   }
 }
 
