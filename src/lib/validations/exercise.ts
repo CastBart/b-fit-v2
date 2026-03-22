@@ -24,11 +24,7 @@ export const createExerciseSchema = z.object({
   difficultyLevel: z.nativeEnum(DifficultyLevel),
   exerciseType: z.nativeEnum(ExerciseType),
   metricType: z.nativeEnum(MetricType),
-  instructions: z
-    .array(z.string().min(1, 'Each instruction must not be empty'))
-    .min(1, 'At least one instruction is required')
-    .optional(),
-  isPublic: z.boolean().optional().default(false),
+  instructions: z.array(z.string().min(1, 'Each instruction must not be empty')).optional(),
 })
 
 export type CreateExerciseInput = z.infer<typeof createExerciseSchema>
@@ -58,7 +54,6 @@ export const updateExerciseSchema = z.object({
     .array(z.string().min(1, 'Each instruction must not be empty'))
     .optional()
     .nullable(),
-  isPublic: z.boolean().optional(),
 })
 
 export type UpdateExerciseInput = z.infer<typeof updateExerciseSchema>

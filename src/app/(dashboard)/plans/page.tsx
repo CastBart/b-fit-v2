@@ -196,7 +196,7 @@ export default function PlansPage() {
             setSearch(e.target.value)
             setPage(1)
           }}
-          className="max-w-md"
+          className="max-w-md border-border"
         />
         <ToggleGroup
           type="single"

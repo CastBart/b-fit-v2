@@ -4,10 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Your existing CSS variables (these are fine) */
 @layer base {
   :root {
-    --background: #dcedfe;
+    /* --background: #dcedfe; */
+    --background: #d2e8fe;
     --foreground: #1d2530;
     --card: #d1eaff;
     --card-foreground: #1d2530;
@@ -103,10 +103,16 @@
     --shadow-xl: 0 1px 3px 0px rgb(245 245 245 / 0.23), 0 8px 10px -1px rgb(245 245 245 / 0.23);
     --shadow-2xl: 0 1px 3px 0px rgb(245 245 245 / 0.58);
   }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
-/* This part is crucial in Tailwind v4:
-   it maps shadcn conventions like bg-background, text-foreground, etc. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -158,29 +164,6 @@
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
 }
-@layer base {
-  * {
-    border-color: var(--border);
-  }
-
-  body {
-    font-feature-settings:
-      'rlig' 1,
-      'calt' 1;
-  }
-
-  .font-sans {
-    font-family:
-      var(--font-sans),
-      -apple-system,
-      BlinkMacSystemFont,
-      'Segoe UI',
-      'Roboto',
-      'Helvetica Neue',
-      Arial,
-      sans-serif;
-  }
-}
 
 /* Default mobile/tablet drawer sizing */
 .custom-drawer {
@@ -211,11 +194,13 @@
     height: 100dvh;
     max-height: 100dvh;
   }
+
   .custom-drawer-fullscreen {
     width: 100vw;
     height: 98dvh;
     max-height: 98dvh;
   }
+
   .custom-drawer-no-height {
     width: 100vw;
     max-height: 100dvh;
@@ -240,11 +225,13 @@
     height: 75dvh;
     max-height: 75dvh;
   }
+
   .custom-drawer-fullscreen {
     width: 600px;
     height: 80dvh;
     max-height: 80dvh;
   }
+
   .custom-drawer-no-height {
     width: 600px;
   }
@@ -256,45 +243,28 @@
   }
 }
 
-/* Hide by default (Chrome/Safari/Edge) */
+/* Custom horizontal scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-  /* height: 0px !important; horizontal */
-  /* width: 0px !important;  just in case */
   height: 8px !important;
 }
 
-/* Show only on hover */
 .custom-scrollbar:hover::-webkit-scrollbar {
   height: 8px !important;
 }
 
-/* Track + thumb (only visible when scrollbar is visible) */
 .custom-scrollbar::-webkit-scrollbar-track {
   background: #2d3748;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #4a5568;
+  background-color: #718096;
   border-radius: 4px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #718096;
-}
-
-/* Firefox
-.custom-scrollbar {
-  scrollbar-width: none; 
-}
-
-.custom-scrollbar:hover {
-  scrollbar-width: thin; 
-} */
-
 /* shadcn-like thin scrollbar */
 .scrollbar-shadcn {
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: hsl(var(--border)) transparent;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
 .scrollbar-shadcn::-webkit-scrollbar {
@@ -306,8 +276,8 @@
 }
 
 .scrollbar-shadcn::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--border));
+  background-color: var(--border);
   border-radius: 9999px;
-  border: 2px solid transparent; /* gives that “padded” thumb feel */
+  border: 2px solid transparent;
   background-clip: content-box;
 }
