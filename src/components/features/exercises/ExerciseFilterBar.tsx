@@ -130,7 +130,7 @@ export function ExerciseFilterBar({
             placeholder="Search exercises..."
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            className="pl-9"
+            className="pl-9 border-border"
           />
         </div>
 

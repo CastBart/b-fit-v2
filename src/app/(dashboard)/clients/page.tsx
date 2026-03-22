@@ -75,7 +75,7 @@ export default function ClientsPage() {
             setSearch(e.target.value)
             setPage(1)
           }}
-          className="max-w-md"
+          className="max-w-md border-border"
         />
         <Select
           value={statusFilter}
@@ -84,7 +84,7 @@ export default function ClientsPage() {
             setPage(1)
           }}
         >
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-[160px] border-border">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>

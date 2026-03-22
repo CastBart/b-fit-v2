@@ -30,7 +30,14 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Switch } from '@/components/ui/switch'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+} from '@/components/ui/dropdown-menu'
+import { Badge } from '@/components/ui/badge'
+import { ChevronDown, X } from 'lucide-react'
 import {
   Form,
   FormControl,
@@ -78,7 +85,6 @@ export function ExerciseForm({
       exerciseType: ExerciseType.MEDIUM,
       metricType: MetricType.WEIGHT_REPS,
       instructions: [],
-      isPublic: false,
       ...defaultValues,
     },
   })
@@ -94,7 +100,7 @@ export function ExerciseForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 p-2">
         {/* Name */}
         <FormField
           control={form.control}
@@ -157,6 +163,88 @@ export function ExerciseForm({
               <FormMessage />
             </FormItem>
           )}
+        />
+
+        {/* Secondary Muscle Groups */}
+        <FormField
+          control={form.control}
+          name="secondaryMuscleGroups"
+          render={({ field }) => {
+            const selectedPrimary = form.watch('primaryMuscleGroup')
+            const availableGroups = Object.entries(MuscleGroupLabels).filter(
+              ([value]) => value !== selectedPrimary
+            )
+            const selected = field.value || []
+
+            const toggleGroup = (group: MuscleGroup) => {
+              if (selected.includes(group)) {
+                field.onChange(selected.filter((g: MuscleGroup) => g !== group))
+              } else {
+                field.onChange([...selected, group])
+              }
+            }
+
+            const removeGroup = (group: MuscleGroup) => {
+              field.onChange(selected.filter((g: MuscleGroup) => g !== group))
+            }
+
+            return (
+              <FormItem>
+                <FormLabel>Secondary Muscle Groups</FormLabel>
+                {selected.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {selected.map((group: MuscleGroup) => (
+                      <Badge key={group} variant="secondary" className="gap-1 pr-1">
+                        {MuscleGroupLabels[group]}
+                        <button
+                          type="button"
+                          onClick={() => removeGroup(group)}
+                          className="ml-0.5 rounded-full p-0.5 hover:bg-muted-foreground/20"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild className="shadow-xs">
+                    <FormControl>
+                      <button
+                        type="button"
+                        disabled={isSubmitting}
+                        className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                      >
+                        <span className={selected.length > 0 ? '' : 'text-muted-foreground'}>
+                          {selected.length > 0
+                            ? `${selected.length} selected`
+                            : 'Select secondary muscles'}
+                        </span>
+                        <ChevronDown className="h-4 w-4 opacity-50" />
+                      </button>
+                    </FormControl>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="max-h-[200px] overflow-y-auto"
+                    align="start"
+                    style={{ minWidth: 'var(--radix-dropdown-menu-trigger-width)' }}
+                  >
+                    {availableGroups.map(([value, label]) => (
+                      <DropdownMenuCheckboxItem
+                        key={value}
+                        checked={selected.includes(value as MuscleGroup)}
+                        onCheckedChange={() => toggleGroup(value as MuscleGroup)}
+                        onSelect={(e) => e.preventDefault()}
+                      >
+                        {label}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <FormMessage />
+              </FormItem>
+            )
+          }}
         />
 
         {/* Equipment Type */}
@@ -322,27 +410,6 @@ export function ExerciseForm({
                 disabled={isSubmitting}
                 error={form.formState.errors.instructions?.message}
               />
-            </FormItem>
-          )}
-        />
-
-        {/* Is Public */}
-        <FormField
-          control={form.control}
-          name="isPublic"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">Public Exercise</FormLabel>
-                <FormDescription>Make this exercise visible to all users</FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled={isSubmitting}
-                />
-              </FormControl>
             </FormItem>
           )}
         />

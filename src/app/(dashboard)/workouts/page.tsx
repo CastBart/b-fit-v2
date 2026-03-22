@@ -286,7 +286,7 @@ export default function WorkoutsPage() {
             setSearch(e.target.value)
             setPage(1)
           }}
-          className="max-w-md"
+          className="max-w-md border-border"
         />
         <ToggleGroup
           type="single"
