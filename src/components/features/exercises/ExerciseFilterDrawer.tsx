@@ -216,11 +216,6 @@ export function ExerciseFilterDrawer({
 
   return (
     <>
-      {/*
-        Drawer stays open in the background when a filter dialog opens.
-        Radix Dialog's focus-trap blocks pointer-events on everything behind it,
-        so the drawer cannot be accidentally dismissed while a dialog is open.
-      */}
       <Drawer open={open} onOpenChange={onOpenChange} nested={nested}>
         <DrawerContent className="custom-drawer-no-height justify-self-center">
           <DrawerHeader className="flex flex-row items-center justify-between border-b pb-4">

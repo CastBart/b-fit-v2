@@ -8,7 +8,7 @@ import {
   DrawerDescription,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
-import { Pencil, Copy, Trash2 } from 'lucide-react'
+import { Pencil, Copy, Trash2, FileDown } from 'lucide-react'
 
 interface DayBuilderOptionsDrawerProps {
   open: boolean
@@ -19,6 +19,7 @@ interface DayBuilderOptionsDrawerProps {
   onRename: () => void
   onDuplicate: () => void
   onDelete: () => void
+  onCopyFromWorkout?: () => void
 }
 
 export function DayBuilderOptionsDrawer({
@@ -30,6 +31,7 @@ export function DayBuilderOptionsDrawer({
   onRename,
   onDuplicate,
   onDelete,
+  onCopyFromWorkout,
 }: DayBuilderOptionsDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -40,6 +42,21 @@ export function DayBuilderOptionsDrawer({
         </DrawerHeader>
 
         <div className="px-6 pb-6 space-y-3">
+          {onCopyFromWorkout && (
+            <Button
+              variant="outline"
+              className="w-full"
+              size="lg"
+              onClick={() => {
+                onOpenChange(false)
+                onCopyFromWorkout()
+              }}
+            >
+              <FileDown className="mr-2 h-5 w-5" />
+              Copy from Workout
+            </Button>
+          )}
+
           <Button
             variant="outline"
             className="w-full"

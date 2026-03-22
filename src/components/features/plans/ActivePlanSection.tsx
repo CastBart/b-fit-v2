@@ -71,7 +71,6 @@ export function ActivePlanSection() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl lg:text-2xl tracking-tight">
-              <ClipboardList className="h-5 w-5" />
               Active Plan
             </CardTitle>
             {/* Week Navigation */}
@@ -85,7 +84,7 @@ export function ActivePlanSection() {
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm font-medium min-w-[90px] text-center">
+              <span className="text-sm font-medium min-w-[60px] text-center">
                 Week {currentViewedWeek}
                 {plan.durationWeeks > 0 ? ` of ${plan.durationWeeks}` : ''}
               </span>

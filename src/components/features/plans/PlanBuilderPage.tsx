@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation'
 import { useSmartBack } from '@/hooks/useSmartBack'
 import { useSession } from 'next-auth/react'
 import { generateId } from '@/lib/utils'
-import { ArrowLeft, Save, Plus, FileDown, MoreHorizontal } from 'lucide-react'
+import { ArrowLeft, Save, Plus, MoreHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ExerciseSelectorPanel } from '@/components/features/workouts/ExerciseSelectorPanel'
 import { WorkoutExercisesList } from '@/components/features/workouts/WorkoutExercisesList'
@@ -522,28 +522,30 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col">
+    <div className="container mx-auto flex h-[calc(100dvh-4.5rem)] flex-col sm:px-6 sm:pt-6 md:h-[calc(100dvh-1rem)]">
       {/* Header */}
-      <div className="border-b bg-background px-6 py-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="border-b bg-background px-4 py-1 sm:px-6 sm:py-4">
+        <div className="flex justify-between gap-3">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={goBack}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">{plan.name}</h1>
+              <h1 className="text-xl sm:text-2xl font-bold">{plan.name}</h1>
               {plan.description && (
-                <p className="text-sm text-muted-foreground">{plan.description}</p>
+                <p className="hidden sm:block text-sm text-muted-foreground">{plan.description}</p>
               )}
             </div>
           </div>
           <Button
-            className="hidden lg:flex"
+            className="flex"
             onClick={handleSave}
             disabled={localDays.length === 0 || savePlanAllDays.isPending}
           >
-            <Save className="mr-2 h-4 w-4" />
-            {savePlanAllDays.isPending ? 'Saving...' : 'Save Plan'}
+            <Save className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">
+              {savePlanAllDays.isPending ? 'Saving...' : 'Save Plan'}
+            </span>
           </Button>
         </div>
       </div>
@@ -600,28 +602,19 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
         </div>
 
         {/* Center: Exercises List */}
-        <div className="w-full relative flex-1 overflow-y-auto lg:w-auto">
-          {/* Copy from Workout button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setCopyFromWorkoutOpen(true)}
-            className="absolute right-0 top-5"
-          >
-            <FileDown className="mr-2 h-4 w-4" />
-            Copy from Workout
-          </Button>
-
-          <WorkoutExercisesList
-            exercises={exercises}
-            selectedIndex={selectedExerciseIndex}
-            onExerciseSelect={(index) => {
-              setSelectedExerciseIndex(index)
-              handleExerciseSelectMobile(index)
-            }}
-            onExerciseRemove={handleExerciseRemove}
-            onExerciseReorder={handleExerciseReorder}
-          />
+        <div className="w-full flex-1 flex flex-col overflow-hidden lg:w-auto">
+          <div className="flex-1 min-h-0">
+            <WorkoutExercisesList
+              exercises={exercises}
+              selectedIndex={selectedExerciseIndex}
+              onExerciseSelect={(index) => {
+                setSelectedExerciseIndex(index)
+                handleExerciseSelectMobile(index)
+              }}
+              onExerciseRemove={handleExerciseRemove}
+              onExerciseReorder={handleExerciseReorder}
+            />
+          </div>
 
           {/* Add Exercise button - Mobile only */}
           <div className="px-4 pb-4 lg:hidden">
@@ -651,17 +644,16 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
       </div>
 
       {/* Sticky Save Button - Mobile/Tablet only */}
-      <div className="sticky bottom-0 z-40 border-t bg-background p-4 lg:hidden">
+      {/* <div className="sticky bottom-0 z-40 border-t bg-background px-4 lg:hidden">
         <Button
           className="w-full"
-          size="lg"
           onClick={handleSave}
           disabled={localDays.length === 0 || savePlanAllDays.isPending}
         >
           <Save className="mr-2 h-4 w-4" />
           {savePlanAllDays.isPending ? 'Saving...' : 'Save Plan'}
         </Button>
-      </div>
+      </div> */}
 
       {/* Day Builder Options Drawer */}
       <DayBuilderOptionsDrawer
@@ -673,6 +665,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
         onRename={handleStartRename}
         onDuplicate={() => handleCopyDay(currentDayIndex)}
         onDelete={() => handleDeleteDay(currentDayIndex)}
+        onCopyFromWorkout={() => setCopyFromWorkoutOpen(true)}
       />
 
       {/* Exercise Selector Drawer - Mobile only */}

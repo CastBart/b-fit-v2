@@ -17,7 +17,6 @@
 import { useMemo } from 'react'
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -206,8 +205,7 @@ export function CompletedSessionDrawer({
             {/* PRs Section */}
             {data.prs && data.prs.length > 0 && (
               <>
-                <Separator />
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
                     <Trophy className="h-4 w-4 text-yellow-500" />
                     New Personal Records!
@@ -237,10 +235,10 @@ export function CompletedSessionDrawer({
               </>
             )}
 
-            <Separator />
+            {/* <Separator /> */}
 
             {/* Exercises List */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
                 Exercises
               </h3>
@@ -268,11 +266,6 @@ export function CompletedSessionDrawer({
           <Button onClick={handleAction} className="w-full">
             {actionLabel}
           </Button>
-          <DrawerClose asChild>
-            <Button variant="outline" onClick={handleClose}>
-              Close
-            </Button>
-          </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

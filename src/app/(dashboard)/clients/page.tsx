@@ -50,16 +50,18 @@ export default function ClientsPage() {
   })
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto flex h-[calc(100dvh-4.5rem)] flex-col px-4 pt-4 sm:px-6 sm:pt-6 md:h-[calc(100dvh-1rem)]">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-4 shrink-0 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">My Clients</h1>
-          <p className="mt-1 text-muted-foreground">Manage your client relationships</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">My Clients</h1>
+          <p className="hidden sm:block mt-1 text-muted-foreground">
+            Manage your client relationships
+          </p>
         </div>
         <Button onClick={() => setInviteOpen(true)}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Invite Client
+          <UserPlus className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Invite Client</span>
         </Button>
       </div>
 

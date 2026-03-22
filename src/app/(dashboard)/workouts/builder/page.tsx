@@ -484,7 +484,7 @@ export default function WorkoutBuilderPage({
         </div>
 
         {/* Center: Workout Exercises List - Full width on mobile, flex-1 on desktop */}
-        <div className="w-full flex-1 overflow-y-auto lg:w-auto">
+        <div className="w-full flex-1 flex flex-col overflow-hidden lg:w-auto">
           <WorkoutExercisesList
             exercises={exercises}
             selectedIndex={selectedExerciseIndex}

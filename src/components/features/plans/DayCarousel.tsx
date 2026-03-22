@@ -97,7 +97,7 @@ export function DayCarousel({
   }
 
   return (
-    <div className="border-b bg-background px-4 py-3">
+    <div className="border-b bg-background px-4 py-1 sm:px-6 sm:py-4">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
