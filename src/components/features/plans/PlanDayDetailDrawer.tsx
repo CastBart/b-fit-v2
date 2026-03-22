@@ -103,7 +103,7 @@ export function PlanDayDetailDrawer({
   return (
     <>
       <Drawer open={open} onOpenChange={onOpenChange} handleOnly repositionInputs={false}>
-        <DrawerContent className="custom-drawer justify-self-center">
+        <DrawerContent className="custom-drawer-fullscreen justify-self-center">
           <DrawerHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -348,8 +348,6 @@ function CompletedSessionInline({ session }: { session: SessionWithDetails }) {
         )}
       </div>
 
-      <Separator />
-
       {/* Exercises */}
       <div className="space-y-4">
         <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
@@ -408,7 +406,7 @@ function ExerciseCard({ exercise }: { exercise: SessionWithDetails['exercises'][
   const allCompleted = completedSets === totalSets && totalSets > 0
 
   return (
-    <div className="rounded-lg border p-4 space-y-3">
+    <div className="rounded-lg border p-4 space-y-3 bg-muted/30">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {allCompleted && <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />}
@@ -447,7 +445,7 @@ function SetRow({
     <div
       className={cn(
         'flex items-center justify-between text-sm py-1 px-2 rounded',
-        set.isCompleted ? 'bg-green-50 dark:bg-green-950/30' : 'bg-muted/50 opacity-60'
+        set.isCompleted ? 'bg-muted' : 'bg-muted/50 opacity-60'
       )}
     >
       <span className="text-muted-foreground">Set {set.setNumber}</span>

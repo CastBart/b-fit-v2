@@ -377,11 +377,17 @@ const sessionSlice = createSlice({
         // All exercises finished current round
         startRestTimerIfApplicable()
 
-        // Increment activeSetNumber for all exercises in superset
+        // Recalculate activeSetNumber based on actual completed sets
+        // (blind increment breaks when exercises are superseted mid-session with different progress)
         supersetExercises.forEach((ex) => {
           const prog = state.progress[ex.instanceId]
-          if (prog && prog.activeSetNumber < totalSets) {
-            prog.activeSetNumber += 1
+          if (prog) {
+            const firstIncompleteIndex = prog.sets.findIndex((s) => !s.completed)
+            if (firstIncompleteIndex !== -1) {
+              prog.activeSetNumber = firstIncompleteIndex + 1
+            } else {
+              prog.activeSetNumber = prog.sets.length
+            }
           }
         })
 
@@ -427,7 +433,11 @@ const sessionSlice = createSlice({
           }
         } else {
           // Move to first unfinished exercise in next superset round
-          const nextSetNumber = currentSetNumber + 1
+          // Use recalculated activeSetNumber instead of currentSetNumber + 1
+          // (handles exercises with different progress levels in the superset)
+          const nextSetNumber =
+            state.progress[supersetExercises[0]!.instanceId]?.activeSetNumber ??
+            currentSetNumber + 1
           const nextExerciseId = getNextSupersetExercise(
             nextSetNumber,
             supersetExercises,

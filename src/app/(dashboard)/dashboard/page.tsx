@@ -129,7 +129,7 @@ export default function DashboardPage() {
                 Browse Workouts
               </Link>
             </Button>
-            <Button asChild variant="outline" className="w-full">
+            <Button asChild variant={'outline'} className="w-full">
               <Link href="/sessions">
                 <BarChart3 className="mr-2 h-5 w-5" />
                 View Sessions

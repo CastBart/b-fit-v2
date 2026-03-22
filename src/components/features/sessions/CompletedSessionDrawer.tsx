@@ -156,11 +156,6 @@ export function CompletedSessionDrawer({
     <Drawer open={open} onOpenChange={onOpenChange} handleOnly repositionInputs={false}>
       <DrawerContent className="custom-drawer-fullscreen justify-self-center">
         <DrawerHeader className="text-center pb-2">
-          <div className="flex justify-center">
-            <div className="rounded-full bg-green-100 dark:bg-green-900 p-3">
-              <Trophy className="h-4 w-4 text-green-600 dark:text-green-400" />
-            </div>
-          </div>
           <DrawerTitle className="text-xl">Workout Complete!</DrawerTitle>
           <DrawerDescription className="text-base">{data.workoutName}</DrawerDescription>
         </DrawerHeader>
@@ -305,7 +300,7 @@ function ExerciseCard({ exercise }: ExerciseCardProps) {
   const allCompleted = completedSets === totalSets && totalSets > 0
 
   return (
-    <div className="rounded-lg border p-4 space-y-3">
+    <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
       {/* Exercise Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -342,7 +337,7 @@ function SetRow({ set, metricType }: SetRowProps) {
     <div
       className={cn(
         'flex items-center justify-between text-sm py-1 px-2 rounded',
-        set.isCompleted ? 'bg-green-50 dark:bg-green-950/30' : 'bg-muted/50 opacity-60'
+        set.isCompleted ? 'bg-muted' : 'bg-muted/50 opacity-60'
       )}
     >
       <span className="text-muted-foreground">Set {set.setNumber}</span>
