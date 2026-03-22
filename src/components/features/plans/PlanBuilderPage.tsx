@@ -168,32 +168,28 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
   }, [localDays.length])
 
   // Reorder a day (drag-and-drop: fromIndex -> toIndex)
-  const handleReorderDay = useCallback(
-    (fromIndex: number, toIndex: number) => {
-      if (fromIndex === toIndex) return
-      if (fromIndex < 0 || fromIndex >= localDays.length) return
-      if (toIndex < 0 || toIndex >= localDays.length) return
+  const handleReorderDay = useCallback((fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return
 
-      setLocalDays((prev) => {
-        const updated = [...prev]
-        const [removed] = updated.splice(fromIndex, 1)
-        if (!removed) return prev
-        updated.splice(toIndex, 0, removed)
-        return updated.map((day, i) => ({ ...day, dayNumber: i + 1 }))
-      })
+    setLocalDays((prev) => {
+      if (fromIndex < 0 || fromIndex >= prev.length) return prev
+      if (toIndex < 0 || toIndex >= prev.length) return prev
+      const updated = [...prev]
+      const [removed] = updated.splice(fromIndex, 1)
+      if (!removed) return prev
+      updated.splice(toIndex, 0, removed)
+      return updated.map((day, i) => ({ ...day, dayNumber: i + 1 }))
+    })
 
-      // Update currentDayIndex to follow the selected day
-      if (currentDayIndex === fromIndex) {
-        setCurrentDayIndex(toIndex)
-      } else if (currentDayIndex > fromIndex && currentDayIndex <= toIndex) {
-        setCurrentDayIndex(currentDayIndex - 1)
-      } else if (currentDayIndex < fromIndex && currentDayIndex >= toIndex) {
-        setCurrentDayIndex(currentDayIndex + 1)
-      }
-      setSelectedExerciseIndex(null)
-    },
-    [localDays.length, currentDayIndex]
-  )
+    // Use functional updater to avoid currentDayIndex dependency
+    setCurrentDayIndex((prev) => {
+      if (prev === fromIndex) return toIndex
+      if (prev > fromIndex && prev <= toIndex) return prev - 1
+      if (prev < fromIndex && prev >= toIndex) return prev + 1
+      return prev
+    })
+    setSelectedExerciseIndex(null)
+  }, [])
 
   // Delete a day
   const handleDeleteDay = useCallback(
@@ -396,11 +392,11 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
   }
 
   // Handle day change
-  const handleDayChange = (index: number) => {
+  const handleDayChange = useCallback((index: number) => {
     setCurrentDayIndex(index)
     setSelectedExerciseIndex(null)
     setIsRenaming(false)
-  }
+  }, [])
 
   // Handle copy from workout
   const handleCopyFromWorkout = (copiedExercises: PlanDayExerciseFormData[]) => {
@@ -538,7 +534,8 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
             </div>
           </div>
           <Button
-            className="flex"
+            className="flex "
+            variant={'default'}
             onClick={handleSave}
             disabled={localDays.length === 0 || savePlanAllDays.isPending}
           >
@@ -562,7 +559,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
 
       {/* Day Info Section */}
       {currentDay && (
-        <div className="flex items-center justify-between border-b bg-background px-4 py-2">
+        <div className="flex items-center justify-between border-b bg-background p-2 sm:px-4">
           {isRenaming ? (
             <input
               ref={renameInputRef}
@@ -586,7 +583,7 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 shrink-0 ml-2"
+            className="h-4 w-4 sm:h-8 sm:w-8 shrink-0 ml-2"
             onClick={() => setDayOptionsOpen(true)}
           >
             <MoreHorizontal className="h-4 w-4" />

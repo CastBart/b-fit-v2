@@ -118,7 +118,7 @@ export function ExerciseConfigPanel({
 
         {/* Configuration Form */}
         <ScrollArea className="flex-1">
-          <div className="space-y-6 p-4">
+          <div className="space-y-3 p-4">
             {/* Superset Manager Button */}
             {onOpenSupersetManager && (
               <div className="space-y-2">
