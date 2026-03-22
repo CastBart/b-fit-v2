@@ -400,16 +400,15 @@ export default function SessionPage() {
   if (exercises.length === 0) {
     return (
       <>
-        <div className="container mx-auto max-w-5xl space-y-6 py-6 px-4">
+        <div className="container mx-auto max-w-5xl space-y-2 py-2 sm:py-4 md:py-6 px-4">
           {/* Session Header */}
           <SessionSettingsDrawer onSessionComplete={handleSessionCompleteFromDrawer}>
             <Button
-              variant="outline"
-              size="lg"
-              className="w-full justify-between text-xl font-bold"
+              variant="ghost"
+              className="w-full justify-between text-sm sm:text-base md:text-lg lg:text-xl font-bold"
             >
               <span className="truncate">Standalone Workout</span>
-              <Wrench className="h-5 w-5 shrink-0 ml-2" />
+              <Wrench className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 ml-2" />
             </Button>
           </SessionSettingsDrawer>
 
@@ -451,11 +450,14 @@ export default function SessionPage() {
   const currentExerciseIndex = exercises.findIndex((ex) => ex.instanceId === activeExerciseId)
 
   return (
-    <div className="container mx-auto max-w-5xl space-y-6 py-6 px-4">
+    <div className="container mx-auto max-w-5xl space-y-2 py-2 sm:py-4 md:py-6 px-4">
       {/* Session Header with Settings */}
       <div className="space-y-4">
         <SessionSettingsDrawer onSessionComplete={handleSessionCompleteFromDrawer}>
-          <Button variant="outline" size="lg" className="w-full justify-between text-xl font-bold">
+          <Button
+            variant="ghost"
+            className="w-full justify-between text-sm sm:text-base md:text-lg lg:text-xl font-bold"
+          >
             <span className="truncate">{workoutName || 'Standalone Workout'}</span>
             <div className="flex items-center gap-2 shrink-0 ml-2">
               {elapsedSeconds !== null && (
@@ -463,7 +465,7 @@ export default function SessionPage() {
                   {formatDuration(elapsedSeconds)}
                 </span>
               )}
-              <Wrench className="h-5 w-5" />
+              <Wrench className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
           </Button>
         </SessionSettingsDrawer>

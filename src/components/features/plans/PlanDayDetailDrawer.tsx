@@ -8,6 +8,8 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerDescription,
+  DrawerFooter,
+  DrawerClose,
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -27,6 +29,7 @@ import {
 } from 'lucide-react'
 import { useAppDispatch } from '@/store/hooks'
 import { startPlanDaySession } from '@/lib/utils/session-navigation'
+import { useActiveSessionGuard } from '@/hooks/useActiveSessionGuard'
 import { useSession } from '@/hooks/queries/useSession'
 import { PlanDayOptionsDrawer } from '@/components/features/plans/PlanDayOptionsDrawer'
 import { formatDuration } from '@/lib/utils/format-time'
@@ -57,6 +60,7 @@ export function PlanDayDetailDrawer({
 }: PlanDayDetailDrawerProps) {
   const router = useRouter()
   const dispatch = useAppDispatch()
+  const { guardedStart } = useActiveSessionGuard()
   const [optionsOpen, setOptionsOpen] = useState(false)
 
   const isCompleted = completion?.status === 'COMPLETED'
@@ -77,17 +81,19 @@ export function PlanDayDetailDrawer({
   const totalSets = day.exercises.reduce((sum, e) => sum + e.sets, 0)
 
   const handleStart = () => {
-    startPlanDaySession(
-      {
-        planId,
-        planDayId: day.id,
-        sessionName: dayLabel,
-        exercises: day.exercises,
-      },
-      dispatch,
-      router
-    )
-    onOpenChange(false)
+    guardedStart(() => {
+      startPlanDaySession(
+        {
+          planId,
+          planDayId: day.id,
+          sessionName: dayLabel,
+          exercises: day.exercises,
+        },
+        dispatch,
+        router
+      )
+      onOpenChange(false)
+    })
   }
 
   const handleClose = () => {
@@ -96,8 +102,8 @@ export function PlanDayDetailDrawer({
 
   return (
     <>
-      <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="custom-drawer justify-self-center">
+      <Drawer open={open} onOpenChange={onOpenChange} handleOnly repositionInputs={false}>
+        <DrawerContent className="custom-drawer-fullscreen justify-self-center">
           <DrawerHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -199,6 +205,11 @@ export function PlanDayDetailDrawer({
               )}
             </div>
           </ScrollArea>
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="outline">Close</Button>
+            </DrawerClose>
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
 
@@ -337,8 +348,6 @@ function CompletedSessionInline({ session }: { session: SessionWithDetails }) {
         )}
       </div>
 
-      <Separator />
-
       {/* Exercises */}
       <div className="space-y-4">
         <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
@@ -397,7 +406,7 @@ function ExerciseCard({ exercise }: { exercise: SessionWithDetails['exercises'][
   const allCompleted = completedSets === totalSets && totalSets > 0
 
   return (
-    <div className="rounded-lg border p-4 space-y-3">
+    <div className="rounded-lg border p-4 space-y-3 bg-muted/30">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {allCompleted && <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />}
@@ -436,7 +445,7 @@ function SetRow({
     <div
       className={cn(
         'flex items-center justify-between text-sm py-1 px-2 rounded',
-        set.isCompleted ? 'bg-green-50 dark:bg-green-950/30' : 'bg-muted/50 opacity-60'
+        set.isCompleted ? 'bg-muted' : 'bg-muted/50 opacity-60'
       )}
     >
       <span className="text-muted-foreground">Set {set.setNumber}</span>

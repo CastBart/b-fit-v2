@@ -22,6 +22,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
 import { useAppDispatch } from '@/store/hooks'
 import { startStandaloneSession } from '@/lib/utils/session-navigation'
+import { useActiveSessionGuard } from '@/hooks/useActiveSessionGuard'
 
 // ============================================================================
 // Types & Constants
@@ -39,6 +40,7 @@ const VIEW_MODE_KEY = 'sessions-view-mode'
 export default function SessionHistoryPage() {
   const router = useRouter()
   const dispatch = useAppDispatch()
+  const { guardedStart } = useActiveSessionGuard()
   const [search, setSearch] = useState('')
   const [statusFilter] = useState<StatusFilter>('ALL')
   const [page, setPage] = useState(1)
@@ -93,7 +95,7 @@ export default function SessionHistoryPage() {
           </p>
         </div>
         <Button
-          onClick={() => startStandaloneSession(dispatch, router)}
+          onClick={() => guardedStart(() => startStandaloneSession(dispatch, router))}
           className="h-9 w-9 sm:h-auto sm:w-auto sm:px-4 sm:py-2"
         >
           <Play className="h-4 w-4 sm:mr-2" />

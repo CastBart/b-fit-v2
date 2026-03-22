@@ -77,7 +77,7 @@ export default function ClientDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto max-w-5xl pt-4 sm:pt-6 px-4">
         <Skeleton className="mb-4 h-8 w-32" />
         <Skeleton className="mb-2 h-10 w-64" />
         <Skeleton className="h-5 w-48" />
@@ -93,7 +93,7 @@ export default function ClientDetailPage() {
   // Not found
   if (!client) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto max-w-5xl pt-4 sm:pt-6 px-4">
         <Button variant="ghost" onClick={() => router.push('/clients')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Clients
@@ -184,21 +184,21 @@ function PendingInvitationView({ invitation, onBack }: PendingInvitationViewProp
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <Button variant="ghost" className="mb-4" onClick={onBack}>
+    <div className="container mx-auto max-w-5xl pt-4 sm:pt-6 px-4">
+      <Button variant="ghost" className="mb-2" onClick={onBack}>
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Clients
       </Button>
 
       {/* Header */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted text-lg font-semibold text-muted-foreground">
-            <Mail className="h-6 w-6" />
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-muted text-lg font-semibold text-muted-foreground">
+            <Mail className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-xl sm:text-2xl font-bold">
                 {invitation.clientEmail || 'Pending Invitation'}
               </h1>
               <Badge variant={isExpired ? 'destructive' : 'secondary'}>
@@ -362,16 +362,6 @@ function ActiveClientView({ client, clientId }: ActiveClientViewProps) {
     router.replace(`${pathname}?tab=${value}`, { scroll: false })
   }
 
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 639px)')
-    setIsMobile(mq.matches)
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
-
   const [assignWorkoutOpen, setAssignWorkoutOpen] = useState(false)
   const [assignPlanOpen, setAssignPlanOpen] = useState(false)
   const [previewWorkoutId, setPreviewWorkoutId] = useState<string | null>(null)
@@ -381,30 +371,30 @@ function ActiveClientView({ client, clientId }: ActiveClientViewProps) {
   const clientName = client?.client?.name ?? client?.client?.email ?? 'Client'
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto max-w-5xl pt-4 sm:pt-6 px-4">
       {/* Back Button */}
-      <Button variant="ghost" className="mb-4" onClick={() => router.push('/clients')}>
+      <Button variant="ghost" className="mb-2" onClick={() => router.push('/clients')}>
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Clients
       </Button>
 
       {/* Header */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4">
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
           {client.client?.image ? (
             <img
               src={client.client.image}
               alt={clientName}
-              className="h-14 w-14 rounded-full object-cover"
+              className="h-10 w-10 sm:h-14 sm:w-14 rounded-full object-cover"
             />
           ) : (
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary">
+            <div className="flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary">
               {clientName[0]?.toUpperCase() ?? '?'}
             </div>
           )}
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">{clientName}</h1>
+              <h1 className="text-xl sm:text-2xl font-bold">{clientName}</h1>
               <Badge variant="default" className="capitalize">
                 {client.status.toLowerCase()}
               </Badge>
@@ -424,37 +414,31 @@ function ActiveClientView({ client, clientId }: ActiveClientViewProps) {
       </div>
 
       {/* Tabs */}
-      <Tabs
-        value={activeTab}
-        onValueChange={handleTabChange}
-        orientation={isMobile ? 'vertical' : 'horizontal'}
-      >
-        <TabsList className="flex h-auto w-full flex-col sm:inline-flex sm:h-10 sm:w-auto sm:flex-row">
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <TabsList className="w-full sm:inline-flex sm:h-10 sm:w-auto">
           <TabsTrigger value="sessions" className="w-full sm:w-auto">
-            <History className="mr-1.5 h-4 w-4" />
+            <History className="hidden sm:inline mr-1.5 h-4 w-4" />
             Sessions
           </TabsTrigger>
           <TabsTrigger value="workouts" className="w-full sm:w-auto">
-            <Dumbbell className="mr-1.5 h-4 w-4" />
+            <Dumbbell className="hidden sm:inline mr-1.5 h-4 w-4" />
             Workouts
           </TabsTrigger>
           <TabsTrigger value="plans" className="w-full sm:w-auto">
-            <CalendarDays className="mr-1.5 h-4 w-4" />
+            <CalendarDays className="hidden sm:inline mr-1.5 h-4 w-4" />
             Plans
           </TabsTrigger>
           <TabsTrigger value="analytics" className="w-full sm:w-auto">
-            <BarChart3 className="mr-1.5 h-4 w-4" />
+            <BarChart3 className="hidden sm:inline mr-1.5 h-4 w-4" />
             Analytics
           </TabsTrigger>
         </TabsList>
 
-        {/* Sessions Tab */}
-        <TabsContent value="sessions" className="mt-6">
+        <TabsContent value="sessions" className="mt-4">
           <ClientSessionsTab clientId={clientId} clientName={clientName} />
         </TabsContent>
 
-        {/* Workouts Tab */}
-        <TabsContent value="workouts" className="mt-6">
+        <TabsContent value="workouts" className="mt-4">
           <ClientWorkoutsTab
             clientId={clientId}
             clientName={clientName}
@@ -462,8 +446,7 @@ function ActiveClientView({ client, clientId }: ActiveClientViewProps) {
           />
         </TabsContent>
 
-        {/* Plans Tab */}
-        <TabsContent value="plans" className="mt-6">
+        <TabsContent value="plans" className="mt-4">
           <ClientPlansTab
             clientId={clientId}
             clientName={clientName}
@@ -471,8 +454,7 @@ function ActiveClientView({ client, clientId }: ActiveClientViewProps) {
           />
         </TabsContent>
 
-        {/* Analytics Tab */}
-        <TabsContent value="analytics" className="mt-6">
+        <TabsContent value="analytics" className="mt-4">
           {client.clientId && <ClientAnalyticsTab clientId={client.clientId} />}
         </TabsContent>
       </Tabs>

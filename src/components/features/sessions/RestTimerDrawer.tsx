@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { Timer, Plus, Minus, SkipForward } from 'lucide-react'
-import { useAppDispatch } from '@/store/hooks'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { stopTimer, addTimeToTimer } from '@/store/slices/sessionSlice'
 import { formatRestTimer } from '@/lib/utils/format-time'
 
@@ -30,6 +30,7 @@ interface RestTimerDrawerProps {
 
 export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
   const dispatch = useAppDispatch()
+  const duration = useAppSelector((state) => state.session.timer?.duration)
   const [open, setOpen] = useState(false)
 
   const handleAddTime = (seconds: number) => {
@@ -57,12 +58,12 @@ export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
       <DrawerTrigger asChild>
         <Button
           size="lg"
-          className="fixed left-1/2 -translate-x-1/2 bottom-6 h-24 w-24 rounded-full shadow-lg z-40"
+          className="fixed left-1/2 -translate-x-1/2 bottom-20 md:bottom-6 h-12 w-24 rounded-full shadow-lg z-40"
           variant={isOvertime || remaining <= 10 ? 'destructive' : 'default'}
         >
-          <div className="flex flex-col items-center">
-            <Timer className="h-7 w-7" />
-            <span className="text-sm font-bold mt-1">{formatRestTimer(remaining)}</span>
+          <div className="flex flex-row items-center gap-1">
+            <Timer className="h-5 w-5" />
+            <span className="text-sm font-bold">{formatRestTimer(remaining)}</span>
           </div>
         </Button>
       </DrawerTrigger>
@@ -70,7 +71,9 @@ export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
       {/* Drawer Content */}
       <DrawerContent className="custom-drawer-no-height justify-self-center">
         <DrawerHeader>
-          <DrawerTitle className="text-center text-2xl">Rest Timer</DrawerTitle>
+          <DrawerTitle className="text-center text-2xl">
+            Rest Timer {duration !== undefined && `(${formatRestTimer(duration)})`}
+          </DrawerTitle>
           <DrawerDescription className="hidden">
             Rest timer controls and countdown
           </DrawerDescription>

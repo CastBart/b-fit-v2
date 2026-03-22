@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
+import { ContinueSessionButton } from '@/components/features/sessions/ContinueSessionButton'
 import type { UserRole } from '@/lib/nav-items'
 
 interface DashboardLayoutProps {
@@ -34,6 +35,7 @@ export function DashboardLayout({ children, userRole = 'PERSONAL' }: DashboardLa
         onMoreClick={() => setSidebarOpen(true)}
         sidebarOpen={sidebarOpen}
       />
+      <ContinueSessionButton />
     </div>
   )
 }

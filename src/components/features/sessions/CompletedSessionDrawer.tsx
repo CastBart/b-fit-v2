@@ -17,7 +17,6 @@
 import { useMemo } from 'react'
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -154,15 +153,10 @@ export function CompletedSessionDrawer({
   const startDate = new Date(data.startTime)
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="custom-drawer justify-self-center">
+    <Drawer open={open} onOpenChange={onOpenChange} handleOnly repositionInputs={false}>
+      <DrawerContent className="custom-drawer-fullscreen justify-self-center">
         <DrawerHeader className="text-center pb-2">
-          <div className="flex justify-center mb-2">
-            <div className="rounded-full bg-green-100 dark:bg-green-900 p-3">
-              <Trophy className="h-8 w-8 text-green-600 dark:text-green-400" />
-            </div>
-          </div>
-          <DrawerTitle className="text-2xl">Workout Complete!</DrawerTitle>
+          <DrawerTitle className="text-xl">Workout Complete!</DrawerTitle>
           <DrawerDescription className="text-base">{data.workoutName}</DrawerDescription>
         </DrawerHeader>
 
@@ -206,8 +200,7 @@ export function CompletedSessionDrawer({
             {/* PRs Section */}
             {data.prs && data.prs.length > 0 && (
               <>
-                <Separator />
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
                     <Trophy className="h-4 w-4 text-yellow-500" />
                     New Personal Records!
@@ -237,10 +230,10 @@ export function CompletedSessionDrawer({
               </>
             )}
 
-            <Separator />
+            {/* <Separator /> */}
 
             {/* Exercises List */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
                 Exercises
               </h3>
@@ -265,14 +258,9 @@ export function CompletedSessionDrawer({
         </ScrollArea>
 
         <DrawerFooter className="pt-4">
-          <Button onClick={handleAction} size="lg" className="w-full">
+          <Button onClick={handleAction} className="w-full">
             {actionLabel}
           </Button>
-          <DrawerClose asChild>
-            <Button variant="outline" onClick={handleClose}>
-              Close
-            </Button>
-          </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
@@ -292,7 +280,7 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, className }: StatCardProps) {
   return (
-    <div className={cn('flex items-center gap-3 rounded-lg border bg-muted/30 p-3', className)}>
+    <div className={cn('flex items-center gap-3 rounded-lg border bg-muted/30 p-2', className)}>
       <div className="text-muted-foreground">{icon}</div>
       <div>
         <p className="text-xs text-muted-foreground">{label}</p>
@@ -312,7 +300,7 @@ function ExerciseCard({ exercise }: ExerciseCardProps) {
   const allCompleted = completedSets === totalSets && totalSets > 0
 
   return (
-    <div className="rounded-lg border p-4 space-y-3">
+    <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
       {/* Exercise Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -349,7 +337,7 @@ function SetRow({ set, metricType }: SetRowProps) {
     <div
       className={cn(
         'flex items-center justify-between text-sm py-1 px-2 rounded',
-        set.isCompleted ? 'bg-green-50 dark:bg-green-950/30' : 'bg-muted/50 opacity-60'
+        set.isCompleted ? 'bg-muted' : 'bg-muted/50 opacity-60'
       )}
     >
       <span className="text-muted-foreground">Set {set.setNumber}</span>

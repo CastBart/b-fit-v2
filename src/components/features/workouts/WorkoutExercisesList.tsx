@@ -276,9 +276,9 @@ export function WorkoutExercisesList({
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       {/* Header */}
-      <div className="border-b p-4">
+      <div className="border-b p-2 sm:p-4">
         <h3 className="font-semibold">Workout Exercises ({exercises.length})</h3>
         <p className="text-xs text-muted-foreground">Drag to reorder, click to configure</p>
       </div>

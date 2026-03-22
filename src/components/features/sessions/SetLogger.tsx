@@ -141,12 +141,12 @@ export function SetLogger({
   const hasCompletedSets = sets.some((s) => s.completed)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* Exercise Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2
-            className="cursor-pointer text-2xl font-bold transition-colors hover:text-primary"
+            className="cursor-pointer text-base sm:text-lg md:text-xl lg:text-2xl font-bold transition-colors hover:text-primary"
             onClick={onExerciseNameClick}
           >
             {exercise.name}
@@ -164,7 +164,7 @@ export function SetLogger({
 
       {/* Set Logging Table */}
       <div className="overflow-x-auto -mx-4 px-4">
-        <Table>
+        <Table className="[&_td]:py-1 [&_th]:py-1">
           <TableHeader>
             <TableRow>
               <TableHead className="text-center">Set</TableHead>

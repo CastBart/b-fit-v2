@@ -71,7 +71,6 @@ export function ActivePlanSection() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl lg:text-2xl tracking-tight">
-              <ClipboardList className="h-5 w-5" />
               Active Plan
             </CardTitle>
             {/* Week Navigation */}
@@ -85,7 +84,7 @@ export function ActivePlanSection() {
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm font-medium min-w-[90px] text-center">
+              <span className="text-sm font-medium min-w-[60px] text-center">
                 Week {currentViewedWeek}
                 {plan.durationWeeks > 0 ? ` of ${plan.durationWeeks}` : ''}
               </span>
@@ -183,18 +182,21 @@ function DayCard({
       onClick={onClick}
       className={cn(
         'flex min-w-[100px] flex-col gap-1 rounded-lg border p-3 text-left transition-colors hover:bg-accent/50',
-        isCompleted && 'border-green-500/50 bg-green-50 dark:bg-green-950/30',
+        // isCompleted && 'border-green-500/50 bg-green-50 dark:bg-green-950/30',
+        isCompleted && '',
         isSkipped && 'border-muted bg-muted/50'
       )}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-bold">{dayNumber}</span>
+        <span className="text-xs font-medium truncate max-w-[80px]">
+          {label || `Day ${dayNumber}`}
+        </span>
         {isCompleted && <Check className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />}
         {isSkipped && <Minus className="h-3.5 w-3.5 text-muted-foreground" />}
       </div>
-      <span className="text-xs font-medium truncate max-w-[80px]">
+      {/* <span className="text-xs font-medium truncate max-w-[80px]">
         {label || `Day ${dayNumber}`}
-      </span>
+      </span> */}
       {exercises.length > 0 && (
         <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">
           {exerciseSummary}
