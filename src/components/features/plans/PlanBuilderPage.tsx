@@ -28,7 +28,7 @@ import { usePlan } from '@/hooks/queries/usePlan'
 import { useSavePlanAllDays } from '@/hooks/mutations/usePlanMutations'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import type { Exercise } from '@prisma/client'
+import type { Exercise, MuscleGroup } from '@prisma/client'
 import type { PlanDayExerciseFormData } from '@/types/plan'
 import { SupersetManager } from '@/lib/superset-manager'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -81,6 +81,12 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
   const [supersetManagerOpen, setSupersetManagerOpen] = useState(false)
   const [copyFromWorkoutOpen, setCopyFromWorkoutOpen] = useState(false)
   const [dayOptionsOpen, setDayOptionsOpen] = useState(false)
+
+  // Replace exercise state
+  const [replaceMode, setReplaceMode] = useState<{
+    exerciseIndex: number
+    muscleGroup: MuscleGroup
+  } | null>(null)
 
   // Inline rename state
   const [isRenaming, setIsRenaming] = useState(false)
@@ -391,11 +397,56 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
     toast.success('Exercise removed from superset')
   }
 
+  // Handle starting exercise replace flow
+  const handleStartReplace = useCallback(
+    (index: number) => {
+      const exercise = exercises[index]
+      if (!exercise?.exercise) return
+
+      const muscleGroup = exercise.exercise.primaryMuscleGroup as MuscleGroup
+      setReplaceMode({ exerciseIndex: index, muscleGroup })
+      setExerciseConfigOpen(false)
+      setExerciseSelectorOpen(true)
+    },
+    [exercises]
+  )
+
+  // Handle replacing an exercise with a new one
+  const handleReplaceExercise = useCallback(
+    (newExercise: Exercise) => {
+      if (!replaceMode) return
+
+      const oldExercise = exercises[replaceMode.exerciseIndex]
+      if (!oldExercise) return
+
+      const sameMetricType = oldExercise.exercise?.metricType === newExercise.metricType
+
+      setCurrentDayExercises((prev) =>
+        prev.map((ex, i) => {
+          if (i !== replaceMode.exerciseIndex) return ex
+          return {
+            ...ex,
+            exerciseId: newExercise.id,
+            exercise: newExercise,
+            reps: sameMetricType ? ex.reps : undefined,
+            weight: sameMetricType ? ex.weight : undefined,
+          }
+        })
+      )
+
+      toast.success(`Replaced ${oldExercise.exercise?.name} with ${newExercise.name}`)
+      setReplaceMode(null)
+      setExerciseSelectorOpen(false)
+    },
+    [replaceMode, exercises, setCurrentDayExercises]
+  )
+
   // Handle day change
   const handleDayChange = useCallback((index: number) => {
     setCurrentDayIndex(index)
     setSelectedExerciseIndex(null)
     setIsRenaming(false)
+    setReplaceMode(null)
   }, [])
 
   // Handle copy from workout
@@ -595,7 +646,12 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Exercise Selector Panel - Hidden on mobile */}
         <div className="hidden border-r bg-muted/10 lg:block lg:w-80">
-          <ExerciseSelectorPanel onExerciseSelect={handleExerciseSelect} />
+          <ExerciseSelectorPanel
+            onExerciseSelect={
+              replaceMode ? (exercise) => handleReplaceExercise(exercise) : handleExerciseSelect
+            }
+            initialMuscleGroups={replaceMode ? [replaceMode.muscleGroup] : undefined}
+          />
         </div>
 
         {/* Center: Exercises List */}
@@ -636,6 +692,11 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
               }
             }}
             onOpenSupersetManager={() => setSupersetManagerOpen(true)}
+            onReplace={
+              selectedExerciseIndex !== null
+                ? () => handleStartReplace(selectedExerciseIndex)
+                : undefined
+            }
           />
         </div>
       </div>
@@ -669,9 +730,20 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
       <div className="lg:hidden">
         <ExerciseSelectorDrawer
           open={exerciseSelectorOpen}
-          onOpenChange={setExerciseSelectorOpen}
-          onExerciseSelect={(exs) => handleAddExercises(exs.map((ex) => ex.id))}
-          multiSelect
+          onOpenChange={(open) => {
+            setExerciseSelectorOpen(open)
+            if (!open) setReplaceMode(null)
+          }}
+          onExerciseSelect={
+            replaceMode
+              ? (exs) => {
+                  if (exs[0]) handleReplaceExercise(exs[0])
+                }
+              : (exs) => handleAddExercises(exs.map((ex) => ex.id))
+          }
+          multiSelect={!replaceMode}
+          replaceMode={!!replaceMode}
+          initialMuscleGroups={replaceMode ? [replaceMode.muscleGroup] : undefined}
         />
       </div>
 
@@ -690,6 +762,11 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
             setExerciseConfigOpen(false)
             setSupersetManagerOpen(true)
           }}
+          onReplace={
+            selectedExerciseIndex !== null
+              ? () => handleStartReplace(selectedExerciseIndex)
+              : undefined
+          }
         />
       </div>
 

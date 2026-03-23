@@ -77,6 +77,8 @@ interface ExerciseSelectorPanelProps {
   ) => void
   /** If true, the create drawer will be nested (for use inside another drawer) */
   nestedDrawer?: boolean
+  /** Pre-populate muscle group filter (e.g. for replace exercise flow) */
+  initialMuscleGroups?: MuscleGroup[]
 }
 
 export function ExerciseSelectorPanel({
@@ -86,9 +88,10 @@ export function ExerciseSelectorPanel({
   selectedIds = EMPTY_SET,
   onSelectionChange,
   nestedDrawer = false,
+  initialMuscleGroups,
 }: ExerciseSelectorPanelProps) {
   const [search, setSearch] = useState('')
-  const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([])
+  const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>(initialMuscleGroups ?? [])
   const [exerciseTypes, setExerciseTypes] = useState<ExerciseType[]>([])
   const [equipmentTypes, setEquipmentTypes] = useState<EquipmentType[]>([])
   const [difficultyLevels, setDifficultyLevels] = useState<DifficultyLevel[]>([])
@@ -96,6 +99,13 @@ export function ExerciseSelectorPanel({
   const [createDrawerOpen, setCreateDrawerOpen] = useState(false)
 
   const { canCreate } = useCanCreateExercise()
+
+  // Sync muscle group filter when initialMuscleGroups changes (e.g. replace different exercises)
+  useEffect(() => {
+    if (initialMuscleGroups) {
+      setMuscleGroups(initialMuscleGroups)
+    }
+  }, [initialMuscleGroups])
 
   // Ref-based stable callback: sync selectedIds into a ref so handleExerciseClick
   // doesn't need it in its dependency array → callback stays stable across selections

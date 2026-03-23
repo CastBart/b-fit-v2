@@ -34,11 +34,13 @@ import {
   sessionViewLoaded,
   goToExercise,
   addExercises,
+  replaceExercise,
   prepareSessionEnd,
   endSession,
   resetSessionState,
 } from '@/store/slices/sessionSlice'
 import { clearSessionBackup } from '@/store/middleware/persistence'
+import { useQueryClient } from '@tanstack/react-query'
 import { useCompleteSession } from '@/hooks/mutations/useSessionMutations'
 import { getSessionPRs } from '@/server/actions/sessions'
 import { SessionStatus, type SaveSessionPayload } from '@/types/session'
@@ -58,12 +60,13 @@ import {
   type CompletedSessionData,
 } from '@/components/features/sessions/CompletedSessionDrawer'
 import { formatDuration } from '@/lib/utils/format-time'
-import type { Exercise } from '@prisma/client'
+import type { Exercise, MuscleGroup } from '@prisma/client'
 import type { SessionExerciseEntry } from '@/types/session'
 
 export default function SessionPage() {
   const router = useRouter()
   const dispatch = useAppDispatch()
+  const queryClient = useQueryClient()
 
   // Session recovery on mount
   const { isRecovering, hasActiveSession } = useSessionRecovery()
@@ -103,6 +106,12 @@ export default function SessionPage() {
   const [exerciseDrawerOpen, setExerciseDrawerOpen] = useState(false)
   const [exerciseDrawerId, setExerciseDrawerId] = useState<string | null>(null)
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false)
+
+  // Replace exercise state
+  const [replaceMode, setReplaceMode] = useState<{
+    instanceId: string
+    muscleGroup: MuscleGroup | null
+  } | null>(null)
 
   // Completed session drawer state
   const [completedSessionDrawerOpen, setCompletedSessionDrawerOpen] = useState(false)
@@ -335,6 +344,61 @@ export default function SessionPage() {
     setExerciseSelectorOpen(false)
   }
 
+  // Handle starting exercise replace flow
+  const handleStartReplace = (exercise: SessionExerciseEntry) => {
+    // Look up primaryMuscleGroup from React Query cache
+    let muscleGroup: MuscleGroup | null = null
+    const exercisesData = queryClient.getQueryCache().findAll({
+      queryKey: ['exercises'],
+    })
+    for (const query of exercisesData) {
+      const data = query.state.data as { exercises?: Exercise[] } | undefined
+      const found = data?.exercises?.find((ex) => ex.id === exercise.exerciseId)
+      if (found) {
+        muscleGroup = found.primaryMuscleGroup as MuscleGroup
+        break
+      }
+    }
+
+    setReplaceMode({ instanceId: exercise.instanceId, muscleGroup })
+    setExerciseSelectorOpen(true)
+  }
+
+  // Handle replacing an exercise with a new one
+  const handleReplaceExercise = (selectedExercises: Exercise[]) => {
+    if (!replaceMode || selectedExercises.length === 0) {
+      setExerciseSelectorOpen(false)
+      setReplaceMode(null)
+      return
+    }
+
+    const newExercise = selectedExercises[0]!
+    const oldExercise = exercises.find((e) => e.instanceId === replaceMode.instanceId)
+    if (!oldExercise) return
+
+    const sameMetricType = oldExercise.metricType === newExercise.metricType
+
+    const replacementEntry: SessionExerciseEntry = {
+      instanceId: generateId(),
+      exerciseId: newExercise.id,
+      name: newExercise.name,
+      order: oldExercise.order,
+      groupId: oldExercise.groupId, // Always carry over
+      targetSets: oldExercise.targetSets, // Always carry over
+      targetReps: sameMetricType ? oldExercise.targetReps : null,
+      targetWeight: sameMetricType ? oldExercise.targetWeight : null,
+      targetRestSeconds: oldExercise.targetRestSeconds, // Always carry over
+      exerciseType: newExercise.exerciseType,
+      metricType: newExercise.metricType,
+      notes: oldExercise.notes, // Always carry over
+    }
+
+    dispatch(replaceExercise({ instanceId: replaceMode.instanceId, newExercise: replacementEntry }))
+    toast.success(`Replaced ${oldExercise.name} with ${newExercise.name}`)
+    setReplaceMode(null)
+    setExerciseSelectorOpen(false)
+  }
+
   // ============================================================================
   // RENDER - LOADING STATES
   // ============================================================================
@@ -534,9 +598,14 @@ export default function SessionPage() {
       {/* Exercise Selector Drawer */}
       <ExerciseSelectorDrawer
         open={exerciseSelectorOpen}
-        onOpenChange={setExerciseSelectorOpen}
-        onExerciseSelect={handleAddExercises}
-        multiSelect
+        onOpenChange={(open) => {
+          setExerciseSelectorOpen(open)
+          if (!open) setReplaceMode(null)
+        }}
+        onExerciseSelect={replaceMode ? handleReplaceExercise : handleAddExercises}
+        multiSelect={!replaceMode}
+        replaceMode={!!replaceMode}
+        initialMuscleGroups={replaceMode?.muscleGroup ? [replaceMode.muscleGroup] : undefined}
       />
       {/* Single Exercise Options Drawer Instance */}
       <ExerciseOptionsDrawer
@@ -544,6 +613,7 @@ export default function SessionPage() {
         open={exerciseOptionsOpen}
         onOpenChange={setExerciseOptionsOpen}
         onOpenSuperset={handleOpenSuperset}
+        onReplace={selectedExercise ? () => handleStartReplace(selectedExercise) : undefined}
       />
 
       {/* Single Superset Drawer Instance */}

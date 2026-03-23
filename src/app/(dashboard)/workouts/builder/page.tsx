@@ -37,7 +37,7 @@ import {
 import { useWorkout } from '@/hooks/queries/useWorkout'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import type { Exercise } from '@prisma/client'
+import type { Exercise, MuscleGroup } from '@prisma/client'
 import { SupersetManager } from '@/lib/superset-manager'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -85,6 +85,12 @@ export default function WorkoutBuilderPage({
   const [exerciseSelectorOpen, setExerciseSelectorOpen] = useState(false)
   const [exerciseConfigOpen, setExerciseConfigOpen] = useState(false)
   const [supersetManagerOpen, setSupersetManagerOpen] = useState(false)
+
+  // Replace exercise state
+  const [replaceMode, setReplaceMode] = useState<{
+    exerciseIndex: number
+    muscleGroup: MuscleGroup
+  } | null>(null)
 
   // Mutations
   const createWorkout = useCreateWorkout()
@@ -350,6 +356,52 @@ export default function WorkoutBuilderPage({
     toast.success('Exercise removed from superset')
   }
 
+  // Handle starting exercise replace flow
+  const handleStartReplace = useCallback(
+    (index: number) => {
+      const exercise = exercises[index]
+      if (!exercise?.exercise) return
+
+      const muscleGroup = exercise.exercise.primaryMuscleGroup as MuscleGroup
+      setReplaceMode({ exerciseIndex: index, muscleGroup })
+      setExerciseConfigOpen(false)
+      setExerciseSelectorOpen(true)
+    },
+    [exercises]
+  )
+
+  // Handle replacing an exercise with a new one
+  const handleReplaceExercise = useCallback(
+    (newExercise: Exercise) => {
+      if (!replaceMode) return
+
+      const oldExercise = exercises[replaceMode.exerciseIndex]
+      if (!oldExercise) return
+
+      const sameMetricType = oldExercise.exercise?.metricType === newExercise.metricType
+
+      setExercises((prev) =>
+        prev.map((ex, i) => {
+          if (i !== replaceMode.exerciseIndex) return ex
+          return {
+            ...ex,
+            exerciseId: newExercise.id,
+            exercise: newExercise,
+            // Reset metric-dependent fields if metricType differs
+            reps: sameMetricType ? ex.reps : undefined,
+            weight: sameMetricType ? ex.weight : undefined,
+            // Always carry over: groupId, restSeconds, notes (already spread from ...ex)
+          }
+        })
+      )
+
+      toast.success(`Replaced ${oldExercise.exercise?.name} with ${newExercise.name}`)
+      setReplaceMode(null)
+      setExerciseSelectorOpen(false)
+    },
+    [replaceMode, exercises]
+  )
+
   // Handle save workout
   const handleSaveWorkout = async () => {
     if (!workoutId) {
@@ -480,7 +532,13 @@ export default function WorkoutBuilderPage({
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Exercise Selector Panel - Hidden on mobile */}
         <div className="hidden border-r bg-muted/10 lg:block lg:w-80">
-          <ExerciseSelectorPanel onExerciseSelect={handleExerciseSelect} disabled={!workoutId} />
+          <ExerciseSelectorPanel
+            onExerciseSelect={
+              replaceMode ? (exercise) => handleReplaceExercise(exercise) : handleExerciseSelect
+            }
+            disabled={!workoutId}
+            initialMuscleGroups={replaceMode ? [replaceMode.muscleGroup] : undefined}
+          />
         </div>
 
         {/* Center: Workout Exercises List - Full width on mobile, flex-1 on desktop */}
@@ -504,6 +562,11 @@ export default function WorkoutBuilderPage({
               }
             }}
             onOpenSupersetManager={() => setSupersetManagerOpen(true)}
+            onReplace={
+              selectedExerciseIndex !== null
+                ? () => handleStartReplace(selectedExerciseIndex)
+                : undefined
+            }
           />
         </div>
       </div>
@@ -519,10 +582,21 @@ export default function WorkoutBuilderPage({
       <div className="lg:hidden">
         <ExerciseSelectorDrawer
           open={exerciseSelectorOpen}
-          onOpenChange={setExerciseSelectorOpen}
-          onExerciseSelect={(exercises) => handleAddExercises(exercises.map((ex) => ex.id))}
+          onOpenChange={(open) => {
+            setExerciseSelectorOpen(open)
+            if (!open) setReplaceMode(null)
+          }}
+          onExerciseSelect={
+            replaceMode
+              ? (exercises) => {
+                  if (exercises[0]) handleReplaceExercise(exercises[0])
+                }
+              : (exercises) => handleAddExercises(exercises.map((ex) => ex.id))
+          }
           disabled={!workoutId}
-          multiSelect={true}
+          multiSelect={!replaceMode}
+          replaceMode={!!replaceMode}
+          initialMuscleGroups={replaceMode ? [replaceMode.muscleGroup] : undefined}
         />
       </div>
 
@@ -541,6 +615,11 @@ export default function WorkoutBuilderPage({
             setExerciseConfigOpen(false)
             setSupersetManagerOpen(true)
           }}
+          onReplace={
+            selectedExerciseIndex !== null
+              ? () => handleStartReplace(selectedExerciseIndex)
+              : undefined
+          }
         />
       </div>
 
