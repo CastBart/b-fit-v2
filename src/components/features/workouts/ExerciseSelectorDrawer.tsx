@@ -1,8 +1,8 @@
 /**
  * Exercise Selector Drawer
  *
- * Mobile drawer for selecting multiple exercises from the library.
- * Wraps ExerciseSelectorPanel with multi-select functionality.
+ * Mobile drawer for selecting exercises from the library.
+ * Supports multi-select (add), single-select (immediate), and replace mode (select + confirm).
  */
 
 'use client'
@@ -25,6 +25,10 @@ interface ExerciseSelectorDrawerProps {
   onExerciseSelect: (exercises: Exercise[]) => void
   multiSelect?: boolean
   disabled?: boolean
+  /** Pre-populate muscle group filter (e.g. for replace exercise flow) */
+  initialMuscleGroups?: import('@prisma/client').MuscleGroup[]
+  /** When true, uses select-then-confirm flow with single selection */
+  replaceMode?: boolean
 }
 
 export function ExerciseSelectorDrawer({
@@ -33,12 +37,32 @@ export function ExerciseSelectorDrawer({
   onExerciseSelect,
   multiSelect = false,
   disabled,
+  initialMuscleGroups,
+  replaceMode = false,
 }: ExerciseSelectorDrawerProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [selectedExercises, setSelectedExercises] = useState<Map<string, Exercise>>(new Map())
 
+  // Determine effective mode: replace uses multi-mode panel for highlight behavior
+  const useMultiMode = multiSelect || replaceMode
+
   const handleSelectionChange = useCallback(
     (newSelectedIds: Set<string>, changed?: { exercise: Exercise; selected: boolean }) => {
+      if (replaceMode && changed) {
+        // Replace mode: enforce single selection
+        if (changed.selected) {
+          // Select only this exercise, deselect everything else
+          setSelectedIds(new Set([changed.exercise.id]))
+          setSelectedExercises(new Map([[changed.exercise.id, changed.exercise]]))
+        } else {
+          // Deselected — clear all
+          setSelectedIds(new Set())
+          setSelectedExercises(new Map())
+        }
+        return
+      }
+
+      // Multi-select mode: allow multiple selections
       setSelectedIds(newSelectedIds)
 
       if (changed) {
@@ -50,25 +74,23 @@ export function ExerciseSelectorDrawer({
         })
       }
     },
-    []
+    [replaceMode]
   )
 
   const handleExerciseClick = useCallback(
     (exercise: Exercise) => {
-      // Single select mode - immediately call handler
+      // Single select mode (not replace) - immediately call handler
       onExerciseSelect([exercise])
       onOpenChange(false)
     },
     [onExerciseSelect, onOpenChange]
   )
 
-  const handleAddExercises = () => {
+  const handleConfirm = () => {
     if (selectedIds.size === 0) return
 
-    // Convert Map values to array and call the handler
     onExerciseSelect(Array.from(selectedExercises.values()))
 
-    // Close drawer and clear selections
     onOpenChange(false)
     setSelectedIds(new Set())
     setSelectedExercises(new Map())
@@ -92,19 +114,32 @@ export function ExerciseSelectorDrawer({
 
         <div className="min-h-0 flex-1 overflow-hidden">
           <ExerciseSelectorPanel
-            mode={multiSelect ? 'multi' : 'single'}
+            mode={useMultiMode ? 'multi' : 'single'}
             selectedIds={selectedIds}
             onSelectionChange={handleSelectionChange}
             onExerciseSelect={handleExerciseClick}
             disabled={disabled}
             nestedDrawer={true}
+            initialMuscleGroups={initialMuscleGroups}
           />
         </div>
 
-        {multiSelect && (
+        {replaceMode && (
           <DrawerFooter>
             <Button
-              onClick={handleAddExercises}
+              onClick={handleConfirm}
+              disabled={disabled || selectedIds.size === 0}
+              className="w-full"
+            >
+              Replace
+            </Button>
+          </DrawerFooter>
+        )}
+
+        {multiSelect && !replaceMode && (
+          <DrawerFooter>
+            <Button
+              onClick={handleConfirm}
               disabled={disabled || selectedIds.size === 0}
               className="w-full"
             >

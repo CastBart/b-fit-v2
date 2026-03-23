@@ -668,6 +668,47 @@ const sessionSlice = createSlice({
     },
 
     /**
+     * Replace an exercise in-place, preserving order and compatible config.
+     * Creates fresh progress for the new exercise.
+     */
+    replaceExercise: (
+      state,
+      action: PayloadAction<{ instanceId: string; newExercise: SessionExerciseEntry }>
+    ) => {
+      const { instanceId, newExercise } = action.payload
+
+      // Remove old progress
+      delete state.progress[instanceId]
+
+      // Replace in exercises array
+      const index = state.exercises.findIndex((e) => e.instanceId === instanceId)
+      if (index !== -1) {
+        state.exercises[index] = { ...newExercise, order: index }
+      }
+
+      // Create new progress entry
+      state.progress[newExercise.instanceId] = {
+        instanceId: newExercise.instanceId,
+        sets: Array.from({ length: newExercise.targetSets }, (_, i) => ({
+          setNumber: i + 1,
+          metrics: {},
+          completed: false,
+          completedAt: null,
+        })),
+        activeSetNumber: 1,
+        notes: newExercise.notes,
+      }
+
+      // Update activeExerciseId if the replaced exercise was active
+      if (state.activeExerciseId === instanceId) {
+        state.activeExerciseId = newExercise.instanceId
+      }
+
+      // Re-check workout completion
+      state.workoutCompleted = checkWorkoutCompletion(state.exercises, state.progress)
+    },
+
+    /**
      * Reorder exercises (for drag-and-drop)
      * Also reassigns superset groups to maintain integrity after reordering
      */
@@ -895,6 +936,7 @@ export const {
   addExercises,
   removeExercise,
   removeExerciseWithCleanup,
+  replaceExercise,
   updateExercises,
   reorderExercises,
   updateSessionNotes,

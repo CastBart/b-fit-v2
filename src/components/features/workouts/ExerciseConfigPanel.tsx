@@ -8,7 +8,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Dumbbell, Link2, Eye } from 'lucide-react'
+import { Dumbbell, Link2, Eye, ArrowLeftRight } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -33,12 +33,14 @@ interface ExerciseConfigPanelProps {
   exercise: WorkoutExercise | null
   onUpdate: (updates: Partial<WorkoutExercise>) => void
   onOpenSupersetManager?: () => void
+  onReplace?: () => void
 }
 
 export function ExerciseConfigPanel({
   exercise,
   onUpdate,
   onOpenSupersetManager,
+  onReplace,
 }: ExerciseConfigPanelProps) {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -136,6 +138,16 @@ export function ExerciseConfigPanel({
                     This exercise is in a superset
                   </p>
                 )}
+              </div>
+            )}
+
+            {onReplace && (
+              <div className="space-y-2">
+                <Label>Replace</Label>
+                <Button variant="outline" className="w-full justify-start" onClick={onReplace}>
+                  <ArrowLeftRight className="mr-2 h-4 w-4" />
+                  Replace Exercise
+                </Button>
               </div>
             )}
 

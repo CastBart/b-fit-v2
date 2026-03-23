@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Link2, Trash2 } from 'lucide-react'
+import { Link2, Trash2, ArrowLeftRight } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { removeExerciseWithCleanup } from '@/store/slices/sessionSlice'
 import { toast } from 'sonner'
@@ -31,6 +31,7 @@ interface ExerciseOptionsDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onOpenSuperset?: () => void
+  onReplace?: () => void
   disabled?: boolean
 }
 
@@ -41,6 +42,7 @@ export function ExerciseOptionsDrawer({
   open,
   onOpenChange,
   onOpenSuperset,
+  onReplace,
   disabled,
 }: ExerciseOptionsDrawerProps) {
   const dispatch = useAppDispatch()
@@ -72,6 +74,11 @@ export function ExerciseOptionsDrawer({
     onOpenSuperset?.()
   }
 
+  const handleReplace = () => {
+    onOpenChange(false)
+    onReplace?.()
+  }
+
   // Don't render if no exercise selected
   if (!exercise) {
     return null
@@ -97,6 +104,18 @@ export function ExerciseOptionsDrawer({
           >
             <Link2 className="mr-2 h-5 w-5" />
             Superset
+          </Button>
+
+          {/* Replace Exercise Button */}
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={handleReplace}
+            disabled={disabled}
+            className="w-full"
+          >
+            <ArrowLeftRight className="mr-2 h-5 w-5" />
+            Replace Exercise
           </Button>
 
           {/* Remove Exercise Button */}
