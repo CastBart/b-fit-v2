@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { History, LayoutGrid, List, Play } from 'lucide-react'
+import { History, LayoutGrid, CalendarDays, Play } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useSessions } from '@/hooks/queries/useSessions'
 import { SessionHistoryCard } from '@/components/features/sessions/SessionHistoryCard'
-import { SessionRowCard } from '@/components/features/sessions/SessionRowCard'
+import { SessionCalendarView } from '@/components/features/sessions/SessionCalendarView'
 import {
   CompletedSessionDrawer,
   type CompletedSessionData,
@@ -29,7 +29,7 @@ import { useActiveSessionGuard } from '@/hooks/useActiveSessionGuard'
 // ============================================================================
 
 type StatusFilter = 'ALL' | 'COMPLETED' | 'ABANDONED'
-type ViewMode = 'list' | 'grid'
+type ViewMode = 'calendar' | 'grid'
 
 const VIEW_MODE_KEY = 'sessions-view-mode'
 
@@ -44,7 +44,7 @@ export default function SessionHistoryPage() {
   const [search, setSearch] = useState('')
   const [statusFilter] = useState<StatusFilter>('ALL')
   const [page, setPage] = useState(1)
-  const [viewMode, setViewMode] = useState<ViewMode>('list')
+  const [viewMode, setViewMode] = useState<ViewMode>('calendar')
 
   // Drawer state
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -54,7 +54,7 @@ export default function SessionHistoryPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem(VIEW_MODE_KEY)
-      if (stored === 'grid' || stored === 'list') {
+      if (stored === 'grid' || stored === 'calendar') {
         setViewMode(stored)
       }
     }
@@ -72,7 +72,7 @@ export default function SessionHistoryPage() {
   }
 
   const handleViewModeChange = (value: string) => {
-    if (value === 'list' || value === 'grid') {
+    if (value === 'calendar' || value === 'grid') {
       setViewMode(value)
       localStorage.setItem(VIEW_MODE_KEY, value)
     }
@@ -105,24 +105,26 @@ export default function SessionHistoryPage() {
 
       {/* Filters + View Toggle */}
       <div className="mb-4 shrink-0 flex gap-4 items-center">
-        <Input
-          type="search"
-          placeholder="Search sessions..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value)
-            setPage(1)
-          }}
-          className="max-w-md"
-        />
+        {viewMode === 'grid' && (
+          <Input
+            type="search"
+            placeholder="Search sessions..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              setPage(1)
+            }}
+            className="max-w-md"
+          />
+        )}
         <ToggleGroup
           type="single"
           value={viewMode}
           onValueChange={handleViewModeChange}
           className="ml-auto"
         >
-          <ToggleGroupItem value="list" aria-label="List view" className="px-2.5">
-            <List className="h-4 w-4" />
+          <ToggleGroupItem value="calendar" aria-label="Calendar view" className="px-2.5">
+            <CalendarDays className="h-4 w-4" />
           </ToggleGroupItem>
           <ToggleGroupItem value="grid" aria-label="Grid view" className="px-2.5">
             <LayoutGrid className="h-4 w-4" />
@@ -132,96 +134,76 @@ export default function SessionHistoryPage() {
 
       {/* Scrollable content */}
       <ScrollArea className="flex-1 min-h-0">
-        {/* Loading State */}
-        {isLoading && viewMode === 'grid' && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i}>
-                <CardContent className="p-4 space-y-3">
-                  <Skeleton className="h-5 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                  <Skeleton className="h-4 w-full" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-        {isLoading && viewMode === 'list' && (
-          <div className="space-y-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i} className="flex items-center gap-4 p-4">
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-5 w-1/3" />
-                  <Skeleton className="h-4 w-2/3" />
-                </div>
-                <Skeleton className="h-5 w-16" />
-                <Skeleton className="h-4 w-24" />
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!isLoading && data?.sessions.length === 0 && (
-          <Card className="border-dashed">
-            <CardContent className="flex flex-col items-center justify-center py-16">
-              <History className="mb-4 h-16 w-16 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold">No sessions found</h3>
-              <p className="text-center text-sm text-muted-foreground">
-                {search || statusFilter !== 'ALL'
-                  ? 'No sessions match your filters. Try adjusting your search.'
-                  : 'Complete your first workout to see it here.'}
-              </p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Sessions List */}
-        {!isLoading && data && data.sessions.length > 0 && (
+        {viewMode === 'calendar' ? (
+          <SessionCalendarView onSessionClick={handleSessionClick} />
+        ) : (
           <>
-            {viewMode === 'grid' ? (
+            {/* Loading State */}
+            {isLoading && (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {data.sessions.map((session) => (
-                  <SessionHistoryCard
-                    key={session.id}
-                    session={session}
-                    onClick={() => handleSessionClick(session)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {data.sessions.map((session) => (
-                  <SessionRowCard
-                    key={session.id}
-                    session={session}
-                    onClick={() => handleSessionClick(session)}
-                  />
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Card key={i}>
+                    <CardContent className="p-4 space-y-3">
+                      <Skeleton className="h-5 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                      <Skeleton className="h-4 w-full" />
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             )}
 
-            {/* Pagination */}
-            {data.totalPages > 1 && (
-              <div className="mt-8 flex items-center justify-center gap-2">
-                <Button
-                  variant="outline"
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                >
-                  Previous
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  Page {data.page} of {data.totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  disabled={page >= data.totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                >
-                  Next
-                </Button>
-              </div>
+            {/* Empty State */}
+            {!isLoading && data?.sessions.length === 0 && (
+              <Card className="border-dashed">
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <History className="mb-4 h-16 w-16 text-muted-foreground" />
+                  <h3 className="mb-2 text-lg font-semibold">No sessions found</h3>
+                  <p className="text-center text-sm text-muted-foreground">
+                    {search || statusFilter !== 'ALL'
+                      ? 'No sessions match your filters. Try adjusting your search.'
+                      : 'Complete your first workout to see it here.'}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Sessions Grid */}
+            {!isLoading && data && data.sessions.length > 0 && (
+              <>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {data.sessions.map((session) => (
+                    <SessionHistoryCard
+                      key={session.id}
+                      session={session}
+                      onClick={() => handleSessionClick(session)}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {data.totalPages > 1 && (
+                  <div className="mt-8 flex items-center justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      disabled={page === 1}
+                      onClick={() => setPage((p) => p - 1)}
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-sm text-muted-foreground">
+                      Page {data.page} of {data.totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      disabled={page >= data.totalPages}
+                      onClick={() => setPage((p) => p + 1)}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
