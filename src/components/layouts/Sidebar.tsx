@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { useTheme } from 'next-themes'
-import { X, Dumbbell, Moon, Sun, LogOut, ChevronsUpDown } from 'lucide-react'
+import { X, Dumbbell, Moon, Sun, LogOut, ChevronsUpDown, PanelLeftClose } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -25,6 +25,8 @@ interface SidebarProps {
   isOpen?: boolean
   onClose?: () => void
   userRole?: UserRole
+  desktopOpen?: boolean
+  onDesktopToggle?: () => void
 }
 
 function SubscriptionBadge() {
@@ -54,7 +56,13 @@ function SubscriptionBadge() {
   return <p className="text-xs text-muted-foreground">{tierConfig.name}</p>
 }
 
-export function Sidebar({ isOpen = true, onClose, userRole = 'PERSONAL' }: SidebarProps) {
+export function Sidebar({
+  isOpen = true,
+  onClose,
+  userRole = 'PERSONAL',
+  desktopOpen = true,
+  onDesktopToggle,
+}: SidebarProps) {
   const pathname = usePathname()
   const { data: session } = useSession()
   const { theme, setTheme } = useTheme()
@@ -95,8 +103,11 @@ export function Sidebar({ isOpen = true, onClose, userRole = 'PERSONAL' }: Sideb
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-50 h-full w-64 border-r border-border bg-card transition-transform duration-200 md:sticky md:top-0 md:z-0 md:h-screen md:translate-x-0',
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          'fixed left-0 top-0 z-50 h-full w-64 border-r border-border bg-card transition-transform duration-200 md:sticky md:top-0 md:z-0 md:h-screen',
+          isOpen ? 'translate-x-0' : '-translate-x-full',
+          desktopOpen
+            ? 'md:translate-x-0'
+            : 'md:-translate-x-full md:w-0 md:overflow-hidden md:border-r-0'
         )}
       >
         <div className="flex h-full flex-col">
@@ -110,9 +121,19 @@ export function Sidebar({ isOpen = true, onClose, userRole = 'PERSONAL' }: Sideb
               <Dumbbell className="h-6 w-6 text-primary" />
               <span className="text-xl">B-Fit</span>
             </Link>
-            <Button variant="ghost" size="icon" onClick={onClose} className="md:hidden">
-              <X className="h-5 w-5" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onDesktopToggle}
+                className="hidden md:inline-flex"
+              >
+                <PanelLeftClose className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={onClose} className="md:hidden">
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
 
           {/* Navigation */}
