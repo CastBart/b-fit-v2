@@ -1,8 +1,9 @@
 /**
  * Rest Timer Drawer Component
  *
- * Floating button that appears when rest timer is running.
- * Opens drawer with countdown and timer controls.
+ * Floating button that appears during active sessions.
+ * - When timer is running: shows countdown with controls
+ * - When timer is idle: shows "Start" button to manually start a rest timer
  */
 
 'use client'
@@ -21,14 +22,23 @@ import {
 import { Button } from '@/components/ui/button'
 import { Timer, Plus, Minus, SkipForward } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { stopTimer, addTimeToTimer } from '@/store/slices/sessionSlice'
+import { startTimer, stopTimer, addTimeToTimer } from '@/store/slices/sessionSlice'
 import { formatRestTimer } from '@/lib/utils/format-time'
 
 interface RestTimerDrawerProps {
-  remaining: number // seconds remaining
+  remaining: number
+  isRunning: boolean
 }
 
-export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
+const TIMER_PRESETS = [
+  { label: '30s', seconds: 30 },
+  { label: '1:00', seconds: 60 },
+  { label: '1:30', seconds: 90 },
+  { label: '2:00', seconds: 120 },
+  { label: '3:00', seconds: 180 },
+]
+
+export function RestTimerDrawer({ remaining, isRunning }: RestTimerDrawerProps) {
   const dispatch = useAppDispatch()
   const duration = useAppSelector((state) => state.session.timer?.duration)
   const [open, setOpen] = useState(false)
@@ -39,6 +49,11 @@ export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
 
   const handleSkip = () => {
     dispatch(stopTimer())
+    setOpen(false)
+  }
+
+  const handleStartTimer = (seconds: number) => {
+    dispatch(startTimer(seconds))
     setOpen(false)
   }
 
@@ -56,87 +71,129 @@ export function RestTimerDrawer({ remaining }: RestTimerDrawerProps) {
     <Drawer open={open} onOpenChange={setOpen}>
       {/* Floating Button */}
       <DrawerTrigger asChild>
-        <Button
-          size="lg"
-          className="fixed left-1/2 -translate-x-1/2 bottom-20 md:bottom-6 h-12 w-24 rounded-full shadow-lg z-40"
-          variant={isOvertime || remaining <= 10 ? 'destructive' : 'default'}
-        >
-          <div className="flex flex-row items-center gap-1">
-            <Timer className="h-5 w-5" />
-            <span className="text-sm font-bold">{formatRestTimer(remaining)}</span>
-          </div>
-        </Button>
+        {isRunning ? (
+          <Button
+            size="lg"
+            className="fixed left-1/2 -translate-x-1/2 bottom-20 md:bottom-6 h-12 w-24 rounded-full shadow-lg z-40"
+            variant={isOvertime || remaining <= 10 ? 'destructive' : 'default'}
+          >
+            <div className="flex flex-row items-center gap-1">
+              <Timer className="h-5 w-5" />
+              <span className="text-sm font-bold">{formatRestTimer(remaining)}</span>
+            </div>
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            className="fixed left-1/2 -translate-x-1/2 bottom-20 md:bottom-6 h-12 w-24 rounded-full shadow-lg z-40"
+            variant="outline"
+          >
+            <div className="flex flex-row items-center gap-1">
+              <Timer className="h-5 w-5" />
+              <span className="text-sm font-medium">Start</span>
+            </div>
+          </Button>
+        )}
       </DrawerTrigger>
 
       {/* Drawer Content */}
       <DrawerContent className="custom-drawer-no-height justify-self-center">
-        <DrawerHeader>
-          <DrawerTitle className="text-center text-2xl">
-            Rest Timer {duration !== undefined && `(${formatRestTimer(duration)})`}
-          </DrawerTitle>
-          <DrawerDescription className="hidden">
-            Rest timer controls and countdown
-          </DrawerDescription>
-        </DrawerHeader>
+        {isRunning ? (
+          <>
+            <DrawerHeader>
+              <DrawerTitle className="text-center text-2xl">
+                Rest Timer {duration !== undefined && `(${formatRestTimer(duration)})`}
+              </DrawerTitle>
+              <DrawerDescription className="hidden">
+                Rest timer controls and countdown
+              </DrawerDescription>
+            </DrawerHeader>
 
-        <div className="px-6 py-8">
-          {/* Large Countdown Display */}
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <div className={`text-8xl font-bold tabular-nums ${getTimerColor()}`}>
-              {formatRestTimer(remaining)}
+            <div className="px-6 py-8">
+              {/* Large Countdown Display */}
+              <div className="flex flex-col items-center justify-center space-y-4">
+                <div className={`text-8xl font-bold tabular-nums ${getTimerColor()}`}>
+                  {formatRestTimer(remaining)}
+                </div>
+                <p className="text-muted-foreground">
+                  {isOvertime ? 'Overtime' : 'Time remaining'}
+                </p>
+              </div>
+
+              {/* Timer Controls */}
+              <div className="mt-8 grid grid-cols-3 gap-4">
+                {/* -15s Button */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => handleAddTime(-15)}
+                  className="flex flex-col items-center gap-1 h-auto py-4"
+                >
+                  <Minus className="h-5 w-5" />
+                  <span className="text-sm">15s</span>
+                </Button>
+
+                {/* Skip Button */}
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  onClick={handleSkip}
+                  className="flex flex-col items-center gap-1 h-auto py-4"
+                >
+                  <SkipForward className="h-5 w-5" />
+                  <span className="text-sm">Skip</span>
+                </Button>
+
+                {/* +15s Button */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => handleAddTime(15)}
+                  className="flex flex-col items-center gap-1 h-auto py-4"
+                >
+                  <Plus className="h-5 w-5" />
+                  <span className="text-sm">15s</span>
+                </Button>
+              </div>
+
+              {/* Quick Add Buttons */}
+              <div className="mt-4 flex justify-center gap-2">
+                <Button variant="ghost" size="sm" onClick={() => handleAddTime(30)}>
+                  +30s
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => handleAddTime(60)}>
+                  +1m
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => handleAddTime(120)}>
+                  +2m
+                </Button>
+              </div>
             </div>
-            <p className="text-muted-foreground">{isOvertime ? 'Overtime' : 'Time remaining'}</p>
-          </div>
+          </>
+        ) : (
+          <>
+            <DrawerHeader>
+              <DrawerTitle className="text-center text-2xl">Start Rest Timer</DrawerTitle>
+              <DrawerDescription className="hidden">Choose a rest timer duration</DrawerDescription>
+            </DrawerHeader>
 
-          {/* Timer Controls */}
-          <div className="mt-8 grid grid-cols-3 gap-4">
-            {/* -15s Button */}
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => handleAddTime(-15)}
-              className="flex flex-col items-center gap-1 h-auto py-4"
-            >
-              <Minus className="h-5 w-5" />
-              <span className="text-sm">15s</span>
-            </Button>
-
-            {/* Skip Button */}
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={handleSkip}
-              className="flex flex-col items-center gap-1 h-auto py-4"
-            >
-              <SkipForward className="h-5 w-5" />
-              <span className="text-sm">Skip</span>
-            </Button>
-
-            {/* +15s Button */}
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => handleAddTime(15)}
-              className="flex flex-col items-center gap-1 h-auto py-4"
-            >
-              <Plus className="h-5 w-5" />
-              <span className="text-sm">15s</span>
-            </Button>
-          </div>
-
-          {/* Quick Add Buttons */}
-          <div className="mt-4 flex justify-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => handleAddTime(30)}>
-              +30s
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => handleAddTime(60)}>
-              +1m
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => handleAddTime(120)}>
-              +2m
-            </Button>
-          </div>
-        </div>
+            <div className="px-6 py-8">
+              <div className="grid grid-cols-3 gap-3">
+                {TIMER_PRESETS.map((preset) => (
+                  <Button
+                    key={preset.seconds}
+                    variant="outline"
+                    size="lg"
+                    onClick={() => handleStartTimer(preset.seconds)}
+                    className="h-auto py-4 text-lg font-medium"
+                  >
+                    {preset.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
         <DrawerFooter>
           <DrawerClose asChild>

@@ -5,12 +5,40 @@ import type {
   SessionExerciseEntry,
   ExerciseProgress,
   SetMetrics,
+  HistorySet,
 } from '@/types/session'
 import { ExerciseType } from '@prisma/client'
 import { SupersetManager } from '@/lib/superset-manager'
 
 // Singleton instance for superset operations
 const supersetManager = new SupersetManager<SessionExerciseEntry>()
+
+/**
+ * Convert a HistorySet into SetMetrics, filtering out null values.
+ */
+function historySetToMetrics(historySet: HistorySet): SetMetrics {
+  const metrics: SetMetrics = {}
+  if (historySet.weight != null) metrics.weight = historySet.weight
+  if (historySet.reps != null) metrics.reps = historySet.reps
+  if (historySet.duration != null) metrics.duration = historySet.duration
+  if (historySet.distance != null) metrics.distance = historySet.distance
+  if (historySet.counterWeight != null) metrics.counterWeight = historySet.counterWeight
+  return metrics
+}
+
+/**
+ * Apply history data to an exercise's progress sets.
+ * Only fills sets that exist on both sides (matched by setNumber).
+ */
+function applyHistoryToProgress(progress: ExerciseProgress, historySets: HistorySet[]): void {
+  for (const set of progress.sets) {
+    if (set.completed) continue
+    const historySet = historySets.find((h) => h.setNumber === set.setNumber)
+    if (historySet) {
+      set.metrics = historySetToMetrics(historySet)
+    }
+  }
+}
 
 // ============================================================================
 // INITIAL STATE
@@ -228,6 +256,28 @@ const sessionSlice = createSlice({
     sessionViewLoaded: (state) => {
       if (state.isActive) {
         state.isStarting = false
+      }
+    },
+
+    /**
+     * Pre-fill incomplete sets with history data from previous sessions.
+     * Called during the isStarting phase before the UI is shown.
+     * historyMap is keyed by exerciseId (not instanceId).
+     */
+    prefillSetsFromHistory: (
+      state,
+      action: PayloadAction<{ historyMap: Record<string, HistorySet[]> }>
+    ) => {
+      const { historyMap } = action.payload
+
+      for (const exercise of state.exercises) {
+        const historySets = historyMap[exercise.exerciseId]
+        if (!historySets?.length) continue
+
+        const progress = state.progress[exercise.instanceId]
+        if (!progress) continue
+
+        applyHistoryToProgress(progress, historySets)
       }
     },
 
@@ -568,15 +618,21 @@ const sessionSlice = createSlice({
     /**
      * Add new exercises to the session
      */
-    addExercises: (state, action: PayloadAction<{ exercises: SessionExerciseEntry[] }>) => {
-      const newExercises = action.payload.exercises
+    addExercises: (
+      state,
+      action: PayloadAction<{
+        exercises: SessionExerciseEntry[]
+        historyMap?: Record<string, HistorySet[]>
+      }>
+    ) => {
+      const { exercises: newExercises, historyMap } = action.payload
 
       // Append to exercises array
       state.exercises.push(...newExercises)
 
       // Create progress entries
       newExercises.forEach((exercise) => {
-        state.progress[exercise.instanceId] = {
+        const progress: ExerciseProgress = {
           instanceId: exercise.instanceId,
           sets: Array.from({ length: exercise.targetSets }, (_, i) => ({
             setNumber: i + 1,
@@ -587,6 +643,14 @@ const sessionSlice = createSlice({
           activeSetNumber: 1,
           notes: exercise.notes,
         }
+
+        // Pre-fill from history if available
+        const historySets = historyMap?.[exercise.exerciseId]
+        if (historySets?.length) {
+          applyHistoryToProgress(progress, historySets)
+        }
+
+        state.progress[exercise.instanceId] = progress
       })
 
       // If no active exercise yet, set to first added
@@ -673,9 +737,13 @@ const sessionSlice = createSlice({
      */
     replaceExercise: (
       state,
-      action: PayloadAction<{ instanceId: string; newExercise: SessionExerciseEntry }>
+      action: PayloadAction<{
+        instanceId: string
+        newExercise: SessionExerciseEntry
+        historySets?: HistorySet[]
+      }>
     ) => {
-      const { instanceId, newExercise } = action.payload
+      const { instanceId, newExercise, historySets } = action.payload
 
       // Remove old progress
       delete state.progress[instanceId]
@@ -687,7 +755,7 @@ const sessionSlice = createSlice({
       }
 
       // Create new progress entry
-      state.progress[newExercise.instanceId] = {
+      const progress: ExerciseProgress = {
         instanceId: newExercise.instanceId,
         sets: Array.from({ length: newExercise.targetSets }, (_, i) => ({
           setNumber: i + 1,
@@ -698,6 +766,13 @@ const sessionSlice = createSlice({
         activeSetNumber: 1,
         notes: newExercise.notes,
       }
+
+      // Pre-fill from history if available
+      if (historySets?.length) {
+        applyHistoryToProgress(progress, historySets)
+      }
+
+      state.progress[newExercise.instanceId] = progress
 
       // Update activeExerciseId if the replaced exercise was active
       if (state.activeExerciseId === instanceId) {
@@ -923,6 +998,7 @@ export const {
   startSession,
   startFreeSession,
   sessionViewLoaded,
+  prefillSetsFromHistory,
   prepareSessionEnd,
   endSession,
   resetSessionState,

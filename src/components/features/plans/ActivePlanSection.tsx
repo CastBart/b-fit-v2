@@ -247,9 +247,9 @@ function ActivePlanSkeleton() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:overflow-x-auto sm:pb-1">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-20 min-w-[100px]" />
+            <Skeleton key={i} className="h-14 w-full sm:h-20 sm:min-w-[100px] sm:w-auto" />
           ))}
         </div>
       </CardContent>
