@@ -248,6 +248,9 @@ export function SetLogger({
 
       {/* Latest History Preview */}
       <LatestHistoryPreview exerciseId={exercise.exerciseId} metricType={exercise.metricType} />
+
+      {/* Spacer to prevent floating timer button from overlapping history */}
+      <div className="pb-20 sm:pb-0" />
     </div>
   )
 }
@@ -323,11 +326,12 @@ function renderSetInputs(
   // ✅ Edit rules:
   // - allow editing ANY non-completed set
   // - lock completed sets
-  const isInputDisabled = !!disabled || isCompleted
+  const isInputDisabled = !!disabled
 
   const inputClass = cn(
     'text-center rounded-full',
     isActive && 'bg-muted',
+    isCompleted && 'text-muted-foreground',
     !isActive && !isCompleted && 'opacity-80'
   )
 

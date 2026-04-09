@@ -32,6 +32,7 @@ import { toast } from 'sonner'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import {
   sessionViewLoaded,
+  prefillSetsFromHistory,
   goToExercise,
   addExercises,
   replaceExercise,
@@ -42,7 +43,7 @@ import {
 import { clearSessionBackup } from '@/store/middleware/persistence'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCompleteSession } from '@/hooks/mutations/useSessionMutations'
-import { getSessionPRs } from '@/server/actions/sessions'
+import { getSessionPRs, getLatestHistoryBatch } from '@/server/actions/sessions'
 import { SessionStatus, type SaveSessionPayload } from '@/types/session'
 import { useSessionRecovery } from '@/hooks/useSessionRecovery'
 import { useElapsedSessionTime } from '@/hooks/useElapsedSessionTime'
@@ -131,11 +132,26 @@ export default function SessionPage() {
   // ============================================================================
 
   useEffect(() => {
-    // Mark that the session view has loaded
-    if (isActive && isStarting) {
+    if (!isActive || !isStarting) return
+
+    const prefillAndLoad = async () => {
+      // Fetch history for all exercises to pre-fill set values
+      if (exercises.length > 0) {
+        const exerciseIds = [...new Set(exercises.map((e) => e.exerciseId))]
+        try {
+          const result = await getLatestHistoryBatch({ exerciseIds })
+          if (result.success && result.data) {
+            dispatch(prefillSetsFromHistory({ historyMap: result.data }))
+          }
+        } catch {
+          // Non-critical — session works fine without pre-fill
+        }
+      }
       dispatch(sessionViewLoaded())
     }
-  }, [isActive, isStarting, dispatch])
+
+    prefillAndLoad()
+  }, [isActive, isStarting, exercises, dispatch])
 
   // ============================================================================
   // EVENT HANDLERS
@@ -311,7 +327,7 @@ export default function SessionPage() {
   }
 
   // Handle adding exercises to the session
-  const handleAddExercises = (selectedExercises: Exercise[]) => {
+  const handleAddExercises = async (selectedExercises: Exercise[]) => {
     if (selectedExercises.length === 0) {
       setExerciseSelectorOpen(false)
       return
@@ -339,8 +355,20 @@ export default function SessionPage() {
       notes: null,
     }))
 
-    // Dispatch to Redux
-    dispatch(addExercises({ exercises: sessionExercises }))
+    // Fetch history for new exercises to pre-fill set values
+    let historyMap: Record<string, import('@/types/session').HistorySet[]> | undefined
+    try {
+      const exerciseIds = [...new Set(sessionExercises.map((e) => e.exerciseId))]
+      const result = await getLatestHistoryBatch({ exerciseIds })
+      if (result.success && result.data) {
+        historyMap = result.data
+      }
+    } catch {
+      // Non-critical
+    }
+
+    // Dispatch to Redux with history
+    dispatch(addExercises({ exercises: sessionExercises, historyMap }))
     setExerciseSelectorOpen(false)
   }
 
@@ -365,7 +393,7 @@ export default function SessionPage() {
   }
 
   // Handle replacing an exercise with a new one
-  const handleReplaceExercise = (selectedExercises: Exercise[]) => {
+  const handleReplaceExercise = async (selectedExercises: Exercise[]) => {
     if (!replaceMode || selectedExercises.length === 0) {
       setExerciseSelectorOpen(false)
       setReplaceMode(null)
@@ -393,7 +421,24 @@ export default function SessionPage() {
       notes: oldExercise.notes, // Always carry over
     }
 
-    dispatch(replaceExercise({ instanceId: replaceMode.instanceId, newExercise: replacementEntry }))
+    // Fetch history for the replacement exercise
+    let historySets: import('@/types/session').HistorySet[] | undefined
+    try {
+      const result = await getLatestHistoryBatch({ exerciseIds: [newExercise.id] })
+      if (result.success && result.data?.[newExercise.id]) {
+        historySets = result.data[newExercise.id]
+      }
+    } catch {
+      // Non-critical
+    }
+
+    dispatch(
+      replaceExercise({
+        instanceId: replaceMode.instanceId,
+        newExercise: replacementEntry,
+        historySets,
+      })
+    )
     toast.success(`Replaced ${oldExercise.name} with ${newExercise.name}`)
     setReplaceMode(null)
     setExerciseSelectorOpen(false)
@@ -502,7 +547,7 @@ export default function SessionPage() {
         </div>
 
         {/* Rest Timer (Floating Button) - Outside container for proper fixed positioning */}
-        {restIsRunning && <RestTimerDrawer remaining={restRemaining} />}
+        <RestTimerDrawer remaining={restRemaining} isRunning={restIsRunning} />
       </>
     )
   }
@@ -631,7 +676,7 @@ export default function SessionPage() {
       />
 
       {/* Rest Timer (Floating Button) - Outside container for proper fixed positioning */}
-      {restIsRunning && <RestTimerDrawer remaining={restRemaining} />}
+      <RestTimerDrawer remaining={restRemaining} isRunning={restIsRunning} />
 
       {/* Complete Session Confirmation Dialog */}
       <AlertDialog open={completeDialogOpen} onOpenChange={setCompleteDialogOpen}>

@@ -8,15 +8,18 @@ import {
   getSessionByIdSchema,
   sessionFiltersSchema,
   getExerciseHistorySchema,
+  getLatestHistoryBatchSchema,
   type GetSessionByIdInput,
   type SessionFiltersInput,
   type GetExerciseHistoryInput,
+  type GetLatestHistoryBatchInput,
 } from '@/lib/validations/session'
 import {
   SessionStatus,
   type TrainingSessionWithDetails,
   type SaveSessionPayload,
   type ExerciseHistoryEntry,
+  type HistorySet,
 } from '@/types/session'
 import { detectSessionPRs, type SessionPR } from '@/lib/analytics/pr-detection'
 import { revalidatePath } from 'next/cache'
@@ -508,6 +511,80 @@ export async function getSessionPRs(sessionId: string): Promise<ActionResponse<S
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to get session PRs',
+    }
+  }
+}
+
+// ============================================================================
+// GET LATEST HISTORY BATCH (For pre-filling session sets)
+// ============================================================================
+
+/**
+ * Batch fetch the latest completed session's sets for multiple exercises.
+ * Returns a map of exerciseId → HistorySet[] (from the most recent completed session).
+ * Single DB query using WHERE exerciseId IN (...).
+ */
+export async function getLatestHistoryBatch(
+  input: GetLatestHistoryBatchInput
+): Promise<ActionResponse<Record<string, HistorySet[]>>> {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    const validated = getLatestHistoryBatchSchema.parse(input)
+
+    // For each exerciseId, find the most recent completed session exercise.
+    // We fetch all matching session exercises ordered by session date desc,
+    // then pick the first per exerciseId in JS.
+    const sessionExercises = await prisma.sessionExercise.findMany({
+      where: {
+        exerciseId: { in: validated.exerciseIds },
+        session: {
+          userId: session.user.id,
+          status: 'COMPLETED',
+        },
+      },
+      include: {
+        session: {
+          select: {
+            startedAt: true,
+          },
+        },
+        sets: {
+          where: { isCompleted: true },
+          orderBy: { setNumber: 'asc' },
+        },
+      },
+      orderBy: {
+        session: {
+          startedAt: 'desc',
+        },
+      },
+    })
+
+    // Group by exerciseId, keep only the latest (first in desc order)
+    const historyMap: Record<string, HistorySet[]> = {}
+    for (const se of sessionExercises) {
+      if (historyMap[se.exerciseId]) continue // already have the latest
+
+      historyMap[se.exerciseId] = se.sets.map((set) => ({
+        setNumber: set.setNumber,
+        weight: set.weight,
+        reps: set.reps,
+        duration: set.duration,
+        distance: set.distance,
+        counterWeight: set.counterWeight,
+      }))
+    }
+
+    return { success: true, data: historyMap }
+  } catch (error) {
+    console.error('Failed to get latest history batch:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get latest history batch',
     }
   }
 }

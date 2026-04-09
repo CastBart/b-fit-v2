@@ -74,6 +74,13 @@ export const getExerciseHistorySchema = z.object({
   limit: z.number().int().min(1).max(50).optional().default(10),
 })
 
+/**
+ * Schema for batch fetching latest exercise history
+ */
+export const getLatestHistoryBatchSchema = z.object({
+  exerciseIds: z.array(z.string().cuid('Invalid exercise ID')).min(1).max(50),
+})
+
 // ============================================================================
 // TYPE EXPORTS
 // ============================================================================
@@ -82,3 +89,4 @@ export type SaveSessionInput = z.infer<typeof saveSessionSchema>
 export type GetSessionByIdInput = z.infer<typeof getSessionByIdSchema>
 export type SessionFiltersInput = z.infer<typeof sessionFiltersSchema>
 export type GetExerciseHistoryInput = z.input<typeof getExerciseHistorySchema>
+export type GetLatestHistoryBatchInput = z.infer<typeof getLatestHistoryBatchSchema>
