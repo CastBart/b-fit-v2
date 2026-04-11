@@ -16,6 +16,8 @@ export function usePlans(params: PlanFiltersInput = {}) {
       }
       return result.data
     },
+    networkMode: 'offlineFirst',
     staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnReconnect: true,
   })
 }

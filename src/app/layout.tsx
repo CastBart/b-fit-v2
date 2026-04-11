@@ -4,8 +4,9 @@ import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { SessionProvider } from '@/components/providers/SessionProvider'
-import { QueryProvider } from '@/components/providers/QueryProvider'
+import { PersistQueryProvider } from '@/components/providers/PersistQueryProvider'
 import ReduxProvider from '@/components/providers/ReduxProvider'
+import { PWAClientBootstrap } from '@/components/pwa/PWAClientBootstrap'
 import { auth } from '@/lib/auth/auth.config'
 import './globals.css'
 
@@ -76,7 +77,7 @@ export default async function RootLayout({
       <body className={`${outfit.className} ${inter.variable} antialiased`}>
         <SessionProvider session={session}>
           <ReduxProvider>
-            <QueryProvider>
+            <PersistQueryProvider>
               <ThemeProvider
                 attribute="class"
                 defaultTheme="system"
@@ -84,9 +85,10 @@ export default async function RootLayout({
                 disableTransitionOnChange
               >
                 <TooltipProvider>{children}</TooltipProvider>
+                <PWAClientBootstrap />
                 <Toaster />
               </ThemeProvider>
-            </QueryProvider>
+            </PersistQueryProvider>
           </ReduxProvider>
         </SessionProvider>
       </body>

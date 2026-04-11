@@ -18,7 +18,9 @@ export function useExerciseHistory(exerciseId: string | null, limit?: number) {
       return result.data
     },
     enabled: !!exerciseId,
+    networkMode: 'offlineFirst',
     staleTime: 2 * 60 * 1000, // 2 minutes - history may update after completing sessions
+    refetchOnReconnect: true,
   })
 }
 
@@ -40,6 +42,8 @@ export function useLatestExerciseHistory(exerciseId: string | null) {
       return result.data?.[0] ?? null
     },
     enabled: !!exerciseId,
+    networkMode: 'offlineFirst',
     staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchOnReconnect: true,
   })
 }

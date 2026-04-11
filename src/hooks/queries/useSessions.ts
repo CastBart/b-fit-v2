@@ -14,7 +14,11 @@ export function useSessions(filters?: SessionFiltersInput) {
 
       return result.data
     },
+    networkMode: 'offlineFirst',
     staleTime: 1000 * 60 * 2, // 2 minutes
-    gcTime: 1000 * 60 * 5, // 5 minutes
+    // Aligned with persister maxAge so the history list survives offline
+    // reloads from the rehydrated cache.
+    gcTime: 1000 * 60 * 60 * 24 * 24,
+    refetchOnReconnect: true,
   })
 }

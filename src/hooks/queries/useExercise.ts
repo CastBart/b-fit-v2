@@ -18,6 +18,8 @@ export function useExercise(exerciseId: string | null) {
       return result.data
     },
     enabled: !!exerciseId, // Only run query if exerciseId exists
+    networkMode: 'offlineFirst',
     staleTime: 10 * 60 * 1000, // 10 minutes (single exercise can be cached longer)
+    refetchOnReconnect: true,
   })
 }

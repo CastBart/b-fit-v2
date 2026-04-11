@@ -19,9 +19,13 @@ export function useSession(sessionId: string | undefined) {
       return result.data as TrainingSessionWithDetails
     },
     enabled: !!sessionId, // Only run if sessionId is provided
+    networkMode: 'offlineFirst',
     staleTime: 1000 * 60 * 5, // 5 minutes (session data can be stale)
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    // Keep gcTime aligned with persister maxAge (24 days) so offline
+    // navigations can still read this entry from the rehydrated cache.
+    gcTime: 1000 * 60 * 60 * 24 * 24,
     refetchOnMount: true, // Always refetch on mount (important for recovery)
     refetchOnWindowFocus: false, // Don't refetch on window focus (session page is active)
+    refetchOnReconnect: true,
   })
 }

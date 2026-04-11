@@ -42,7 +42,7 @@ import {
 } from '@/store/slices/sessionSlice'
 import { clearSessionBackup } from '@/store/middleware/persistence'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCompleteSession } from '@/hooks/mutations/useSessionMutations'
+import { commitCompletedSession } from '@/lib/pwa/commit-completed-session'
 import { getSessionPRs, getLatestHistoryBatch } from '@/server/actions/sessions'
 import { SessionStatus, type SaveSessionPayload } from '@/types/session'
 import { useSessionRecovery } from '@/hooks/useSessionRecovery'
@@ -96,9 +96,6 @@ export default function SessionPage() {
   const elapsedSeconds = useElapsedSessionTime()
   const { remaining: restRemaining, isRunning: restIsRunning } = useRestTimer()
 
-  // Mutations
-  const completeSessionMutation = useCompleteSession()
-
   // Local UI state
   const [exerciseSelectorOpen, setExerciseSelectorOpen] = useState(false)
   const [exerciseOptionsOpen, setExerciseOptionsOpen] = useState(false)
@@ -107,6 +104,7 @@ export default function SessionPage() {
   const [exerciseDrawerOpen, setExerciseDrawerOpen] = useState(false)
   const [exerciseDrawerId, setExerciseDrawerId] = useState<string | null>(null)
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false)
+  const [isCommitting, setIsCommitting] = useState(false)
 
   // Replace exercise state
   const [replaceMode, setReplaceMode] = useState<{
@@ -248,6 +246,7 @@ export default function SessionPage() {
 
   // Handle complete session from banner
   const handleCompleteSession = async () => {
+    setIsCommitting(true)
     try {
       // Build the drawer data BEFORE any state changes
       const drawerData = buildCompletedSessionData()
@@ -256,8 +255,10 @@ export default function SessionPage() {
       // Prepare session end (stops timer, sets completeTime, but keeps isActive = true)
       dispatch(prepareSessionEnd())
 
-      // Save to database
-      await completeSessionMutation.mutateAsync(payload)
+      // Commit boundary: writes durable IDB marker, fires the mutation
+      // (pauses offline), clears the localStorage backup. Survives a
+      // crash between "tapped Complete" and "server confirmed".
+      await commitCompletedSession('complete', payload)
 
       // Fetch PRs and attach to drawer data
       await fetchAndAttachPRs(payload.sessionId, drawerData)
@@ -270,6 +271,7 @@ export default function SessionPage() {
       toast.error('Failed to save session. Please try again.')
     } finally {
       setCompleteDialogOpen(false)
+      setIsCommitting(false)
     }
   }
 
@@ -605,14 +607,10 @@ export default function SessionPage() {
               </div>
               <Button
                 onClick={() => setCompleteDialogOpen(true)}
-                disabled={completeSessionMutation.isPending}
+                disabled={isCommitting}
                 className="shrink-0 bg-green-600 hover:bg-green-700"
               >
-                {completeSessionMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  'Save'
-                )}
+                {isCommitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save'}
               </Button>
             </div>
           </div>

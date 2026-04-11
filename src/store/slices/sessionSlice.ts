@@ -321,6 +321,21 @@ const sessionSlice = createSlice({
       return { ...action.payload }
     },
 
+    /**
+     * Rewrite an exercise id reference (tmp_* → real id) inside the live
+     * session after an offline-created exercise syncs to the server.
+     * Walks both the exercises array and any progress entries that key
+     * on the same instance; the instanceId does NOT change.
+     */
+    rewriteExerciseRef: (state, action: PayloadAction<{ from: string; to: string }>) => {
+      const { from, to } = action.payload
+      for (const exercise of state.exercises) {
+        if (exercise.exerciseId === from) {
+          exercise.exerciseId = to
+        }
+      }
+    },
+
     // ========================================================================
     // EXERCISE NAVIGATION
     // ========================================================================
@@ -1003,6 +1018,7 @@ export const {
   endSession,
   resetSessionState,
   rehydrateSession,
+  rewriteExerciseRef,
   goToExercise,
   completeSet,
   updateSet,

@@ -19,6 +19,8 @@ export function usePlan(planId?: string) {
       return result.data
     },
     enabled: !!planId,
+    networkMode: 'offlineFirst',
     staleTime: 1000 * 60 * 10, // 10 minutes
+    refetchOnReconnect: true,
   })
 }

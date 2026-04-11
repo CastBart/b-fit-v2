@@ -19,6 +19,8 @@ export function useWorkout(workoutId?: string) {
       return result.data
     },
     enabled: !!workoutId,
+    networkMode: 'offlineFirst',
     staleTime: 1000 * 60 * 10, // 10 minutes
+    refetchOnReconnect: true,
   })
 }

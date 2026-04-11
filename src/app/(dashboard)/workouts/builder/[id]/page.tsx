@@ -8,7 +8,7 @@
 'use client'
 
 import { use } from 'react'
-import WorkoutBuilderPage from '../page'
+import WorkoutBuilder from '../WorkoutBuilder'
 
 interface EditWorkoutPageProps {
   params: Promise<{
@@ -19,5 +19,5 @@ interface EditWorkoutPageProps {
 export default function EditWorkoutPage({ params }: EditWorkoutPageProps) {
   const { id } = use(params)
 
-  return <WorkoutBuilderPage editWorkoutId={id} />
+  return <WorkoutBuilder editWorkoutId={id} />
 }

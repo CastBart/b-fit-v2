@@ -19,8 +19,9 @@ export function useExercises(params: Partial<ExerciseFiltersInput>, key: string)
 
       return result.data
     },
+    networkMode: 'offlineFirst',
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    refetchOnReconnect: true,
   })
 }

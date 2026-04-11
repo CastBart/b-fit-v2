@@ -12,6 +12,8 @@ export function useActivePlanDashboard(weekNumber?: number) {
       }
       return result.data!
     },
+    networkMode: 'offlineFirst',
     staleTime: 1000 * 60 * 2,
+    refetchOnReconnect: true,
   })
 }

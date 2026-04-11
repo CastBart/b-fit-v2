@@ -18,8 +18,31 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ExerciseForm } from './ExerciseForm'
 import { useCreateExercise } from '@/hooks/mutations/useExerciseMutations'
+import { newTempId } from '@/lib/pwa/temp-id'
 import type { CreateExerciseInput } from '@/lib/validations/exercise'
 import type { Exercise } from '@prisma/client'
+
+function buildOptimisticExerciseForCaller(input: CreateExerciseInput, tempId: string): Exercise {
+  const now = new Date()
+  return {
+    id: tempId,
+    name: input.name,
+    description: input.description ?? null,
+    primaryMuscleGroup: input.primaryMuscleGroup,
+    secondaryMuscleGroups: input.secondaryMuscleGroups ?? [],
+    equipmentType: input.equipmentType,
+    movementPattern: input.movementPattern,
+    difficultyLevel: input.difficultyLevel,
+    exerciseType: input.exerciseType,
+    metricType: input.metricType,
+    instructions: (input.instructions ?? []) as string[],
+    isDefault: false,
+    isPublic: false,
+    createdById: null,
+    createdAt: now,
+    updatedAt: now,
+  } as Exercise
+}
 
 interface CreateExerciseDrawerProps {
   open: boolean
@@ -39,15 +62,18 @@ export function CreateExerciseDrawer({
   const createExercise = useCreateExercise()
 
   const handleSubmit = useCallback(
-    async (data: CreateExerciseInput) => {
-      try {
-        const exercise = await createExercise.mutateAsync(data)
-        onOpenChange(false)
-        if (exercise && onExerciseCreated) {
-          onExerciseCreated(exercise)
-        }
-      } catch {
-        // Error is handled by the mutation hook
+    (data: CreateExerciseInput) => {
+      // Offline-first: allocate a tmp_* id, fire the mutation
+      // (it pauses offline, hits /api/offline/exercises online), and
+      // hand the optimistic exercise back to the parent synchronously.
+      // When the real id arrives, rewriteExerciseId patches every cache
+      // shape and emits exerciseIdRewritten for UI state subscribers.
+      const tempId = newTempId()
+      const optimistic = buildOptimisticExerciseForCaller(data, tempId)
+      createExercise.mutate({ input: data, tempId })
+      onOpenChange(false)
+      if (onExerciseCreated) {
+        onExerciseCreated(optimistic)
       }
     },
     [createExercise, onOpenChange, onExerciseCreated]
@@ -72,11 +98,7 @@ export function CreateExerciseDrawer({
         </DrawerHeader>
 
         <ScrollArea className="flex-1 px-4 pb-4">
-          <ExerciseForm
-            onSubmit={handleSubmit}
-            onCancel={handleCancel}
-            isSubmitting={createExercise.isPending}
-          />
+          <ExerciseForm onSubmit={handleSubmit} onCancel={handleCancel} isSubmitting={false} />
         </ScrollArea>
       </DrawerContent>
     </Drawer>

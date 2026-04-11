@@ -1,93 +1,64 @@
-/**
- * React Query mutation hooks for exercise operations
- */
-
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, onlineManager } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { createExercise, updateExercise, deleteExercise } from '@/server/actions/exercises'
 import type { CreateExerciseInput, UpdateExerciseInput } from '@/lib/validations/exercise'
 
-// ============================================================================
-// Create Exercise
-// ============================================================================
+// Block 6: mutationKey-only hooks. The mutationFn, optimistic cache
+// patching, temp-id reconciliation, and invalidation all live in
+// `@/lib/pwa/mutation-defaults` so paused mutations rehydrated from
+// IndexedDB can resume across deploys without the hook being mounted.
+//
+// Create callers must allocate their own tempId via `newTempId()` from
+// `@/lib/pwa/temp-id` and pass `{ input, tempId }` as variables.
+
+type CreateVariables = { input: CreateExerciseInput; tempId: string }
+type UpdateVariables = { id: string; input: UpdateExerciseInput }
+type DeleteVariables = { id: string }
+
+function offlineAware(savedCopy: string, offlineCopy: string) {
+  if (onlineManager.isOnline()) {
+    toast.success(savedCopy)
+  } else {
+    toast.success(offlineCopy, {
+      description: 'Will sync automatically when you are back online.',
+    })
+  }
+}
 
 export function useCreateExercise() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (input: CreateExerciseInput) => {
-      const result = await createExercise(input)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to create exercise')
-      }
-      return result.data
-    },
+  return useMutation<unknown, Error, CreateVariables>({
+    mutationKey: ['exercises', 'create'],
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['exercises'] })
-      toast.success('Exercise created successfully')
+      offlineAware('Exercise created', 'Saved locally')
     },
-    onError: (error: Error) => {
-      toast.error(error.message)
+    onError: (error) => {
+      if (!onlineManager.isOnline()) return
+      toast.error(error.message || 'Failed to create exercise')
     },
   })
 }
-
-// ============================================================================
-// Update Exercise
-// ============================================================================
 
 export function useUpdateExercise() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async ({
-      exerciseId,
-      input,
-    }: {
-      exerciseId: string
-      input: UpdateExerciseInput
-    }) => {
-      const result = await updateExercise(exerciseId, input)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to update exercise')
-      }
-      return result.data
+  return useMutation<unknown, Error, UpdateVariables>({
+    mutationKey: ['exercises', 'update'],
+    onSuccess: () => {
+      offlineAware('Exercise updated', 'Saved locally')
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['exercises'] })
-      if (data) {
-        queryClient.invalidateQueries({ queryKey: ['exercise', data.id] })
-      }
-      toast.success('Exercise updated successfully')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
+    onError: (error) => {
+      if (!onlineManager.isOnline()) return
+      toast.error(error.message || 'Failed to update exercise')
     },
   })
 }
 
-// ============================================================================
-// Delete Exercise
-// ============================================================================
-
 export function useDeleteExercise() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (exerciseId: string) => {
-      const result = await deleteExercise(exerciseId)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to delete exercise')
-      }
-      return exerciseId
+  return useMutation<unknown, Error, DeleteVariables>({
+    mutationKey: ['exercises', 'delete'],
+    onSuccess: () => {
+      offlineAware('Exercise deleted', 'Deleted locally')
     },
-    onSuccess: (exerciseId) => {
-      queryClient.invalidateQueries({ queryKey: ['exercises'] })
-      queryClient.removeQueries({ queryKey: ['exercise', exerciseId] })
-      toast.success('Exercise deleted successfully')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
+    onError: (error) => {
+      if (!onlineManager.isOnline()) return
+      toast.error(error.message || 'Failed to delete exercise')
     },
   })
 }
