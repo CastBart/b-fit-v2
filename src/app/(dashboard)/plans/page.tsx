@@ -83,9 +83,9 @@ export default function PlansPage() {
   const activatePlan = useActivatePlan()
   const copyPlan = useCopyPlan()
 
-  if (error) {
-    toast.error('Failed to load plans')
-  }
+  useEffect(() => {
+    if (error) toast.error('Failed to load plans')
+  }, [error])
 
   const handleViewModeChange = (value: string) => {
     if (value === 'list' || value === 'grid') {

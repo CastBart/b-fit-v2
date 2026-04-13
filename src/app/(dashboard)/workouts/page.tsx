@@ -116,9 +116,9 @@ export default function WorkoutsPage() {
   const deleteWorkout = useDeleteWorkout()
   const duplicateWorkoutMutation = useDuplicateWorkout()
 
-  if (error) {
-    toast.error('Failed to load workouts')
-  }
+  useEffect(() => {
+    if (error) toast.error('Failed to load workouts')
+  }, [error])
 
   // ---- Handlers ----
 

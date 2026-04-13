@@ -1,3 +1,4 @@
+import { onlineManager } from '@tanstack/react-query'
 import { queryClient } from '@/lib/react-query/queryClient'
 import { clearPendingCommit, type CommitAction } from './commit-completed-session'
 import { SessionStatus, type SaveSessionPayload } from '@/types/session'
@@ -142,8 +143,10 @@ function registerSessionMutation(action: CommitAction) {
       await clearPendingCommit(payload.sessionId)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
-      queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
+      if (onlineManager.isOnline()) {
+        queryClient.invalidateQueries({ queryKey: ['sessions'] })
+        queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
+      }
     },
   })
 }
@@ -160,8 +163,7 @@ type CreateExerciseVariables = { input: CreateExerciseInput; tempId: string }
 type UpdateExerciseVariables = { id: string; input: UpdateExerciseInput }
 type DeleteExerciseVariables = { id: string }
 
-type ExerciseListSnapshot = Array<[readonly unknown[], ExerciseListResponse | undefined]>
-type ExerciseListContext = { snapshots: ExerciseListSnapshot }
+type ExerciseListContext = { prev: ExerciseListResponse | undefined }
 
 function buildOptimisticExercise(
   input: CreateExerciseInput,
@@ -189,19 +191,16 @@ function buildOptimisticExercise(
   } as Exercise & { _pending: true }
 }
 
-function snapshotExerciseLists(): ExerciseListSnapshot {
-  const snapshots: ExerciseListSnapshot = []
-  const queries = queryClient.getQueryCache().findAll({ queryKey: ['exercises'] })
-  for (const query of queries) {
-    snapshots.push([query.queryKey, query.state.data as ExerciseListResponse | undefined])
-  }
-  return snapshots
+// Canonical key for the full exercise list. All optimistic updates target
+// this single entry — NOT a prefix match across all ['exercises', *] keys.
+const EXERCISES_ALL_KEY = ['exercises', 'all'] as const
+
+function snapshotExerciseList(): ExerciseListResponse | undefined {
+  return queryClient.getQueryData<ExerciseListResponse>(EXERCISES_ALL_KEY)
 }
 
-function restoreExerciseListSnapshots(snapshots: ExerciseListSnapshot): void {
-  for (const [key, prev] of snapshots) {
-    queryClient.setQueryData(key, prev)
-  }
+function restoreExerciseListSnapshot(prev: ExerciseListResponse | undefined): void {
+  queryClient.setQueryData(EXERCISES_ALL_KEY, prev)
 }
 
 queryClient.setMutationDefaults(['exercises', 'create'], {
@@ -224,10 +223,10 @@ queryClient.setMutationDefaults(['exercises', 'create'], {
   },
   onMutate: async ({ input, tempId }: CreateExerciseVariables) => {
     await queryClient.cancelQueries({ queryKey: ['exercises'] })
-    const snapshots = snapshotExerciseLists()
+    const prev = snapshotExerciseList()
     const optimistic = buildOptimisticExercise(input, tempId)
 
-    queryClient.setQueriesData<ExerciseListResponse>({ queryKey: ['exercises'] }, (old) => {
+    queryClient.setQueryData<ExerciseListResponse>(EXERCISES_ALL_KEY, (old) => {
       if (!old || !Array.isArray(old.exercises)) return old
       return {
         ...old,
@@ -240,12 +239,11 @@ queryClient.setMutationDefaults(['exercises', 'create'], {
     // query key so ['exercise', tempId] resolves while offline.
     queryClient.setQueryData(['exercise', tempId], optimistic)
 
-    return { snapshots } satisfies ExerciseListContext
+    return { prev } satisfies ExerciseListContext
   },
   onError: (_err, _vars, context) => {
     const ctx = context as ExerciseListContext | undefined
-    if (!ctx?.snapshots) return
-    restoreExerciseListSnapshots(ctx.snapshots)
+    if (ctx) restoreExerciseListSnapshot(ctx.prev)
   },
   onSuccess: async ({ tempId, real }: { tempId: string; real: Exercise }) => {
     await idMap.set(tempId, real.id)
@@ -254,7 +252,9 @@ queryClient.setMutationDefaults(['exercises', 'create'], {
     rewriteExerciseId(queryClient, tempId, real)
   },
   onSettled: () => {
-    queryClient.invalidateQueries({ queryKey: ['exercises'] })
+    if (onlineManager.isOnline()) {
+      queryClient.invalidateQueries({ queryKey: ['exercises'] })
+    }
   },
 })
 
@@ -281,9 +281,9 @@ queryClient.setMutationDefaults(['exercises', 'update'], {
   },
   onMutate: async ({ id, input }: UpdateExerciseVariables) => {
     await queryClient.cancelQueries({ queryKey: ['exercises'] })
-    const snapshots = snapshotExerciseLists()
+    const prev = snapshotExerciseList()
 
-    queryClient.setQueriesData<ExerciseListResponse>({ queryKey: ['exercises'] }, (old) => {
+    queryClient.setQueryData<ExerciseListResponse>(EXERCISES_ALL_KEY, (old) => {
       if (!old || !Array.isArray(old.exercises)) return old
       return {
         ...old,
@@ -293,17 +293,18 @@ queryClient.setMutationDefaults(['exercises', 'update'], {
       }
     })
 
-    return { snapshots } satisfies ExerciseListContext
+    return { prev } satisfies ExerciseListContext
   },
   onError: (_err, _vars, context) => {
     const ctx = context as ExerciseListContext | undefined
-    if (!ctx?.snapshots) return
-    restoreExerciseListSnapshots(ctx.snapshots)
+    if (ctx) restoreExerciseListSnapshot(ctx.prev)
   },
   onSettled: (_data, _err, variables) => {
-    queryClient.invalidateQueries({ queryKey: ['exercises'] })
-    if (variables && !isTempId(variables.id)) {
-      queryClient.invalidateQueries({ queryKey: ['exercise', variables.id] })
+    if (onlineManager.isOnline()) {
+      queryClient.invalidateQueries({ queryKey: ['exercises'] })
+      if (variables && !isTempId(variables.id)) {
+        queryClient.invalidateQueries({ queryKey: ['exercise', variables.id] })
+      }
     }
   },
 })
@@ -325,26 +326,41 @@ queryClient.setMutationDefaults(['exercises', 'delete'], {
   },
   onMutate: async ({ id }: DeleteExerciseVariables) => {
     await queryClient.cancelQueries({ queryKey: ['exercises'] })
-    const snapshots = snapshotExerciseLists()
+    const prev = snapshotExerciseList()
 
-    queryClient.setQueriesData<ExerciseListResponse>({ queryKey: ['exercises'] }, (old) => {
+    queryClient.setQueryData<ExerciseListResponse>(EXERCISES_ALL_KEY, (old) => {
       if (!old || !Array.isArray(old.exercises)) return old
       const filtered = old.exercises.filter((e) => e.id !== id)
       if (filtered.length === old.exercises.length) return old
       return { ...old, exercises: filtered, total: Math.max(0, old.total - 1) }
     })
 
-    return { snapshots } satisfies ExerciseListContext
+    return { prev } satisfies ExerciseListContext
   },
   onError: (_err, _vars, context) => {
     const ctx = context as ExerciseListContext | undefined
-    if (!ctx?.snapshots) return
-    restoreExerciseListSnapshots(ctx.snapshots)
+    if (ctx) restoreExerciseListSnapshot(ctx.prev)
   },
   onSuccess: ({ id }) => {
     queryClient.removeQueries({ queryKey: ['exercise', id] })
   },
   onSettled: () => {
-    queryClient.invalidateQueries({ queryKey: ['exercises'] })
+    if (onlineManager.isOnline()) {
+      queryClient.invalidateQueries({ queryKey: ['exercises'] })
+    }
   },
+})
+
+// Centralized reconnect invalidation. When connectivity returns, sweep
+// all persisted query families so stale offline data gets refreshed.
+// This replaces per-hook `refetchOnReconnect: true` with a controlled,
+// single-point invalidation that fires once per reconnect event.
+onlineManager.subscribe((online) => {
+  if (!online) return
+  // Resume any paused mutations first, then refresh stale queries.
+  queryClient.resumePausedMutations().then(() => {
+    for (const key of ['exercises', 'workouts', 'plans', 'sessions', 'activePlanDashboard', 'dashboard']) {
+      queryClient.invalidateQueries({ queryKey: [key] })
+    }
+  })
 })

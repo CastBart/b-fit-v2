@@ -2,146 +2,100 @@
 
 import { onlineManager, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
-import { getExercises } from '@/server/actions/exercises'
-import { getActivePlanDashboard } from '@/server/actions/plans'
-import { getUserSessions, getSessionById } from '@/server/actions/sessions'
+import { syncAllUserData } from '@/server/actions/sync'
+import { getSessionById } from '@/server/actions/sessions'
 import { getWorkoutById } from '@/server/actions/workouts'
 import { loadSessionBackup } from '@/store/middleware/persistence'
 import type { TrainingSessionWithDetails } from '@/types/session'
-import type { ActivePlanDashboardResponse } from '@/types/plan'
-
-// Dedicated stable cache key for the critical-data prefetch. Does not
-// collide with filter-specific `['exercises', <serialized filters>]`
-// keys produced by the exercises page or workout/plan builders.
-const PREFETCH_EXERCISES_KEY = 'prefetch-all'
-const PREFETCH_EXERCISES_PARAMS = { page: 1, limit: 100 } as const
-
-// Recent history list for the sessions tab. Must match the shape the
-// sessions page would request, minus any transient filters.
-const PREFETCH_SESSIONS_PARAMS = { page: 1, limit: 20 } as const
-
-// Active plan dashboard hook uses `weekNumber ?? 'active'` as its key
-// discriminator — mirror that here so the prefetched entry is the one
-// `useActivePlanDashboard()` (called with no args) will consume.
-const PREFETCH_ACTIVE_PLAN_KEY = 'active' as const
 
 /**
- * Prefetch the gym-cold-open data set into the persisted React Query cache.
+ * Full data sync into the persisted React Query cache.
  *
  * Runs on mount (if online) and again whenever the browser transitions
- * from offline → online, so a user who opened the app offline still gets
- * the prefetch the moment connectivity returns.
+ * from offline → online. A single `syncAllUserData()` server action call
+ * fetches all exercises, workouts, plans, sessions, and the active plan
+ * dashboard in one round-trip, then seeds canonical "all" cache keys
+ * that the page-level query hooks read from.
  *
- * The list is deliberately narrow: exercise library, active plan
- * dashboard, recent sessions history, and — if the user has an in-flight
- * live session — the session detail + its workout template. Workouts and
- * plans outside this scope are served from whatever the user has
- * naturally visited (and persisted).
+ * The live session (if any) is fetched separately since it depends on
+ * the localStorage session backup, not on the sync payload.
  */
 export function usePrefetchCriticalData() {
   const queryClient = useQueryClient()
-  const hasPrefetchedRef = useRef(false)
+  const hasSyncedRef = useRef(false)
 
   useEffect(() => {
-    const runPrefetch = async () => {
+    const runSync = async () => {
       if (!onlineManager.isOnline()) return
-      if (hasPrefetchedRef.current) return
-      hasPrefetchedRef.current = true
+      if (hasSyncedRef.current) return
+      hasSyncedRef.current = true
 
-      // 1. Exercise library — large page so a single prefetch covers the
-      //    typical personal library without paging.
-      const exercisesPromise = queryClient.prefetchQuery({
-        queryKey: ['exercises', PREFETCH_EXERCISES_KEY],
-        queryFn: async () => {
-          const result = await getExercises(PREFETCH_EXERCISES_PARAMS)
-          if (!result.success) {
-            throw new Error(result.error || 'Failed to prefetch exercises')
+      try {
+        // 1. Full data sync — all entities in one server action call.
+        const result = await syncAllUserData()
+        if (result.success && result.data) {
+          queryClient.setQueryData(['exercises', 'all'], result.data.exercises)
+          queryClient.setQueryData(['workouts', 'all'], result.data.workouts)
+          queryClient.setQueryData(['plans', 'all'], result.data.plans)
+          queryClient.setQueryData(['sessions', 'all'], result.data.sessions)
+          if (result.data.activePlanDashboard) {
+            queryClient.setQueryData(
+              ['activePlanDashboard', 'active'],
+              result.data.activePlanDashboard,
+            )
           }
-          return result.data
-        },
-      })
-
-      // 2. Active plan dashboard. Embedded plan-day exercises double as
-      //    the "current workout" source — there is no separate
-      //    Workout entity linked from PlanDay in this schema.
-      const activePlanPromise = queryClient.prefetchQuery<ActivePlanDashboardResponse>({
-        queryKey: ['activePlanDashboard', PREFETCH_ACTIVE_PLAN_KEY],
-        queryFn: async () => {
-          const result = await getActivePlanDashboard()
-          if (!result.success) {
-            throw new Error(result.error || 'Failed to prefetch active plan')
+          if (result.data.dashboardStats) {
+            queryClient.setQueryData(
+              ['dashboard', 'stats'],
+              result.data.dashboardStats,
+            )
           }
-          return result.data!
-        },
-      })
+        } else {
+          console.warn('Sync failed:', result.error)
+          hasSyncedRef.current = false
+        }
 
-      // 3. Recent sessions history — covers the sessions tab + the
-      //    dashboard's "recent sessions" surface.
-      const sessionsPromise = queryClient.prefetchQuery({
-        queryKey: ['sessions', PREFETCH_SESSIONS_PARAMS],
-        queryFn: async () => {
-          const result = await getUserSessions(PREFETCH_SESSIONS_PARAMS)
-          if (!result.success || !result.data) {
-            throw new Error(result.error || 'Failed to prefetch sessions')
-          }
-          return result.data
-        },
-      })
-
-      // 4. Active live session (if any). Read directly from the
-      //    localStorage backup rather than Redux state so this runs
-      //    independently of Redux hydration order.
-      const liveSessionPromise = (async () => {
+        // 2. Active live session (if any). Read from localStorage backup
+        //    so this runs independently of Redux hydration order.
         const backup = loadSessionBackup()
         const sessionId = backup?.state.sessionId
         const workoutId = backup?.state.workoutId
-        if (!sessionId) return
-
-        await queryClient.prefetchQuery({
-          queryKey: ['session', sessionId],
-          queryFn: async () => {
-            const result = await getSessionById({ sessionId })
-            if (!result.success || !result.data) {
-              throw new Error(result.error || 'Failed to prefetch session')
-            }
-            return result.data as TrainingSessionWithDetails
-          },
-        })
-
-        if (workoutId) {
+        if (sessionId) {
           await queryClient.prefetchQuery({
-            queryKey: ['workout', workoutId],
+            queryKey: ['session', sessionId],
             queryFn: async () => {
-              const result = await getWorkoutById(workoutId)
-              if (!result.success || !result.data) {
-                throw new Error(result.error || 'Failed to prefetch workout')
+              const res = await getSessionById({ sessionId })
+              if (!res.success || !res.data) {
+                throw new Error(res.error || 'Failed to prefetch session')
               }
-              return result.data
+              return res.data as TrainingSessionWithDetails
             },
           })
-        }
-      })()
 
-      try {
-        await Promise.allSettled([
-          exercisesPromise,
-          activePlanPromise,
-          sessionsPromise,
-          liveSessionPromise,
-        ])
+          if (workoutId) {
+            await queryClient.prefetchQuery({
+              queryKey: ['workout', workoutId],
+              queryFn: async () => {
+                const res = await getWorkoutById(workoutId)
+                if (!res.success || !res.data) {
+                  throw new Error(res.error || 'Failed to prefetch workout')
+                }
+                return res.data
+              },
+            })
+          }
+        }
       } catch (err) {
-        // Prefetch is best-effort — individual failures are already
-        // surfaced on their owning hooks when they next run.
-        console.warn('Critical-data prefetch partially failed', err)
-        hasPrefetchedRef.current = false
+        console.warn('Data sync partially failed:', err)
+        hasSyncedRef.current = false
       }
     }
 
-    void runPrefetch()
+    void runSync()
 
     const unsubscribe = onlineManager.subscribe((online) => {
-      if (online && !hasPrefetchedRef.current) {
-        void runPrefetch()
+      if (online && !hasSyncedRef.current) {
+        void runSync()
       }
     })
 

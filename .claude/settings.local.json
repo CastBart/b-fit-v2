@@ -66,7 +66,11 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:vaul.emilkowal.ski)",
       "Bash(npm i:*)",
-      "Bash(SERWIST_SUPPRESS_TURBOPACK_WARNING=1 npm run build)"
+      "Bash(SERWIST_SUPPRESS_TURBOPACK_WARNING=1 npm run build)",
+      "Bash(npm start:*)",
+      "Bash(powershell:*)",
+      "Bash(npx next:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" -X HEAD http://localhost:3000/api/auth/session)"
     ]
   },
   "enabledPlugins": {

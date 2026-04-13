@@ -1,7 +1,7 @@
 'use client'
 
-import { Suspense, useCallback, useMemo, useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useCallback, useMemo, useState, useEffect, useRef } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { ExerciseCard } from '@/components/features/exercises/ExerciseCard'
 import { ExerciseFilterBar } from '@/components/features/exercises/ExerciseFilterBar'
@@ -38,7 +38,6 @@ function parseCsvParam<T extends string>(param: string | null): T[] {
 /* ---------------- component ---------------- */
 
 function ExercisesContent() {
-  const router = useRouter()
   const searchParams = useSearchParams()
 
   /* ---------- drawer state (LOCAL ONLY) ---------- */
@@ -49,43 +48,46 @@ function ExercisesContent() {
   /* ---------- permissions ---------- */
   const { canCreate } = useCanCreateExercise()
 
-  /* ---------- URL params ---------- */
-  const currentPage = Number(searchParams.get('page')) || 1
-  const search = searchParams.get('search') || ''
-
-  const muscleGroupsParam = searchParams.get('muscleGroups')
-  const exerciseTypesParam = searchParams.get('exerciseTypes')
-  const equipmentTypesParam = searchParams.get('equipmentTypes')
-  const difficultyLevelsParam = searchParams.get('difficultyLevels')
-  const movementPatternsParam = searchParams.get('movementPatterns')
-
-  /* ---------- parsed & memoized filters ---------- */
-  const muscleGroups = useMemo(
-    () => normalizeArray(parseCsvParam<MuscleGroup>(muscleGroupsParam)),
-    [muscleGroupsParam]
+  /* ---------- LOCAL filter state (initialized from URL) ---------- */
+  const [currentPage, setCurrentPage] = useState(() => Number(searchParams.get('page')) || 1)
+  const [search, setSearch] = useState(() => searchParams.get('search') || '')
+  const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>(
+    () => normalizeArray(parseCsvParam<MuscleGroup>(searchParams.get('muscleGroups')))
+  )
+  const [exerciseTypes, setExerciseTypes] = useState<ExerciseType[]>(
+    () => normalizeArray(parseCsvParam<ExerciseType>(searchParams.get('exerciseTypes')))
+  )
+  const [equipmentTypes, setEquipmentTypes] = useState<EquipmentType[]>(
+    () => normalizeArray(parseCsvParam<EquipmentType>(searchParams.get('equipmentTypes')))
+  )
+  const [difficultyLevels, setDifficultyLevels] = useState<DifficultyLevel[]>(
+    () => normalizeArray(parseCsvParam<DifficultyLevel>(searchParams.get('difficultyLevels')))
+  )
+  const [movementPatterns, setMovementPatterns] = useState<MovementPattern[]>(
+    () => normalizeArray(parseCsvParam<MovementPattern>(searchParams.get('movementPatterns')))
   )
 
-  const exerciseTypes = useMemo(
-    () => normalizeArray(parseCsvParam<ExerciseType>(exerciseTypesParam)),
-    [exerciseTypesParam]
-  )
+  /* ---------- Sync local state → URL via history.replaceState ---------- */
+  // Avoid Next.js router.replace which makes server requests (fails offline).
+  const isInitialMount = useRef(true)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+    const params = new URLSearchParams()
+    if (search) params.set('search', search)
+    if (muscleGroups.length) params.set('muscleGroups', muscleGroups.join(','))
+    if (exerciseTypes.length) params.set('exerciseTypes', exerciseTypes.join(','))
+    if (equipmentTypes.length) params.set('equipmentTypes', equipmentTypes.join(','))
+    if (difficultyLevels.length) params.set('difficultyLevels', difficultyLevels.join(','))
+    if (movementPatterns.length) params.set('movementPatterns', movementPatterns.join(','))
+    params.set('page', String(currentPage))
+    const qs = params.toString()
+    window.history.replaceState(window.history.state, '', `/exercises?${qs}`)
+  }, [search, muscleGroups, exerciseTypes, equipmentTypes, difficultyLevels, movementPatterns, currentPage])
 
-  const equipmentTypes = useMemo(
-    () => normalizeArray(parseCsvParam<EquipmentType>(equipmentTypesParam)),
-    [equipmentTypesParam]
-  )
-
-  const difficultyLevels = useMemo(
-    () => normalizeArray(parseCsvParam<DifficultyLevel>(difficultyLevelsParam)),
-    [difficultyLevelsParam]
-  )
-
-  const movementPatterns = useMemo(
-    () => normalizeArray(parseCsvParam<MovementPattern>(movementPatternsParam)),
-    [movementPatternsParam]
-  )
-
-  /* ---------- params passed to server ---------- */
+  /* ---------- params passed to query hook ---------- */
   const filterParams = useMemo(
     () => ({
       search: search || undefined,
@@ -97,43 +99,11 @@ function ExercisesContent() {
       page: currentPage,
       limit: 20,
     }),
-    [
-      search,
-      muscleGroups,
-      exerciseTypes,
-      equipmentTypes,
-      difficultyLevels,
-      movementPatterns,
-      currentPage,
-    ]
-  )
-
-  /* ---------- STABLE QUERY KEY ---------- */
-  const queryKeyParams = useMemo(
-    () =>
-      JSON.stringify({
-        search,
-        muscleGroups,
-        exerciseTypes,
-        equipmentTypes,
-        difficultyLevels,
-        movementPatterns,
-        page: currentPage,
-        limit: 20,
-      }),
-    [
-      search,
-      muscleGroups,
-      exerciseTypes,
-      equipmentTypes,
-      difficultyLevels,
-      movementPatterns,
-      currentPage,
-    ]
+    [search, muscleGroups, exerciseTypes, equipmentTypes, difficultyLevels, movementPatterns, currentPage]
   )
 
   /* ---------- fetch exercises ---------- */
-  const { data, isLoading, error } = useExercises(filterParams, queryKeyParams)
+  const { data, isLoading, error } = useExercises(filterParams)
 
   const exercises = data?.exercises ?? []
   const total = data?.total ?? 0
@@ -145,38 +115,46 @@ function ExercisesContent() {
     }
   }, [error])
 
-  /* ---------- URL updates ---------- */
-  const updateFilters = useCallback(
-    (updates: Record<string, string | string[] | undefined>) => {
-      const params = new URLSearchParams(searchParams.toString())
+  /* ---------- filter update helpers ---------- */
+  const handleSearchChange = useCallback((v: string) => {
+    setSearch(v)
+    setCurrentPage(1)
+  }, [])
 
-      Object.entries(updates).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          const normalized = normalizeArray(value.map(String))
-          if (normalized.length) {
-            params.set(key, normalized.join(','))
-          } else {
-            params.delete(key)
-          }
-          return
-        }
+  const handleMuscleGroupsChange = useCallback((v: MuscleGroup[]) => {
+    setMuscleGroups(normalizeArray(v))
+    setCurrentPage(1)
+  }, [])
 
-        if (value) {
-          params.set(key, value)
-        } else {
-          params.delete(key)
-        }
-      })
+  const handleExerciseTypesChange = useCallback((v: ExerciseType[]) => {
+    setExerciseTypes(normalizeArray(v))
+    setCurrentPage(1)
+  }, [])
 
-      if (!('page' in updates)) params.set('page', '1')
+  const handleEquipmentTypesChange = useCallback((v: EquipmentType[]) => {
+    setEquipmentTypes(normalizeArray(v))
+    setCurrentPage(1)
+  }, [])
 
-      const next = params.toString()
-      if (next === searchParams.toString()) return
+  const handleDifficultyLevelsChange = useCallback((v: DifficultyLevel[]) => {
+    setDifficultyLevels(normalizeArray(v))
+    setCurrentPage(1)
+  }, [])
 
-      router.replace(`/exercises?${next}`)
-    },
-    [router, searchParams]
-  )
+  const handleMovementPatternsChange = useCallback((v: MovementPattern[]) => {
+    setMovementPatterns(normalizeArray(v))
+    setCurrentPage(1)
+  }, [])
+
+  const handleClearFilters = useCallback(() => {
+    setSearch('')
+    setMuscleGroups([])
+    setExerciseTypes([])
+    setEquipmentTypes([])
+    setDifficultyLevels([])
+    setMovementPatterns([])
+    setCurrentPage(1)
+  }, [])
 
   /* ---------- handlers ---------- */
   const handleExerciseClick = useCallback((id: string) => {
@@ -190,10 +168,6 @@ function ExercisesContent() {
       setTimeout(() => setSelectedExerciseId(null), 300)
     }
   }, [])
-
-  const handleClearFilters = useCallback(() => {
-    router.replace('/exercises?page=1')
-  }, [router])
 
   /* ---------- render ---------- */
   return (
@@ -226,12 +200,12 @@ function ExercisesContent() {
           equipmentTypes={equipmentTypes}
           difficultyLevels={difficultyLevels}
           movementPatterns={movementPatterns}
-          onSearchChange={(v) => updateFilters({ search: v || undefined })}
-          onMuscleGroupsChange={(v) => updateFilters({ muscleGroups: v })}
-          onExerciseTypesChange={(v) => updateFilters({ exerciseTypes: v })}
-          onEquipmentTypesChange={(v) => updateFilters({ equipmentTypes: v })}
-          onDifficultyLevelsChange={(v) => updateFilters({ difficultyLevels: v })}
-          onMovementPatternsChange={(v) => updateFilters({ movementPatterns: v })}
+          onSearchChange={handleSearchChange}
+          onMuscleGroupsChange={handleMuscleGroupsChange}
+          onExerciseTypesChange={handleExerciseTypesChange}
+          onEquipmentTypesChange={handleEquipmentTypesChange}
+          onDifficultyLevelsChange={handleDifficultyLevelsChange}
+          onMovementPatternsChange={handleMovementPatternsChange}
           onClearAll={handleClearFilters}
         />
         <div className="mt-3 border-b" />
@@ -267,7 +241,7 @@ function ExercisesContent() {
                 variant="outline"
                 size="sm"
                 disabled={currentPage === 1}
-                onClick={() => updateFilters({ page: String(currentPage - 1) })}
+                onClick={() => setCurrentPage((p) => p - 1)}
               >
                 Previous
               </Button>
@@ -278,7 +252,7 @@ function ExercisesContent() {
                 variant="outline"
                 size="sm"
                 disabled={currentPage >= (data?.totalPages ?? 1)}
-                onClick={() => updateFilters({ page: String(currentPage + 1) })}
+                onClick={() => setCurrentPage((p) => p + 1)}
               >
                 Next
               </Button>

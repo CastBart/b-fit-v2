@@ -15,7 +15,17 @@ export function ActivePlanSection() {
   const [viewedWeekNumber, setViewedWeekNumber] = useState<number | undefined>(undefined)
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null)
 
-  const { data, isLoading, isError } = useActivePlanDashboard(viewedWeekNumber)
+  const { data, isLoading, isError, error, fetchStatus, status } = useActivePlanDashboard(viewedWeekNumber)
+
+  useEffect(() => {
+    console.log('[bfit:ActivePlan] Mount')
+    return () => console.log('[bfit:ActivePlan] Unmount')
+  }, [])
+
+  useEffect(() => {
+    console.log('[bfit:ActivePlan] Query state: status=%s, fetchStatus=%s, isError=%s, hasData=%s, error=%s',
+      status, fetchStatus, isError, !!data, error?.message ?? 'none')
+  }, [status, fetchStatus, isError, data, error])
 
   // Sync viewed week with server data when it loads
   useEffect(() => {
@@ -29,6 +39,7 @@ export function ActivePlanSection() {
   }
 
   if (isError || !data) {
+    console.log('[bfit:ActivePlan] Rendering null — isError=%s, data=%s', isError, data)
     return null
   }
 

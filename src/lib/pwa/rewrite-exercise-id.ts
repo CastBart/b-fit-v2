@@ -18,9 +18,8 @@ import { emitter } from './emitter'
 //   - Workout-builder local selection state — same emitter path
 
 export function rewriteExerciseId(qc: QueryClient, tempId: string, real: Exercise): void {
-  // 1. All ['exercises', *] pages. Match by prefix so every filter variant
-  //    the user has observed gets patched in one pass.
-  qc.setQueriesData<ExerciseListResponse>({ queryKey: ['exercises'] }, (old) => {
+  // 1. Canonical ['exercises', 'all'] cache entry.
+  qc.setQueryData<ExerciseListResponse>(['exercises', 'all'], (old) => {
     if (!old || !Array.isArray(old.exercises)) return old
     let dirty = false
     const nextList = old.exercises.map((e) => {

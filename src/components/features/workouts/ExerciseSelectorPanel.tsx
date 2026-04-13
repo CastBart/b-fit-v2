@@ -114,31 +114,15 @@ export function ExerciseSelectorPanel({
     selectedIdsRef.current = selectedIds
   }, [selectedIds])
 
-  const filterKey = useMemo(
-    () =>
-      JSON.stringify({
-        search,
-        muscleGroups,
-        exerciseTypes,
-        equipmentTypes,
-        difficultyLevels,
-        movementPatterns,
-      }),
-    [search, muscleGroups, exerciseTypes, equipmentTypes, difficultyLevels, movementPatterns]
-  )
-
-  const { data, isLoading } = useExercises(
-    {
-      search: search || undefined,
-      primaryMuscleGroups: muscleGroups.length ? muscleGroups : undefined,
-      exerciseTypes: exerciseTypes.length ? exerciseTypes : undefined,
-      equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
-      difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
-      movementPatterns: movementPatterns.length ? movementPatterns : undefined,
-      limit: 500,
-    },
-    `selector-${filterKey}`
-  )
+  const { data, isLoading } = useExercises({
+    search: search || undefined,
+    primaryMuscleGroups: muscleGroups.length ? muscleGroups : undefined,
+    exerciseTypes: exerciseTypes.length ? exerciseTypes : undefined,
+    equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
+    difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
+    movementPatterns: movementPatterns.length ? movementPatterns : undefined,
+    limit: 500,
+  })
 
   const exercises = data?.exercises || []
 

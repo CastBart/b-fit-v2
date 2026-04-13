@@ -33,6 +33,15 @@ export function SyncStatusIndicator() {
   const [pendingCount, setPendingCount] = useState(0)
 
   useEffect(() => {
+    console.log('[bfit:SyncIndicator] Mounted')
+    return () => console.log('[bfit:SyncIndicator] Unmounted')
+  }, [])
+
+  useEffect(() => {
+    console.log('[bfit:SyncIndicator] State: isOnline=%s, pendingCount=%d', isOnline, pendingCount)
+  }, [isOnline, pendingCount])
+
+  useEffect(() => {
     const cache = queryClient.getMutationCache()
     const update = () => {
       setPendingCount(countPendingOfflineMutations(cache.getAll() as never))

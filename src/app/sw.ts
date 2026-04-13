@@ -1,6 +1,6 @@
-import { defaultCache } from '@serwist/next/worker'
+import { defaultCache, PAGES_CACHE_NAME } from '@serwist/next/worker'
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist'
-import { NetworkOnly, Serwist } from 'serwist'
+import { ExpirationPlugin, NetworkFirst, NetworkOnly, Serwist } from 'serwist'
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -27,6 +27,25 @@ const serwist = new Serwist({
     {
       matcher: ({ request }) => request.headers.get('next-action') != null,
       handler: new NetworkOnly(),
+    },
+    // Unified RSC cache: defaultCache splits prefetch and navigation RSC
+    // requests into separate caches (pages-rsc-prefetch vs pages-rsc).
+    // Offline, navigation RSC requests fail because they look in the empty
+    // pages-rsc cache even though the prefetch response is in
+    // pages-rsc-prefetch. This rule catches ALL RSC requests first and
+    // puts them in a single cache, so prefetched payloads serve navigation.
+    {
+      matcher: ({ request, url: { pathname }, sameOrigin }) =>
+        request.headers.get('RSC') === '1' && sameOrigin && !pathname.startsWith('/api/'),
+      handler: new NetworkFirst({
+        cacheName: PAGES_CACHE_NAME.rsc,
+        plugins: [
+          new ExpirationPlugin({
+            maxEntries: 64,
+            maxAgeSeconds: 24 * 60 * 60,
+          }),
+        ],
+      }),
     },
     ...defaultCache,
   ],

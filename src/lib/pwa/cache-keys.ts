@@ -14,6 +14,7 @@ export const PERSISTED_QUERY_KEYS = new Set<string>([
   'activePlanDashboard',
   'session',
   'sessions',
+  'dashboard',
 ])
 
 export const NON_PERSISTED_QUERY_KEYS = new Set<string>([
