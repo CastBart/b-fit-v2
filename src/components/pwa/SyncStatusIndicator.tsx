@@ -28,18 +28,17 @@ function countPendingOfflineMutations(
 }
 
 export function SyncStatusIndicator() {
+  // TEMP: defer render until after hydration to test if this component
+  // causes React error #418 (server=null, client=<div>Offline</div>).
+  // Remove this block once root cause is confirmed or ruled out.
+  const [hydrated, setHydrated] = useState(false)
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
   const { isOnline } = useOnlineStatus()
   const queryClient = useQueryClient()
   const [pendingCount, setPendingCount] = useState(0)
-
-  useEffect(() => {
-    console.log('[bfit:SyncIndicator] Mounted')
-    return () => console.log('[bfit:SyncIndicator] Unmounted')
-  }, [])
-
-  useEffect(() => {
-    console.log('[bfit:SyncIndicator] State: isOnline=%s, pendingCount=%d', isOnline, pendingCount)
-  }, [isOnline, pendingCount])
 
   useEffect(() => {
     const cache = queryClient.getMutationCache()
@@ -53,6 +52,8 @@ export function SyncStatusIndicator() {
     }
   }, [queryClient])
 
+  // TEMP: return null before hydration to match server render (always null)
+  if (!hydrated) return null
   if (isOnline && pendingCount === 0) return null
 
   const label = !isOnline

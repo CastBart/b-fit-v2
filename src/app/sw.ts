@@ -10,6 +10,31 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope
 
+const stripRscPlugin = {
+  async cacheKeyWillBeUsed({ request }: { request: Request }) {
+    const url = new URL(request.url)
+
+    if (url.searchParams.has('_rsc')) {
+      url.searchParams.delete('_rsc')
+      return new Request(url.toString(), {
+        method: request.method,
+        headers: request.headers,
+        mode: request.mode,
+        credentials: request.credentials,
+        cache: request.cache,
+        redirect: request.redirect,
+        referrer: request.referrer,
+        referrerPolicy: request.referrerPolicy,
+        integrity: request.integrity,
+        keepalive: request.keepalive,
+        signal: request.signal,
+      })
+    }
+
+    return request
+  },
+}
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
@@ -28,18 +53,34 @@ const serwist = new Serwist({
       matcher: ({ request }) => request.headers.get('next-action') != null,
       handler: new NetworkOnly(),
     },
-    // Unified RSC cache: defaultCache splits prefetch and navigation RSC
-    // requests into separate caches (pages-rsc-prefetch vs pages-rsc).
-    // Offline, navigation RSC requests fail because they look in the empty
-    // pages-rsc cache even though the prefetch response is in
-    // pages-rsc-prefetch. This rule catches ALL RSC requests first and
-    // puts them in a single cache, so prefetched payloads serve navigation.
+
+    // RSC prefetch requests
+    {
+      matcher: ({ request, url: { pathname }, sameOrigin }) =>
+        request.headers.get('RSC') === '1' &&
+        request.headers.get('Next-Router-Prefetch') === '1' &&
+        sameOrigin &&
+        !pathname.startsWith('/api/'),
+      handler: new NetworkFirst({
+        cacheName: PAGES_CACHE_NAME.rscPrefetch,
+        plugins: [
+          stripRscPlugin,
+          new ExpirationPlugin({
+            maxEntries: 32,
+            maxAgeSeconds: 24 * 60 * 60,
+          }),
+        ],
+      }),
+    },
+
+    // Full RSC navigation requests
     {
       matcher: ({ request, url: { pathname }, sameOrigin }) =>
         request.headers.get('RSC') === '1' && sameOrigin && !pathname.startsWith('/api/'),
       handler: new NetworkFirst({
         cacheName: PAGES_CACHE_NAME.rsc,
         plugins: [
+          stripRscPlugin,
           new ExpirationPlugin({
             maxEntries: 64,
             maxAgeSeconds: 24 * 60 * 60,
@@ -47,6 +88,7 @@ const serwist = new Serwist({
         ],
       }),
     },
+
     ...defaultCache,
   ],
   fallbacks: {

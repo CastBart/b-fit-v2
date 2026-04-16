@@ -205,12 +205,14 @@ function restoreExerciseListSnapshot(prev: ExerciseListResponse | undefined): vo
 
 queryClient.setMutationDefaults(['exercises', 'create'], {
   mutationFn: async ({ input, tempId }: CreateExerciseVariables) => {
+    // console.log('[bfit:createExercise] mutationFn start', { tempId, name: input.name })
     const res = await fetch('/api/offline/exercises', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(input),
       credentials: 'same-origin',
     })
+    // console.log('[bfit:createExercise] response received', { tempId, status: res.status })
     const json = (await res.json().catch(() => null)) as {
       success: boolean
       data?: Exercise
@@ -246,6 +248,7 @@ queryClient.setMutationDefaults(['exercises', 'create'], {
     if (ctx) restoreExerciseListSnapshot(ctx.prev)
   },
   onSuccess: async ({ tempId, real }: { tempId: string; real: Exercise }) => {
+    // console.log('[bfit:createExercise] onSuccess', { tempId, realId: real.id })
     await idMap.set(tempId, real.id)
     // Centralized cache rewrite — lists, detail, history, Redux session
     // refs (via emitter), builder local state (via emitter).
@@ -351,16 +354,10 @@ queryClient.setMutationDefaults(['exercises', 'delete'], {
   },
 })
 
-// Centralized reconnect invalidation. When connectivity returns, sweep
-// all persisted query families so stale offline data gets refreshed.
-// This replaces per-hook `refetchOnReconnect: true` with a controlled,
-// single-point invalidation that fires once per reconnect event.
-onlineManager.subscribe((online) => {
-  if (!online) return
-  // Resume any paused mutations first, then refresh stale queries.
-  queryClient.resumePausedMutations().then(() => {
-    for (const key of ['exercises', 'workouts', 'plans', 'sessions', 'activePlanDashboard', 'dashboard']) {
-      queryClient.invalidateQueries({ queryKey: [key] })
-    }
-  })
-})
+// // Resume paused mutations when connectivity returns. Query refetches
+// // are handled globally by refetchOnReconnect: true in queryClient.ts,
+// // so no invalidateQueries calls are needed here.
+// onlineManager.subscribe((online) => {
+//   if (!online) return
+//   queryClient.resumePausedMutations()
+// })

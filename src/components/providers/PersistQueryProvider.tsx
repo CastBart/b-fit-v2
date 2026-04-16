@@ -3,11 +3,15 @@
 import * as React from 'react'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { onlineManager } from '@tanstack/react-query'
 import { queryClient } from '@/lib/react-query/queryClient'
 import { idbPersister } from '@/lib/pwa/persister'
 import { isPersistedQueryKey } from '@/lib/pwa/cache-keys'
 import { recoverPendingSessionCommits } from '@/lib/pwa/recover-pending-commits'
 import { isActuallyOnline } from '@/lib/pwa/onlineProbe'
+// Side-effect import: dev-only fetch interceptor for diagnosing offline
+// network calls. Must run before any other fetch-based code.
+import '@/lib/pwa/fetch-debugger'
 // Side-effect import: overrides onlineManager's navigator.onLine listener
 // with an active probe. Must run before mutation-defaults subscribes.
 import '@/lib/pwa/onlineManagerSetup'
@@ -23,7 +27,7 @@ import '@/lib/pwa/mutation-defaults'
 const ReactQueryDevtoolsProduction = React.lazy(() =>
   import('@tanstack/react-query-devtools/production').then((d) => ({
     default: d.ReactQueryDevtools,
-  })),
+  }))
 )
 
 const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? 'dev'
@@ -80,7 +84,6 @@ export function PersistQueryProvider({ children }: { children: React.ReactNode }
         },
       }}
       onSuccess={async () => {
-        console.log('[bfit:PersistProvider] onSuccess — cache restored from IDB')
         // Deliberate order:
         //   1. Cache has rehydrated (onSuccess fires after restore).
         //   2. Re-queue durable session commits whose RQ-persister entry
@@ -116,10 +119,12 @@ export function PersistQueryProvider({ children }: { children: React.ReactNode }
           }
         }
 
-        // Active probe — navigator.onLine returns true even when Chrome
-        // DevTools "Offline" mode is active. Use a real HEAD request to
-        // confirm connectivity before resuming mutations.
-        const online = await isActuallyOnline()
+        // Short-circuit: if onlineManager already knows we're offline
+        // (from persisted sessionStorage state restored in onlineManagerSetup),
+        // skip the active probe entirely. The probe fires GET /api/auth/session
+        // which is wasted when we already know the answer. Only probe when
+        // onlineManager thinks we're online (to catch navigator.onLine lies).
+        const online = onlineManager.isOnline() && (await isActuallyOnline())
         if (online) {
           await queryClient.resumePausedMutations()
           queryClient.invalidateQueries({ queryKey: ['sessions'] })

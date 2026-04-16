@@ -11,8 +11,7 @@ import type { TrainingSessionWithDetails } from '@/types/session'
 /**
  * Full data sync into the persisted React Query cache.
  *
- * Runs on mount (if online) and again whenever the browser transitions
- * from offline → online. A single `syncAllUserData()` server action call
+ * Runs once on mount (if online). A single `syncAllUserData()` server action call
  * fetches all exercises, workouts, plans, sessions, and the active plan
  * dashboard in one round-trip, then seeds canonical "all" cache keys
  * that the page-level query hooks read from.
@@ -41,14 +40,11 @@ export function usePrefetchCriticalData() {
           if (result.data.activePlanDashboard) {
             queryClient.setQueryData(
               ['activePlanDashboard', 'active'],
-              result.data.activePlanDashboard,
+              result.data.activePlanDashboard
             )
           }
           if (result.data.dashboardStats) {
-            queryClient.setQueryData(
-              ['dashboard', 'stats'],
-              result.data.dashboardStats,
-            )
+            queryClient.setQueryData(['dashboard', 'stats'], result.data.dashboardStats)
           }
         } else {
           console.warn('Sync failed:', result.error)
@@ -92,15 +88,7 @@ export function usePrefetchCriticalData() {
     }
 
     void runSync()
-
-    const unsubscribe = onlineManager.subscribe((online) => {
-      if (online && !hasSyncedRef.current) {
-        void runSync()
-      }
-    })
-
-    return () => {
-      unsubscribe()
-    }
+    // No reconnect subscription -- refetchOnReconnect: true in queryClient.ts
+    // handles stale-query refetching on connectivity return.
   }, [queryClient])
 }

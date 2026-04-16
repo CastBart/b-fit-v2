@@ -15,6 +15,12 @@ interface SessionProviderProps {
  */
 export function SessionProvider({ children, session }: SessionProviderProps) {
   return (
-    <NextAuthSessionProvider session={session ?? undefined}>{children}</NextAuthSessionProvider>
+    <NextAuthSessionProvider
+      session={session ?? undefined}
+      refetchOnWindowFocus={false}
+      refetchWhenOffline={false}
+    >
+      {children}
+    </NextAuthSessionProvider>
   )
 }

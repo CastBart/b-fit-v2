@@ -164,12 +164,12 @@ for (const key of keyOrder) {
 
 output += `}\n`;
 
-// Print summary
-console.log('Front outline fills:', frontOutlineFills.length);
-console.log('Front outline strokes:', frontOutlineStrokes.length);
-console.log('Back outline fills:', backOutlineFills.length);
-console.log('Back outline strokes:', backOutlineStrokes.length);
-console.log('\nMuscle groups:');
+// // Print summary
+// console.log('Front outline fills:', frontOutlineFills.length);
+// console.log('Front outline strokes:', frontOutlineStrokes.length);
+// console.log('Back outline fills:', backOutlineFills.length);
+// console.log('Back outline strokes:', backOutlineStrokes.length);
+// console.log('\nMuscle groups:');
 for (const key of keyOrder) {
   const data = muscleData[key];
   if (data) {

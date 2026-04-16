@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { PanelLeft } from 'lucide-react'
 import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
@@ -17,11 +17,6 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, userRole = 'PERSONAL' }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true)
-
-  useEffect(() => {
-    console.log('[bfit:DashboardLayout] Mounted')
-    return () => console.log('[bfit:DashboardLayout] Unmounted')
-  }, [])
 
   return (
     <div className="min-h-screen bg-background">

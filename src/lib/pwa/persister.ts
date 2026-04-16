@@ -12,7 +12,7 @@ export const idbPersister = createAsyncStoragePersister({
       const parsed = JSON.parse(value)
       const qs = parsed?.clientState?.queries?.length ?? 0
       const ms = parsed?.clientState?.mutations?.length ?? 0
-      console.log(`[bfit:persister] setItem: queries=${qs}, mutations=${ms}`)
+      // console.log(`[bfit:persister] setItem: queries=${qs}, mutations=${ms}`)
       if (qs === 0 && ms === 0) {
         // Check if IDB already has non-empty data for this key.
         // If yes, this is a dehydration bug — skip to preserve good data.

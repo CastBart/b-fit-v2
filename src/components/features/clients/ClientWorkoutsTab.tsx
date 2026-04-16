@@ -14,6 +14,7 @@ import { DeleteWorkoutDialog } from '@/components/features/workouts/DeleteWorkou
 import { useClientWorkouts } from '@/hooks/queries/useClientDetail'
 import { useDeleteWorkout, useDuplicateWorkout } from '@/hooks/mutations/useWorkoutMutations'
 import { getWorkoutById } from '@/server/actions/workouts'
+import { onlineManager } from '@tanstack/react-query'
 import { startWorkoutSession } from '@/lib/utils/session-navigation'
 import { useAppDispatch } from '@/store/hooks'
 import { useActiveSessionGuard } from '@/hooks/useActiveSessionGuard'
@@ -100,6 +101,10 @@ export function ClientWorkoutsTab({
   const handleStart = useCallback(
     (workoutId: string) => {
       if (startingWorkoutId) return
+      if (!onlineManager.isOnline()) {
+        toast.error('Cannot start a workout while offline')
+        return
+      }
       guardedStart(async () => {
         setStartingWorkoutId(workoutId)
         try {

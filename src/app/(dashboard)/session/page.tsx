@@ -43,6 +43,7 @@ import {
 import { clearSessionBackup } from '@/store/middleware/persistence'
 import { useQueryClient } from '@tanstack/react-query'
 import { commitCompletedSession } from '@/lib/pwa/commit-completed-session'
+import { onlineManager } from '@tanstack/react-query'
 import { getSessionPRs, getLatestHistoryBatch } from '@/server/actions/sessions'
 import { SessionStatus, type SaveSessionPayload } from '@/types/session'
 import { useSessionRecovery } from '@/hooks/useSessionRecovery'
@@ -134,7 +135,7 @@ export default function SessionPage() {
 
     const prefillAndLoad = async () => {
       // Fetch history for all exercises to pre-fill set values
-      if (exercises.length > 0) {
+      if (exercises.length > 0 && onlineManager.isOnline()) {
         const exerciseIds = [...new Set(exercises.map((e) => e.exerciseId))]
         try {
           const result = await getLatestHistoryBatch({ exerciseIds })
@@ -234,6 +235,7 @@ export default function SessionPage() {
 
   // Fetch PRs for a session and merge into drawer data
   const fetchAndAttachPRs = async (savedSessionId: string, drawerData: CompletedSessionData) => {
+    if (!onlineManager.isOnline()) return
     try {
       const prResult = await getSessionPRs(savedSessionId)
       if (prResult.success && prResult.data && prResult.data.length > 0) {
@@ -359,14 +361,16 @@ export default function SessionPage() {
 
     // Fetch history for new exercises to pre-fill set values
     let historyMap: Record<string, import('@/types/session').HistorySet[]> | undefined
-    try {
-      const exerciseIds = [...new Set(sessionExercises.map((e) => e.exerciseId))]
-      const result = await getLatestHistoryBatch({ exerciseIds })
-      if (result.success && result.data) {
-        historyMap = result.data
+    if (onlineManager.isOnline()) {
+      try {
+        const exerciseIds = [...new Set(sessionExercises.map((e) => e.exerciseId))]
+        const result = await getLatestHistoryBatch({ exerciseIds })
+        if (result.success && result.data) {
+          historyMap = result.data
+        }
+      } catch {
+        // Non-critical
       }
-    } catch {
-      // Non-critical
     }
 
     // Dispatch to Redux with history
@@ -425,13 +429,15 @@ export default function SessionPage() {
 
     // Fetch history for the replacement exercise
     let historySets: import('@/types/session').HistorySet[] | undefined
-    try {
-      const result = await getLatestHistoryBatch({ exerciseIds: [newExercise.id] })
-      if (result.success && result.data?.[newExercise.id]) {
-        historySets = result.data[newExercise.id]
+    if (onlineManager.isOnline()) {
+      try {
+        const result = await getLatestHistoryBatch({ exerciseIds: [newExercise.id] })
+        if (result.success && result.data?.[newExercise.id]) {
+          historySets = result.data[newExercise.id]
+        }
+      } catch {
+        // Non-critical
       }
-    } catch {
-      // Non-critical
     }
 
     dispatch(

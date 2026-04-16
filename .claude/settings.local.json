@@ -70,7 +70,13 @@
       "Bash(npm start:*)",
       "Bash(powershell:*)",
       "Bash(npx next:*)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" -X HEAD http://localhost:3000/api/auth/session)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" -X HEAD http://localhost:3000/api/auth/session)",
+      "Bash(cat .husky/pre-commit)",
+      "Bash(ls .husky/)",
+      "Bash(ls .prettierrc* .prettierignore)",
+      "Bash(cat .prettierrc)",
+      "Bash(cat .prettierrc.json)",
+      "Bash(cat .prettierrc.js)"
     ]
   },
   "enabledPlugins": {
