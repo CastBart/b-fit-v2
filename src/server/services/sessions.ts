@@ -15,6 +15,8 @@
  *     concern and lives in the action wrapper, not the service.
  */
 
+import { Prisma } from '@prisma/client'
+
 import { prisma } from '@/lib/db/prisma'
 import { saveSessionSchema } from '@/lib/validations/session'
 import { SessionStatus, type SaveSessionPayload } from '@/types/session'
@@ -23,89 +25,104 @@ import { checkAndAdvanceWeek } from '@/server/utils/plan-week-utils'
 async function persistSession(userId: string, payload: SaveSessionPayload) {
   const validated = saveSessionSchema.parse(payload)
 
-  return prisma.$transaction(async (tx) => {
-    const newSession = await tx.trainingSession.create({
-      data: {
-        id: validated.sessionId,
-        userId,
-        workoutId: validated.workoutId,
-        name: validated.workoutName,
-        notes: validated.sessionNotes,
-        status: validated.status,
-        startedAt: new Date(validated.startTime),
-        completedAt: new Date(validated.completeTime),
-        planId: validated.planId ?? null,
-        planDayId: validated.planDayId ?? null,
-      },
-    })
+  const existing = await prisma.trainingSession.findUnique({
+    where: { id: validated.sessionId },
+  })
+  if (existing) return existing
 
-    for (const exercise of validated.exercises) {
-      const sessionExercise = await tx.sessionExercise.create({
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const newSession = await tx.trainingSession.create({
         data: {
-          sessionId: newSession.id,
-          exerciseId: exercise.exerciseId,
-          instanceId: exercise.instanceId,
-          order: exercise.order,
-          groupId: exercise.groupId,
-          targetSets: exercise.targetSets,
-          targetReps: exercise.targetReps,
-          targetWeight: exercise.targetWeight,
-          targetRestSeconds: exercise.targetRestSeconds,
-          notes: exercise.notes,
+          id: validated.sessionId,
+          userId,
+          workoutId: validated.workoutId,
+          name: validated.workoutName,
+          notes: validated.sessionNotes,
+          status: validated.status,
+          startedAt: new Date(validated.startTime),
+          completedAt: new Date(validated.completeTime),
+          planId: validated.planId ?? null,
+          planDayId: validated.planDayId ?? null,
         },
       })
 
-      for (const set of exercise.sets) {
-        if (!set.isCompleted) continue
-        await tx.sessionSet.create({
+      for (const exercise of validated.exercises) {
+        const sessionExercise = await tx.sessionExercise.create({
           data: {
             sessionId: newSession.id,
-            sessionExerciseId: sessionExercise.id,
-            setNumber: set.setNumber,
-            weight: set.weight,
-            reps: set.reps,
-            duration: set.duration,
-            distance: set.distance,
-            counterWeight: set.counterWeight,
-            isCompleted: set.isCompleted,
-            completedAt: set.completedAt ? new Date(set.completedAt) : null,
-          },
-        })
-      }
-    }
-
-    if (validated.planId && validated.planDayId && validated.status === 'COMPLETED') {
-      const activeWeek = await tx.planWeek.findFirst({
-        where: { planId: validated.planId, status: 'IN_PROGRESS' },
-      })
-
-      if (activeWeek) {
-        const existing = await tx.planDayCompletion.findUnique({
-          where: {
-            planWeekId_planDayId: {
-              planWeekId: activeWeek.id,
-              planDayId: validated.planDayId,
-            },
+            exerciseId: exercise.exerciseId,
+            instanceId: exercise.instanceId,
+            order: exercise.order,
+            groupId: exercise.groupId,
+            targetSets: exercise.targetSets,
+            targetReps: exercise.targetReps,
+            targetWeight: exercise.targetWeight,
+            targetRestSeconds: exercise.targetRestSeconds,
+            notes: exercise.notes,
           },
         })
 
-        if (!existing) {
-          await tx.planDayCompletion.create({
+        for (const set of exercise.sets) {
+          if (!set.isCompleted) continue
+          await tx.sessionSet.create({
             data: {
-              planWeekId: activeWeek.id,
-              planDayId: validated.planDayId,
-              status: 'COMPLETED',
               sessionId: newSession.id,
+              sessionExerciseId: sessionExercise.id,
+              setNumber: set.setNumber,
+              weight: set.weight,
+              reps: set.reps,
+              duration: set.duration,
+              distance: set.distance,
+              counterWeight: set.counterWeight,
+              isCompleted: set.isCompleted,
+              completedAt: set.completedAt ? new Date(set.completedAt) : null,
+            },
+          })
+        }
+      }
+
+      if (validated.planId && validated.planDayId && validated.status === 'COMPLETED') {
+        const activeWeek = await tx.planWeek.findFirst({
+          where: { planId: validated.planId, status: 'IN_PROGRESS' },
+        })
+
+        if (activeWeek) {
+          const existing = await tx.planDayCompletion.findUnique({
+            where: {
+              planWeekId_planDayId: {
+                planWeekId: activeWeek.id,
+                planDayId: validated.planDayId,
+              },
             },
           })
 
-          await checkAndAdvanceWeek(tx, validated.planId, activeWeek.id)
+          if (!existing) {
+            await tx.planDayCompletion.create({
+              data: {
+                planWeekId: activeWeek.id,
+                planDayId: validated.planDayId,
+                status: 'COMPLETED',
+                sessionId: newSession.id,
+              },
+            })
+
+            await checkAndAdvanceWeek(tx, validated.planId, activeWeek.id)
+          }
         }
       }
-    }
 
-    return newSession
-  })
+      return newSession
+    })
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      const raced = await prisma.trainingSession.findUnique({
+        where: { id: validated.sessionId },
+      })
+      if (raced) return raced
+    }
+    throw error
+  }
 }
 
 export const sessionService = {

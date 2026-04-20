@@ -34,8 +34,10 @@ export const idMap = {
 
   async set(tempId: string, realId: string): Promise<void> {
     const m = await ensureMirror()
+
     m[tempId] = realId
     await flush()
+
     const pending = waiters.get(tempId)
     if (pending) {
       waiters.delete(tempId)
@@ -43,13 +45,14 @@ export const idMap = {
     }
   },
 
-  // Resolve immediately if the mapping already exists, otherwise wait
-  // for it to land. No timeout — the caller is a mutation resume path
-  // that is itself bounded by the user's session lifetime.
   async waitFor(tempId: string): Promise<string> {
     const m = await ensureMirror()
     const existing = m[tempId]
-    if (existing) return existing
+
+    if (existing) {
+      return existing
+    }
+
     return new Promise<string>((resolve) => {
       const list = waiters.get(tempId) ?? []
       list.push(resolve)

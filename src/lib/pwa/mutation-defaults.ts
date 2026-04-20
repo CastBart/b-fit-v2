@@ -47,6 +47,27 @@ async function postSessionAction(
   return { success: true, data: json.data }
 }
 
+// Rewrite any tmp_* exerciseIds in the frozen payload to the real ids
+// assigned by the server. Session mutations are queued with whatever ids
+// existed at complete-time (often temp ids from offline-created exercises),
+// so on resume we must block on idMap until the dependent exercise-create
+// mutations have landed. Mirrors the existing guard in exercises/update|delete.
+async function resolveSessionPayloadIds(payload: SaveSessionPayload): Promise<SaveSessionPayload> {
+  const exercises = await Promise.all(
+    payload.exercises.map(async (ex) => {
+      if (!isTempId(ex.exerciseId)) {
+        return ex
+      }
+
+      const realId = await idMap.waitFor(ex.exerciseId)
+
+      return { ...ex, exerciseId: realId }
+    })
+  )
+
+  return { ...payload, exercises }
+}
+
 function effectiveStatus(action: CommitAction, payload: SaveSessionPayload): SessionStatus {
   if (action === 'complete') return SessionStatus.COMPLETED
   if (action === 'abandon') return SessionStatus.ABANDONED
@@ -105,8 +126,9 @@ type SessionMutationContext = {
 function registerSessionMutation(action: CommitAction) {
   queryClient.setMutationDefaults(['sessions', action], {
     mutationFn: async ({ payload }: SessionVariables) => {
-      const result = await postSessionAction(action, payload)
-      return { sessionId: result.data, payload }
+      const resolved = await resolveSessionPayloadIds(payload)
+      const result = await postSessionAction(action, resolved)
+      return { sessionId: result.data, payload: resolved }
     },
     onMutate: async ({ payload }: SessionVariables) => {
       await queryClient.cancelQueries({ queryKey: ['sessions'] })
@@ -205,14 +227,13 @@ function restoreExerciseListSnapshot(prev: ExerciseListResponse | undefined): vo
 
 queryClient.setMutationDefaults(['exercises', 'create'], {
   mutationFn: async ({ input, tempId }: CreateExerciseVariables) => {
-    // console.log('[bfit:createExercise] mutationFn start', { tempId, name: input.name })
     const res = await fetch('/api/offline/exercises', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(input),
+      body: JSON.stringify({ ...input, clientId: tempId }),
       credentials: 'same-origin',
     })
-    // console.log('[bfit:createExercise] response received', { tempId, status: res.status })
+
     const json = (await res.json().catch(() => null)) as {
       success: boolean
       data?: Exercise
@@ -248,10 +269,7 @@ queryClient.setMutationDefaults(['exercises', 'create'], {
     if (ctx) restoreExerciseListSnapshot(ctx.prev)
   },
   onSuccess: async ({ tempId, real }: { tempId: string; real: Exercise }) => {
-    // console.log('[bfit:createExercise] onSuccess', { tempId, realId: real.id })
     await idMap.set(tempId, real.id)
-    // Centralized cache rewrite — lists, detail, history, Redux session
-    // refs (via emitter), builder local state (via emitter).
     rewriteExerciseId(queryClient, tempId, real)
   },
   onSettled: () => {
