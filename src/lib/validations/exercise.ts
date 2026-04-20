@@ -25,6 +25,7 @@ export const createExerciseSchema = z.object({
   exerciseType: z.nativeEnum(ExerciseType),
   metricType: z.nativeEnum(MetricType),
   instructions: z.array(z.string().min(1, 'Each instruction must not be empty')).optional(),
+  clientId: z.string().optional(),
 })
 
 export type CreateExerciseInput = z.infer<typeof createExerciseSchema>

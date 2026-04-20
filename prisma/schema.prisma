@@ -243,6 +243,9 @@ model Exercise {
   createdById String?
   createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
 
+  // Idempotency key for offline create retries (client-generated tempId)
+  clientId String? @unique
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

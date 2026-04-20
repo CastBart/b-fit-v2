@@ -11,6 +11,8 @@
  *     transports surface them as 4xx / error ActionResponses.
  */
 
+import { Prisma } from '@prisma/client'
+
 import { prisma } from '@/lib/db/prisma'
 import {
   createExerciseSchema,
@@ -43,13 +45,33 @@ export class DefaultExerciseImmutableError extends Error {
 export const exerciseService = {
   async create(userId: string, input: CreateExerciseInput) {
     const validated = createExerciseSchema.parse(input)
-    return prisma.exercise.create({
-      data: {
-        ...validated,
-        createdById: userId,
-        instructions: validated.instructions || [],
-      },
-    })
+    const { clientId, ...rest } = validated
+
+    if (clientId) {
+      const existing = await prisma.exercise.findUnique({ where: { clientId } })
+      if (existing) return existing
+    }
+
+    try {
+      return await prisma.exercise.create({
+        data: {
+          ...rest,
+          createdById: userId,
+          instructions: rest.instructions || [],
+          clientId: clientId ?? null,
+        },
+      })
+    } catch (error) {
+      if (
+        clientId &&
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        const existing = await prisma.exercise.findUnique({ where: { clientId } })
+        if (existing) return existing
+      }
+      throw error
+    }
   },
 
   async update(userId: string, id: string, input: UpdateExerciseInput) {
