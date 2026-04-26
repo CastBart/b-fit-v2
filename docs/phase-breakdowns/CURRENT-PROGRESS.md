@@ -1,10 +1,83 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-03-13
-**Current Phase**: Phase 5 - Advanced Features (Organisation)
-**Recently Completed**: ScrollArea Fix — Restored Shadcn default + Created VirtualizedScrollArea
-**Next Tasks**: Organisation Feature — Chunk O2
-**Branch**: `development`
+**Last Updated**: 2026-04-26
+**Current Phase**: Offline-First PWA — PR-series follow-up to Block 7
+**Recently Completed**: PR1.5 — Read-path completeness for detail routes + active-plan all-weeks seeding
+**Next Tasks**: PR2 — Workout offline mutations (after PR1.5 has been running for a few days; see roadmap PR2 in `i-need-you-to-cheeky-widget-execution.md`)
+**Branch**: `feature/cache-app-shell`
+
+---
+
+## PR1.5 — Read-path completeness for detail routes (2026-04-26) ✅
+
+### Problem
+
+After PR1, every sidebar route was offline-reachable but tapping a workout or plan card from a list still produced an empty detail page — `['workout', id]` and `['plan', id]` were never proactively populated. PR1 testing also surfaced an `ActivePlanSection` blink-and-disappear bug rooted in `useActivePlanDashboard` switching its queryKey from `'active'` to a numbered week immediately on mount, where the new key had no cached data.
+
+### Solution
+
+1. **`getAllActivePlanDashboardWeeks()`** — bulk variant of `getActivePlanDashboard`. One round-trip returns one full `ActivePlanDashboard` entry per `PlanWeek` record. Single batched completions query grouped by `planWeekId`. Plan + weeks + days fetched once and shared across entries.
+2. **`syncTopDetails()`** — top 10 workouts (recency-by-`TrainingSession.workoutId` via `groupBy`, fallback to `updatedAt`) + top 5 plans (active plan guaranteed first, server-side asserted). One batched `findMany` per entity with the same include shape as `getWorkoutById` / `getPlanById`.
+3. **`SyncPayload` rename** — `activePlanDashboard: ActivePlanDashboardResponse | null` → `activePlanDashboardAllWeeks: ActivePlanDashboard[]`. Empty array is the canonical "no active plan" signal.
+4. **`usePrefetchCriticalData` seeding update** — loops over all weeks to seed every `['activePlanDashboard', weekNumber]` key plus the `'active'` alias. When the array is empty, calls `queryClient.removeQueries({ queryKey: ['activePlanDashboard'] })` so deactivation propagates offline. After warming, fires `void syncTopDetails()` and seeds `['workout', id]` / `['plan', id]`. Failures are non-blocking; `hasSyncedRef` stays `true`.
+5. **`useActivePlanDashboard` safety net** — added `placeholderData: keepPreviousData` per the user's explicit request as a defensive net even with the per-week seeding in place.
+
+Detailed write-up + audit findings + blockers in `docs/offline/implementation-blocks.md` ("PR1.5 — Read-path completeness for detail routes + active-plan all-weeks seeding").
+
+### Modified Files
+
+```
+src/server/actions/plans.ts                - getAllActivePlanDashboardWeeks() added
+src/server/actions/sync.ts                 - syncTopDetails() added; syncAllUserData uses bulk weeks action
+src/types/sync.ts                          - SyncPayload.activePlanDashboardAllWeeks; TopDetailsPayload added
+src/hooks/usePrefetchCriticalData.ts       - all-weeks seeding loop, removeQueries on empty,
+                                             fire-and-forget syncTopDetails seeding
+src/hooks/queries/useActivePlanDashboard.ts - placeholderData: keepPreviousData safety net
+docs/offline/implementation-blocks.md      - PR1.5 status section
+docs/phase-breakdowns/CURRENT-PROGRESS.md  - This entry
+```
+
+### Carry-overs to PR2
+
+- `WorkoutWithDetails` / `PlanWithDetails` declared types vs runtime `createdBy.select` mismatch is a pre-existing tech-debt the new code mirrors via `as unknown as` casts — flagged for a future hygiene pass.
+- Caps at 10 workouts + 5 plans; can grow to 25/10 once payload size is empirically measured (200 KB p95 budget).
+- PR3's plan-mutation work must invalidate the entire `['activePlanDashboard']` key root (not just `'active'`) to avoid stale week-keyed entries lingering after activate/deactivate.
+- Active-plan invariant is server-asserted: `syncTopDetails` throws if the active plan is missing from its result. PR3's optimistic-update paths must keep this contract intact.
+
+---
+
+## PR1 — Top-Level Route Warming for Offline Navigation (2026-04-26) ✅
+
+### Problem
+
+After login, only `/dashboard` was offline-reachable because the Serwist `NetworkFirst` RSC cache only fills on actual navigation. A user who logged in and never clicked a sidebar link before going offline would hit `/~offline` for every route. Discovered during the Block 7 runtime sweep.
+
+### Solution
+
+Fire-and-forget RSC warm-up of the seven top-level sidebar routes after a successful sync. Three subtle defects had to be fixed together to deliver the outcome:
+
+1. **Vary-header mismatch** — Cache API's default Vary-aware match couldn't find warmed entries on real navigations. Added `matchOptions: { ignoreVary: true }` to both RSC `NetworkFirst` handlers.
+2. **First-install SW race** — Warming fetches dispatched before the SW had claimed the document, bypassing the cache entirely. Added `waitForServiceWorkerControl()` (5 s `ready` + 2 s `controllerchange` timeouts) that gates `warmTopLevelRoutes()`.
+3. **Soft-nav login left `useSession()` stuck on `unauthenticated`** — `SessionProvider` only consumes its `session` prop as initial state and doesn't auto-refetch. Added a path-aware one-shot effect that calls `useSession().update()` once when the user is on a protected route while still showing as unauthenticated.
+
+Detailed write-up in `docs/offline/implementation-blocks.md` ("PR1 — Top-Level Route Warming for Offline Navigation").
+
+### Modified Files
+
+```
+src/app/sw.ts                              - matchOptions: { ignoreVary: true } on both RSC NetworkFirst handlers
+src/hooks/usePrefetchCriticalData.ts       - WARM_ROUTES, waitForServiceWorkerControl, warmTopLevelRoutes,
+                                             useSession status gate, path-aware update() nudge,
+                                             [PWA warm] diagnostic logs
+docs/offline/implementation-blocks.md      - PR1 status section
+docs/phase-breakdowns/CURRENT-PROGRESS.md  - This entry
+```
+
+### Carry-overs to PR1.5
+
+- `ActivePlanSection` "blink and disappear" on first dashboard load (pre-existing; surfaced during PR1 testing).
+- Detail routes (`/workouts/[id]`, `/plans/[id]`, etc.) are not warmed — visited-page caching only.
+- Whether to derive `WARM_ROUTES` dynamically from `nav-items.ts` instead of keeping it static.
 
 ---
 
