@@ -63,6 +63,10 @@ const serwist = new Serwist({
         !pathname.startsWith('/api/'),
       handler: new NetworkFirst({
         cacheName: PAGES_CACHE_NAME.rscPrefetch,
+        // Next.js RSC responses set `Vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Url`.
+        // Without ignoreVary, offline navigations miss cached entries because real-nav requests
+        // carry a Next-Router-State-Tree value the warming/prefetch fetches don't.
+        matchOptions: { ignoreVary: true },
         plugins: [
           stripRscPlugin,
           new ExpirationPlugin({
@@ -79,6 +83,8 @@ const serwist = new Serwist({
         request.headers.get('RSC') === '1' && sameOrigin && !pathname.startsWith('/api/'),
       handler: new NetworkFirst({
         cacheName: PAGES_CACHE_NAME.rsc,
+        // See note on the prefetch handler above — same Vary-mismatch problem applies here.
+        matchOptions: { ignoreVary: true },
         plugins: [
           stripRscPlugin,
           new ExpirationPlugin({
