@@ -163,6 +163,61 @@ export const syncWorkoutExercisesSchema = z.object({
 })
 
 // ============================================================================
+// Offline Route Schemas
+// ============================================================================
+//
+// Used by /api/offline/workouts and /api/offline/workouts/exercises.
+// Differences from the online schemas:
+//   - `clientId` is a free-form string (carries the client tempId).
+//   - Nested `clientId` allowed on each exercise for replay-safe upsert.
+//   - Optional nested `exercises` array on create so a single POST can
+//     seed a workout + its initial exercises (mirrors how syncExercises
+//     replays).
+//
+// `id` / `workoutId` / `exerciseId` / `workoutExerciseId` are still
+// expected to be real server cuids — the client mutationFn resolves
+// any tmp_* via idMap.waitFor before calling these routes.
+
+const nestedOfflineExerciseSchema = z.object({
+  workoutExerciseId: z.string().cuid().optional(),
+  clientId: z.string().min(1).optional(),
+  exerciseId: z.string().cuid('Invalid exercise ID format'),
+  order: z.number().int().min(0, 'Order must be 0 or greater'),
+  sets: z.number().int().min(1, 'Sets must be at least 1').max(20, 'Sets cannot exceed 20'),
+  reps: z.number().int().min(1).max(999).optional().nullable(),
+  weight: z.number().min(0).max(9999).optional().nullable(),
+  restSeconds: z.number().int().min(0).max(600).default(60),
+  notes: z.string().max(500).optional().nullable(),
+  groupId: z.string().optional().nullable(),
+})
+
+export const offlineWorkoutCreateSchema = z.object({
+  clientId: z.string().min(1).optional(),
+  name: z.string().min(1, 'Workout name is required').max(100),
+  description: z.string().max(500).optional(),
+  exercises: z.array(nestedOfflineExerciseSchema).optional(),
+})
+
+export const offlineWorkoutUpdateSchema = z.object({
+  id: z.string().cuid('Invalid workout ID format'),
+  input: updateWorkoutSchema,
+})
+
+export const offlineWorkoutDeleteSchema = z.object({
+  id: z.string().cuid('Invalid workout ID format'),
+})
+
+export const offlineSyncWorkoutExercisesSchema = z.object({
+  workoutId: z.string().cuid('Invalid workout ID format'),
+  exercises: z.array(nestedOfflineExerciseSchema),
+})
+
+export type OfflineWorkoutCreateInput = z.infer<typeof offlineWorkoutCreateSchema>
+export type OfflineWorkoutUpdateInput = z.infer<typeof offlineWorkoutUpdateSchema>
+export type OfflineWorkoutDeleteInput = z.infer<typeof offlineWorkoutDeleteSchema>
+export type OfflineSyncWorkoutExercisesInput = z.infer<typeof offlineSyncWorkoutExercisesSchema>
+
+// ============================================================================
 // Type Inference
 // ============================================================================
 

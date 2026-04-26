@@ -264,9 +264,16 @@ queryClient.setMutationDefaults(['exercises', 'create'], {
 
     return { prev } satisfies ExerciseListContext
   },
-  onError: (_err, _vars, context) => {
+  onError: (err, vars, context) => {
     const ctx = context as ExerciseListContext | undefined
     if (ctx) restoreExerciseListSnapshot(ctx.prev)
+    // Unblock dependent mutations (e.g. workout-create with this exercise
+    // referenced as a tmp_*) so they fail-fast instead of hanging on
+    // idMap.waitFor forever. Only fires after retries are exhausted.
+    const v = vars as CreateExerciseVariables | undefined
+    if (v?.tempId) {
+      idMap.reject(v.tempId, err instanceof Error ? err : new Error(String(err)))
+    }
   },
   onSuccess: async ({ tempId, real }: { tempId: string; real: Exercise }) => {
     await idMap.set(tempId, real.id)
@@ -368,6 +375,509 @@ queryClient.setMutationDefaults(['exercises', 'delete'], {
   onSettled: () => {
     if (onlineManager.isOnline()) {
       queryClient.invalidateQueries({ queryKey: ['exercises'] })
+    }
+  },
+})
+
+// ============================================================================
+// Workout mutations
+// ============================================================================
+
+import type { CreateWorkoutInput, UpdateWorkoutInput } from '@/lib/validations/workout'
+import { rewriteWorkoutId } from './rewrite-workout-id'
+
+// Snapshot of a workout exercise in the shape the detail page renders.
+// Used by sync-exercises for optimistic updates AND mapped down to the
+// wire format inside mutationFn.
+export type WorkoutExerciseSnapshot = {
+  id: string // existing workoutExerciseId (real cuid) OR tmp_* for new
+  exerciseId: string // could be tmp_*
+  order: number
+  sets: number
+  reps?: number | null
+  weight?: number | null
+  restSeconds: number
+  notes?: string | null
+  groupId?: string | null
+  exercise: Exercise // populated for optimistic detail render
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+type WorkoutCreateVariables = {
+  input: CreateWorkoutInput
+  tempId: string
+  userId: string // for optimistic createdBy.id (UI ownership checks)
+  exercises?: WorkoutExerciseSnapshot[]
+}
+
+type WorkoutUpdateVariables = {
+  id: string
+  input: UpdateWorkoutInput
+}
+
+type WorkoutDeleteVariables = { id: string }
+
+type WorkoutSyncExercisesVariables = {
+  workoutId: string
+  exercises: WorkoutExerciseSnapshot[]
+}
+
+// Cache shapes (loose — consumers project as needed)
+type WorkoutListRow = {
+  id: string
+  name: string
+  description: string | null
+  createdById: string
+  isTemplate: boolean
+  copiedFromId: string | null
+  createdAt: Date
+  updatedAt: Date
+  createdBy: { id: string; name: string | null; email: string | null }
+  exercises: Array<{
+    id: string
+    exercise: { primaryMuscleGroup: string; secondaryMuscleGroups: string[] }
+  }>
+  copiedFrom: { id: string; name: string } | null
+  exerciseCount: number
+  _pending?: boolean
+}
+
+type WorkoutsListShape = {
+  workouts: WorkoutListRow[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+type WorkoutDetailShape = {
+  id: string
+  name: string
+  description: string | null
+  createdById: string
+  isTemplate: boolean
+  copiedFromId: string | null
+  createdAt: Date
+  updatedAt: Date
+  createdBy: { id: string; name: string | null; email: string | null }
+  exercises: Array<
+    WorkoutExerciseSnapshot & {
+      workoutId: string
+    }
+  >
+  copiedFrom: { id: string; name: string } | null
+  _pending?: boolean
+}
+
+const WORKOUTS_ALL_KEY = ['workouts', 'all'] as const
+
+function snapshotWorkoutsList(): WorkoutsListShape | undefined {
+  return queryClient.getQueryData<WorkoutsListShape>(WORKOUTS_ALL_KEY)
+}
+
+function snapshotWorkoutDetail(id: string): WorkoutDetailShape | undefined {
+  return queryClient.getQueryData<WorkoutDetailShape>(['workout', id])
+}
+
+function buildOptimisticListRow(vars: WorkoutCreateVariables): WorkoutListRow {
+  const now = new Date()
+  return {
+    id: vars.tempId,
+    name: vars.input.name,
+    description: vars.input.description ?? null,
+    createdById: vars.userId,
+    isTemplate: true,
+    copiedFromId: null,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: { id: vars.userId, name: null, email: null },
+    exercises: (vars.exercises ?? []).map((e) => ({
+      id: e.id,
+      exercise: {
+        primaryMuscleGroup: e.exercise.primaryMuscleGroup as unknown as string,
+        secondaryMuscleGroups: e.exercise.secondaryMuscleGroups as unknown as string[],
+      },
+    })),
+    copiedFrom: null,
+    exerciseCount: vars.exercises?.length ?? 0,
+    _pending: true,
+  }
+}
+
+function buildOptimisticDetail(vars: WorkoutCreateVariables): WorkoutDetailShape {
+  const now = new Date()
+  return {
+    id: vars.tempId,
+    name: vars.input.name,
+    description: vars.input.description ?? null,
+    createdById: vars.userId,
+    isTemplate: true,
+    copiedFromId: null,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: { id: vars.userId, name: null, email: null },
+    exercises: (vars.exercises ?? []).map((e) => ({
+      ...e,
+      workoutId: vars.tempId,
+    })),
+    copiedFrom: null,
+    _pending: true,
+  }
+}
+
+// Map a snapshot exercise array to the wire format expected by the
+// /api/offline/workouts/exercises route. Resolves any tmp_* exerciseIds
+// via idMap before sending.
+async function snapshotsToWireExercises(exercises: WorkoutExerciseSnapshot[]): Promise<
+  Array<{
+    workoutExerciseId?: string
+    clientId?: string
+    exerciseId: string
+    order: number
+    sets: number
+    reps?: number | null
+    weight?: number | null
+    restSeconds: number
+    notes?: string | null
+    groupId?: string | null
+  }>
+> {
+  return Promise.all(
+    exercises.map(async (e) => {
+      const exerciseId = isTempId(e.exerciseId) ? await idMap.waitFor(e.exerciseId) : e.exerciseId
+      const isNew = isTempId(e.id)
+      return {
+        workoutExerciseId: isNew ? undefined : e.id,
+        clientId: isNew ? e.id : undefined,
+        exerciseId,
+        order: e.order,
+        sets: e.sets,
+        reps: e.reps ?? null,
+        weight: e.weight ?? null,
+        restSeconds: e.restSeconds,
+        notes: e.notes ?? null,
+        groupId: e.groupId ?? null,
+      }
+    })
+  )
+}
+
+type WorkoutMutationContext = {
+  prevList: WorkoutsListShape | undefined
+  prevDetailById: Record<string, WorkoutDetailShape | undefined>
+}
+
+queryClient.setMutationDefaults(['workouts', 'create'], {
+  mutationFn: async (vars: WorkoutCreateVariables) => {
+    const wireExercises = vars.exercises?.length
+      ? await snapshotsToWireExercises(vars.exercises)
+      : undefined
+    const res = await fetch('/api/offline/workouts', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        clientId: vars.tempId,
+        name: vars.input.name,
+        description: vars.input.description,
+        exercises: wireExercises,
+      }),
+      credentials: 'same-origin',
+    })
+    const json = (await res.json().catch(() => null)) as {
+      success: boolean
+      data?: { id: string } & Record<string, unknown>
+      error?: string
+    } | null
+    if (!res.ok || !json?.success || !json.data) {
+      throw new Error(json?.error || `POST /api/offline/workouts failed: ${res.status}`)
+    }
+    return { tempId: vars.tempId, real: json.data }
+  },
+  onMutate: async (vars: WorkoutCreateVariables) => {
+    await queryClient.cancelQueries({ queryKey: ['workouts'] })
+    await queryClient.cancelQueries({ queryKey: ['workout', vars.tempId] })
+
+    const prevList = snapshotWorkoutsList()
+    const optimisticRow = buildOptimisticListRow(vars)
+
+    queryClient.setQueryData<WorkoutsListShape>(WORKOUTS_ALL_KEY, (old) => {
+      if (!old || !Array.isArray(old.workouts)) return old
+      return {
+        ...old,
+        workouts: [optimisticRow, ...old.workouts],
+        total: old.total + 1,
+      }
+    })
+
+    queryClient.setQueryData(['workout', vars.tempId], buildOptimisticDetail(vars))
+
+    return {
+      prevList,
+      prevDetailById: { [vars.tempId]: undefined },
+    } satisfies WorkoutMutationContext
+  },
+  onError: (err, vars, context) => {
+    const ctx = context as WorkoutMutationContext | undefined
+    if (ctx?.prevList !== undefined) {
+      queryClient.setQueryData(WORKOUTS_ALL_KEY, ctx.prevList)
+    }
+    if (ctx) {
+      for (const [id, prev] of Object.entries(ctx.prevDetailById)) {
+        if (prev === undefined) {
+          queryClient.removeQueries({ queryKey: ['workout', id] })
+        } else {
+          queryClient.setQueryData(['workout', id], prev)
+        }
+      }
+    }
+    // Unblock dependent mutations (e.g. sync-exercises waiting on this
+    // workout's tempId via idMap.waitFor) so they fail-fast.
+    const v = vars as WorkoutCreateVariables | undefined
+    if (v?.tempId) {
+      idMap.reject(v.tempId, err instanceof Error ? err : new Error(String(err)))
+    }
+  },
+  onSuccess: async ({
+    tempId,
+    real,
+  }: {
+    tempId: string
+    real: { id: string } & Record<string, unknown>
+  }) => {
+    await idMap.set(tempId, real.id)
+    rewriteWorkoutId(queryClient, tempId, real)
+  },
+  onSettled: (_data, _err, vars) => {
+    if (onlineManager.isOnline()) {
+      queryClient.invalidateQueries({ queryKey: ['workouts'] })
+      const v = vars as WorkoutCreateVariables | undefined
+      if (v?.tempId) {
+        queryClient.invalidateQueries({ queryKey: ['workout', v.tempId] })
+      }
+    }
+  },
+})
+
+queryClient.setMutationDefaults(['workouts', 'update'], {
+  mutationFn: async ({ id, input }: WorkoutUpdateVariables) => {
+    const targetId = isTempId(id) ? await idMap.waitFor(id) : id
+    const res = await fetch('/api/offline/workouts', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id: targetId, input }),
+      credentials: 'same-origin',
+    })
+    const json = (await res.json().catch(() => null)) as {
+      success: boolean
+      data?: { id: string } & Record<string, unknown>
+      error?: string
+    } | null
+    if (!res.ok || !json?.success || !json.data) {
+      throw new Error(json?.error || `PATCH /api/offline/workouts failed: ${res.status}`)
+    }
+    return json.data
+  },
+  onMutate: async ({ id, input }: WorkoutUpdateVariables) => {
+    await queryClient.cancelQueries({ queryKey: ['workouts'] })
+    await queryClient.cancelQueries({ queryKey: ['workout', id] })
+
+    const prevList = snapshotWorkoutsList()
+    const prevDetail = snapshotWorkoutDetail(id)
+
+    queryClient.setQueryData<WorkoutsListShape>(WORKOUTS_ALL_KEY, (old) => {
+      if (!old || !Array.isArray(old.workouts)) return old
+      return {
+        ...old,
+        workouts: old.workouts.map((w) =>
+          w.id === id ? { ...w, ...input, updatedAt: new Date() } : w
+        ),
+      }
+    })
+
+    if (prevDetail) {
+      queryClient.setQueryData<WorkoutDetailShape>(['workout', id], {
+        ...prevDetail,
+        ...input,
+        updatedAt: new Date(),
+      })
+    }
+
+    return {
+      prevList,
+      prevDetailById: { [id]: prevDetail },
+    } satisfies WorkoutMutationContext
+  },
+  onError: (_err, _vars, context) => {
+    const ctx = context as WorkoutMutationContext | undefined
+    if (ctx?.prevList !== undefined) {
+      queryClient.setQueryData(WORKOUTS_ALL_KEY, ctx.prevList)
+    }
+    if (ctx) {
+      for (const [id, prev] of Object.entries(ctx.prevDetailById)) {
+        if (prev === undefined) {
+          queryClient.removeQueries({ queryKey: ['workout', id] })
+        } else {
+          queryClient.setQueryData(['workout', id], prev)
+        }
+      }
+    }
+  },
+  onSettled: (_data, _err, variables) => {
+    if (onlineManager.isOnline()) {
+      queryClient.invalidateQueries({ queryKey: ['workouts'] })
+      if (variables && !isTempId(variables.id)) {
+        queryClient.invalidateQueries({ queryKey: ['workout', variables.id] })
+      }
+    }
+  },
+})
+
+queryClient.setMutationDefaults(['workouts', 'delete'], {
+  mutationFn: async ({ id }: WorkoutDeleteVariables) => {
+    const targetId = isTempId(id) ? await idMap.waitFor(id) : id
+    const res = await fetch('/api/offline/workouts', {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id: targetId }),
+      credentials: 'same-origin',
+    })
+    const json = (await res.json().catch(() => null)) as {
+      success: boolean
+      error?: string
+    } | null
+    if (!res.ok || !json?.success) {
+      throw new Error(json?.error || `DELETE /api/offline/workouts failed: ${res.status}`)
+    }
+    return { id: targetId }
+  },
+  onMutate: async ({ id }: WorkoutDeleteVariables) => {
+    await queryClient.cancelQueries({ queryKey: ['workouts'] })
+    await queryClient.cancelQueries({ queryKey: ['workout', id] })
+
+    const prevList = snapshotWorkoutsList()
+    const prevDetail = snapshotWorkoutDetail(id)
+
+    queryClient.setQueryData<WorkoutsListShape>(WORKOUTS_ALL_KEY, (old) => {
+      if (!old || !Array.isArray(old.workouts)) return old
+      const filtered = old.workouts.filter((w) => w.id !== id)
+      if (filtered.length === old.workouts.length) return old
+      return { ...old, workouts: filtered, total: Math.max(0, old.total - 1) }
+    })
+
+    return {
+      prevList,
+      prevDetailById: { [id]: prevDetail },
+    } satisfies WorkoutMutationContext
+  },
+  onError: (_err, _vars, context) => {
+    const ctx = context as WorkoutMutationContext | undefined
+    if (ctx?.prevList !== undefined) {
+      queryClient.setQueryData(WORKOUTS_ALL_KEY, ctx.prevList)
+    }
+    if (ctx) {
+      for (const [id, prev] of Object.entries(ctx.prevDetailById)) {
+        if (prev !== undefined) {
+          queryClient.setQueryData(['workout', id], prev)
+        }
+      }
+    }
+  },
+  onSuccess: ({ id }) => {
+    queryClient.removeQueries({ queryKey: ['workout', id] })
+  },
+  onSettled: () => {
+    if (onlineManager.isOnline()) {
+      queryClient.invalidateQueries({ queryKey: ['workouts'] })
+      queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
+    }
+  },
+})
+
+queryClient.setMutationDefaults(['workouts', 'sync-exercises'], {
+  mutationFn: async ({ workoutId, exercises }: WorkoutSyncExercisesVariables) => {
+    const targetWorkoutId = isTempId(workoutId) ? await idMap.waitFor(workoutId) : workoutId
+    const wireExercises = await snapshotsToWireExercises(exercises)
+    const res = await fetch('/api/offline/workouts/exercises', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ workoutId: targetWorkoutId, exercises: wireExercises }),
+      credentials: 'same-origin',
+    })
+    const json = (await res.json().catch(() => null)) as {
+      success: boolean
+      data?: { addedCount: number; updatedCount: number; deletedCount: number }
+      error?: string
+    } | null
+    if (!res.ok || !json?.success) {
+      throw new Error(json?.error || `POST /api/offline/workouts/exercises failed: ${res.status}`)
+    }
+    return json.data
+  },
+  onMutate: async ({ workoutId, exercises }: WorkoutSyncExercisesVariables) => {
+    await queryClient.cancelQueries({ queryKey: ['workouts'] })
+    await queryClient.cancelQueries({ queryKey: ['workout', workoutId] })
+
+    const prevList = snapshotWorkoutsList()
+    const prevDetail = snapshotWorkoutDetail(workoutId)
+
+    // Update list row's exerciseCount + minimal exercises projection
+    queryClient.setQueryData<WorkoutsListShape>(WORKOUTS_ALL_KEY, (old) => {
+      if (!old || !Array.isArray(old.workouts)) return old
+      return {
+        ...old,
+        workouts: old.workouts.map((w) =>
+          w.id === workoutId
+            ? {
+                ...w,
+                exerciseCount: exercises.length,
+                exercises: exercises.map((e) => ({
+                  id: e.id,
+                  exercise: {
+                    primaryMuscleGroup: e.exercise.primaryMuscleGroup as unknown as string,
+                    secondaryMuscleGroups: e.exercise.secondaryMuscleGroups as unknown as string[],
+                  },
+                })),
+                updatedAt: new Date(),
+              }
+            : w
+        ),
+      }
+    })
+
+    // Replace detail's exercises array
+    if (prevDetail) {
+      queryClient.setQueryData<WorkoutDetailShape>(['workout', workoutId], {
+        ...prevDetail,
+        exercises: exercises.map((e) => ({ ...e, workoutId })),
+        updatedAt: new Date(),
+      })
+    }
+
+    return {
+      prevList,
+      prevDetailById: { [workoutId]: prevDetail },
+    } satisfies WorkoutMutationContext
+  },
+  onError: (_err, _vars, context) => {
+    const ctx = context as WorkoutMutationContext | undefined
+    if (ctx?.prevList !== undefined) {
+      queryClient.setQueryData(WORKOUTS_ALL_KEY, ctx.prevList)
+    }
+    if (ctx) {
+      for (const [id, prev] of Object.entries(ctx.prevDetailById)) {
+        if (prev !== undefined) {
+          queryClient.setQueryData(['workout', id], prev)
+        }
+      }
+    }
+  },
+  onSettled: (_data, _err, variables) => {
+    if (onlineManager.isOnline()) {
+      queryClient.invalidateQueries({ queryKey: ['workouts'] })
+      if (variables && !isTempId(variables.workoutId)) {
+        queryClient.invalidateQueries({ queryKey: ['workout', variables.workoutId] })
+      }
     }
   },
 })

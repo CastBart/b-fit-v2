@@ -134,9 +134,7 @@ export function ClientWorkoutsTab({
 
   const handleDeleteConfirm = useCallback(() => {
     if (!deleteTarget) return
-    deleteWorkout.mutate(deleteTarget.id, {
-      onSuccess: () => setDeleteTarget(null),
-    })
+    deleteWorkout.mutate({ id: deleteTarget.id }, { onSuccess: () => setDeleteTarget(null) })
   }, [deleteTarget, deleteWorkout])
 
   const handleDuplicate = useCallback(

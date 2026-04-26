@@ -67,7 +67,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   // Handle delete confirmation
   const handleDelete = async () => {
     try {
-      await deleteWorkout.mutateAsync(id)
+      await deleteWorkout.mutateAsync({ id })
       router.push('/workouts')
     } catch (error) {
       // Error already handled by mutation

@@ -281,6 +281,9 @@ model Workout {
   copiedFrom   Workout? @relation("WorkoutCopies", fields: [copiedFromId], references: [id], onDelete: SetNull)
   copies       Workout[] @relation("WorkoutCopies")
 
+  // Idempotency key for offline create retries (client-generated tempId)
+  clientId String? @unique
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -312,6 +315,9 @@ model WorkoutExercise {
   weight      Float?
   restSeconds Int     @default(60)
   notes       String?
+
+  // Idempotency key for offline create retries (client-generated tempId)
+  clientId String? @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
