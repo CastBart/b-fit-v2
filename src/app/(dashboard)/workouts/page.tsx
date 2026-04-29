@@ -22,7 +22,8 @@ import { DeleteWorkoutDialog } from '@/components/features/workouts/DeleteWorkou
 import { useWorkouts } from '@/hooks/queries/useWorkouts'
 import { useDeleteWorkout, useDuplicateWorkout } from '@/hooks/mutations/useWorkoutMutations'
 import { getWorkoutById } from '@/server/actions/workouts'
-import { onlineManager } from '@tanstack/react-query'
+import { onlineManager, useQueryClient } from '@tanstack/react-query'
+import type { WorkoutWithDetails } from '@/types/workout'
 import { startWorkoutSession } from '@/lib/utils/session-navigation'
 import { useAppDispatch } from '@/store/hooks'
 import { useActiveSessionGuard } from '@/hooks/useActiveSessionGuard'
@@ -84,6 +85,7 @@ function getStoredPinnedIds(): Set<string> {
 export default function WorkoutsPage() {
   const router = useRouter()
   const dispatch = useAppDispatch()
+  const queryClient = useQueryClient()
   const { guardedStart } = useActiveSessionGuard()
   const { data: session } = useSession()
   const isClient = session?.user?.role === 'CLIENT'
@@ -133,10 +135,23 @@ export default function WorkoutsPage() {
   const handleStart = useCallback(
     (workoutId: string) => {
       if (startingWorkoutId) return
-      if (!onlineManager.isOnline()) {
-        toast.error('Cannot start a workout while offline')
+
+      // Prefer the cached detail (seeded by syncTopDetails for top-N
+      // workouts and by any prior /workouts/[id] visit). Reading from
+      // cache avoids a server-action round-trip and works offline.
+      const cached = queryClient.getQueryData<WorkoutWithDetails>(['workout', workoutId])
+      if (cached) {
+        guardedStart(() => startWorkoutSession(cached, dispatch, router))
         return
       }
+
+      if (!onlineManager.isOnline()) {
+        toast.error('Workout details not available offline', {
+          description: 'Open this workout once while online to enable offline start.',
+        })
+        return
+      }
+
       guardedStart(async () => {
         setStartingWorkoutId(workoutId)
         try {
@@ -153,7 +168,7 @@ export default function WorkoutsPage() {
         }
       })
     },
-    [startingWorkoutId, dispatch, router, guardedStart]
+    [startingWorkoutId, dispatch, router, guardedStart, queryClient]
   )
 
   const handleTogglePin = useCallback((workoutId: string) => {
@@ -179,7 +194,12 @@ export default function WorkoutsPage() {
 
   const handleDeleteConfirm = useCallback(() => {
     if (!deleteTarget) return
-    deleteWorkout.mutate({ id: deleteTarget.id }, { onSuccess: () => setDeleteTarget(null) })
+    // Fire-and-forget: paused (offline) mutations never fire onSuccess
+    // until reconnect, so closing the dialog from there would strand it
+    // open. The optimistic delete has already removed the row from the
+    // list — close immediately.
+    deleteWorkout.mutate({ id: deleteTarget.id })
+    setDeleteTarget(null)
   }, [deleteTarget, deleteWorkout])
 
   const handleDuplicate = useCallback(

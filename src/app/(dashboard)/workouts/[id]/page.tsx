@@ -64,15 +64,15 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const goBack = useSmartBack('/workouts')
   const supersetManager = new SupersetManager<WorkoutExerciseWithExercise>()
 
-  // Handle delete confirmation
-  const handleDelete = async () => {
-    try {
-      await deleteWorkout.mutateAsync({ id })
-      router.push('/workouts')
-    } catch (error) {
-      // Error already handled by mutation
-      console.error('Error deleting workout:', error)
-    }
+  // Handle delete confirmation. Fire-and-forget — do NOT await
+  // mutateAsync. Paused (offline) mutations don't resolve until reconnect,
+  // which would strand the dialog spinner. The optimistic delete has
+  // already removed the row from caches, so the destination list page
+  // renders fresh data.
+  const handleDelete = () => {
+    deleteWorkout.mutate({ id })
+    setDeleteDialogOpen(false)
+    router.push('/workouts')
   }
 
   // Handle start workout

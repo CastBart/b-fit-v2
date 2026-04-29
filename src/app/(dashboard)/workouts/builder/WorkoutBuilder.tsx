@@ -35,7 +35,7 @@ import {
 } from '@/hooks/mutations/useWorkoutMutations'
 import { newTempId } from '@/lib/pwa/temp-id'
 import { useWorkout } from '@/hooks/queries/useWorkout'
-import { useQueryClient } from '@tanstack/react-query'
+import { onlineManager, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { Exercise, MuscleGroup } from '@prisma/client'
 import { SupersetManager } from '@/lib/superset-manager'
@@ -451,17 +451,19 @@ export default function WorkoutBuilder({ editWorkoutId, forClientId }: WorkoutBu
       }))
 
     if (isEditMode) {
-      syncExercises.mutate(
-        { workoutId, exercises: snapshots },
-        {
-          onSuccess: () => {
-            router.push(
-              clientContextId
-                ? `/clients/${clientContextId}?tab=workouts`
-                : `/workouts/${workoutId}`
-            )
-          },
-        }
+      // Fire-and-forget: do NOT await onSuccess. With networkMode:'online',
+      // an offline mutation enters paused state and onSuccess never fires
+      // until reconnect — gating navigation on it would strand the UI.
+      // The optimistic update has already applied to ['workout', workoutId]
+      // and ['workouts','all'], so the destination page renders fresh data.
+      syncExercises.mutate({ workoutId, exercises: snapshots })
+      if (!onlineManager.isOnline()) {
+        toast.success('Saved offline', {
+          description: 'Will sync automatically when you are back online.',
+        })
+      }
+      router.push(
+        clientContextId ? `/clients/${clientContextId}?tab=workouts` : `/workouts/${workoutId}`
       )
     } else {
       // Create mode: navigate immediately so the optimistic list shows
@@ -480,6 +482,11 @@ export default function WorkoutBuilder({ editWorkoutId, forClientId }: WorkoutBu
           groupId: s.groupId,
         })),
       })
+      if (!onlineManager.isOnline()) {
+        toast.success('Saved offline', {
+          description: 'Will sync automatically when you are back online.',
+        })
+      }
       router.push(clientContextId ? `/clients/${clientContextId}?tab=workouts` : '/workouts')
     }
   }

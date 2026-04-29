@@ -25,13 +25,13 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: 'any',
       },
       {
-        src: '/icons/bfit-maskable-192.png',
+        src: '/icons/bfit-icon-192-maskable.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable',
       },
       {
-        src: '/icons/bfit-maskable-512.png',
+        src: '/icons/bfit-icon-512-maskable.png',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'maskable',

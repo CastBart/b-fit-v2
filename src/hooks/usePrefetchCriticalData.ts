@@ -35,6 +35,7 @@ const WARM_ROUTES = [
   '/dashboard',
   '/exercises',
   '/workouts',
+  '/workouts/builder',
   '/plans',
   '/sessions',
   '/session',
@@ -209,8 +210,15 @@ export function usePrefetchCriticalData() {
               queryClient.setQueryData(['plan', plan.id], plan)
             }
 
+            // Warm both the detail and builder routes per workout. The
+            // builder shell is a 'use client' boundary that the SW only
+            // caches once requested, so without this, offline edits land
+            // on /~offline before WorkoutBuilder ever mounts.
             const detailRoutes = [
-              ...res.data.workouts.map((w) => `/workouts/${w.id}`),
+              ...res.data.workouts.flatMap((w) => [
+                `/workouts/${w.id}`,
+                `/workouts/builder/${w.id}`,
+              ]),
               ...res.data.plans.map((p) => `/plans/${p.id}`),
             ]
             void warmRoutes(detailRoutes)

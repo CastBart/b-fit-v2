@@ -296,21 +296,55 @@ export function useReorderExercises() {
 }
 
 // ============================================================================
-// Online-only mutations (gated by isOnline check + toast)
+// Online-only mutations (gated at click time, not inside mutationFn)
 // ============================================================================
+//
+// Why the gate lives at click time, not inside mutationFn:
+//
+// With networkMode:'online' (the project default in queryClient.ts), an
+// offline mutate() enters paused state BEFORE mutationFn runs. A check
+// inside mutationFn never fires when offline → no toast, no abort, but
+// the paused mutation is still persisted to IDB (every paused mutation
+// is, regardless of mutationKey) and silently replays on reconnect.
+//
+// To gate cleanly: check onlineManager.isOnline() in a wrapper around
+// mutate/mutateAsync, toast and return early when offline. Nothing ever
+// gets persisted; nothing ever silently replays.
+//
+// FOLLOW-UP (deferred, see PR2 notes):
+//   - useDuplicateWorkout — strong candidate for full offline support
+//     (optimistic create from cached source workout). Mirror the
+//     ['workouts','create'] pattern with a new ['workouts','duplicate']
+//     entry in mutation-defaults + a /api/offline/workouts/duplicate
+//     route.
+//   - useCopyWorkout, useCreateWorkoutForClient — touch cross-user /
+//     client-relationship surface. Defer offline support until there's
+//     a clear UX need; treat the cache-miss case carefully.
 
-function requireOnline(): boolean {
-  if (onlineManager.isOnline()) return true
-  toast.error('This action requires a connection')
-  return false
+function offlineGuard<TVars, TData>(
+  m: ReturnType<typeof useMutation<TData, Error, TVars>>
+): typeof m {
+  const guardedMutate: typeof m.mutate = (vars, opts) => {
+    if (!onlineManager.isOnline()) {
+      toast.error('This action requires a connection')
+      return
+    }
+    m.mutate(vars, opts)
+  }
+  const guardedMutateAsync: typeof m.mutateAsync = (vars, opts) => {
+    if (!onlineManager.isOnline()) {
+      toast.error('This action requires a connection')
+      return Promise.reject(new Error('Offline'))
+    }
+    return m.mutateAsync(vars, opts)
+  }
+  return { ...m, mutate: guardedMutate, mutateAsync: guardedMutateAsync }
 }
 
 export function useCopyWorkout() {
   const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (input: CopyWorkoutInput) => {
-      if (!requireOnline()) throw new Error('Offline')
+  const m = useMutation<unknown, Error, CopyWorkoutInput>({
+    mutationFn: async (input) => {
       const result = await copyWorkout(input)
       if (!result.success) {
         throw new Error(result.error || 'Failed to copy workout')
@@ -321,19 +355,21 @@ export function useCopyWorkout() {
       queryClient.invalidateQueries({ queryKey: ['workouts'] })
       toast.success('Workout assigned successfully')
     },
-    onError: (error: Error) => {
-      if (error.message === 'Offline') return
+    onError: (error) => {
       toast.error(error.message)
     },
   })
+  return offlineGuard(m)
 }
 
 export function useCreateWorkoutForClient() {
   const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (input: { clientId: string; name: string; description?: string }) => {
-      if (!requireOnline()) throw new Error('Offline')
+  const m = useMutation<
+    { id: string } | undefined,
+    Error,
+    { clientId: string; name: string; description?: string }
+  >({
+    mutationFn: async (input) => {
       const result = await createWorkoutForClient(input)
       if (!result.success) {
         throw new Error(result.error || 'Failed to create workout for client')
@@ -344,19 +380,17 @@ export function useCreateWorkoutForClient() {
       queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
       toast.success('Workout created for client')
     },
-    onError: (error: Error) => {
-      if (error.message === 'Offline') return
+    onError: (error) => {
       toast.error(error.message)
     },
   })
+  return offlineGuard(m)
 }
 
 export function useDuplicateWorkout() {
   const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (workoutId: string) => {
-      if (!requireOnline()) throw new Error('Offline')
+  const m = useMutation<unknown, Error, string>({
+    mutationFn: async (workoutId) => {
       const result = await duplicateWorkout(workoutId)
       if (!result.success) {
         throw new Error(result.error || 'Failed to duplicate workout')
@@ -368,9 +402,9 @@ export function useDuplicateWorkout() {
       queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
       toast.success('Workout duplicated')
     },
-    onError: (error: Error) => {
-      if (error.message === 'Offline') return
+    onError: (error) => {
       toast.error(error.message)
     },
   })
+  return offlineGuard(m)
 }
