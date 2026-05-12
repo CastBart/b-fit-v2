@@ -3,8 +3,6 @@
 import { prisma } from '@/lib/db/prisma'
 import { getServerSession } from '@/lib/auth/auth'
 import {
-  createExerciseSchema,
-  updateExerciseSchema,
   exerciseFiltersSchema,
   type CreateExerciseInput,
   type UpdateExerciseInput,
@@ -12,6 +10,7 @@ import {
 } from '@/lib/validations/exercise'
 import type { ExerciseListResponse } from '@/types/exercise'
 import { requirePermission } from '@/lib/auth/rbac'
+import { exerciseService } from '@/server/services/exercises'
 
 /**
  * Get a list of exercises with filters and pagination
@@ -254,17 +253,7 @@ export async function createExercise(data: CreateExerciseInput) {
       return { success: false, error: auth.error }
     }
 
-    // Validate input
-    const validatedData = createExerciseSchema.parse(data)
-
-    // Create exercise
-    const exercise = await prisma.exercise.create({
-      data: {
-        ...validatedData,
-        createdById: auth.userId,
-        instructions: validatedData.instructions || [],
-      },
-    })
+    const exercise = await exerciseService.create(auth.userId, data)
 
     return {
       success: true,
@@ -303,52 +292,7 @@ export async function updateExercise(id: string, data: UpdateExerciseInput) {
       }
     }
 
-    // Get the exercise
-    const exercise = await prisma.exercise.findUnique({
-      where: { id },
-    })
-
-    if (!exercise) {
-      return {
-        success: false,
-        error: 'Exercise not found',
-      }
-    }
-
-    // Check if user is the owner
-    if (exercise.createdById !== session.user.id) {
-      return {
-        success: false,
-        error: 'You can only update exercises that you created',
-      }
-    }
-
-    // Cannot update default exercises
-    if (exercise.isDefault) {
-      return {
-        success: false,
-        error: 'Default exercises cannot be modified',
-      }
-    }
-
-    // Validate input
-    const validatedData = updateExerciseSchema.parse(data)
-
-    // Prepare update data with proper JSON handling for instructions
-    const updateData: Record<string, unknown> = {
-      ...validatedData,
-    }
-
-    // Handle instructions as JSON type
-    if (validatedData.instructions !== undefined) {
-      updateData.instructions = validatedData.instructions
-    }
-
-    // Update exercise
-    const updatedExercise = await prisma.exercise.update({
-      where: { id },
-      data: updateData,
-    })
+    const updatedExercise = await exerciseService.update(session.user.id, id, data)
 
     return {
       success: true,
@@ -387,38 +331,7 @@ export async function deleteExercise(id: string) {
       }
     }
 
-    // Get the exercise
-    const exercise = await prisma.exercise.findUnique({
-      where: { id },
-    })
-
-    if (!exercise) {
-      return {
-        success: false,
-        error: 'Exercise not found',
-      }
-    }
-
-    // Check if user is the owner
-    if (exercise.createdById !== session.user.id) {
-      return {
-        success: false,
-        error: 'You can only delete exercises that you created',
-      }
-    }
-
-    // Cannot delete default exercises
-    if (exercise.isDefault) {
-      return {
-        success: false,
-        error: 'Default exercises cannot be deleted',
-      }
-    }
-
-    // Delete exercise
-    await prisma.exercise.delete({
-      where: { id },
-    })
+    await exerciseService.delete(session.user.id, id)
 
     return {
       success: true,

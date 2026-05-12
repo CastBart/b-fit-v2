@@ -1,6 +1,13 @@
 import { Middleware } from '@reduxjs/toolkit'
 import type { SessionBackup, SessionState } from '@/types/session'
 
+// Storage boundary (offline-first PWA):
+//   Redux + localStorage    — IN-PROGRESS live session (this file).
+//   React Query + IndexedDB — SAVED session history and all other entities.
+// The Redux clear on completion is invoked from `commitCompletedSession`
+// (Block 5), not from the completion mutation's onSuccess, so it fires
+// only after the durable commit marker is written.
+
 // ============================================================================
 // CONSTANTS
 // ============================================================================
@@ -28,7 +35,12 @@ export const localStoragePersistenceMiddleware: Middleware = (storeAPI) => (next
 
   // Type guard for Redux actions
   const isReduxAction = (act: unknown): act is { type: string } => {
-    return typeof act === 'object' && act !== null && 'type' in act && typeof (act as { type: unknown }).type === 'string'
+    return (
+      typeof act === 'object' &&
+      act !== null &&
+      'type' in act &&
+      typeof (act as { type: unknown }).type === 'string'
+    )
   }
 
   // Only handle session actions

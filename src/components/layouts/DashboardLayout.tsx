@@ -5,6 +5,7 @@ import { PanelLeft } from 'lucide-react'
 import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
 import { ContinueSessionButton } from '@/components/features/sessions/ContinueSessionButton'
+import { SyncStatusIndicator } from '@/components/pwa/SyncStatusIndicator'
 import { Button } from '@/components/ui/button'
 import type { UserRole } from '@/lib/nav-items'
 
@@ -55,6 +56,7 @@ export function DashboardLayout({ children, userRole = 'PERSONAL' }: DashboardLa
         sidebarOpen={sidebarOpen}
       />
       <ContinueSessionButton />
+      <SyncStatusIndicator />
     </div>
   )
 }

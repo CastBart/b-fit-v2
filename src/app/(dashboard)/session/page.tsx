@@ -42,7 +42,8 @@ import {
 } from '@/store/slices/sessionSlice'
 import { clearSessionBackup } from '@/store/middleware/persistence'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCompleteSession } from '@/hooks/mutations/useSessionMutations'
+import { commitCompletedSession } from '@/lib/pwa/commit-completed-session'
+import { onlineManager } from '@tanstack/react-query'
 import { getSessionPRs, getLatestHistoryBatch } from '@/server/actions/sessions'
 import { SessionStatus, type SaveSessionPayload } from '@/types/session'
 import { useSessionRecovery } from '@/hooks/useSessionRecovery'
@@ -96,9 +97,6 @@ export default function SessionPage() {
   const elapsedSeconds = useElapsedSessionTime()
   const { remaining: restRemaining, isRunning: restIsRunning } = useRestTimer()
 
-  // Mutations
-  const completeSessionMutation = useCompleteSession()
-
   // Local UI state
   const [exerciseSelectorOpen, setExerciseSelectorOpen] = useState(false)
   const [exerciseOptionsOpen, setExerciseOptionsOpen] = useState(false)
@@ -107,6 +105,7 @@ export default function SessionPage() {
   const [exerciseDrawerOpen, setExerciseDrawerOpen] = useState(false)
   const [exerciseDrawerId, setExerciseDrawerId] = useState<string | null>(null)
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false)
+  const [isCommitting, setIsCommitting] = useState(false)
 
   // Replace exercise state
   const [replaceMode, setReplaceMode] = useState<{
@@ -136,7 +135,7 @@ export default function SessionPage() {
 
     const prefillAndLoad = async () => {
       // Fetch history for all exercises to pre-fill set values
-      if (exercises.length > 0) {
+      if (exercises.length > 0 && onlineManager.isOnline()) {
         const exerciseIds = [...new Set(exercises.map((e) => e.exerciseId))]
         try {
           const result = await getLatestHistoryBatch({ exerciseIds })
@@ -236,6 +235,7 @@ export default function SessionPage() {
 
   // Fetch PRs for a session and merge into drawer data
   const fetchAndAttachPRs = async (savedSessionId: string, drawerData: CompletedSessionData) => {
+    if (!onlineManager.isOnline()) return
     try {
       const prResult = await getSessionPRs(savedSessionId)
       if (prResult.success && prResult.data && prResult.data.length > 0) {
@@ -248,6 +248,7 @@ export default function SessionPage() {
 
   // Handle complete session from banner
   const handleCompleteSession = async () => {
+    setIsCommitting(true)
     try {
       // Build the drawer data BEFORE any state changes
       const drawerData = buildCompletedSessionData()
@@ -256,8 +257,10 @@ export default function SessionPage() {
       // Prepare session end (stops timer, sets completeTime, but keeps isActive = true)
       dispatch(prepareSessionEnd())
 
-      // Save to database
-      await completeSessionMutation.mutateAsync(payload)
+      // Commit boundary: writes durable IDB marker, fires the mutation
+      // (pauses offline), clears the localStorage backup. Survives a
+      // crash between "tapped Complete" and "server confirmed".
+      await commitCompletedSession('complete', payload)
 
       // Fetch PRs and attach to drawer data
       await fetchAndAttachPRs(payload.sessionId, drawerData)
@@ -270,6 +273,7 @@ export default function SessionPage() {
       toast.error('Failed to save session. Please try again.')
     } finally {
       setCompleteDialogOpen(false)
+      setIsCommitting(false)
     }
   }
 
@@ -357,14 +361,16 @@ export default function SessionPage() {
 
     // Fetch history for new exercises to pre-fill set values
     let historyMap: Record<string, import('@/types/session').HistorySet[]> | undefined
-    try {
-      const exerciseIds = [...new Set(sessionExercises.map((e) => e.exerciseId))]
-      const result = await getLatestHistoryBatch({ exerciseIds })
-      if (result.success && result.data) {
-        historyMap = result.data
+    if (onlineManager.isOnline()) {
+      try {
+        const exerciseIds = [...new Set(sessionExercises.map((e) => e.exerciseId))]
+        const result = await getLatestHistoryBatch({ exerciseIds })
+        if (result.success && result.data) {
+          historyMap = result.data
+        }
+      } catch {
+        // Non-critical
       }
-    } catch {
-      // Non-critical
     }
 
     // Dispatch to Redux with history
@@ -423,13 +429,15 @@ export default function SessionPage() {
 
     // Fetch history for the replacement exercise
     let historySets: import('@/types/session').HistorySet[] | undefined
-    try {
-      const result = await getLatestHistoryBatch({ exerciseIds: [newExercise.id] })
-      if (result.success && result.data?.[newExercise.id]) {
-        historySets = result.data[newExercise.id]
+    if (onlineManager.isOnline()) {
+      try {
+        const result = await getLatestHistoryBatch({ exerciseIds: [newExercise.id] })
+        if (result.success && result.data?.[newExercise.id]) {
+          historySets = result.data[newExercise.id]
+        }
+      } catch {
+        // Non-critical
       }
-    } catch {
-      // Non-critical
     }
 
     dispatch(
@@ -605,14 +613,10 @@ export default function SessionPage() {
               </div>
               <Button
                 onClick={() => setCompleteDialogOpen(true)}
-                disabled={completeSessionMutation.isPending}
+                disabled={isCommitting}
                 className="shrink-0 bg-green-600 hover:bg-green-700"
               >
-                {completeSessionMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  'Save'
-                )}
+                {isCommitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save'}
               </Button>
             </div>
           </div>

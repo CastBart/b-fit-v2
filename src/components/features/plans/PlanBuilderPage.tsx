@@ -32,6 +32,7 @@ import type { Exercise, MuscleGroup } from '@prisma/client'
 import type { PlanDayExerciseFormData } from '@/types/plan'
 import { SupersetManager } from '@/lib/superset-manager'
 import { Skeleton } from '@/components/ui/skeleton'
+import { isTempId } from '@/lib/pwa/temp-id'
 
 interface WorkoutExercise {
   workoutExerciseId?: string
@@ -479,13 +480,20 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
   const handleSave = () => {
     if (!plan || localDays.length === 0) return
 
+    // Pass LocalDay.uid as the day-level clientId and the exercise's
+    // instanceId as the per-exercise clientId. Both are stable across
+    // the user's session, so a save-all-days replay (online or offline)
+    // matches existing rows instead of duplicating them.
     const daysPayload = localDays.map((day) => {
       const exs = dayExercises.get(day.uid) || []
       return {
         dayId: day.dayId,
+        clientId: day.uid,
         dayNumber: day.dayNumber,
         label: day.label,
         exercises: exs.map((ex) => ({
+          planDayExerciseId: ex.workoutExerciseId,
+          clientId: ex.instanceId,
           exerciseId: ex.exerciseId,
           order: ex.order,
           sets: ex.sets,
@@ -498,16 +506,21 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
       }
     })
 
-    savePlanAllDays.mutate(
-      { planId, days: daysPayload },
-      {
-        onSuccess: () => {
-          router.push(
-            clientContextId ? `/clients/${clientContextId}?tab=plans` : `/plans/${planId}`
-          )
-        },
-      }
-    )
+    savePlanAllDays.mutate({ planId, days: daysPayload })
+
+    // Avoid navigating to /plans/<tempId> after an offline-created plan
+    // save — that detail route was never warmed and falls back to /~offline.
+    // The plan list is always warm and shows the optimistic row, and once
+    // the temp id swaps to a real id the user can open the detail later.
+    const planIdIsTemp = isTempId(planId)
+    const clientContextIsTemp = clientContextId ? isTempId(clientContextId) : false
+    const target =
+      clientContextId && !clientContextIsTemp
+        ? `/clients/${clientContextId}?tab=plans`
+        : planIdIsTemp
+          ? '/plans'
+          : `/plans/${planId}`
+    router.push(target)
   }
 
   // Day info for carousel
@@ -588,12 +601,10 @@ export function PlanBuilderPage({ planId, initialDayIndex = 0 }: PlanBuilderPage
             className="flex "
             variant={'default'}
             onClick={handleSave}
-            disabled={localDays.length === 0 || savePlanAllDays.isPending}
+            disabled={localDays.length === 0}
           >
             <Save className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">
-              {savePlanAllDays.isPending ? 'Saving...' : 'Save Plan'}
-            </span>
+            <span className="hidden sm:inline">Save Plan</span>
           </Button>
         </div>
       </div>

@@ -83,9 +83,9 @@ export default function PlansPage() {
   const activatePlan = useActivatePlan()
   const copyPlan = useCopyPlan()
 
-  if (error) {
-    toast.error('Failed to load plans')
-  }
+  useEffect(() => {
+    if (error) toast.error('Failed to load plans')
+  }, [error])
 
   const handleViewModeChange = (value: string) => {
     if (value === 'list' || value === 'grid') {
@@ -96,12 +96,9 @@ export default function PlansPage() {
 
   const handleDelete = () => {
     if (!planToDelete) return
-    deletePlan.mutate(planToDelete.id, {
-      onSuccess: () => {
-        setDeleteDialogOpen(false)
-        setPlanToDelete(null)
-      },
-    })
+    deletePlan.mutate({ id: planToDelete.id })
+    setDeleteDialogOpen(false)
+    setPlanToDelete(null)
   }
 
   const handleOpenCopyDialog = (planId: string, planName: string) => {
@@ -133,8 +130,8 @@ export default function PlansPage() {
     plan,
     isClient,
     onView: (id: string) => router.push(`/plans/${id}`),
-    onEdit: (id: string) => router.push(`/plans/builder/${id}`),
-    onActivate: (id: string) => activatePlan.mutate(id),
+    onEdit: (id: string) => router.push(`/plans/builder?id=${id}`),
+    onActivate: (id: string) => activatePlan.mutate({ id }),
     isActivating: activatePlan.isPending,
     ...(isClient
       ? {}

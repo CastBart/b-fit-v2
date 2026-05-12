@@ -30,7 +30,7 @@ export function useSessionRecovery(): {
       if (backup && backup.state.isActive) {
         // Rehydrate session from backup
         dispatch(rehydrateSession(backup.state))
-        console.log('✅ Session recovered from LocalStorage')
+        // console.log('✅ Session recovered from LocalStorage')
       }
     } catch (error) {
       console.error('Failed to recover session:', error)

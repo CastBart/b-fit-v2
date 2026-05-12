@@ -8,7 +8,7 @@
 
 'use client'
 
-import { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react'
+import { useState, useEffect, useCallback, useRef, memo } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { Dumbbell, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -107,62 +107,76 @@ export function ExerciseSelectorPanel({
     }
   }, [initialMuscleGroups])
 
-  // Ref-based stable callback: sync selectedIds into a ref so handleExerciseClick
-  // doesn't need it in its dependency array → callback stays stable across selections
+  // Ref-based stable callbacks: sync prop callbacks + selectedIds into refs
+  // so handleExerciseClick has an empty(-ish) dep array and stays referentially
+  // stable across renders.
+  //
+  // Why this matters: <ExerciseButton> is React.memo'd with a custom
+  // comparator that intentionally IGNORES `onClick` for perf — it would
+  // otherwise re-render every row whenever the parent passes a new inline
+  // callback. With that comparator in place, we MUST give it a stable
+  // onClick or buttons will fire whatever closure existed on first mount.
+  // PlanBuilderPage hit this when switching between days: clicks always
+  // added exercises to the day that was active when the panel mounted,
+  // because the inline handleExerciseSelect in PlanBuilderPage captures
+  // currentDayUid in its closure and was being silently swallowed by the
+  // memo comparator. The refs below decouple identity from value.
   const selectedIdsRef = useRef(selectedIds)
+  const onExerciseSelectRef = useRef(onExerciseSelect)
+  const onSelectionChangeRef = useRef(onSelectionChange)
   useEffect(() => {
     selectedIdsRef.current = selectedIds
   }, [selectedIds])
+  useEffect(() => {
+    onExerciseSelectRef.current = onExerciseSelect
+  }, [onExerciseSelect])
+  useEffect(() => {
+    onSelectionChangeRef.current = onSelectionChange
+  }, [onSelectionChange])
 
-  const filterKey = useMemo(
-    () =>
-      JSON.stringify({
-        search,
-        muscleGroups,
-        exerciseTypes,
-        equipmentTypes,
-        difficultyLevels,
-        movementPatterns,
-      }),
-    [search, muscleGroups, exerciseTypes, equipmentTypes, difficultyLevels, movementPatterns]
-  )
-
-  const { data, isLoading } = useExercises(
-    {
-      search: search || undefined,
-      primaryMuscleGroups: muscleGroups.length ? muscleGroups : undefined,
-      exerciseTypes: exerciseTypes.length ? exerciseTypes : undefined,
-      equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
-      difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
-      movementPatterns: movementPatterns.length ? movementPatterns : undefined,
-      limit: 500,
-    },
-    `selector-${filterKey}`
-  )
+  const { data, isLoading } = useExercises({
+    search: search || undefined,
+    primaryMuscleGroups: muscleGroups.length ? muscleGroups : undefined,
+    exerciseTypes: exerciseTypes.length ? exerciseTypes : undefined,
+    equipmentTypes: equipmentTypes.length ? equipmentTypes : undefined,
+    difficultyLevels: difficultyLevels.length ? difficultyLevels : undefined,
+    movementPatterns: movementPatterns.length ? movementPatterns : undefined,
+    limit: 500,
+  })
 
   const exercises = data?.exercises || []
 
-  // Stable callback — reads selectedIds from ref instead of prop
-  const handleExerciseClick = useCallback(
-    (exercise: Exercise) => {
-      if (disabled) return
+  // Stable callback — reads everything from refs so identity never changes
+  // across renders. `disabled` and `mode` go through refs too; they rarely
+  // change, but if a caller flips them mid-mount the next click reflects
+  // the new value (refs are read at call time).
+  const disabledRef = useRef(disabled)
+  const modeRef = useRef(mode)
+  useEffect(() => {
+    disabledRef.current = disabled
+  }, [disabled])
+  useEffect(() => {
+    modeRef.current = mode
+  }, [mode])
 
-      if (mode === 'multi' && onSelectionChange) {
-        const currentIds = selectedIdsRef.current
-        const nextIds = new Set(currentIds)
-        const isNowSelected = !nextIds.has(exercise.id)
+  const handleExerciseClick = useCallback((exercise: Exercise) => {
+    if (disabledRef.current) return
 
-        if (isNowSelected) nextIds.add(exercise.id)
-        else nextIds.delete(exercise.id)
+    const onSelectionChange = onSelectionChangeRef.current
+    if (modeRef.current === 'multi' && onSelectionChange) {
+      const currentIds = selectedIdsRef.current
+      const nextIds = new Set(currentIds)
+      const isNowSelected = !nextIds.has(exercise.id)
 
-        onSelectionChange(nextIds, { exercise, selected: isNowSelected })
-        return
-      }
+      if (isNowSelected) nextIds.add(exercise.id)
+      else nextIds.delete(exercise.id)
 
-      onExerciseSelect(exercise)
-    },
-    [disabled, mode, onSelectionChange, onExerciseSelect]
-  )
+      onSelectionChange(nextIds, { exercise, selected: isNowSelected })
+      return
+    }
+
+    onExerciseSelectRef.current(exercise)
+  }, [])
 
   const handleClearAll = useCallback(() => {
     setSearch('')

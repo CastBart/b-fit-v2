@@ -21,7 +21,7 @@ export function ExerciseMultiSelect({
   max = 5,
 }: ExerciseMultiSelectProps) {
   const [search, setSearch] = useState('')
-  const { data } = useExercises({ limit: 100, search: search || undefined }, `compare-${search}`)
+  const { data } = useExercises({ limit: 100, search: search || undefined })
 
   const exercises = data?.exercises ?? []
 

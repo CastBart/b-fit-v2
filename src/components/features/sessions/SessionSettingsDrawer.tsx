@@ -48,7 +48,7 @@ import {
   endSession,
 } from '@/store/slices/sessionSlice'
 import { clearSessionBackup } from '@/store/middleware/persistence'
-import { useCompleteSession } from '@/hooks/mutations/useSessionMutations'
+import { commitCompletedSession } from '@/lib/pwa/commit-completed-session'
 import { useElapsedSessionTime } from '@/hooks/useElapsedSessionTime'
 import { formatStartTime, formatDuration } from '@/lib/utils/format-time'
 import { SessionStatus, type SaveSessionPayload } from '@/types/session'
@@ -81,13 +81,11 @@ export function SessionSettingsDrawer({ children, onSessionComplete }: SessionSe
   // Live elapsed time
   const elapsedSeconds = useElapsedSessionTime()
 
-  // Mutations
-  const completeSessionMutation = useCompleteSession()
-
   // Local state
   const [open, setOpen] = useState(false)
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false)
   const [abandonDialogOpen, setAbandonDialogOpen] = useState(false)
+  const [isCommitting, setIsCommitting] = useState(false)
   const [notes, setNotes] = useState(sessionNotes || '')
 
   // Update notes in Redux on blur
@@ -140,14 +138,17 @@ export function SessionSettingsDrawer({ children, onSessionComplete }: SessionSe
 
   // Handle complete session
   const handleComplete = async () => {
+    setIsCommitting(true)
     try {
       const payload = buildSavePayload(SessionStatus.COMPLETED)
 
       // Prepare session end (stops timer, sets completeTime, keeps isActive = true)
       dispatch(prepareSessionEnd())
 
-      // Save to database
-      await completeSessionMutation.mutateAsync(payload)
+      // Commit boundary: writes durable IDB marker, fires the mutation
+      // (pauses offline), and clears the localStorage backup. Safe under
+      // a crash between "tapped Complete" and "server confirmed".
+      await commitCompletedSession('complete', payload)
 
       // Close the drawer first
       setCompleteDialogOpen(false)
@@ -167,6 +168,8 @@ export function SessionSettingsDrawer({ children, onSessionComplete }: SessionSe
       console.error('Failed to complete session:', error)
       toast.error('Failed to save session. Please try again.')
       setCompleteDialogOpen(false)
+    } finally {
+      setIsCommitting(false)
     }
   }
 
@@ -255,9 +258,9 @@ export function SessionSettingsDrawer({ children, onSessionComplete }: SessionSe
                 onClick={() => setCompleteDialogOpen(true)}
                 className="w-full"
                 size="lg"
-                disabled={completeSessionMutation.isPending}
+                disabled={isCommitting}
               >
-                {completeSessionMutation.isPending ? (
+                {isCommitting ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     Saving...

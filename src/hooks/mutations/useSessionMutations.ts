@@ -1,103 +1,66 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, onlineManager } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { saveCompletedSession, completeSession, abandonSession } from '@/server/actions/sessions'
 import type { SaveSessionPayload } from '@/types/session'
 
-// ============================================================================
-// SAVE COMPLETED SESSION
-// ============================================================================
+// Block 5: these hooks are now mutationKey-only. The mutationFn, onMutate,
+// onError, onSuccess, and onSettled are provided by `setMutationDefaults`
+// in `@/lib/pwa/mutation-defaults` so that paused mutations rehydrated
+// from IndexedDB can resume without the React component tree being alive.
+//
+// Call sites should prefer `commitCompletedSession(action, payload)` from
+// `@/lib/pwa/commit-completed-session`, which enforces the durability
+// boundary (write IDB marker → fire mutation → clear Redux backup).
+// These hooks remain so the UI can read mutation state (pending, error)
+// via the React Query observer pattern.
 
-/**
- * Hook for saving a completed session to the database.
- * This is called when the user completes a workout session.
- */
+type SessionVariables = { payload: SaveSessionPayload }
+
+function offlineToast(savedCopy: string, offlineCopy: string) {
+  if (onlineManager.isOnline()) {
+    toast.success(savedCopy)
+  } else {
+    toast.success(offlineCopy, {
+      description: 'Will sync automatically when you are back online.',
+    })
+  }
+}
+
 export function useSaveCompletedSession() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (payload: SaveSessionPayload) => {
-      const result = await saveCompletedSession(payload)
-
-      if (!result.success || !result.data) {
-        throw new Error(result.error || 'Failed to save session')
-      }
-
-      return result.data // Returns session ID
+  return useMutation<unknown, Error, SessionVariables>({
+    mutationKey: ['sessions', 'save'],
+    onSuccess: () => {
+      toast.success('Workout saved')
     },
-    onSuccess: (sessionId) => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
-      queryClient.invalidateQueries({ queryKey: ['session', sessionId] })
-      queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
-      toast.success('🎉 Workout saved!')
-    },
-    onError: (error: Error) => {
+    onError: (error) => {
+      if (!onlineManager.isOnline()) return
       toast.error(error.message || 'Failed to save workout')
       console.error('Save session error:', error)
     },
   })
 }
 
-// ============================================================================
-// COMPLETE SESSION
-// ============================================================================
-
-/**
- * Hook for completing a session (saves with COMPLETED status).
- * This is the primary way users finish a workout.
- */
 export function useCompleteSession() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (payload: SaveSessionPayload) => {
-      const result = await completeSession(payload)
-
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to complete session')
-      }
-
-      return payload.sessionId
+  return useMutation<unknown, Error, SessionVariables>({
+    mutationKey: ['sessions', 'complete'],
+    onSuccess: () => {
+      offlineToast('Workout completed', 'Saved locally')
     },
-    onSuccess: (sessionId) => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
-      queryClient.invalidateQueries({ queryKey: ['session', sessionId] })
-      queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
-      toast.success('🎉 Workout completed!')
-    },
-    onError: (error: Error) => {
+    onError: (error) => {
+      if (!onlineManager.isOnline()) return
       toast.error(error.message || 'Failed to complete workout')
       console.error('Complete session error:', error)
     },
   })
 }
 
-// ============================================================================
-// ABANDON SESSION
-// ============================================================================
-
-/**
- * Hook for abandoning a session (saves with ABANDONED status).
- * Saves partial progress for later review.
- */
 export function useAbandonSession() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (payload: SaveSessionPayload) => {
-      const result = await abandonSession(payload)
-
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to abandon session')
-      }
-
-      return payload.sessionId
+  return useMutation<unknown, Error, SessionVariables>({
+    mutationKey: ['sessions', 'abandon'],
+    onSuccess: () => {
+      offlineToast('Session saved as abandoned', 'Saved locally')
     },
-    onSuccess: (sessionId) => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
-      queryClient.invalidateQueries({ queryKey: ['session', sessionId] })
-      toast.success('Session saved as abandoned')
-    },
-    onError: (error: Error) => {
+    onError: (error) => {
+      if (!onlineManager.isOnline()) return
       toast.error(error.message || 'Failed to abandon session')
       console.error('Abandon session error:', error)
     },

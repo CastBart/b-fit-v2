@@ -139,8 +139,9 @@ export interface PaginationParams {
 /**
  * Workout list response with pagination
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface WorkoutListResponse {
-  workouts: WorkoutEntity[]
+  workouts: any[]
   total: number
   page: number
   limit: number

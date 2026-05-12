@@ -190,6 +190,77 @@ export const getActivePlanWeekSchema = z.object({
 })
 
 // ============================================================================
+// Offline Schemas
+//
+// Variants of the above schemas relaxed for offline transport. tmp_* ids
+// flow through these unchanged and are resolved client-side via idMap
+// before reaching the network. clientId is the idempotency key for
+// offline replays.
+// ============================================================================
+
+const offlineIdSchema = z.string().min(1, 'id required')
+
+export const offlinePlanCreateSchema = createPlanSchema.extend({
+  clientId: z.string().min(1).optional(),
+})
+
+export const offlinePlanUpdateSchema = z.object({
+  id: offlineIdSchema,
+  input: updatePlanSchema,
+})
+
+export const offlinePlanDeleteSchema = z.object({
+  id: offlineIdSchema,
+})
+
+export const offlinePlanActivateSchema = z.object({
+  id: offlineIdSchema,
+})
+
+export const offlinePlanDeactivateSchema = z.object({
+  id: offlineIdSchema,
+})
+
+export const offlineSavePlanAllDaysSchema = z.object({
+  planId: offlineIdSchema,
+  days: z
+    .array(
+      z.object({
+        dayId: z.string().min(1).optional(),
+        clientId: z.string().min(1).optional(),
+        dayNumber: z.number().int().min(1),
+        label: z.string().max(100).optional().nullable(),
+        exercises: z.array(
+          z.object({
+            planDayExerciseId: z.string().min(1).optional(),
+            clientId: z.string().min(1).optional(),
+            exerciseId: z.string().min(1, 'exerciseId required'),
+            order: z.number().int().min(0, 'Order must be 0 or greater'),
+            sets: z
+              .number()
+              .int()
+              .min(1, 'Sets must be at least 1')
+              .max(20, 'Sets cannot exceed 20'),
+            reps: z.number().int().min(1).max(999).optional().nullable(),
+            weight: z.number().min(0).max(9999).optional().nullable(),
+            restSeconds: z.number().int().min(0).max(600).default(60),
+            notes: z.string().max(500).optional().nullable(),
+            groupId: z.string().optional().nullable(),
+          })
+        ),
+      })
+    )
+    .min(1, 'Plan must have at least 1 day')
+    .max(7, 'Plan cannot exceed 7 days'),
+})
+
+export const offlineSkipPlanDaySchema = z.object({
+  planId: offlineIdSchema,
+  planDayId: offlineIdSchema,
+  clientId: z.string().min(1).optional(),
+})
+
+// ============================================================================
 // Type Inference
 // ============================================================================
 

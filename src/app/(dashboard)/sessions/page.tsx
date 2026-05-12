@@ -67,9 +67,9 @@ export default function SessionHistoryPage() {
     limit: 12,
   })
 
-  if (error) {
-    toast.error('Failed to load sessions')
-  }
+  useEffect(() => {
+    if (error) toast.error('Failed to load sessions')
+  }, [error])
 
   const handleViewModeChange = (value: string) => {
     if (value === 'calendar' || value === 'grid') {

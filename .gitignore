@@ -53,10 +53,12 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 
-# PWA files
+# PWA files (Serwist + legacy Workbox)
 **/public/workbox-*.js
 **/public/sw.js
+**/public/sw.js.map
 **/public/worker-*.js
+**/public/swe-worker-*.js
 
 # Prisma
 prisma/migrations/migration_lock.toml

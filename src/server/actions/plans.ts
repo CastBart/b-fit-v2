@@ -34,7 +34,7 @@ import {
   type CopyPlanInput,
   type SkipPlanDayInput,
 } from '@/lib/validations/plan'
-import type { ActivePlanDashboardResponse } from '@/types/plan'
+import type { ActivePlanDashboard, ActivePlanDashboardResponse } from '@/types/plan'
 import { checkAndAdvanceWeek } from '@/server/utils/plan-week-utils'
 
 // ============================================================================
@@ -1076,6 +1076,147 @@ export async function getActivePlanDashboard(
       return { success: false, error: error.message }
     }
     return { success: false, error: 'Failed to fetch active plan dashboard' }
+  }
+}
+
+/**
+ * Bulk variant of getActivePlanDashboard. Returns one ActivePlanDashboard
+ * entry per existing PlanWeek record so the offline cache can seed every
+ * ['activePlanDashboard', weekNumber] key in one round-trip. Plan + weeks +
+ * days are fetched once and shared across entries; completions are fetched
+ * in a single query and grouped by planWeekId.
+ */
+export async function getAllActivePlanDashboardWeeks(): Promise<
+  ActionResponse<{ weeks: ActivePlanDashboard[] }>
+> {
+  try {
+    const session = await getServerSession()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Authentication required' }
+    }
+
+    const plan = await prisma.plan.findFirst({
+      where: { createdById: session.user.id, isActive: true },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        daysPerWeek: true,
+        durationWeeks: true,
+        activatedAt: true,
+      },
+    })
+
+    if (!plan || !plan.activatedAt) {
+      return { success: true, data: { weeks: [] } }
+    }
+
+    const weekRecords = await prisma.planWeek.findMany({
+      where: { planId: plan.id },
+      orderBy: { weekNumber: 'asc' },
+      select: {
+        id: true,
+        weekNumber: true,
+        status: true,
+        startedAt: true,
+        completedAt: true,
+      },
+    })
+
+    if (weekRecords.length === 0) {
+      return { success: true, data: { weeks: [] } }
+    }
+
+    const activeWeek =
+      weekRecords.findLast((w) => w.status === 'IN_PROGRESS') ??
+      weekRecords[weekRecords.length - 1]!
+    const activeWeekNumber = activeWeek.weekNumber
+
+    const dayRecords = await prisma.planDay.findMany({
+      where: { planId: plan.id },
+      include: {
+        exercises: {
+          include: {
+            exercise: {
+              select: {
+                id: true,
+                name: true,
+                exerciseType: true,
+                metricType: true,
+              },
+            },
+          },
+          orderBy: { order: 'asc' },
+        },
+      },
+      orderBy: { dayNumber: 'asc' },
+    })
+
+    const allCompletions = await prisma.planDayCompletion.findMany({
+      where: { planWeekId: { in: weekRecords.map((w) => w.id) } },
+      select: {
+        planWeekId: true,
+        planDayId: true,
+        status: true,
+        sessionId: true,
+        completedAt: true,
+      },
+    })
+
+    const completionsByWeekId = new Map<string, typeof allCompletions>()
+    for (const c of allCompletions) {
+      const list = completionsByWeekId.get(c.planWeekId) ?? []
+      list.push(c)
+      completionsByWeekId.set(c.planWeekId, list)
+    }
+
+    const sharedPlan = {
+      id: plan.id,
+      name: plan.name,
+      description: plan.description,
+      daysPerWeek: plan.daysPerWeek,
+      durationWeeks: plan.durationWeeks,
+      activatedAt: plan.activatedAt,
+    }
+    const sharedDays = dayRecords.map((d) => ({
+      id: d.id,
+      dayNumber: d.dayNumber,
+      label: d.label,
+      exercises: d.exercises.map((e) => ({
+        id: e.id,
+        exerciseId: e.exerciseId,
+        exercise: e.exercise,
+        order: e.order,
+        groupId: e.groupId,
+        sets: e.sets,
+        reps: e.reps,
+        weight: e.weight,
+        restSeconds: e.restSeconds,
+        notes: e.notes,
+      })),
+    }))
+
+    const weeks: ActivePlanDashboard[] = weekRecords.map((w) => ({
+      plan: sharedPlan,
+      weeks: weekRecords,
+      activeWeekNumber,
+      viewedWeekNumber: w.weekNumber,
+      days: sharedDays,
+      weekCompletions: (completionsByWeekId.get(w.id) ?? []).map((c) => ({
+        planDayId: c.planDayId,
+        status: c.status,
+        sessionId: c.sessionId,
+        completedAt: c.completedAt,
+      })),
+    }))
+
+    return { success: true, data: { weeks } }
+  } catch (error) {
+    console.error('Error fetching active plan dashboard weeks:', error)
+    if (error instanceof Error) {
+      return { success: false, error: error.message }
+    }
+    return { success: false, error: 'Failed to fetch active plan dashboard weeks' }
   }
 }
 

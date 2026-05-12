@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { onlineManager } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -84,8 +85,13 @@ export default function DashboardPage() {
     if (searchParams.get('checkout') === 'success') {
       toast.success('Subscription activated! Welcome to your new plan.')
       // Refresh the JWT to pick up the new role from the DB, then
-      // re-render the server layout so sidebar/navbar reflect the change
-      update().then(() => router.refresh())
+      // re-render the server layout so sidebar/navbar reflect the change.
+      // Guard: skip when offline — update() hits /api/auth/session and
+      // router.refresh() triggers a full RSC re-render, both of which
+      // fail offline and cause React error #418.
+      if (onlineManager.isOnline()) {
+        update().then(() => router.refresh())
+      }
     }
   }, [searchParams, update, router])
 

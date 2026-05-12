@@ -1,23 +1,18 @@
 /**
  * React Query mutation hooks for workout operations
+ *
+ * Block 6: mutationKey-only hooks. The mutationFn, optimistic cache
+ * patching, temp-id reconciliation, and invalidation all live in
+ * `@/lib/pwa/mutation-defaults` so paused mutations rehydrated from
+ * IndexedDB can resume across deploys without the hook being mounted.
+ *
+ * Create callers must allocate their own tempId via `newTempId()` from
+ * `@/lib/pwa/temp-id` and pass `{ input, tempId, userId }` as variables.
  */
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient, onlineManager } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import {
-  createWorkout,
-  createWorkoutForClient,
-  updateWorkout,
-  deleteWorkout,
-  addExerciseToWorkout,
-  updateWorkoutExercise,
-  removeExerciseFromWorkout,
-  reorderExercises,
-  copyWorkout,
-  addMultipleExercisesToWorkout,
-  syncWorkoutExercises,
-  duplicateWorkout,
-} from '@/server/actions/workouts'
+import { copyWorkout, createWorkoutForClient, duplicateWorkout } from '@/server/actions/workouts'
 import type {
   CreateWorkoutInput,
   UpdateWorkoutInput,
@@ -26,237 +21,330 @@ import type {
   ReorderExercisesInput,
   CopyWorkoutInput,
   AddMultipleExercisesToWorkoutInput,
-  SyncWorkoutExercisesInput,
 } from '@/lib/validations/workout'
+import { newTempId } from '@/lib/pwa/temp-id'
+import type { WorkoutExerciseSnapshot } from '@/lib/pwa/mutation-defaults'
 
 // ============================================================================
-// Create Workout
+// Helpers
 // ============================================================================
+
+function offlineAware(savedCopy: string, offlineCopy: string) {
+  if (onlineManager.isOnline()) {
+    toast.success(savedCopy)
+  } else {
+    toast.success(offlineCopy, {
+      description: 'Will sync automatically when you are back online.',
+    })
+  }
+}
+
+// ============================================================================
+// Primary mutations (offline-capable, mutationKey-only)
+// ============================================================================
+
+type CreateVariables = {
+  input: CreateWorkoutInput
+  tempId: string
+  userId: string
+  exercises?: WorkoutExerciseSnapshot[]
+}
 
 export function useCreateWorkout() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (input: CreateWorkoutInput) => {
-      const result = await createWorkout(input)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to create workout')
-      }
-      return result.data
-    },
+  return useMutation<unknown, Error, CreateVariables>({
+    mutationKey: ['workouts', 'create'],
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['workouts'] })
-      toast.success('Workout created successfully')
+      offlineAware('Workout created successfully', 'Workout saved locally')
     },
-    onError: (error: Error) => {
-      toast.error(error.message)
+    onError: (error) => {
+      if (!onlineManager.isOnline()) return
+      toast.error(error.message || 'Failed to create workout')
     },
   })
 }
 
-// ============================================================================
-// Update Workout
-// ============================================================================
+type UpdateVariables = { id: string; input: UpdateWorkoutInput }
 
 export function useUpdateWorkout() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async ({ workoutId, input }: { workoutId: string; input: UpdateWorkoutInput }) => {
-      const result = await updateWorkout(workoutId, input)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to update workout')
-      }
-      return result.data
+  return useMutation<unknown, Error, UpdateVariables>({
+    mutationKey: ['workouts', 'update'],
+    onSuccess: () => {
+      offlineAware('Workout updated', 'Saved locally')
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['workouts'] })
-      if (data) {
-        queryClient.invalidateQueries({ queryKey: ['workout', data.id] })
-      }
-      toast.success('Workout updated successfully')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
+    onError: (error) => {
+      if (!onlineManager.isOnline()) return
+      toast.error(error.message || 'Failed to update workout')
     },
   })
 }
 
-// ============================================================================
-// Delete Workout
-// ============================================================================
+type DeleteVariables = { id: string }
 
 export function useDeleteWorkout() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (workoutId: string) => {
-      const result = await deleteWorkout(workoutId)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to delete workout')
-      }
-      return workoutId
+  return useMutation<unknown, Error, DeleteVariables>({
+    mutationKey: ['workouts', 'delete'],
+    onSuccess: () => {
+      offlineAware('Workout deleted', 'Deleted locally')
     },
-    onSuccess: (workoutId) => {
-      queryClient.invalidateQueries({ queryKey: ['workouts'] })
-      queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
-      queryClient.removeQueries({ queryKey: ['workout', workoutId] })
-      toast.success('Workout deleted successfully')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
+    onError: (error) => {
+      if (!onlineManager.isOnline()) return
+      toast.error(error.message || 'Failed to delete workout')
     },
   })
 }
 
+type SyncExercisesVariables = {
+  workoutId: string
+  exercises: WorkoutExerciseSnapshot[]
+}
+
+export function useSyncWorkoutExercises() {
+  return useMutation<
+    { addedCount: number; updatedCount: number; deletedCount: number } | undefined,
+    Error,
+    SyncExercisesVariables
+  >({
+    mutationKey: ['workouts', 'sync-exercises'],
+    onSuccess: (data) => {
+      if (!onlineManager.isOnline()) {
+        toast.success('Workout saved locally', {
+          description: 'Will sync automatically when you are back online.',
+        })
+        return
+      }
+      const { addedCount = 0, updatedCount = 0, deletedCount = 0 } = data ?? {}
+      const changes = []
+      if (addedCount > 0) changes.push(`${addedCount} added`)
+      if (updatedCount > 0) changes.push(`${updatedCount} updated`)
+      if (deletedCount > 0) changes.push(`${deletedCount} removed`)
+      toast.success(changes.length ? `Workout updated: ${changes.join(', ')}` : 'Workout updated')
+    },
+    onError: (error) => {
+      if (!onlineManager.isOnline()) return
+      toast.error(error.message || 'Failed to sync workout exercises')
+    },
+  })
+}
+
+// Helper for callers that allocate tempIds at the UI boundary.
+export const allocateWorkoutTempId = newTempId
+
 // ============================================================================
-// Add Exercise to Workout
+// Sub-mutations — composers over sync-exercises
 // ============================================================================
+//
+// These hooks read the current ['workout', workoutId] cache, derive the
+// new exercises array, and trigger sync-exercises with the full snapshot.
+// All offline-safety lives in sync-exercises' mutation defaults.
+
+type WorkoutDetailLike = {
+  id: string
+  exercises: WorkoutExerciseSnapshot[]
+} & Record<string, unknown>
+
+function exerciseLookup(
+  qc: ReturnType<typeof useQueryClient>,
+  exerciseId: string
+): WorkoutExerciseSnapshot['exercise'] | undefined {
+  const direct = qc.getQueryData<WorkoutExerciseSnapshot['exercise']>(['exercise', exerciseId])
+  if (direct) return direct
+  const list = qc.getQueryData<{
+    exercises?: WorkoutExerciseSnapshot['exercise'][]
+  }>(['exercises', 'all'])
+  return list?.exercises?.find((e) => (e as { id: string }).id === exerciseId)
+}
 
 export function useAddExerciseToWorkout() {
   const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (input: AddExerciseToWorkoutInput) => {
-      const result = await addExerciseToWorkout(input)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to add exercise')
+  const sync = useSyncWorkoutExercises()
+  return {
+    ...sync,
+    mutate: (input: AddExerciseToWorkoutInput, opts?: Parameters<typeof sync.mutate>[1]) => {
+      const detail = queryClient.getQueryData<WorkoutDetailLike>(['workout', input.workoutId])
+      const current = detail?.exercises ?? []
+      const exercise = exerciseLookup(queryClient, input.exerciseId)
+      if (!exercise) {
+        toast.error('Exercise data not loaded — try again')
+        return
       }
-      return result.data
-    },
-    onSuccess: (data) => {
-      if (data) {
-        queryClient.invalidateQueries({ queryKey: ['workout', data.workoutId] })
+      const newRow: WorkoutExerciseSnapshot = {
+        id: newTempId(),
+        exerciseId: input.exerciseId,
+        order: input.order ?? current.length,
+        sets: input.sets,
+        reps: input.reps,
+        weight: input.weight,
+        restSeconds: input.restSeconds ?? 60,
+        notes: input.notes,
+        groupId: input.groupId,
+        exercise,
       }
-      queryClient.invalidateQueries({ queryKey: ['workouts'] })
-      toast.success('Exercise added to workout')
+      sync.mutate({ workoutId: input.workoutId, exercises: [...current, newRow] }, opts)
     },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
+  }
 }
-
-// ============================================================================
-// Add Multiple Exercises to Workout (Batch Operation)
-// ============================================================================
 
 export function useAddMultipleExercisesToWorkout() {
   const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (input: AddMultipleExercisesToWorkoutInput) => {
-      const result = await addMultipleExercisesToWorkout(input)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to add exercises')
+  const sync = useSyncWorkoutExercises()
+  return {
+    ...sync,
+    mutate: (
+      input: AddMultipleExercisesToWorkoutInput,
+      opts?: Parameters<typeof sync.mutate>[1]
+    ) => {
+      const detail = queryClient.getQueryData<WorkoutDetailLike>(['workout', input.workoutId])
+      const current = detail?.exercises ?? []
+      const newRows: WorkoutExerciseSnapshot[] = []
+      for (const e of input.exercises) {
+        const exercise = exerciseLookup(queryClient, e.exerciseId)
+        if (!exercise) {
+          toast.error('Exercise data not loaded — try again')
+          return
+        }
+        newRows.push({
+          id: newTempId(),
+          exerciseId: e.exerciseId,
+          order: e.order,
+          sets: e.sets,
+          reps: e.reps,
+          weight: e.weight,
+          restSeconds: e.restSeconds ?? 60,
+          notes: e.notes,
+          groupId: e.groupId,
+          exercise,
+        })
       }
-      return result.data
+      sync.mutate({ workoutId: input.workoutId, exercises: [...current, ...newRows] }, opts)
     },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['workout', variables.workoutId] })
-      queryClient.invalidateQueries({ queryKey: ['workouts'] })
-      const count = variables.exercises.length
-      toast.success(`${count} exercise${count !== 1 ? 's' : ''} added to workout`)
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
+  }
 }
-
-// ============================================================================
-// Update Workout Exercise
-// ============================================================================
 
 export function useUpdateWorkoutExercise() {
   const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (input: UpdateWorkoutExerciseInput) => {
-      const result = await updateWorkoutExercise(input)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to update exercise')
+  const sync = useSyncWorkoutExercises()
+  return {
+    ...sync,
+    mutate: (input: UpdateWorkoutExerciseInput, opts?: Parameters<typeof sync.mutate>[1]) => {
+      // We need the workoutId to read the detail. The legacy schema only
+      // gives us workoutExerciseId — find the parent by scanning the
+      // workouts list cache for the matching nested id.
+      const list = queryClient.getQueryData<{
+        workouts: Array<{ id: string; exercises: Array<{ id: string }> }>
+      }>(['workouts', 'all'])
+      const parent = list?.workouts.find((w) =>
+        w.exercises.some((e) => e.id === input.workoutExerciseId)
+      )
+      if (!parent) {
+        toast.error('Workout context not found — try again')
+        return
       }
-      return result.data
+      const detail = queryClient.getQueryData<WorkoutDetailLike>(['workout', parent.id])
+      const current = detail?.exercises ?? []
+      const next = current.map((e) =>
+        e.id === input.workoutExerciseId
+          ? {
+              ...e,
+              sets: input.sets ?? e.sets,
+              reps: input.reps ?? e.reps,
+              weight: input.weight ?? e.weight,
+              restSeconds: input.restSeconds ?? e.restSeconds,
+              notes: input.notes ?? e.notes,
+              groupId: input.groupId ?? e.groupId,
+            }
+          : e
+      )
+      sync.mutate({ workoutId: parent.id, exercises: next }, opts)
     },
-    onSuccess: (data) => {
-      if (data) {
-        queryClient.invalidateQueries({ queryKey: ['workout', data.workoutId] })
-      }
-      toast.success('Exercise updated')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
+  }
 }
-
-// ============================================================================
-// Remove Exercise from Workout
-// ============================================================================
 
 export function useRemoveExerciseFromWorkout() {
   const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async ({
-      workoutExerciseId,
-      workoutId,
-    }: {
-      workoutExerciseId: string
-      workoutId: string
-    }) => {
-      const result = await removeExerciseFromWorkout(workoutExerciseId)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to remove exercise')
-      }
-      return workoutId
+  const sync = useSyncWorkoutExercises()
+  return {
+    ...sync,
+    mutate: (
+      input: { workoutExerciseId: string; workoutId: string },
+      opts?: Parameters<typeof sync.mutate>[1]
+    ) => {
+      const detail = queryClient.getQueryData<WorkoutDetailLike>(['workout', input.workoutId])
+      const current = detail?.exercises ?? []
+      const next = current
+        .filter((e) => e.id !== input.workoutExerciseId)
+        .map((e, i) => ({ ...e, order: i }))
+      sync.mutate({ workoutId: input.workoutId, exercises: next }, opts)
     },
-    onSuccess: (workoutId) => {
-      queryClient.invalidateQueries({ queryKey: ['workout', workoutId] })
-      queryClient.invalidateQueries({ queryKey: ['workouts'] })
-      toast.success('Exercise removed from workout')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
+  }
 }
-
-// ============================================================================
-// Reorder Exercises
-// ============================================================================
 
 export function useReorderExercises() {
   const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (input: ReorderExercisesInput) => {
-      const result = await reorderExercises(input)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to reorder exercises')
-      }
-      return input.workoutId
+  const sync = useSyncWorkoutExercises()
+  return {
+    ...sync,
+    mutate: (input: ReorderExercisesInput, opts?: Parameters<typeof sync.mutate>[1]) => {
+      const detail = queryClient.getQueryData<WorkoutDetailLike>(['workout', input.workoutId])
+      const current = detail?.exercises ?? []
+      const orderById = new Map(input.exerciseOrders.map((o) => [o.workoutExerciseId, o.order]))
+      const next = current
+        .map((e) => ({ ...e, order: orderById.get(e.id) ?? e.order }))
+        .sort((a, b) => a.order - b.order)
+      sync.mutate({ workoutId: input.workoutId, exercises: next }, opts)
     },
-    onSuccess: (workoutId) => {
-      queryClient.invalidateQueries({ queryKey: ['workout', workoutId] })
-      toast.success('Exercises reordered')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
+  }
 }
 
 // ============================================================================
-// Copy Workout
+// Online-only mutations (gated at click time, not inside mutationFn)
 // ============================================================================
+//
+// Why the gate lives at click time, not inside mutationFn:
+//
+// With networkMode:'online' (the project default in queryClient.ts), an
+// offline mutate() enters paused state BEFORE mutationFn runs. A check
+// inside mutationFn never fires when offline → no toast, no abort, but
+// the paused mutation is still persisted to IDB (every paused mutation
+// is, regardless of mutationKey) and silently replays on reconnect.
+//
+// To gate cleanly: check onlineManager.isOnline() in a wrapper around
+// mutate/mutateAsync, toast and return early when offline. Nothing ever
+// gets persisted; nothing ever silently replays.
+//
+// FOLLOW-UP (deferred, see PR2 notes):
+//   - useDuplicateWorkout — strong candidate for full offline support
+//     (optimistic create from cached source workout). Mirror the
+//     ['workouts','create'] pattern with a new ['workouts','duplicate']
+//     entry in mutation-defaults + a /api/offline/workouts/duplicate
+//     route.
+//   - useCopyWorkout, useCreateWorkoutForClient — touch cross-user /
+//     client-relationship surface. Defer offline support until there's
+//     a clear UX need; treat the cache-miss case carefully.
+
+function offlineGuard<TVars, TData>(
+  m: ReturnType<typeof useMutation<TData, Error, TVars>>
+): typeof m {
+  const guardedMutate: typeof m.mutate = (vars, opts) => {
+    if (!onlineManager.isOnline()) {
+      toast.error('This action requires a connection')
+      return
+    }
+    m.mutate(vars, opts)
+  }
+  const guardedMutateAsync: typeof m.mutateAsync = (vars, opts) => {
+    if (!onlineManager.isOnline()) {
+      toast.error('This action requires a connection')
+      return Promise.reject(new Error('Offline'))
+    }
+    return m.mutateAsync(vars, opts)
+  }
+  return { ...m, mutate: guardedMutate, mutateAsync: guardedMutateAsync }
+}
 
 export function useCopyWorkout() {
   const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (input: CopyWorkoutInput) => {
+  const m = useMutation<unknown, Error, CopyWorkoutInput>({
+    mutationFn: async (input) => {
       const result = await copyWorkout(input)
       if (!result.success) {
         throw new Error(result.error || 'Failed to copy workout')
@@ -267,59 +355,21 @@ export function useCopyWorkout() {
       queryClient.invalidateQueries({ queryKey: ['workouts'] })
       toast.success('Workout assigned successfully')
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       toast.error(error.message)
     },
   })
+  return offlineGuard(m)
 }
-
-// ============================================================================
-// Sync Workout Exercises
-// ============================================================================
-
-export function useSyncWorkoutExercises() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (input: SyncWorkoutExercisesInput) => {
-      const result = await syncWorkoutExercises(input)
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to sync workout exercises')
-      }
-      return result.data
-    },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['workouts'] })
-      queryClient.invalidateQueries({ queryKey: ['workout', variables.workoutId] })
-      queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
-
-      const { addedCount, updatedCount, deletedCount } = data || {
-        addedCount: 0,
-        updatedCount: 0,
-        deletedCount: 0,
-      }
-      const changes = []
-      if (addedCount > 0) changes.push(`${addedCount} added`)
-      if (updatedCount > 0) changes.push(`${updatedCount} updated`)
-      if (deletedCount > 0) changes.push(`${deletedCount} removed`)
-
-      toast.success(`Workout updated: ${changes.join(', ')}`)
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
-}
-
-// ============================================================================
-// Create Workout for Client
-// ============================================================================
 
 export function useCreateWorkoutForClient() {
   const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (input: { clientId: string; name: string; description?: string }) => {
+  const m = useMutation<
+    { id: string } | undefined,
+    Error,
+    { clientId: string; name: string; description?: string }
+  >({
+    mutationFn: async (input) => {
       const result = await createWorkoutForClient(input)
       if (!result.success) {
         throw new Error(result.error || 'Failed to create workout for client')
@@ -330,21 +380,17 @@ export function useCreateWorkoutForClient() {
       queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
       toast.success('Workout created for client')
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       toast.error(error.message)
     },
   })
+  return offlineGuard(m)
 }
-
-// ============================================================================
-// Duplicate Workout
-// ============================================================================
 
 export function useDuplicateWorkout() {
   const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async (workoutId: string) => {
+  const m = useMutation<unknown, Error, string>({
+    mutationFn: async (workoutId) => {
       const result = await duplicateWorkout(workoutId)
       if (!result.success) {
         throw new Error(result.error || 'Failed to duplicate workout')
@@ -356,8 +402,9 @@ export function useDuplicateWorkout() {
       queryClient.invalidateQueries({ queryKey: ['clientWorkouts'] })
       toast.success('Workout duplicated')
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       toast.error(error.message)
     },
   })
+  return offlineGuard(m)
 }

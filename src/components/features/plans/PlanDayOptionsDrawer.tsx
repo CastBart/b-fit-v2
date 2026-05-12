@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Play, SkipForward, Pencil } from 'lucide-react'
-import { useSkipPlanDay } from '@/hooks/mutations/usePlanMutations'
+import { useSkipPlanDay, allocateSkipDayClientId } from '@/hooks/mutations/usePlanMutations'
 import type { ActivePlanDashboard } from '@/types/plan'
 
 interface PlanDayOptionsDrawerProps {
@@ -45,13 +45,17 @@ export function PlanDayOptionsDrawer({
   const isClient = authSession?.user?.role === 'CLIENT'
   const skipMutation = useSkipPlanDay()
 
-  const handleSkip = async () => {
-    await skipMutation.mutateAsync({ planId, planDayId })
+  const handleSkip = () => {
+    skipMutation.mutate({
+      planId,
+      planDayId,
+      clientId: allocateSkipDayClientId(),
+    })
     onClose()
   }
 
   const handleEditPlan = () => {
-    router.push(`/plans/builder/${planId}?day=${dayNumber}`)
+    router.push(`/plans/builder?id=${planId}&day=${dayNumber}`)
     onClose()
   }
 
@@ -72,15 +76,9 @@ export function PlanDayOptionsDrawer({
           )}
 
           {canSkip && (
-            <Button
-              variant="outline"
-              className="w-full"
-              size="lg"
-              onClick={handleSkip}
-              disabled={skipMutation.isPending}
-            >
+            <Button variant="outline" className="w-full" size="lg" onClick={handleSkip}>
               <SkipForward className="mr-2 h-5 w-5" />
-              {skipMutation.isPending ? 'Skipping...' : 'Skip Day'}
+              Skip Day
             </Button>
           )}
 

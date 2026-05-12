@@ -4,7 +4,6 @@ import { auth } from '@/lib/auth/auth.config'
 import { prisma } from '@/lib/db/prisma'
 import type { Prisma } from '@prisma/client'
 import {
-  saveSessionSchema,
   getSessionByIdSchema,
   sessionFiltersSchema,
   getExerciseHistorySchema,
@@ -15,7 +14,6 @@ import {
   type GetLatestHistoryBatchInput,
 } from '@/lib/validations/session'
 import {
-  SessionStatus,
   type TrainingSessionWithDetails,
   type SaveSessionPayload,
   type ExerciseHistoryEntry,
@@ -23,7 +21,7 @@ import {
 } from '@/types/session'
 import { detectSessionPRs, type SessionPR } from '@/lib/analytics/pr-detection'
 import { revalidatePath } from 'next/cache'
-import { checkAndAdvanceWeek } from '@/server/utils/plan-week-utils'
+import { sessionService } from '@/server/services/sessions'
 
 // ============================================================================
 // RESPONSE TYPES
@@ -56,107 +54,13 @@ export async function saveCompletedSession(
       return { success: false, error: 'Unauthorized' }
     }
 
-    const validated = saveSessionSchema.parse(payload)
+    const trainingSession = await sessionService.save(session.user.id, payload)
 
-    // Create session with all exercises and sets in one transaction
-    const trainingSession = await prisma.$transaction(async (tx) => {
-      // 1. Create TrainingSession
-      const newSession = await tx.trainingSession.create({
-        data: {
-          id: validated.sessionId,
-          userId: session.user.id,
-          workoutId: validated.workoutId,
-          name: validated.workoutName,
-          notes: validated.sessionNotes,
-          status: validated.status,
-          startedAt: new Date(validated.startTime),
-          completedAt: new Date(validated.completeTime),
-          planId: validated.planId ?? null,
-          planDayId: validated.planDayId ?? null,
-        },
-      })
-
-      // 2. Create SessionExercises and SessionSets
-      for (const exercise of validated.exercises) {
-        const sessionExercise = await tx.sessionExercise.create({
-          data: {
-            sessionId: newSession.id,
-            exerciseId: exercise.exerciseId,
-            instanceId: exercise.instanceId,
-            order: exercise.order,
-            groupId: exercise.groupId,
-            targetSets: exercise.targetSets,
-            targetReps: exercise.targetReps,
-            targetWeight: exercise.targetWeight,
-            targetRestSeconds: exercise.targetRestSeconds,
-            notes: exercise.notes,
-          },
-        })
-
-        // 3. Create SessionSets for this exercise
-        for (const set of exercise.sets) {
-          if (set.isCompleted) {
-            await tx.sessionSet.create({
-              data: {
-                sessionId: newSession.id,
-                sessionExerciseId: sessionExercise.id,
-                setNumber: set.setNumber,
-                weight: set.weight,
-                reps: set.reps,
-                duration: set.duration,
-                distance: set.distance,
-                counterWeight: set.counterWeight,
-                isCompleted: set.isCompleted,
-                completedAt: set.completedAt ? new Date(set.completedAt) : null,
-              },
-            })
-          }
-        }
-      }
-
-      // 4. Plan day completion tracking
-      if (validated.planId && validated.planDayId && validated.status === 'COMPLETED') {
-        const activeWeek = await tx.planWeek.findFirst({
-          where: { planId: validated.planId, status: 'IN_PROGRESS' },
-        })
-
-        if (activeWeek) {
-          const existing = await tx.planDayCompletion.findUnique({
-            where: {
-              planWeekId_planDayId: {
-                planWeekId: activeWeek.id,
-                planDayId: validated.planDayId,
-              },
-            },
-          })
-
-          if (!existing) {
-            await tx.planDayCompletion.create({
-              data: {
-                planWeekId: activeWeek.id,
-                planDayId: validated.planDayId,
-                status: 'COMPLETED',
-                sessionId: newSession.id,
-              },
-            })
-
-            await checkAndAdvanceWeek(tx, validated.planId, activeWeek.id)
-          }
-        }
-      }
-
-      return newSession
-    })
-
-    // Revalidate sessions list
     revalidatePath('/sessions')
     revalidatePath(`/sessions/${trainingSession.id}`)
     revalidatePath('/dashboard')
 
-    return {
-      success: true,
-      data: trainingSession.id,
-    }
+    return { success: true, data: trainingSession.id }
   } catch (error) {
     console.error('Failed to save completed session:', error)
     return {
@@ -167,39 +71,55 @@ export async function saveCompletedSession(
 }
 
 /**
- * Complete a session (wrapper that calls saveCompletedSession with COMPLETED status)
- *
- * @param payload - Complete session data
- * @returns ActionResponse
+ * Complete a session (delegates to sessionService.complete, which forces COMPLETED status)
  */
 export async function completeSession(payload: SaveSessionPayload): Promise<ActionResponse> {
-  const result = await saveCompletedSession({
-    ...payload,
-    status: SessionStatus.COMPLETED,
-  })
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Unauthorized' }
+    }
 
-  return {
-    success: result.success,
-    error: result.error,
+    const trainingSession = await sessionService.complete(session.user.id, payload)
+
+    revalidatePath('/sessions')
+    revalidatePath(`/sessions/${trainingSession.id}`)
+    revalidatePath('/dashboard')
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to complete session:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to complete session',
+    }
   }
 }
 
 /**
- * Abandon a session (wrapper that calls saveCompletedSession with ABANDONED status)
+ * Abandon a session (delegates to sessionService.abandon, which forces ABANDONED status)
  * Saves partial progress for later review.
- *
- * @param payload - Complete session data
- * @returns ActionResponse
  */
 export async function abandonSession(payload: SaveSessionPayload): Promise<ActionResponse> {
-  const result = await saveCompletedSession({
-    ...payload,
-    status: SessionStatus.ABANDONED,
-  })
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return { success: false, error: 'Unauthorized' }
+    }
 
-  return {
-    success: result.success,
-    error: result.error,
+    const trainingSession = await sessionService.abandon(session.user.id, payload)
+
+    revalidatePath('/sessions')
+    revalidatePath(`/sessions/${trainingSession.id}`)
+    revalidatePath('/dashboard')
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to abandon session:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to abandon session',
+    }
   }
 }
 

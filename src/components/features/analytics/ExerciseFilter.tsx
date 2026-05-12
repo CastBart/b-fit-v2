@@ -15,7 +15,7 @@ interface ExerciseFilterProps {
 }
 
 export function ExerciseFilter({ value, onValueChange }: ExerciseFilterProps) {
-  const { data } = useExercises({ limit: 100 }, 'analytics-filter')
+  const { data } = useExercises({ limit: 100 })
 
   return (
     <Select
