@@ -478,6 +478,9 @@ model Plan {
   copiedFrom   Plan?   @relation("PlanCopies", fields: [copiedFromId], references: [id], onDelete: SetNull)
   copies       Plan[]  @relation("PlanCopies")
 
+  // Idempotency key for offline create retries (client-generated tempId)
+  clientId String? @unique
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -502,6 +505,9 @@ model PlanDay {
   // Day configuration
   dayNumber Int     // 1 through daysPerWeek
   label     String? // Optional label (e.g., "Push Day", "Leg Day")
+
+  // Idempotency key for offline save-all-days replays (client-generated uid)
+  clientId String? @unique
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -534,6 +540,9 @@ model PlanDayExercise {
   weight      Float?
   restSeconds Int     @default(60)
   notes       String?
+
+  // Idempotency key for offline save-all-days replays (client-generated instanceId)
+  clientId String? @unique
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -575,6 +584,9 @@ model PlanDayCompletion {
   sessionId   String?             @unique
   session     TrainingSession?    @relation(fields: [sessionId], references: [id], onDelete: SetNull)
   completedAt DateTime            @default(now())
+
+  // Idempotency key for offline skip/complete replays (client-generated tempId)
+  clientId String? @unique
 
   @@unique([planWeekId, planDayId])
   @@index([planWeekId])

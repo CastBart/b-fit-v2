@@ -19,6 +19,11 @@ type Waiter = {
 
 let mirror: IdMap | null = null
 const waiters = new Map<string, Waiter[]>()
+// Generic change-listeners — fire after every successful set(). Used by
+// the React-tree redirect hook (usePlanTempIdRedirect) to re-evaluate
+// URL state without depending on the emitter event, which has a fatal
+// closure-stale race when navigation completes after the emit.
+const subscribers = new Set<() => void>()
 
 async function ensureMirror(): Promise<IdMap> {
   if (mirror) return mirror
@@ -47,6 +52,19 @@ export const idMap = {
     if (pending) {
       waiters.delete(tempId)
       for (const w of pending) w.resolve(realId)
+    }
+
+    for (const sub of subscribers) sub()
+  },
+
+  // Subscribe to any successful set(). Returns an unsubscribe function.
+  // Listeners receive no payload — they should re-read whatever idMap
+  // state they care about. Designed for React useEffect/useState pairs
+  // that need to trigger a re-render when an entity has been reconciled.
+  subscribe(callback: () => void): () => void {
+    subscribers.add(callback)
+    return () => {
+      subscribers.delete(callback)
     }
   },
 

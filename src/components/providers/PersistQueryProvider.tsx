@@ -77,7 +77,10 @@ export function PersistQueryProvider({ children }: { children: React.ReactNode }
               const key = mutation.options.mutationKey
               if (
                 Array.isArray(key) &&
-                (key[0] === 'sessions' || key[0] === 'exercises' || key[0] === 'workouts')
+                (key[0] === 'sessions' ||
+                  key[0] === 'exercises' ||
+                  key[0] === 'workouts' ||
+                  key[0] === 'plans')
               ) {
                 return true
               }
@@ -109,7 +112,8 @@ export function PersistQueryProvider({ children }: { children: React.ReactNode }
             Array.isArray(m.options.mutationKey) &&
             (m.options.mutationKey[0] === 'sessions' ||
               m.options.mutationKey[0] === 'exercises' ||
-              m.options.mutationKey[0] === 'workouts')
+              m.options.mutationKey[0] === 'workouts' ||
+              m.options.mutationKey[0] === 'plans')
           ) {
             const pausedState = {
               ...m.state,

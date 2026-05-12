@@ -37,6 +37,11 @@ const WARM_ROUTES = [
   '/workouts',
   '/workouts/builder',
   '/plans',
+  '/plans/create',
+  // Single static shell for the plan builder. The id travels in `?id=...`
+  // (see /plans/builder/page.tsx) so this one cached entry serves every
+  // plan id offline — real cuids and tmp_* alike.
+  '/plans/builder',
   '/sessions',
   '/session',
   '/analytics',
@@ -214,6 +219,11 @@ export function usePrefetchCriticalData() {
             // builder shell is a 'use client' boundary that the SW only
             // caches once requested, so without this, offline edits land
             // on /~offline before WorkoutBuilder ever mounts.
+            //
+            // Plan builder is intentionally NOT warmed per-id: it now lives
+            // at the static `/plans/builder` URL with `?id=<id>` and is
+            // covered by WARM_ROUTES once. Keeping `/plans/${p.id}` here
+            // because the plan detail page is genuinely per-id.
             const detailRoutes = [
               ...res.data.workouts.flatMap((w) => [
                 `/workouts/${w.id}`,

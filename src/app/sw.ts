@@ -13,25 +13,47 @@ declare const self: ServiceWorkerGlobalScope
 const stripRscPlugin = {
   async cacheKeyWillBeUsed({ request }: { request: Request }) {
     const url = new URL(request.url)
+    let modified = false
 
     if (url.searchParams.has('_rsc')) {
       url.searchParams.delete('_rsc')
-      return new Request(url.toString(), {
-        method: request.method,
-        headers: request.headers,
-        mode: request.mode,
-        credentials: request.credentials,
-        cache: request.cache,
-        redirect: request.redirect,
-        referrer: request.referrer,
-        referrerPolicy: request.referrerPolicy,
-        integrity: request.integrity,
-        keepalive: request.keepalive,
-        signal: request.signal,
-      })
+      modified = true
     }
 
-    return request
+    // Plan builder is a single static shell (`'use client'`, reads `id`
+    // and `day` via useSearchParams on the client). The server-rendered
+    // RSC payload is genuinely id-agnostic, so collapsing every query-
+    // string variant into the same cache key lets one warmed entry
+    // serve every plan id offline:
+    //   /plans/builder
+    //   /plans/builder?id=abc
+    //   /plans/builder?id=tmp_*
+    //   /plans/builder?id=abc&day=2
+    //
+    // Intentionally scoped to this exact pathname — do NOT generalize
+    // to other routes. `/plans/[id]`, `/workouts/builder/[id]`, etc.
+    // have RSC payloads that depend on their dynamic segment, and
+    // global query-param stripping would serve the wrong content.
+    if (url.pathname === '/plans/builder' && url.search !== '') {
+      url.search = ''
+      modified = true
+    }
+
+    if (!modified) return request
+
+    return new Request(url.toString(), {
+      method: request.method,
+      headers: request.headers,
+      mode: request.mode,
+      credentials: request.credentials,
+      cache: request.cache,
+      redirect: request.redirect,
+      referrer: request.referrer,
+      referrerPolicy: request.referrerPolicy,
+      integrity: request.integrity,
+      keepalive: request.keepalive,
+      signal: request.signal,
+    })
   },
 }
 

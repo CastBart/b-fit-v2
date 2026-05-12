@@ -1,10 +1,77 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-04-26
+**Last Updated**: 2026-04-30
 **Current Phase**: Offline-First PWA — PR-series follow-up to Block 7
-**Recently Completed**: PR1.5 — Read-path completeness for detail routes + active-plan all-weeks seeding
-**Next Tasks**: PR2 — Workout offline mutations (after PR1.5 has been running for a few days; see roadmap PR2 in `i-need-you-to-cheeky-widget-execution.md`)
+**Recently Completed**: PR3 — Plan offline capabilities (implementation complete; awaiting full user-test pass)
+**Next Tasks**: User-test the PR3 offline plan flows (create / save-all-days / activate / deactivate / skip-day with online-offline-reload-reconnect cycles). Then choose between (a) builder-route warming follow-up (mirror PR2's pattern), (b) cleanup PR for legacy plan hooks, or (c) the next entity in the offline series. See `i-need-you-to-cheeky-widget-execution.md` PR3 section for full scope and `docs/offline/implementation-blocks.md` PR3 section for implementation details + carry-overs.
 **Branch**: `feature/cache-app-shell`
+
+---
+
+## PR3 — Plan offline capabilities (2026-04-30) ✅
+
+### Problem
+
+After PR2, every workout-side mutation was offline-safe but the entire plan domain still hard-failed offline: creating a plan, editing days/exercises in the builder, activating/deactivating a plan, or skipping a day in the active-plan dashboard would either error silently or block on a never-completing `mutateAsync`. The active-plan dashboard's per-week cache fan-out (one key per week the user navigates to, plus `'active'`) meant any optimistic update needed to walk every cached entry — not just patch a single key.
+
+### Solution
+
+Mirrored the PR2 workouts pattern across the plan domain:
+
+1. **Schema:** added `clientId String? @unique` to `Plan`, `PlanDay`, `PlanDayExercise`, and `PlanDayCompletion`. Per-day and per-exercise `clientId` was needed because `save-all-days` is a recursive upsert that has to match nested rows across replays — without them a replay would delete-and-recreate every nested row and lose ids that downstream mutations depend on.
+2. **Service layer:** new `src/server/services/plans.ts` with `create / update / delete / saveAllDays / activate / deactivate / skipDay`. `saveAllDays` returns `{ totalSaved, dayIdMap, exerciseIdMap }` so the client can reconcile tmp ids; the existing `dayNumber +100` offset trick was extended with a `+1000` offset on existing exercises to dodge `(planDayId, order)` collisions during reorder.
+3. **Five new offline routes** under `/api/offline/plans/*` — full POST/PATCH/DELETE on the root plus `/days`, `/activate`, `/deactivate`, `/skip-day`. Same auth + error mapping as PR2.
+4. **Cache rewriter:** new `src/lib/pwa/rewrite-plan-id.ts` with `rewritePlanId` (patches `['plans','all']`, `['plan', id]`, and **all** `['activePlanDashboard', *]` entries) and `rewritePlanDayIds` (post-`save-all-days` swap of client-side day uids to real ids in detail + every dashboard entry's `days[]` and `weekCompletions[].planDayId`).
+5. **Mutation defaults:** 7 `setMutationDefaults` registrations in `mutation-defaults.ts` (~700 lines). Helpers added: `patchDashboardsForPlan` for the per-week fan-out walk; `buildSyntheticDashboard` so an offline activate renders the dashboard immediately from the cached plan detail; `restorePlanContext` for one-shot snapshot rollback.
+6. **Hook refactor:** all 7 primary plan hooks dropped their inline `mutationFn` and became `useMutation({ mutationKey })` shells. Hook-level `onSuccess` toasts via `offlineAware()` switch between "saved" and "saved locally, will sync" copy. 5 legacy hooks wrapped in `offlineGuard` and left online-only (cleanup deferred per user instruction).
+7. **UI audit:** removed every `isPending` button gate and `onSuccess`-await dialog close in plan create / list / detail / builder / day-options-drawer pages. Create page allocates `tempId` at click time and navigates immediately to `/plans/builder/{tempId}`; the temp-id redirect hook swaps the URL on real-id arrival.
+8. **PersistQueryProvider:** added `'plans'` to both the `shouldDehydrateMutation` error-state allowlist and the on-rehydrate "errored → paused" rebuild loop.
+
+Detailed write-up + audit findings + blockers + signals in `docs/offline/implementation-blocks.md` ("PR3 — Plan offline capabilities").
+
+### Modified Files
+
+```
+prisma/schema.prisma                                         - clientId on Plan, PlanDay, PlanDayExercise, PlanDayCompletion
+prisma/migrations/20260429120000_add_client_id_to_plan_models/migration.sql  - hand-written, applied via deploy
+src/lib/pwa/emitter.ts                                       - planIdRewritten event
+src/lib/pwa/rewrite-plan-id.ts                               - NEW (rewritePlanId + rewritePlanDayIds)
+src/components/providers/PersistQueryProvider.tsx            - 'plans' in 2 allowlists
+src/lib/validations/plan.ts                                  - 7 offline*Schema siblings
+src/server/services/plans.ts                                 - NEW (planService + 3 error classes)
+src/app/api/offline/plans/route.ts                           - NEW (POST/PATCH/DELETE)
+src/app/api/offline/plans/days/route.ts                      - NEW (POST save-all-days)
+src/app/api/offline/plans/activate/route.ts                  - NEW (POST)
+src/app/api/offline/plans/deactivate/route.ts                - NEW (POST)
+src/app/api/offline/plans/skip-day/route.ts                  - NEW (POST)
+src/lib/pwa/mutation-defaults.ts                             - 7 ['plans', *] registrations + helpers
+src/hooks/mutations/usePlanMutations.ts                      - full rewrite (mutationKey-only primary hooks)
+src/hooks/usePlanTempIdRedirect.ts                           - NEW (mirrors workout redirect)
+src/components/pwa/PWAClientBootstrap.tsx                    - mounts plan redirect hook
+src/app/(dashboard)/plans/create/page.tsx                    - tempId at click, immediate navigate
+src/app/(dashboard)/plans/page.tsx                           - { id } shape; immediate dialog close
+src/app/(dashboard)/plans/[id]/page.tsx                      - { id } / { id, input } shapes; fire-and-forget
+src/components/features/clients/ClientPlansTab.tsx           - { id } shape for activate/deactivate
+src/components/features/plans/PlanBuilderPage.tsx            - clientId per day + per exercise; immediate navigate
+src/components/features/plans/PlanDayOptionsDrawer.tsx       - mutate (not mutateAsync); allocate clientId
+docs/offline/implementation-blocks.md                        - PR3 section + open-risks update
+docs/phase-breakdowns/CURRENT-PROGRESS.md                    - This entry
+```
+
+### Validation
+
+- `npx tsc --noEmit` — 0 errors (only pre-existing `SupersetManager.test.ts` errors, untouched)
+- `npx eslint` over all touched files — 0 errors, 0 warnings
+- `npm run build` — clean, 36 routes generated
+- `npx prisma migrate deploy` — applied
+- **Manual user-test pass pending** — full offline-flow coverage is the user's next step
+
+### Carry-overs to next PR
+
+- Plan-builder route warming: `/plans/builder` and per-plan `/plans/builder/:id` are not in `WARM_ROUTES`. Mirror the PR2 workout-builder warming follow-up.
+- Cleanup PR for legacy plan hooks if user-testing confirms the builder fully replaces them.
+- Offline `complete-day` mutation (sister to PR3's `skip-day`) — currently only fires from session-completion.
+- `idMap` retention sweep — entries from PR2/PR3 grow unbounded across sessions.
 
 ---
 

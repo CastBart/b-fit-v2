@@ -101,13 +101,9 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
   const goBack = useSmartBack('/plans')
   const supersetManager = new SupersetManager<PlanDayExerciseWithExercise>()
 
-  const handleDelete = async () => {
-    try {
-      await deletePlan.mutateAsync(id)
-      router.push('/plans')
-    } catch (error) {
-      console.error('Error deleting plan:', error)
-    }
+  const handleDelete = () => {
+    deletePlan.mutate({ id })
+    router.push('/plans')
   }
 
   const handleOpenEditDialog = () => {
@@ -119,19 +115,15 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
   }
 
   const handleSaveEdit = () => {
-    updatePlan.mutate(
-      {
-        planId: id,
-        input: {
-          name: editName.trim(),
-          description: editDescription.trim() || undefined,
-          durationWeeks: editDuration,
-        },
+    updatePlan.mutate({
+      id,
+      input: {
+        name: editName.trim(),
+        description: editDescription.trim() || undefined,
+        durationWeeks: editDuration,
       },
-      {
-        onSuccess: () => setEditDialogOpen(false),
-      }
-    )
+    })
+    setEditDialogOpen(false)
   }
 
   const handleOpenCopyDialog = () => {
@@ -274,21 +266,12 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
         {session?.user?.role !== 'CLIENT' && (
           <div className="flex gap-3 mt-4 items-center">
             {plan.isActive ? (
-              <Button
-                onClick={() => deactivatePlan.mutate(id)}
-                variant="outline"
-                size="lg"
-                disabled={deactivatePlan.isPending}
-              >
+              <Button onClick={() => deactivatePlan.mutate({ id })} variant="outline" size="lg">
                 <ZapOff className="h-4 w-4 mr-2" />
                 Deactivate
               </Button>
             ) : (
-              <Button
-                onClick={() => activatePlan.mutate(id)}
-                size="lg"
-                disabled={activatePlan.isPending}
-              >
+              <Button onClick={() => activatePlan.mutate({ id })} size="lg">
                 <Zap className="h-4 w-4 mr-2" />
                 Activate Plan
               </Button>
@@ -300,7 +283,7 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => router.push(`/plans/builder/${id}`)}>
+                <DropdownMenuItem onClick={() => router.push(`/plans/builder?id=${id}`)}>
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Days
                 </DropdownMenuItem>
@@ -485,8 +468,8 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
             <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSaveEdit} disabled={!editName.trim() || updatePlan.isPending}>
-              {updatePlan.isPending ? 'Saving...' : 'Save Changes'}
+            <Button onClick={handleSaveEdit} disabled={!editName.trim()}>
+              Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>

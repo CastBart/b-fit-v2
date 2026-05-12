@@ -60,9 +60,9 @@ export function ClientPlansTab({ clientId, clientName, onAssignPlan }: ClientPla
     plan,
     isClient: false,
     onView: (id: string) => router.push(`/plans/${id}`),
-    onEdit: (id: string) => router.push(`/plans/builder/${id}`),
-    onActivate: (id: string) => activatePlan.mutate(id),
-    onDeactivate: (id: string) => deactivatePlan.mutate(id),
+    onEdit: (id: string) => router.push(`/plans/builder?id=${id}`),
+    onActivate: (id: string) => activatePlan.mutate({ id }),
+    onDeactivate: (id: string) => deactivatePlan.mutate({ id }),
     isActivating: activatePlan.isPending,
     isDeactivating: deactivatePlan.isPending,
     // No onCopy or onDelete in client context
