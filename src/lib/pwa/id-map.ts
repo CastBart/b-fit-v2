@@ -12,8 +12,18 @@ const ID_MAP_KEY = 'bfit-id-map'
 
 type IdMap = Record<string, string>
 
+type Waiter = {
+  resolve: (realId: string) => void
+  reject: (reason: Error) => void
+}
+
 let mirror: IdMap | null = null
-const waiters = new Map<string, Array<(realId: string) => void>>()
+const waiters = new Map<string, Waiter[]>()
+// Generic change-listeners — fire after every successful set(). Used by
+// the React-tree redirect hook (usePlanTempIdRedirect) to re-evaluate
+// URL state without depending on the emitter event, which has a fatal
+// closure-stale race when navigation completes after the emit.
+const subscribers = new Set<() => void>()
 
 async function ensureMirror(): Promise<IdMap> {
   if (mirror) return mirror
@@ -41,7 +51,20 @@ export const idMap = {
     const pending = waiters.get(tempId)
     if (pending) {
       waiters.delete(tempId)
-      for (const resolve of pending) resolve(realId)
+      for (const w of pending) w.resolve(realId)
+    }
+
+    for (const sub of subscribers) sub()
+  },
+
+  // Subscribe to any successful set(). Returns an unsubscribe function.
+  // Listeners receive no payload — they should re-read whatever idMap
+  // state they care about. Designed for React useEffect/useState pairs
+  // that need to trigger a re-render when an entity has been reconciled.
+  subscribe(callback: () => void): () => void {
+    subscribers.add(callback)
+    return () => {
+      subscribers.delete(callback)
     }
   },
 
@@ -53,10 +76,21 @@ export const idMap = {
       return existing
     }
 
-    return new Promise<string>((resolve) => {
+    return new Promise<string>((resolve, reject) => {
       const list = waiters.get(tempId) ?? []
-      list.push(resolve)
+      list.push({ resolve, reject })
       waiters.set(tempId, list)
     })
+  },
+
+  // Fail-fast for waiters when the underlying create mutation errors
+  // permanently (post-retry, non-paused). We do NOT persist a rejection
+  // marker — if the user retries the create later and it succeeds, new
+  // waitFor calls should still resolve normally.
+  reject(tempId: string, reason: Error): void {
+    const pending = waiters.get(tempId)
+    if (!pending) return
+    waiters.delete(tempId)
+    for (const w of pending) w.reject(reason)
   },
 }

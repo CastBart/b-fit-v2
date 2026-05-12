@@ -41,7 +41,7 @@ export default function CreatePlanForClientPage({ params }: CreatePlanForClientP
       {
         onSuccess: (data) => {
           if (data) {
-            router.push(`/plans/builder/${data.id}`)
+            router.push(`/plans/builder?id=${data.id}`)
           }
         },
       }

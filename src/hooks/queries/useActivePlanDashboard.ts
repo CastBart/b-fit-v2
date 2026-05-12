@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { getActivePlanDashboard } from '@/server/actions/plans'
 import { offlineQueryFn } from '@/lib/react-query/offlineQueryFn'
 import type { ActivePlanDashboardResponse } from '@/types/plan'
@@ -18,5 +18,10 @@ export function useActivePlanDashboard(weekNumber?: number) {
     staleTime: 1000 * 60 * 2,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
+    // Keep the previous week's data visible while the new key fetches, so
+    // ActivePlanSection's mount-time `setViewedWeekNumber(activeWeekNumber)`
+    // doesn't briefly show a skeleton in place of the plan. Acts as a safety
+    // net even when the prefetch has already seeded every week.
+    placeholderData: keepPreviousData,
   })
 }

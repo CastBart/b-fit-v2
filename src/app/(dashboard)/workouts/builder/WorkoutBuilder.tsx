@@ -14,7 +14,6 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { generateId } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { useSmartBack } from '@/hooks/useSmartBack'
 import { useSession } from 'next-auth/react'
@@ -34,8 +33,9 @@ import {
   useAddMultipleExercisesToWorkout,
   useSyncWorkoutExercises,
 } from '@/hooks/mutations/useWorkoutMutations'
+import { newTempId } from '@/lib/pwa/temp-id'
 import { useWorkout } from '@/hooks/queries/useWorkout'
-import { useQueryClient } from '@tanstack/react-query'
+import { onlineManager, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { Exercise, MuscleGroup } from '@prisma/client'
 import { SupersetManager } from '@/lib/superset-manager'
@@ -152,27 +152,44 @@ export default function WorkoutBuilder({ editWorkoutId, forClientId }: WorkoutBu
 
   // Handle workout creation (create mode only)
   const handleCreateWorkout = async (name: string, description?: string) => {
-    const onSuccess = (data: { id: string } | undefined) => {
-      if (!data) return
-      setWorkoutId(data.id)
-      setWorkoutName(name)
-      setWorkoutDescription(description || '')
-      setShowCreateDialog(false)
-      toast.success('Workout created! Now add exercises.')
-    }
-
-    const onError = () => {
-      toast.error('Failed to create workout. Please try again.')
-    }
-
     if (forClientId) {
+      // Online-only path (gated in the hook). Wait for the real id.
+      const onSuccess = (data: { id: string } | undefined) => {
+        if (!data) return
+        setWorkoutId(data.id)
+        setWorkoutName(name)
+        setWorkoutDescription(description || '')
+        setShowCreateDialog(false)
+        toast.success('Workout created! Now add exercises.')
+      }
+      const onError = () => {
+        toast.error('Failed to create workout. Please try again.')
+      }
       createWorkoutForClientMutation.mutate(
         { clientId: forClientId, name, description },
         { onSuccess, onError }
       )
-    } else {
-      createWorkout.mutate({ name, description }, { onSuccess, onError })
+      return
     }
+
+    // Personal create — offline-safe. Allocate the tempId locally and
+    // proceed immediately so users can keep adding exercises while the
+    // create mutation queues. rewriteWorkoutId will swap the cache key
+    // when the server confirms; the tempId-redirect hook handles URL.
+    if (!authSession?.user?.id) {
+      toast.error('You must be signed in to create a workout')
+      return
+    }
+    const tempId = newTempId()
+    setWorkoutId(tempId)
+    setWorkoutName(name)
+    setWorkoutDescription(description || '')
+    setShowCreateDialog(false)
+    createWorkout.mutate({
+      tempId,
+      userId: authSession.user.id,
+      input: { name, description },
+    })
   }
 
   // Handle exercise selection from library (desktop single-select)
@@ -185,7 +202,7 @@ export default function WorkoutBuilder({ editWorkoutId, forClientId }: WorkoutBu
 
       // Add exercise to the list with default parameters
       const newExercise: WorkoutExercise = {
-        instanceId: generateId(),
+        instanceId: newTempId(),
         exerciseId: exercise.id,
         order: exercises.length,
         sets: 3,
@@ -236,7 +253,7 @@ export default function WorkoutBuilder({ editWorkoutId, forClientId }: WorkoutBu
 
       // Create WorkoutExercise objects with default values
       const newExercises: WorkoutExercise[] = selectedExercises.map((exercise, idx) => ({
-        instanceId: generateId(),
+        instanceId: newTempId(),
         exerciseId: exercise.id,
         order: exercises.length + idx,
         sets: 3,
@@ -411,55 +428,66 @@ export default function WorkoutBuilder({ editWorkoutId, forClientId }: WorkoutBu
       return
     }
 
+    // Build full snapshots for sync-exercises. id is the existing
+    // workoutExerciseId for loaded rows, or the local tmp_* instanceId
+    // for new ones — the offline route uses the tmp_* as a clientId
+    // for replay-safe upsert.
+    const snapshots = exercises
+      .filter(
+        (ex): ex is WorkoutExercise & { exercise: NonNullable<WorkoutExercise['exercise']> } =>
+          Boolean(ex.exercise)
+      )
+      .map((ex) => ({
+        id: ex.workoutExerciseId ?? ex.instanceId,
+        exerciseId: ex.exerciseId,
+        order: ex.order,
+        sets: ex.sets,
+        reps: ex.reps ?? null,
+        weight: ex.weight ?? null,
+        restSeconds: ex.restSeconds,
+        notes: ex.notes ?? null,
+        groupId: ex.groupId ?? null,
+        exercise: ex.exercise,
+      }))
+
     if (isEditMode) {
-      // Edit mode: Sync exercises (add new, update existing, delete removed)
-      syncExercises.mutate(
-        {
-          workoutId,
-          exercises: exercises.map((ex) => ({
-            workoutExerciseId: ex.workoutExerciseId, // Present for existing, undefined for new
-            exerciseId: ex.exerciseId,
-            order: ex.order,
-            sets: ex.sets,
-            reps: ex.reps,
-            weight: ex.weight,
-            restSeconds: ex.restSeconds,
-            notes: ex.notes,
-            groupId: ex.groupId,
-          })),
-        },
-        {
-          onSuccess: () => {
-            router.push(
-              clientContextId
-                ? `/clients/${clientContextId}?tab=workouts`
-                : `/workouts/${workoutId}`
-            )
-          },
-        }
+      // Fire-and-forget: do NOT await onSuccess. With networkMode:'online',
+      // an offline mutation enters paused state and onSuccess never fires
+      // until reconnect — gating navigation on it would strand the UI.
+      // The optimistic update has already applied to ['workout', workoutId]
+      // and ['workouts','all'], so the destination page renders fresh data.
+      syncExercises.mutate({ workoutId, exercises: snapshots })
+      if (!onlineManager.isOnline()) {
+        toast.success('Saved offline', {
+          description: 'Will sync automatically when you are back online.',
+        })
+      }
+      router.push(
+        clientContextId ? `/clients/${clientContextId}?tab=workouts` : `/workouts/${workoutId}`
       )
     } else {
-      // Create mode: Use batch mutation to add all exercises
-      addMultipleExercises.mutate(
-        {
-          workoutId,
-          exercises: exercises.map((ex) => ({
-            exerciseId: ex.exerciseId,
-            order: ex.order,
-            sets: ex.sets,
-            reps: ex.reps,
-            weight: ex.weight,
-            restSeconds: ex.restSeconds,
-            notes: ex.notes,
-            groupId: ex.groupId,
-          })),
-        },
-        {
-          onSuccess: () => {
-            router.push(clientContextId ? `/clients/${clientContextId}?tab=workouts` : '/workouts')
-          },
-        }
-      )
+      // Create mode: navigate immediately so the optimistic list shows
+      // the new workout. The sync-exercises mutation runs in the
+      // background; if offline, it queues until reconnect.
+      addMultipleExercises.mutate({
+        workoutId,
+        exercises: snapshots.map((s) => ({
+          exerciseId: s.exerciseId,
+          order: s.order,
+          sets: s.sets,
+          reps: s.reps ?? undefined,
+          weight: s.weight ?? undefined,
+          restSeconds: s.restSeconds,
+          notes: s.notes ?? undefined,
+          groupId: s.groupId,
+        })),
+      })
+      if (!onlineManager.isOnline()) {
+        toast.success('Saved offline', {
+          description: 'Will sync automatically when you are back online.',
+        })
+      }
+      router.push(clientContextId ? `/clients/${clientContextId}?tab=workouts` : '/workouts')
     }
   }
 

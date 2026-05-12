@@ -5,6 +5,8 @@ type Handler<T> = (payload: T) => void
 
 type EventMap = {
   exerciseIdRewritten: { from: string; to: string }
+  workoutIdRewritten: { from: string; to: string }
+  planIdRewritten: { from: string; to: string }
 }
 
 const listeners: { [K in keyof EventMap]?: Set<Handler<EventMap[K]>> } = {}

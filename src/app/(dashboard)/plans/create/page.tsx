@@ -11,18 +11,20 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useCreatePlan } from '@/hooks/mutations/usePlanMutations'
+import { useCreatePlan, allocatePlanTempId } from '@/hooks/mutations/usePlanMutations'
 import { cn } from '@/lib/utils'
 
 const DURATION_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 16, 20, 24, 36, 52]
 
 export default function CreatePlanPage() {
   const router = useRouter()
+  const { data: session } = useSession()
   const createPlan = useCreatePlan()
 
   // Step state
@@ -38,21 +40,22 @@ export default function CreatePlanPage() {
   const canProceedStep2 = daysPerWeek >= 1 && daysPerWeek <= 7
 
   const handleCreate = () => {
-    createPlan.mutate(
-      {
+    if (!session?.user?.id) return
+    // Allocate the tempId at the UI boundary so we can navigate to the
+    // builder URL immediately. The temp-id redirect hook swaps the URL
+    // to the real id when the server responds.
+    const tempId = allocatePlanTempId()
+    createPlan.mutate({
+      input: {
         name: name.trim(),
         description: description.trim() || undefined,
         daysPerWeek,
         durationWeeks,
       },
-      {
-        onSuccess: (data) => {
-          if (data) {
-            router.push(`/plans/builder/${data.id}`)
-          }
-        },
-      }
-    )
+      tempId,
+      userId: session.user.id,
+    })
+    router.push(`/plans/builder?id=${tempId}`)
   }
 
   return (
@@ -227,15 +230,9 @@ export default function CreatePlanPage() {
               </div>
             </div>
 
-            <Button onClick={handleCreate} disabled={createPlan.isPending} className="w-full">
-              {createPlan.isPending ? (
-                'Creating...'
-              ) : (
-                <>
-                  <Check className="mr-2 h-4 w-4" />
-                  Create Plan
-                </>
-              )}
+            <Button onClick={handleCreate} className="w-full">
+              <Check className="mr-2 h-4 w-4" />
+              Create Plan
             </Button>
           </CardContent>
         </Card>

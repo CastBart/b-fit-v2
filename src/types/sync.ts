@@ -1,11 +1,11 @@
 import type { ExerciseListResponse } from './exercise'
-import type { WorkoutListResponse } from './workout'
-import type { ActivePlanDashboardResponse } from './plan'
+import type { WorkoutListResponse, WorkoutWithDetails } from './workout'
+import type { ActivePlanDashboard, PlanWithDetails } from './plan'
 import type { TrainingSessionWithDetails, ExerciseHistoryEntry } from './session'
 import type { DashboardStats } from './dashboard'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface PlanListResponse {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   plans: any[]
   total: number
   page: number
@@ -25,7 +25,17 @@ export interface SyncPayload {
   workouts: WorkoutListResponse
   plans: PlanListResponse
   sessions: SessionListResponse
-  activePlanDashboard: ActivePlanDashboardResponse | null
+  /**
+   * One ActivePlanDashboard entry per existing PlanWeek record. Empty array
+   * when no active plan — the consumer uses that signal to clear stale
+   * ['activePlanDashboard', *] cache keys after deactivation.
+   */
+  activePlanDashboardAllWeeks: ActivePlanDashboard[]
   dashboardStats: DashboardStats | null
   exerciseHistory: Record<string, ExerciseHistoryEntry[]>
+}
+
+export interface TopDetailsPayload {
+  workouts: WorkoutWithDetails[]
+  plans: PlanWithDetails[]
 }
