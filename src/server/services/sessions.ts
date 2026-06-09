@@ -64,6 +64,11 @@ async function persistSession(userId: string, payload: SaveSessionPayload) {
         })
 
         for (const set of exercise.sets) {
+          // INVARIANT: only completed sets are persisted. Non-completed sets
+          // (user typed values but never tapped the check) must never land in
+          // SessionSet — they would otherwise inflate volume, set counts, and
+          // analytics. This is the single write path for both the server
+          // action and the offline route handler; keep this filter intact.
           if (!set.isCompleted) continue
           await tx.sessionSet.create({
             data: {

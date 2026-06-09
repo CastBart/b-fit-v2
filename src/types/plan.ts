@@ -162,6 +162,8 @@ export type ActivePlanDashboard = {
         name: string
         exerciseType: string
         metricType: string
+        primaryMuscleGroup: string
+        secondaryMuscleGroups: string[]
       }
       order: number
       groupId: string | null

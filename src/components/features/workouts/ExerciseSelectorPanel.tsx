@@ -100,10 +100,22 @@ export function ExerciseSelectorPanel({
 
   const { canCreate } = useCanCreateExercise()
 
-  // Sync muscle group filter when initialMuscleGroups changes (e.g. replace different exercises)
+  // Apply initialMuscleGroups by VALUE, not by array reference.
+  // Call sites pass a fresh `[muscleGroup]` array literal on every render, so
+  // depending on array identity would re-fire this effect any time the user
+  // cleared the filter — snapping it back to the preset. Tracking the last
+  // applied content via a ref applies the preset once per replace-target and
+  // re-applies only when the actual muscle group changes.
+  const appliedMuscleKeyRef = useRef<string | null>(null)
   useEffect(() => {
-    if (initialMuscleGroups) {
-      setMuscleGroups(initialMuscleGroups)
+    const key = initialMuscleGroups ? initialMuscleGroups.join(',') : null
+    if (key === null) {
+      appliedMuscleKeyRef.current = null
+      return
+    }
+    if (key !== appliedMuscleKeyRef.current) {
+      appliedMuscleKeyRef.current = key
+      setMuscleGroups(initialMuscleGroups!)
     }
   }, [initialMuscleGroups])
 

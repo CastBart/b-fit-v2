@@ -214,7 +214,7 @@ export default function SessionHistoryPage() {
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         data={selectedSession}
-        actionLabel="Close"
+        actions={[{ label: 'Close', onClick: () => setDrawerOpen(false) }]}
       />
     </div>
   )

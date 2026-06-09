@@ -8,8 +8,14 @@ import type { CompletedSessionData } from '@/components/features/sessions/Comple
 export function mapSessionToCompletedData(
   session: TrainingSessionWithDetails
 ): CompletedSessionData {
-  const startTime = session.startedAt.getTime()
-  const endTime = session.completedAt?.getTime() ?? session.startedAt.getTime()
+  // Defensive Date coercion: the React Query IDB persister serializes the cache
+  // with raw JSON, so Date fields rehydrate as ISO strings on refresh. `new Date()`
+  // accepts both real Dates and ISO strings, so this works for first-load
+  // (real Date from Server Action) and post-rehydration (string from IDB).
+  const startedAt = new Date(session.startedAt)
+  const completedAt = session.completedAt ? new Date(session.completedAt) : null
+  const startTime = startedAt.getTime()
+  const endTime = completedAt ? completedAt.getTime() : startTime
   const durationSeconds = Math.round((endTime - startTime) / 1000)
 
   return {
@@ -19,11 +25,21 @@ export function mapSessionToCompletedData(
     endTime,
     durationSeconds,
     sessionNotes: session.notes,
+    workoutId: session.workoutId,
+    planId: session.planId,
     exercises: session.exercises.map((se) => ({
       id: se.id,
+      exerciseId: se.exerciseId,
       name: se.exercise.name,
       metricType: se.exercise.metricType,
+      exerciseType: se.exercise.exerciseType,
       notes: se.notes,
+      targetReps: se.targetReps,
+      targetWeight: se.targetWeight,
+      targetRestSeconds: se.targetRestSeconds,
+      groupId: se.groupId,
+      primaryMuscleGroup: se.exercise.primaryMuscleGroup,
+      secondaryMuscleGroups: se.exercise.secondaryMuscleGroups,
       sets: se.sets.map((set) => ({
         setNumber: set.setNumber,
         weight: set.weight,
