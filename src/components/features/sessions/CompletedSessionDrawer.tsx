@@ -30,6 +30,8 @@ import { CheckCircle2, Clock, Dumbbell, Calendar, Trophy, TrendingUp } from 'luc
 import { cn } from '@/lib/utils'
 import { formatDuration } from '@/lib/utils/format-time'
 import { CompletedSessionActionsMenu } from './CompletedSessionActionsMenu'
+import { MuscleGroupSetCounts } from '@/components/features/workouts/MuscleGroupSetCounts'
+import { computeMuscleGroupSetCounts } from '@/lib/analytics/muscle-set-counts'
 import type { ExerciseType, MetricType, MuscleGroup } from '@prisma/client'
 
 // ============================================================================
@@ -181,6 +183,18 @@ export function CompletedSessionDrawer({
     }
   }, [data])
 
+  // Weighted set counts per muscle group, from COMPLETED sets only.
+  const muscleSetCounts = useMemo(() => {
+    if (!data) return []
+    return computeMuscleGroupSetCounts(
+      data.exercises.map((ex) => ({
+        sets: ex.sets.filter((s) => s.isCompleted).length,
+        primaryMuscleGroup: ex.primaryMuscleGroup,
+        secondaryMuscleGroups: ex.secondaryMuscleGroups,
+      }))
+    )
+  }, [data])
+
   const handleClose = () => {
     onOpenChange(false)
     onClose?.()
@@ -273,7 +287,8 @@ export function CompletedSessionDrawer({
               </>
             )}
 
-            {/* <Separator /> */}
+            {/* Weighted set counts per muscle group (completed sets only) */}
+            <MuscleGroupSetCounts counts={muscleSetCounts} />
 
             {/* Exercises List */}
             <div className="space-y-2">

@@ -103,3 +103,14 @@ When finishing a task from each phase, document your work:
 - Make sure to document current progress in docs/phase-breakdowns/CURRENT-PROGRESS.md
 - Ensure to document completed task of the working phase in docs/phase-breakdowns/phase-[phasenumber]-[phasename].md
 - Also ensure to make few lines of notes for which task is next in the CURRENT-PROGRESS.md file
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).

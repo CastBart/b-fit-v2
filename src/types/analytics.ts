@@ -2,7 +2,10 @@
 // DATE RANGE
 // ============================================================================
 
-export type DateRangePreset = '7d' | '30d' | '90d' | '1y' | 'all'
+export type DateRangePreset = '7d' | '30d' | '90d' | '1y' | 'all' | 'custom'
+
+/** Preset values that map to a fixed lookback window (everything except custom). */
+export type FixedDateRangePreset = Exclude<DateRangePreset, 'custom'>
 
 export type DateRange = {
   start: Date
@@ -22,6 +25,12 @@ export type MuscleGroupDistribution = {
   muscleGroup: string
   volume: number
   percentage: number
+}
+
+/** Weighted set count for a single muscle group (primary 1.0 / secondary 0.5). */
+export type MuscleGroupSetCountPoint = {
+  muscleGroup: string
+  sets: number
 }
 
 // ============================================================================
@@ -79,6 +88,7 @@ export type AnalyticsOverview = {
   // Charts
   volumeProgression: VolumeDataPoint[]
   muscleGroupDistribution: MuscleGroupDistribution[]
+  muscleGroupSetCounts: MuscleGroupSetCountPoint[]
 
   // Frequency
   frequency: FrequencyStats

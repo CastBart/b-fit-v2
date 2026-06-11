@@ -3,11 +3,12 @@
 import { auth } from '@/lib/auth/auth.config'
 import { prisma } from '@/lib/db/prisma'
 import { requireRole } from '@/lib/auth/rbac'
-import { getDateRange } from '@/lib/analytics/date-utils'
+import { resolveDateRange } from '@/lib/analytics/date-utils'
 import {
   getTotalVolume,
   getVolumeProgression,
   getVolumeByMuscleGroup,
+  getSetCountByMuscleGroup,
 } from '@/lib/analytics/volume'
 import { getMonthlyPRCount } from '@/lib/analytics/pr-detection'
 import { getPRSummary } from '@/lib/analytics/pr-summary'
@@ -50,7 +51,7 @@ export async function getAnalyticsOverview(
     }
 
     const validated = analyticsFiltersSchema.parse(input)
-    const { start, end } = getDateRange(validated.dateRange)
+    const { start, end } = resolveDateRange(validated)
     const userId = session.user.id
 
     const [
@@ -60,6 +61,7 @@ export async function getAnalyticsOverview(
       personalRecords,
       volumeProgression,
       muscleGroupDistribution,
+      muscleGroupSetCounts,
       frequency,
       adherence,
       prSummary,
@@ -70,6 +72,7 @@ export async function getAnalyticsOverview(
       getMonthlyPRCount(userId),
       getVolumeProgression(userId, start, end, validated.exerciseId),
       getVolumeByMuscleGroup(userId, start, end),
+      getSetCountByMuscleGroup(userId, start, end),
       calculateSessionFrequency(userId, start, end),
       calculateAdherence(userId, start, end),
       getPRSummary(userId, start, end),
@@ -84,6 +87,7 @@ export async function getAnalyticsOverview(
         personalRecords,
         volumeProgression,
         muscleGroupDistribution,
+        muscleGroupSetCounts,
         frequency,
         adherence,
         prSummary,
@@ -116,7 +120,7 @@ export async function getVolumeProgressionData(
     }
 
     const validated = analyticsFiltersSchema.parse(input)
-    const { start, end } = getDateRange(validated.dateRange)
+    const { start, end } = resolveDateRange(validated)
 
     const data = await getVolumeProgression(session.user.id, start, end, validated.exerciseId)
 
@@ -148,7 +152,7 @@ export async function getExerciseComparisonData(
     }
 
     const validated = exerciseComparisonSchema.parse(input)
-    const { start, end } = getDateRange(validated.dateRange)
+    const { start, end } = resolveDateRange(validated)
     const userId = session.user.id
 
     // Fetch exercise names and volume data in parallel
@@ -213,7 +217,7 @@ export async function getClientAnalytics(
       return { success: false, error: 'No active relationship with this client' }
     }
 
-    const { start, end } = getDateRange(validated.dateRange)
+    const { start, end } = resolveDateRange(validated)
     const clientId = validated.clientId
 
     const [
@@ -223,6 +227,7 @@ export async function getClientAnalytics(
       personalRecords,
       volumeProgression,
       muscleGroupDistribution,
+      muscleGroupSetCounts,
       frequency,
       adherence,
       prSummary,
@@ -233,6 +238,7 @@ export async function getClientAnalytics(
       getMonthlyPRCount(clientId),
       getVolumeProgression(clientId, start, end),
       getVolumeByMuscleGroup(clientId, start, end),
+      getSetCountByMuscleGroup(clientId, start, end),
       calculateSessionFrequency(clientId, start, end),
       calculateAdherence(clientId, start, end),
       getPRSummary(clientId, start, end),
@@ -247,6 +253,7 @@ export async function getClientAnalytics(
         personalRecords,
         volumeProgression,
         muscleGroupDistribution,
+        muscleGroupSetCounts,
         frequency,
         adherence,
         prSummary,

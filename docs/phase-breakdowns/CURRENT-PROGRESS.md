@@ -2,9 +2,175 @@
 
 **Last Updated**: 2026-05-28
 **Current Phase**: Testing-Improvements — PWA field-testing PR series (Chunks A–H)
-**Recently Completed**: Chunk E — Auto-populate next set from the completed set (#2)
-**Next Tasks**: Chunk F (muscle-group set counts — first consumer of the Chunk B exercise fields) or Chunk G (analytics custom date range — independent). See `~/.claude/plans/i-have-been-using-breezy-abelson.md` for the chunked plan and `docs/improvements/chunk-e-autopopulate-next-set.md` for Chunk E details.
+**Recently Completed**: Chunk H — Analytics set-count chart per muscle group (#9). **All implementation chunks A–H are done.**
+**Next Tasks**: User verification of Chunks F/G/H (and the earlier pending-verification chunks). Then the only remaining work is **Chunk I** (deferred backlog): test-runner setup + unit tests, persister Date-aware serialization, plan-creator drag-flicker investigation, offline save-as-workout. See `~/.claude/plans/i-have-been-using-breezy-abelson.md` and `docs/improvements/chunk-h-analytics-set-count-chart.md`.
 **Branch**: `Testing-Improvements`
+
+---
+
+## Chunk H — Analytics set-count chart per muscle group (2026-05-28) ✅ (pending verification)
+
+### Problem
+
+Analytics showed volume distribution by muscle group but not how many **sets**
+each muscle group received — the metric most lifters actually program against.
+
+### Solution
+
+New `getSetCountByMuscleGroup(userId, start, end)` in `volume.ts`: raw SQL counts
+completed sets per session-exercise instance in the window, then aggregates via
+the shared Chunk F `computeMuscleGroupSetCounts` helper (primary 1.0 / secondary
+0.5). Added `muscleGroupSetCounts` to `AnalyticsOverview` and both analytics
+actions' `Promise.all`. New `MuscleGroupSetsChart` (clone of `MuscleGroupChart`,
+volume → sets) rendered on the analytics page and client tab. Colour map
+extracted to a shared `muscle-group-colors.ts` (used by both charts). Flows
+through `getAnalyticsOverview`, so the Chunk G custom range applies for free.
+
+Detailed write-up in `docs/improvements/chunk-h-analytics-set-count-chart.md`.
+
+### Modified Files
+
+```
+src/lib/analytics/volume.ts                                    - getSetCountByMuscleGroup
+src/types/analytics.ts                                         - MuscleGroupSetCountPoint + overview field
+src/server/actions/analytics.ts                                - add to both Promise.all + return
+src/components/features/analytics/muscle-group-colors.ts       - NEW (shared colour map)
+src/components/features/analytics/MuscleGroupChart.tsx         - import shared colours (dedup)
+src/components/features/analytics/MuscleGroupSetsChart.tsx     - NEW (sets bar chart)
+src/app/(dashboard)/analytics/page.tsx                         - render the chart
+src/components/features/analytics/ClientAnalyticsTab.tsx       - render the chart
+docs/improvements/chunk-h-analytics-set-count-chart.md         - NEW (chunk write-up)
+docs/phase-breakdowns/CURRENT-PROGRESS.md                      - This entry
+```
+
+No schema/DB migration; no new dependencies.
+
+### Validation
+
+- `npm run type-check` — clean (excluding pre-existing orphan
+  `SupersetManager.test.ts`).
+- `npm run lint` — new files clean after auto-fixed formatting.
+- **Manual user-test pass pending:** chart renders sensible weighted counts;
+  honours preset + custom date ranges; client tab mirrors; empty state when no
+  completed sets.
+
+### Carry-overs
+
+- Implementation chunks complete. Remaining = Chunk I deferred backlog.
+
+---
+
+## Chunk G — Analytics custom date range (2026-05-28) ✅ (pending verification)
+
+### Problem
+
+Analytics could only be viewed over fixed lookback presets (7d/30d/90d/1y/all).
+Field testing wanted an arbitrary start/end window.
+
+### Solution
+
+Added `'custom'` to `DateRangePreset` and threaded explicit `startDate`/`endDate`
+end-to-end. New `resolveDateRange()` is the single entry the four analytics
+actions use — handles `'custom'` (whole-day-normalized bounds) and delegates
+fixed presets to `getDateRange` (now typed to `FixedDateRangePreset`, so a
+forgotten `'custom'` call site won't compile). Zod schemas require both bounds
+(and `start <= end`) only when `dateRange === 'custom'`. Hooks thread the range
+into both the action input and the query key (ISO strings) so each window
+caches separately. `DateRangeSelector` gained a "Custom range" option that
+reveals a `react-day-picker` range calendar in a popover (no new deps). State
+lifted into all three call sites (analytics page, compare page, client tab);
+a `customReady` guard keeps queries on the default preset until both bounds are
+picked, so an in-progress selection never fires an invalid request.
+
+Detailed write-up in `docs/improvements/chunk-g-analytics-custom-range.md`.
+
+### Modified Files
+
+```
+src/types/analytics.ts                                       - 'custom' + FixedDateRangePreset
+src/lib/validations/analytics.ts                             - startDate/endDate + superRefine
+src/lib/analytics/date-utils.ts                              - getDateRange typing + resolveDateRange
+src/server/actions/analytics.ts                              - use resolveDateRange (×4)
+src/hooks/queries/useAnalytics.ts                            - thread custom range + query keys
+src/components/features/analytics/DateRangeSelector.tsx      - custom option + calendar popover
+src/app/(dashboard)/analytics/page.tsx                       - custom state wiring
+src/app/(dashboard)/analytics/compare/page.tsx               - custom state wiring
+src/components/features/analytics/ClientAnalyticsTab.tsx     - custom state wiring
+docs/improvements/chunk-g-analytics-custom-range.md          - NEW (chunk write-up)
+docs/phase-breakdowns/CURRENT-PROGRESS.md                    - This entry
+```
+
+No schema/DB changes; no new dependencies.
+
+### Validation
+
+- `npm run type-check` — clean (excluding pre-existing orphan
+  `SupersetManager.test.ts`).
+- `npm run lint` — new/changed files clean after auto-fixed formatting.
+- **Manual user-test pass pending:** custom range refetches all analytics cards;
+  preset switch still works with distinct cache keys; compare + client tab
+  mirror; half-picked custom range fires no request.
+
+### Carry-overs
+
+- Chunk H flows through `getAnalyticsOverview` → custom range applies for free.
+
+---
+
+## Chunk F — Muscle-group set counts (2026-05-28) ✅ (pending verification)
+
+### Problem
+
+No surface showed how training volume (by sets) distributed across muscle
+groups. Field testing wanted a per-muscle-group set breakdown on workouts,
+completed sessions, and plans (per day and per full plan).
+
+### Solution
+
+New pure helper `computeMuscleGroupSetCounts` (primary 1.0 / secondary 0.5
+weighting, sorted desc) + a compact `MuscleGroupSetCounts` badge component.
+Wired into five surfaces, each feeding the helper its own set source:
+WorkoutPreviewDrawer + workout detail (`we.sets`), CompletedSessionDrawer
+(completed sets only), PlanDayDetailDrawer (per-day), and plan detail
+(full-plan total). All muscle-group data was already available — workout/plan
+via the full `exercise` relation, completed session via the Chunk B
+`CompletedExerciseData` fields, plan day via the Chunk B `getActivePlanDashboard`
+select widening.
+
+Detailed write-up + integration table in
+`docs/improvements/chunk-f-muscle-set-counts.md`.
+
+### Modified Files
+
+```
+src/lib/analytics/muscle-set-counts.ts                       - NEW (helper + formatSetCount)
+src/components/features/workouts/MuscleGroupSetCounts.tsx     - NEW (badge list component)
+src/components/features/workouts/WorkoutPreviewDrawer.tsx     - render after body map
+src/app/(dashboard)/workouts/[id]/page.tsx                    - render after body map
+src/components/features/sessions/CompletedSessionDrawer.tsx   - useMemo + render (completed sets)
+src/components/features/plans/PlanDayDetailDrawer.tsx         - per-day render
+src/app/(dashboard)/plans/[id]/page.tsx                       - full-plan total render
+docs/improvements/chunk-f-muscle-set-counts.md               - NEW (chunk write-up)
+docs/phase-breakdowns/CURRENT-PROGRESS.md                     - This entry
+```
+
+No server, schema, or type-shape changes.
+
+### Validation
+
+- `npm run type-check` — clean (excluding pre-existing orphan
+  `SupersetManager.test.ts`).
+- `npm run lint` — new files clean after one auto-fixed formatting nit.
+- **Manual user-test pass pending:** workout/plan counts match hand-calc
+  (primary 1.0 + secondary 0.5 × sets); completed session counts use completed
+  sets only; plan detail shows the summed total; empty workout/day renders no
+  section.
+
+### Carry-overs
+
+- Unit tests for `computeMuscleGroupSetCounts` deferred to Chunk I (no runner).
+- Half-set values (e.g. `2.5`) are intended (secondary 0.5 weighting).
+- Chunk H reuses this helper for the analytics set-count chart.
 
 ---
 
