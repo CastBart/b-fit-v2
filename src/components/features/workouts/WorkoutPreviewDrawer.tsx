@@ -16,6 +16,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useWorkout } from '@/hooks/queries/useWorkout'
 import { MuscleGroupBody } from '@/components/features/workouts/MuscleGroupBody'
+import { MuscleGroupSetCounts } from '@/components/features/workouts/MuscleGroupSetCounts'
+import { computeMuscleGroupSetCounts } from '@/lib/analytics/muscle-set-counts'
 import { SupersetManager } from '@/lib/superset-manager'
 import type { WorkoutExerciseWithExercise } from '@/types/workout'
 import { MuscleGroupLabels } from '@/types/exercise'
@@ -140,6 +142,19 @@ export function WorkoutPreviewDrawer({
                     size="smd"
                   />
                 </div>
+              )}
+
+              {/* Weighted set counts per muscle group */}
+              {workout.exercises.length > 0 && (
+                <MuscleGroupSetCounts
+                  counts={computeMuscleGroupSetCounts(
+                    workout.exercises.map((we) => ({
+                      sets: we.sets,
+                      primaryMuscleGroup: we.exercise.primaryMuscleGroup,
+                      secondaryMuscleGroups: we.exercise.secondaryMuscleGroups ?? [],
+                    }))
+                  )}
+                />
               )}
 
               {/* Exercises */}

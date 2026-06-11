@@ -62,6 +62,7 @@ import {
   type CompletedSessionData,
 } from '@/components/features/sessions/CompletedSessionDrawer'
 import { formatDuration } from '@/lib/utils/format-time'
+import { startRepeatedSession } from '@/lib/utils/session-navigation'
 import type { Exercise, MuscleGroup } from '@prisma/client'
 import type { SessionExerciseEntry } from '@/types/session'
 
@@ -211,13 +212,23 @@ export default function SessionPage() {
       endTime,
       durationSeconds,
       sessionNotes: sessionNotes || null,
+      workoutId,
+      planId,
       exercises: exercises.map((exercise) => {
         const exerciseProgress = progress[exercise.instanceId]
         return {
           id: exercise.instanceId,
+          exerciseId: exercise.exerciseId,
           name: exercise.name,
           metricType: exercise.metricType,
+          exerciseType: exercise.exerciseType,
           notes: exerciseProgress?.notes || null,
+          targetReps: exercise.targetReps,
+          targetWeight: exercise.targetWeight,
+          targetRestSeconds: exercise.targetRestSeconds,
+          groupId: exercise.groupId,
+          primaryMuscleGroup: exercise.primaryMuscleGroup,
+          secondaryMuscleGroups: exercise.secondaryMuscleGroups,
           sets:
             exerciseProgress?.sets.map((set) => ({
               setNumber: set.setNumber,
@@ -298,6 +309,26 @@ export default function SessionPage() {
     setCompletedSessionDrawerOpen(true)
   }
 
+  // Repeat the just-completed session. The default repeat flow (in the drawer's
+  // actions menu) would conflict here: this drawer's close handler tears down
+  // the session and pushes to /dashboard. So we tear down the just-completed
+  // session cleanly, dismiss the drawer WITHOUT the close handler, then start
+  // the repeat.
+  const handleRepeatSession = (repeatData: CompletedSessionData) => {
+    dispatch(endSession())
+    dispatch(resetSessionState())
+    clearSessionBackup()
+    // Close the drawer via its controlled `open` prop ONLY. Do NOT null
+    // `completedSessionData` here: the drawer guards with `if (!data) return
+    // null`, so nulling it unmounts the drawer (and the open actions menu)
+    // while still "open", skipping Vaul's + Radix's body-unlock cleanup and
+    // stranding `pointer-events: none` on <body> (page renders but is
+    // unclickable until refresh). Leaving data set lets the drawer animate
+    // closed normally; it's gated by `open` and overwritten on next complete.
+    setCompletedSessionDrawerOpen(false)
+    startRepeatedSession(repeatData, dispatch, router)
+  }
+
   // Handle session complete from settings drawer (called after DB save, before state clear)
   const handleSessionCompleteFromDrawer = async () => {
     // Build the drawer data while state is still available
@@ -354,6 +385,10 @@ export default function SessionPage() {
       // Exercise categorization
       exerciseType: exercise.exerciseType,
       metricType: exercise.metricType,
+
+      // Muscle groups (denormalized for in-session displays)
+      primaryMuscleGroup: exercise.primaryMuscleGroup,
+      secondaryMuscleGroups: exercise.secondaryMuscleGroups,
 
       // Notes
       notes: null,
@@ -424,6 +459,8 @@ export default function SessionPage() {
       targetRestSeconds: oldExercise.targetRestSeconds, // Always carry over
       exerciseType: newExercise.exerciseType,
       metricType: newExercise.metricType,
+      primaryMuscleGroup: newExercise.primaryMuscleGroup,
+      secondaryMuscleGroups: newExercise.secondaryMuscleGroups,
       notes: oldExercise.notes, // Always carry over
     }
 
@@ -704,8 +741,8 @@ export default function SessionPage() {
         onOpenChange={handleCompletedDrawerOpenChange}
         data={completedSessionData}
         onClose={handleCompletedSessionClose}
-        actionLabel="Go to Dashboard"
-        onAction={handleCompletedSessionClose}
+        onRepeat={handleRepeatSession}
+        actions={[{ label: 'Go to Dashboard', onClick: handleCompletedSessionClose }]}
       />
     </div>
   )

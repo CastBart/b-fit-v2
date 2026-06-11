@@ -42,6 +42,8 @@ import { SupersetManager } from '@/lib/superset-manager'
 import type { WorkoutExerciseWithExercise } from '@/types/workout'
 import { MuscleGroupLabels } from '@/types/exercise'
 import { MuscleGroupBody } from '@/components/features/workouts/MuscleGroupBody'
+import { MuscleGroupSetCounts } from '@/components/features/workouts/MuscleGroupSetCounts'
+import { computeMuscleGroupSetCounts } from '@/lib/analytics/muscle-set-counts'
 import { cn } from '@/lib/utils'
 
 interface WorkoutDetailPageProps {
@@ -257,6 +259,20 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           </div>
         )}
       </div>
+
+      {/* Weighted set counts per muscle group */}
+      {hasExercises && (
+        <MuscleGroupSetCounts
+          className="mb-4"
+          counts={computeMuscleGroupSetCounts(
+            workout.exercises.map((we) => ({
+              sets: we.sets,
+              primaryMuscleGroup: we.exercise.primaryMuscleGroup,
+              secondaryMuscleGroups: we.exercise.secondaryMuscleGroups ?? [],
+            }))
+          )}
+        />
+      )}
       {/* <div className="flex flex-col lg:flex-row gap-6"> */}
       {/* Muscle Group Body Map */}
       {/* {hasExercises && (

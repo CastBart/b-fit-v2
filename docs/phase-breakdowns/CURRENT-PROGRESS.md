@@ -1,12 +1,530 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-04-30
-**Current Phase**: Offline-First PWA — PR-series follow-up to Block 7
-**Recently Completed**: PR3 — Plan offline capabilities (implementation complete; awaiting full user-test pass)
-**Next Tasks**: User-test the PR3 offline plan flows (create / save-all-days / activate / deactivate / skip-day with online-offline-reload-reconnect cycles). Then choose between (a) builder-route warming follow-up (mirror PR2's pattern), (b) cleanup PR for legacy plan hooks, or (c) the next entity in the offline series. See `i-need-you-to-cheeky-widget-execution.md` PR3 section for full scope and `docs/offline/implementation-blocks.md` PR3 section for implementation details + carry-overs.
-**Branch**: `feature/cache-app-shell`
+**Last Updated**: 2026-05-28
+**Current Phase**: Testing-Improvements — PWA field-testing PR series (Chunks A–H)
+**Recently Completed**: Chunk H — Analytics set-count chart per muscle group (#9). **All implementation chunks A–H are done.**
+**Next Tasks**: User verification of Chunks F/G/H (and the earlier pending-verification chunks). Then the only remaining work is **Chunk I** (deferred backlog): test-runner setup + unit tests, persister Date-aware serialization, plan-creator drag-flicker investigation, offline save-as-workout. See `~/.claude/plans/i-have-been-using-breezy-abelson.md` and `docs/improvements/chunk-h-analytics-set-count-chart.md`.
+**Branch**: `Testing-Improvements`
 
 ---
+
+## Chunk H — Analytics set-count chart per muscle group (2026-05-28) ✅ (pending verification)
+
+### Problem
+
+Analytics showed volume distribution by muscle group but not how many **sets**
+each muscle group received — the metric most lifters actually program against.
+
+### Solution
+
+New `getSetCountByMuscleGroup(userId, start, end)` in `volume.ts`: raw SQL counts
+completed sets per session-exercise instance in the window, then aggregates via
+the shared Chunk F `computeMuscleGroupSetCounts` helper (primary 1.0 / secondary
+0.5). Added `muscleGroupSetCounts` to `AnalyticsOverview` and both analytics
+actions' `Promise.all`. New `MuscleGroupSetsChart` (clone of `MuscleGroupChart`,
+volume → sets) rendered on the analytics page and client tab. Colour map
+extracted to a shared `muscle-group-colors.ts` (used by both charts). Flows
+through `getAnalyticsOverview`, so the Chunk G custom range applies for free.
+
+Detailed write-up in `docs/improvements/chunk-h-analytics-set-count-chart.md`.
+
+### Modified Files
+
+```
+src/lib/analytics/volume.ts                                    - getSetCountByMuscleGroup
+src/types/analytics.ts                                         - MuscleGroupSetCountPoint + overview field
+src/server/actions/analytics.ts                                - add to both Promise.all + return
+src/components/features/analytics/muscle-group-colors.ts       - NEW (shared colour map)
+src/components/features/analytics/MuscleGroupChart.tsx         - import shared colours (dedup)
+src/components/features/analytics/MuscleGroupSetsChart.tsx     - NEW (sets bar chart)
+src/app/(dashboard)/analytics/page.tsx                         - render the chart
+src/components/features/analytics/ClientAnalyticsTab.tsx       - render the chart
+docs/improvements/chunk-h-analytics-set-count-chart.md         - NEW (chunk write-up)
+docs/phase-breakdowns/CURRENT-PROGRESS.md                      - This entry
+```
+
+No schema/DB migration; no new dependencies.
+
+### Validation
+
+- `npm run type-check` — clean (excluding pre-existing orphan
+  `SupersetManager.test.ts`).
+- `npm run lint` — new files clean after auto-fixed formatting.
+- **Manual user-test pass pending:** chart renders sensible weighted counts;
+  honours preset + custom date ranges; client tab mirrors; empty state when no
+  completed sets.
+
+### Carry-overs
+
+- Implementation chunks complete. Remaining = Chunk I deferred backlog.
+
+---
+
+## Chunk G — Analytics custom date range (2026-05-28) ✅ (pending verification)
+
+### Problem
+
+Analytics could only be viewed over fixed lookback presets (7d/30d/90d/1y/all).
+Field testing wanted an arbitrary start/end window.
+
+### Solution
+
+Added `'custom'` to `DateRangePreset` and threaded explicit `startDate`/`endDate`
+end-to-end. New `resolveDateRange()` is the single entry the four analytics
+actions use — handles `'custom'` (whole-day-normalized bounds) and delegates
+fixed presets to `getDateRange` (now typed to `FixedDateRangePreset`, so a
+forgotten `'custom'` call site won't compile). Zod schemas require both bounds
+(and `start <= end`) only when `dateRange === 'custom'`. Hooks thread the range
+into both the action input and the query key (ISO strings) so each window
+caches separately. `DateRangeSelector` gained a "Custom range" option that
+reveals a `react-day-picker` range calendar in a popover (no new deps). State
+lifted into all three call sites (analytics page, compare page, client tab);
+a `customReady` guard keeps queries on the default preset until both bounds are
+picked, so an in-progress selection never fires an invalid request.
+
+Detailed write-up in `docs/improvements/chunk-g-analytics-custom-range.md`.
+
+### Modified Files
+
+```
+src/types/analytics.ts                                       - 'custom' + FixedDateRangePreset
+src/lib/validations/analytics.ts                             - startDate/endDate + superRefine
+src/lib/analytics/date-utils.ts                              - getDateRange typing + resolveDateRange
+src/server/actions/analytics.ts                              - use resolveDateRange (×4)
+src/hooks/queries/useAnalytics.ts                            - thread custom range + query keys
+src/components/features/analytics/DateRangeSelector.tsx      - custom option + calendar popover
+src/app/(dashboard)/analytics/page.tsx                       - custom state wiring
+src/app/(dashboard)/analytics/compare/page.tsx               - custom state wiring
+src/components/features/analytics/ClientAnalyticsTab.tsx     - custom state wiring
+docs/improvements/chunk-g-analytics-custom-range.md          - NEW (chunk write-up)
+docs/phase-breakdowns/CURRENT-PROGRESS.md                    - This entry
+```
+
+No schema/DB changes; no new dependencies.
+
+### Validation
+
+- `npm run type-check` — clean (excluding pre-existing orphan
+  `SupersetManager.test.ts`).
+- `npm run lint` — new/changed files clean after auto-fixed formatting.
+- **Manual user-test pass pending:** custom range refetches all analytics cards;
+  preset switch still works with distinct cache keys; compare + client tab
+  mirror; half-picked custom range fires no request.
+
+### Carry-overs
+
+- Chunk H flows through `getAnalyticsOverview` → custom range applies for free.
+
+---
+
+## Chunk F — Muscle-group set counts (2026-05-28) ✅ (pending verification)
+
+### Problem
+
+No surface showed how training volume (by sets) distributed across muscle
+groups. Field testing wanted a per-muscle-group set breakdown on workouts,
+completed sessions, and plans (per day and per full plan).
+
+### Solution
+
+New pure helper `computeMuscleGroupSetCounts` (primary 1.0 / secondary 0.5
+weighting, sorted desc) + a compact `MuscleGroupSetCounts` badge component.
+Wired into five surfaces, each feeding the helper its own set source:
+WorkoutPreviewDrawer + workout detail (`we.sets`), CompletedSessionDrawer
+(completed sets only), PlanDayDetailDrawer (per-day), and plan detail
+(full-plan total). All muscle-group data was already available — workout/plan
+via the full `exercise` relation, completed session via the Chunk B
+`CompletedExerciseData` fields, plan day via the Chunk B `getActivePlanDashboard`
+select widening.
+
+Detailed write-up + integration table in
+`docs/improvements/chunk-f-muscle-set-counts.md`.
+
+### Modified Files
+
+```
+src/lib/analytics/muscle-set-counts.ts                       - NEW (helper + formatSetCount)
+src/components/features/workouts/MuscleGroupSetCounts.tsx     - NEW (badge list component)
+src/components/features/workouts/WorkoutPreviewDrawer.tsx     - render after body map
+src/app/(dashboard)/workouts/[id]/page.tsx                    - render after body map
+src/components/features/sessions/CompletedSessionDrawer.tsx   - useMemo + render (completed sets)
+src/components/features/plans/PlanDayDetailDrawer.tsx         - per-day render
+src/app/(dashboard)/plans/[id]/page.tsx                       - full-plan total render
+docs/improvements/chunk-f-muscle-set-counts.md               - NEW (chunk write-up)
+docs/phase-breakdowns/CURRENT-PROGRESS.md                     - This entry
+```
+
+No server, schema, or type-shape changes.
+
+### Validation
+
+- `npm run type-check` — clean (excluding pre-existing orphan
+  `SupersetManager.test.ts`).
+- `npm run lint` — new files clean after one auto-fixed formatting nit.
+- **Manual user-test pass pending:** workout/plan counts match hand-calc
+  (primary 1.0 + secondary 0.5 × sets); completed session counts use completed
+  sets only; plan detail shows the summed total; empty workout/day renders no
+  section.
+
+### Carry-overs
+
+- Unit tests for `computeMuscleGroupSetCounts` deferred to Chunk I (no runner).
+- Half-set values (e.g. `2.5`) are intended (secondary 0.5 weighting).
+- Chunk H reuses this helper for the analytics set-count chart.
+
+---
+
+## Chunk E — Auto-populate next set from the completed set (2026-05-28) ✅ (pending verification)
+
+### Problem
+
+During a live session, every set started blank. For an exercise where the user
+repeats the same weight/reps across sets, they had to re-type the same values
+each time — slow and error-prone mid-workout.
+
+### Solution
+
+Single reducer change in `sessionSlice.completeSet`: after a set is marked
+complete, carry its metrics into the **immediate next set** of the same
+exercise, but only into fields that are still blank or 0. New isolated helper
+`autoPopulateNextSet` (beside `applyHistoryToProgress`). Targets
+`activeSetIndex + 1` by index, so it never touches a different exercise —
+superset rotation is unaffected. Composes with history prefill (non-zero
+prefilled values are preserved) and with user edits (non-zero entries
+preserved). Only the next set is filled per completion; completing it then fills
+the one after (cascade-by-one).
+
+Detailed write-up in `docs/improvements/chunk-e-autopopulate-next-set.md`.
+
+### Modified Files
+
+```
+src/store/slices/sessionSlice.ts                     - autoPopulateNextSet + completeSet wiring + SessionSet import
+docs/improvements/chunk-e-autopopulate-next-set.md   - NEW (chunk write-up)
+docs/phase-breakdowns/CURRENT-PROGRESS.md            - This entry
+```
+
+No UI, server, or type-shape changes.
+
+### Validation
+
+- `npm run type-check` — clean (excluding pre-existing orphan
+  `SupersetManager.test.ts`).
+- `npm run lint` — edited regions clean.
+- **Manual user-test pass pending:** fresh exercise fills next set; pre-edited
+  next set not overwritten; last set no-op; superset only affects same instance;
+  history-prefilled values not overwritten.
+
+### Carry-overs
+
+- Unit tests deferred to Chunk I (no test runner installed). `autoPopulateNextSet`
+  is an isolated helper ready to test once a runner exists.
+
+---
+
+## Chunk D — Repeat Session from a completed session (2026-05-28) ✅ (pending verification)
+
+### Problem
+
+Field testing wanted a one-tap "do this again" from a completed session — both
+right after finishing (live drawer) and from past sessions (history views) —
+without rebuilding the session by hand.
+
+### Solution
+
+New `startRepeatedSession` helper + a self-contained `RepeatSessionButton`
+rendered in the completed-session drawer footer (beside Save-as-Workout). The
+new session is ad-hoc (`workoutId`/`planId`/`planDayId` all null) so repeating a
+plan-day session never re-completes a plan day. Set counts + target params carry
+over; actual values pre-fill from history on start.
+
+Key nuance: the **live just-completed drawer** keeps the session `isActive` and
+couples drawer-close to teardown + navigate-to-dashboard, which conflicts with
+starting a repeat. So `RepeatSessionButton` takes an optional `onRepeat`
+override: history views use the self-contained default (`useActiveSessionGuard`
+→ `startRepeatedSession`), while the session page injects a teardown-aware
+handler. `ClientSessionsTab` passes `hideRepeat` (a PT shouldn't start their own
+session from a client's record).
+
+Detailed write-up + the context-split table in
+`docs/improvements/chunk-d-repeat-session.md`.
+
+### Modified Files
+
+```
+src/lib/utils/session-navigation.ts                          - NEW startRepeatedSession helper
+src/components/features/sessions/RepeatSessionButton.tsx      - NEW button
+src/components/features/sessions/CompletedSessionDrawer.tsx   - onRepeat / hideRepeat props + render
+src/app/(dashboard)/session/page.tsx                          - handleRepeatSession + onRepeat wiring
+src/components/features/clients/ClientSessionsTab.tsx         - hideRepeat
+docs/improvements/chunk-d-repeat-session.md                   - NEW (chunk write-up)
+docs/phase-breakdowns/CURRENT-PROGRESS.md                     - This entry
+```
+
+### Validation
+
+- `npm run type-check` — clean (excluding pre-existing orphan
+  `SupersetManager.test.ts`).
+- `npm run lint` — new button lints clean; no non-prettier issues introduced.
+- **Manual user-test pass pending:** live repeat starts fresh on /session and
+  doesn't re-open the prior session; history repeat works; guard fires when a
+  different session is active; plan-day origin produces an ad-hoc repeat; client
+  tab hides the button.
+
+### Carry-overs
+
+- Repeat hidden only in the client tab; drop `hideRepeat` there if PTs should
+  demo client sessions later.
+- Chunks E (auto-populate next set) and F (muscle-group set counts) are next.
+
+### UI follow-up (same session) — actions moved to a kebab menu
+
+Per user request, Save-as-Workout + Repeat were moved from the drawer footer
+into a kebab (⋮) menu to the right of the drawer title. The two standalone
+button components were deleted and consolidated into
+`src/components/features/sessions/CompletedSessionActionsMenu.tsx` (renders null
+when neither action is available). Behaviour unchanged; only the trigger surface
+moved. Type-check + lint clean.
+
+### Bugfix (same session) — unclickable page after live Repeat
+
+Repeating from the live just-completed drawer left `<body>` with
+`pointer-events: none` (page rendered but unclickable until refresh). Cause:
+`handleRepeatSession` nulled `completedSessionData` synchronously, unmounting the
+open Vaul drawer + modal dropdown before their body-unlock cleanup ran. Fixed by
+closing the drawer via the controlled `open=false` prop only (no data-null) and
+making the actions `DropdownMenu` `modal={false}`. See
+`docs/improvements/chunk-d-repeat-session.md` → "Bugfix".
+
+---
+
+## Chunk C — Save completed session as a Workout (2026-05-28) ✅ (pending verification)
+
+### Problem
+
+Field testing surfaced the need to turn a one-off completed session into a
+reusable workout — without re-building it by hand in the workout builder.
+Constraints: block only when the session already came from a workout
+(`workoutId` set; plan-day sessions still qualify), hide for CLIENT role, and
+don't create a duplicate-named workout.
+
+### Solution
+
+Scoped the offline story first (per request) and found the existing
+offline workout-create stack already covers everything needed —
+`useCreateWorkout` → `['workouts','create']` mutation default →
+`/api/offline/workouts` → `workoutService.create` (workout + nested exercises,
+idempotent on `clientId`, optimistic + auto-sync). So instead of the planned
+dedicated server action, Chunk C **reuses** that stack:
+
+1. **`useCanCreateWorkout`** (new hook) — role gate (PERSONAL/PT), mirrors
+   `useCanCreateExercise`. Server route is the authoritative guard (CLIENT →
+   403); the hook only hides the button.
+2. **`SaveAsWorkoutButton`** (new, self-gated component) — renders null unless
+   `workoutId == null && canCreate`. Opens a name dialog (default = session
+   name), does a **client-side** case-insensitive dedupe against the cached
+   `['workouts','all']` list, maps the completed exercises →
+   `WorkoutExerciseSnapshot[]` (clamped to wire constraints; `exercise` object
+   synthesized from Chunk B's muscle-group fields for optimistic render), and
+   fires `useCreateWorkout`.
+3. **Drawer wiring** — the button renders at the top of the
+   `CompletedSessionDrawer` footer. Self-gating means all four completed-session
+   views get it automatically with no per-call-site changes.
+
+**Offline:** fully supported (reused stack). **Name uniqueness:** client-side
+best-effort — workout `name` has no unique DB constraint.
+
+Detailed write-up + offline scoping table in
+`docs/improvements/chunk-c-save-as-workout.md`.
+
+### Modified Files
+
+```
+src/hooks/useCanCreateWorkout.ts                              - NEW (role gate)
+src/components/features/sessions/SaveAsWorkoutButton.tsx      - NEW (button + dialog + mapping)
+src/components/features/sessions/CompletedSessionDrawer.tsx   - render button in footer
+docs/improvements/chunk-c-save-as-workout.md                  - NEW (chunk write-up)
+docs/phase-breakdowns/CURRENT-PROGRESS.md                     - This entry
+```
+
+No server action / schema / route / mutation-default changes — existing offline
+infra reused wholesale.
+
+### Validation
+
+- `npm run type-check` — clean (excluding pre-existing orphan
+  `SupersetManager.test.ts`).
+- `npm run lint` — new files clean after one auto-fixed formatting nit.
+- **Manual user-test pass pending:** ad-hoc save → appears under /workouts;
+  duplicate name → inline error; plan-day session → button shows; workout-
+  sourced session → hidden; CLIENT → hidden; offline → "saved locally" +
+  optimistic + sync on reconnect.
+
+### Carry-overs / considerations
+
+- PT viewing a client's session sees the button; saving creates a PT-owned
+  workout. Intentional ("reuse what my client did"); flagged for future
+  restriction if product wants own-sessions-only.
+- Name-only dialog — no description captured. Add later if desired.
+- Chunk D (Repeat Session) will add a second self-gated button to the same
+  footer, following this pattern.
+
+---
+
+## Chunk B — Drawer foundation + completed-session type expansion (2026-05-28) ✅
+
+### Problem
+
+Three upcoming chunks (C: Save-as-Workout, D: Repeat Session, F: muscle-group
+set counts on the session view) all need to (a) read additional fields from
+the completed-session payload (`workoutId`/`planId`, target params, muscle
+groups), and (b) render a second/third button in the completed-session
+drawer footer. The drawer's `actionLabel`/`onAction` single-action API and
+the narrow `CompletedSessionData` / `CompletedExerciseData` types didn't
+support either. Doing the expansion + footer refactor up front in one batch
+avoids touching the same files three times.
+
+### Solution
+
+1. **Type expansion** — added `workoutId?`/`planId?` to `CompletedSessionData`;
+   added `exerciseId`, `exerciseType`, `targetReps`, `targetWeight`,
+   `targetRestSeconds`, `groupId`, `primaryMuscleGroup`, `secondaryMuscleGroups`
+   to `CompletedExerciseData`. Added `primaryMuscleGroup` and
+   `secondaryMuscleGroups` to `SessionExerciseEntry` so the live session
+   state can populate them downstream. `SaveSessionPayload` deliberately
+   not widened — server can re-derive on read.
+2. **Population** — `mapSessionToCompletedData` reads the new fields off the
+   already-included `se.exercise`. `buildCompletedSessionData` in
+   `session/page.tsx` reads from Redux. Two `SessionExerciseEntry`
+   construction sites (`handleAddExercises`, `handleReplaceExercise`) now
+   include muscle groups from the source `Exercise`. `startWorkoutSession` /
+   `startPlanDaySession` thread them through.
+3. **Server query widening** — `getActivePlanDashboard` (both occurrences)
+   now selects `primaryMuscleGroup` and `secondaryMuscleGroups` on the nested
+   exercise. `ActivePlanDashboard` type widened to match. `getWorkoutById`
+   already uses `include: { exercise: true }`, so no change there.
+4. **Drawer footer refactor** — replaced `actionLabel?` / `onAction?` with
+   `actions?: DrawerAction[]` (stacked buttons). Each action's `onClick` is
+   responsible for its own close behaviour — the drawer no longer
+   auto-closes after an action (Chunk C will open a name dialog over the
+   still-open drawer). Fallback "Done" button renders when `actions` is
+   omitted.
+5. **Call-site migrations** — all four existing call sites (`RecentSessions`,
+   `ClientSessionsTab`, `/sessions` page, live `/session` page) now pass
+   their own `actions` array. The live session page used to fire its close
+   handler twice per click under the old API; the new shape runs it once.
+
+Detailed write-up in `docs/improvements/chunk-b-drawer-foundation.md`.
+
+### Modified Files
+
+```
+src/components/features/sessions/CompletedSessionDrawer.tsx  - types + footer
+src/lib/utils/session-mappers.ts                              - populate new fields from DB
+src/types/session.ts                                          - SessionExerciseEntry muscle groups
+src/lib/utils/session-navigation.ts                           - thread muscle groups
+src/app/(dashboard)/session/page.tsx                          - 3 construction sites + drawer call
+src/components/features/dashboard/RecentSessions.tsx          - actions[] migration
+src/app/(dashboard)/sessions/page.tsx                         - actions[] migration
+src/components/features/clients/ClientSessionsTab.tsx         - actions[] migration
+src/server/actions/plans.ts                                   - widen exercise select (×2)
+src/types/plan.ts                                             - widen ActivePlanDashboard
+docs/improvements/chunk-b-drawer-foundation.md                - NEW (chunk write-up)
+docs/phase-breakdowns/CURRENT-PROGRESS.md                     - This entry
+```
+
+### Validation
+
+- `npm run type-check` — clean (excluding pre-existing orphan
+  `SupersetManager.test.ts`).
+- `npm run lint` — no new violations on touched files; repo-wide CRLF and
+  bundled-output noise is pre-existing and unrelated.
+- **No user-visible change expected.** Manual smoke test = existing flows
+  still work: complete a session → drawer opens; click a session card on
+  dashboard / `/sessions` / client tab → drawer opens with Close button;
+  replace / add exercises mid-session → no console errors; start a plan-day
+  session → no errors.
+
+### Carry-overs
+
+- Existing IDB-persisted `ActivePlanDashboard` blobs lack the two new
+  exercise fields; on rehydrate they're `undefined` until React Query
+  refetches. Chunk F's set-count display must handle this gracefully or
+  gate on freshness. No `buster` bump for now — the next refetch self-heals.
+- Chunks C, D, F unblocked. Each adds an entry to the drawer's `actions[]`
+  and reads the new `CompletedExerciseData` fields.
+
+---
+
+## Chunk A — PWA field-testing quick wins (2026-05-28) ✅ (pending verification)
+
+### Problem
+
+Real-world PWA usage surfaced four issues that ship as one batch because each is
+isolated and low-risk:
+
+1. The exercise-replace muscle filter snapped back to the preset whenever the
+   user cleared it.
+2. Viewing a completed session after a hard refresh threw
+   `e.startedAt.getTime is not a function` — the IDB persister rehydrates Dates
+   as strings.
+3. The "Last session" preview during a live session never showed the previous
+   session's exercise notes, even when they existed.
+4. A previously reported "incomplete sets get persisted" concern needed a
+   verification pass (turned out to be already fixed on this branch).
+
+### Solution
+
+1. **Exercise-replace filter** — replaced the array-identity effect in
+   `ExerciseSelectorPanel.tsx` with a `useRef`-tracked content-key effect.
+   Preset applies once per replace-target; clearing the filter now sticks.
+2. **Date rehydration crash** — defensively coerced
+   `session.startedAt`/`session.completedAt` with `new Date()` inside
+   `mapSessionToCompletedData`. Audited every `.getTime() / .toLocaleDateString()`
+   call across `src/`; all other consumers were already wrapping. Systemic
+   persister Date-revival deferred to Chunk I.
+3. **History notes preview** — added a notes block to `LatestHistoryPreview` in
+   `ExerciseHistoryDisplay.tsx`, mirroring `HistoryEntryCard`.
+4. **Incomplete-sets invariant** — verified `sessionService.persistSession`
+   already filters incomplete sets at the single write path. Added a load-bearing
+   invariant comment so future refactors don't accidentally drop the filter.
+   Unit-test coverage deferred to Chunk I (no test runner installed).
+
+Detailed write-up in `docs/issues/chunk-a-quick-fixes.md`.
+
+### Modified Files
+
+```
+src/components/features/workouts/ExerciseSelectorPanel.tsx   - Issue 1 (content-keyed preset effect)
+src/lib/utils/session-mappers.ts                              - Issue 2 (new Date coercion)
+src/components/features/sessions/ExerciseHistoryDisplay.tsx   - Issue 3 (notes block)
+src/server/services/sessions.ts                               - Issue 4 (invariant comment)
+docs/issues/chunk-a-quick-fixes.md                            - NEW (chunk write-up)
+docs/phase-breakdowns/CURRENT-PROGRESS.md                     - This entry
+```
+
+### Validation
+
+- `npm run type-check` — clean except pre-existing orphan
+  `SupersetManager.test.ts` errors (no test runner installed; file untouched).
+- `npm run lint` — no new violations on the four touched files. The repo-wide
+  CRLF/prettier noise is pre-existing and unrelated to this chunk.
+- **Manual user-test pass pending** for: (a) clearing the muscle filter during a
+  replace flow, (b) hard refresh → view any session card, (c) live session
+  shows previous-session notes in the "Last session" card.
+
+### Carry-overs to next chunk
+
+- Chunk B kicks off the drawer multi-action footer + `CompletedSessionData` /
+  `CompletedExerciseData` field expansion. No user-visible behaviour change in
+  Chunk B itself; foundation for Chunks C, D, F.
+- Deferred to Chunk I: persister Date-aware serialization, set up a test runner
+  and add a `persistSession` incomplete-set regression test, offline support for
+  save-as-workout.
+
+---
+
+## PR3 — Plan offline capabilities (2026-04-30) ✅
 
 ## PR3 — Plan offline capabilities (2026-04-30) ✅
 

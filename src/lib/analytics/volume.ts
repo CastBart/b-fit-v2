@@ -1,5 +1,11 @@
+import type { MuscleGroup } from '@prisma/client'
+
 import { prisma } from '@/lib/db/prisma'
 import type { VolumeDataPoint, MuscleGroupDistribution } from '@/types/analytics'
+import {
+  computeMuscleGroupSetCounts,
+  type MuscleGroupSetCount,
+} from '@/lib/analytics/muscle-set-counts'
 
 /**
  * Get total volume (weight * reps) across all completed sets for a user.
@@ -104,6 +110,47 @@ export async function getVolumeByMuscleGroup(
     volume: Math.round(r.volume),
     percentage: totalVolume > 0 ? Math.round((r.volume / totalVolume) * 1000) / 10 : 0,
   }))
+}
+
+/**
+ * Get weighted set counts per muscle group for completed sets in a window.
+ *
+ * Counts completed sets per session-exercise instance, then aggregates with
+ * the shared `computeMuscleGroupSetCounts` helper (primary 1.0 / secondary
+ * 0.5) — the same weighting used on workout/plan/session surfaces (Chunk F).
+ * Grouping by `se.id` keeps each exercise instance's set count attributed to
+ * its own muscle groups before weighting.
+ */
+export async function getSetCountByMuscleGroup(
+  userId: string,
+  startDate: Date,
+  endDate: Date
+): Promise<MuscleGroupSetCount[]> {
+  const rows = await prisma.$queryRaw<
+    { primaryMuscleGroup: string; secondaryMuscleGroups: string[]; setCount: number }[]
+  >`
+    SELECT e."primaryMuscleGroup" AS "primaryMuscleGroup",
+           e."secondaryMuscleGroups" AS "secondaryMuscleGroups",
+           COUNT(ss.id)::int AS "setCount"
+    FROM "SessionSet" ss
+    INNER JOIN "SessionExercise" se ON se.id = ss."sessionExerciseId"
+    INNER JOIN "Exercise" e ON e.id = se."exerciseId"
+    INNER JOIN "TrainingSession" ts ON ts.id = ss."sessionId"
+    WHERE ts."userId" = ${userId}
+      AND ts.status = 'COMPLETED'
+      AND ss."isCompleted" = true
+      AND ts."completedAt" >= ${startDate}
+      AND ts."completedAt" <= ${endDate}
+    GROUP BY se.id, e."primaryMuscleGroup", e."secondaryMuscleGroups"
+  `
+
+  return computeMuscleGroupSetCounts(
+    rows.map((r) => ({
+      sets: r.setCount,
+      primaryMuscleGroup: r.primaryMuscleGroup as MuscleGroup,
+      secondaryMuscleGroups: (r.secondaryMuscleGroups ?? []) as MuscleGroup[],
+    }))
+  )
 }
 
 // ============================================================================

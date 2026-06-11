@@ -25,15 +25,31 @@ const outfit = Outfit({
 
 export const viewport: Viewport = {
   interactiveWidget: 'resizes-content',
+  themeColor: '#0b64f4',
 }
 
 export const metadata: Metadata = {
   title: {
-    default: 'B-Fit | Workout Tracking & Fitness Management',
+    default: 'B-Fit',
     template: '%s | B-Fit',
   },
   description:
     'Track your workouts, monitor progress, and achieve your fitness goals with B-Fit. Professional workout tracking for personal users, trainers, and organizations.',
+
+  manifest: '/manifest.json',
+
+  icons: {
+    icon: [
+      { url: '/icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icons/favicon-48x48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/icons/favicon-64x64.png', sizes: '64x64', type: 'image/png' },
+      { url: '/icons/favicon-128x128.png', sizes: '128x128', type: 'image/png' },
+      { url: '/icons/favicon-256x256.png', sizes: '256x256', type: 'image/png' },
+    ],
+    apple: [{ url: '/icons/favicon-180x180.png', sizes: '180x180', type: 'image/png' }],
+  },
+
   keywords: [
     'workout tracking',
     'fitness',
@@ -44,21 +60,25 @@ export const metadata: Metadata = {
     'plan builder',
     'client management',
   ],
+
   authors: [{ name: 'B-Fit' }],
   creator: 'B-Fit',
+
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://b-fit.app',
-    title: 'B-Fit | Workout Tracking & Fitness Management',
+    title: 'B-Fit',
     description: 'Professional workout tracking for personal users, trainers, and organizations',
     siteName: 'B-Fit',
   },
+
   twitter: {
     card: 'summary_large_image',
     title: 'B-Fit | Workout Tracking',
     description: 'Track your workouts, monitor progress, and achieve your fitness goals',
   },
+
   robots: {
     index: true,
     follow: true,

@@ -169,12 +169,14 @@ export function ClientSessionsTab({ clientId, clientName }: ClientSessionsTabPro
         </>
       )}
 
-      {/* Session Detail Drawer */}
+      {/* Session Detail Drawer — viewing another user's (client's) session,
+          so hide "Repeat Session" (would start the PT's own session). */}
       <CompletedSessionDrawer
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         data={selectedSession}
-        actionLabel="Close"
+        hideRepeat
+        actions={[{ label: 'Close', onClick: () => setDrawerOpen(false) }]}
       />
     </>
   )

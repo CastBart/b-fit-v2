@@ -13,41 +13,22 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { MUSCLE_GROUP_COLORS } from '@/components/features/analytics/muscle-group-colors'
-import type { MuscleGroupDistribution } from '@/types/analytics'
+import { MuscleGroupLabels } from '@/types/exercise'
+import { formatSetCount } from '@/lib/analytics/muscle-set-counts'
+import type { MuscleGroupSetCountPoint } from '@/types/analytics'
+import type { MuscleGroup } from '@prisma/client'
 
-const MUSCLE_GROUP_LABELS: Record<string, string> = {
-  CHEST: 'Chest',
-  UPPER_BACK: 'Upper Back',
-  LATS: 'Lats',
-  LOWER_BACK: 'Lower Back',
-  TRAPS: 'Traps',
-  FRONT_DELTS: 'Front Delts',
-  SIDE_DELTS: 'Side Delts',
-  REAR_DELTS: 'Rear Delts',
-  BICEPS: 'Biceps',
-  TRICEPS: 'Triceps',
-  FOREARMS: 'Forearms',
-  QUADS: 'Quads',
-  HAMSTRINGS: 'Hamstrings',
-  GLUTES: 'Glutes',
-  CALVES: 'Calves',
-  CORE: 'Core',
-  ABDUCTORS: 'Abductors',
-  ADDUCTORS: 'Adductors',
-  FULL_BODY: 'Full Body',
-}
-
-interface MuscleGroupChartProps {
-  data: MuscleGroupDistribution[]
+interface MuscleGroupSetsChartProps {
+  data: MuscleGroupSetCountPoint[]
   isLoading: boolean
 }
 
-export function MuscleGroupChart({ data, isLoading }: MuscleGroupChartProps) {
+export function MuscleGroupSetsChart({ data, isLoading }: MuscleGroupSetsChartProps) {
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Muscle Group Distribution</CardTitle>
+          <CardTitle className="text-base">Sets by Muscle Group</CardTitle>
         </CardHeader>
         <CardContent>
           <Skeleton className="h-[300px] w-full" />
@@ -60,11 +41,11 @@ export function MuscleGroupChart({ data, isLoading }: MuscleGroupChartProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Muscle Group Distribution</CardTitle>
+          <CardTitle className="text-base">Sets by Muscle Group</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">
-            No data yet. Complete sessions to see your muscle group distribution.
+            No data yet. Complete sessions to see your set distribution.
           </div>
         </CardContent>
       </Card>
@@ -73,13 +54,13 @@ export function MuscleGroupChart({ data, isLoading }: MuscleGroupChartProps) {
 
   const chartData = data.map((d) => ({
     ...d,
-    label: MUSCLE_GROUP_LABELS[d.muscleGroup] ?? d.muscleGroup,
+    label: MuscleGroupLabels[d.muscleGroup as MuscleGroup] ?? d.muscleGroup,
   }))
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Muscle Group Distribution</CardTitle>
+        <CardTitle className="text-base">Sets by Muscle Group</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -89,7 +70,7 @@ export function MuscleGroupChart({ data, isLoading }: MuscleGroupChartProps) {
               type="number"
               tick={{ fontSize: 12 }}
               className="text-muted-foreground"
-              tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`}
+              allowDecimals
             />
             <YAxis
               type="category"
@@ -107,19 +88,16 @@ export function MuscleGroupChart({ data, isLoading }: MuscleGroupChartProps) {
                   <div className="rounded-lg border bg-background p-3 shadow-sm">
                     <p className="text-sm font-medium">{item.label}</p>
                     <p className="text-sm text-muted-foreground">
-                      Volume:{' '}
+                      Sets:{' '}
                       <span className="font-medium text-foreground">
-                        {item.volume.toLocaleString()} kg
+                        {formatSetCount(item.sets)}
                       </span>
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Share: <span className="font-medium text-foreground">{item.percentage}%</span>
                     </p>
                   </div>
                 )
               }}
             />
-            <Bar dataKey="volume" radius={[0, 4, 4, 0]}>
+            <Bar dataKey="sets" radius={[0, 4, 4, 0]}>
               {chartData.map((entry) => (
                 <Cell
                   key={entry.muscleGroup}

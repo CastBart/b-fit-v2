@@ -55,6 +55,10 @@ export function LatestHistoryPreview({ exerciseId, metricType }: LatestHistoryPr
       <HistorySetsTable sets={latestHistory.sets} metricType={metricType} compact />
 
       <HistoryMetricsSummary entry={latestHistory} metricType={metricType} />
+
+      {latestHistory.notes && (
+        <p className="text-xs text-muted-foreground italic border-t pt-2">{latestHistory.notes}</p>
+      )}
     </div>
   )
 }

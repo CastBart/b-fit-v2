@@ -13,9 +13,17 @@ import type { DateRangePreset } from '@/types/analytics'
 export default function ExerciseComparisonPage() {
   const goBack = useSmartBack('/analytics')
   const [dateRange, setDateRange] = useState<DateRangePreset>('90d')
+  const [customStart, setCustomStart] = useState<Date | undefined>(undefined)
+  const [customEnd, setCustomEnd] = useState<Date | undefined>(undefined)
   const [selectedExerciseIds, setSelectedExerciseIds] = useState<string[]>([])
 
-  const { data, isLoading } = useExerciseComparison(selectedExerciseIds, dateRange)
+  const customReady = dateRange !== 'custom' || (!!customStart && !!customEnd)
+  const effectiveRange: DateRangePreset = customReady ? dateRange : '90d'
+
+  const { data, isLoading } = useExerciseComparison(selectedExerciseIds, effectiveRange, {
+    startDate: customStart,
+    endDate: customEnd,
+  })
 
   return (
     <div className="space-y-6">
@@ -30,7 +38,16 @@ export default function ExerciseComparisonPage() {
             <p className="text-muted-foreground">Compare volume progression across exercises.</p>
           </div>
         </div>
-        <DateRangeSelector value={dateRange} onValueChange={setDateRange} />
+        <DateRangeSelector
+          value={dateRange}
+          onValueChange={setDateRange}
+          customStart={customStart}
+          customEnd={customEnd}
+          onCustomRangeChange={(start, end) => {
+            setCustomStart(start)
+            setCustomEnd(end)
+          }}
+        />
       </div>
 
       {/* Layout: selector + chart */}

@@ -64,6 +64,8 @@ import {
 } from '@/hooks/mutations/usePlanMutations'
 import { formatPlanDuration, getCurrentWeek, getPlanProgress } from '@/lib/utils/plan-utils'
 import { SupersetManager } from '@/lib/superset-manager'
+import { MuscleGroupSetCounts } from '@/components/features/workouts/MuscleGroupSetCounts'
+import { computeMuscleGroupSetCounts } from '@/lib/analytics/muscle-set-counts'
 import { cn } from '@/lib/utils'
 import { useSession } from 'next-auth/react'
 import type { PlanDayExerciseWithExercise } from '@/types/plan'
@@ -189,6 +191,17 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
   const currentWeek = plan.isActive ? getCurrentWeek(plan.activatedAt) : 0
   const progress = plan.isActive ? getPlanProgress(plan.activatedAt, plan.durationWeeks) : 0
 
+  // Full-plan weighted set counts per muscle group (across all days).
+  const planMuscleSetCounts = computeMuscleGroupSetCounts(
+    plan.days.flatMap((day) =>
+      day.exercises.map((ex) => ({
+        sets: ex.sets,
+        primaryMuscleGroup: ex.exercise.primaryMuscleGroup,
+        secondaryMuscleGroups: ex.exercise.secondaryMuscleGroups,
+      }))
+    )
+  )
+
   // Build superset label mapping for all exercises
   const groupColors = [
     { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', line: 'bg-blue-500' },
@@ -308,6 +321,15 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
           </div>
         )}
       </div>
+
+      {/* Full-plan weighted set counts per muscle group */}
+      {totalExerciseCount > 0 && (
+        <MuscleGroupSetCounts
+          className="mb-6"
+          title="Total sets per muscle group"
+          counts={planMuscleSetCounts}
+        />
+      )}
 
       {/* Day-by-Day Breakdown */}
       <div className="space-y-6">

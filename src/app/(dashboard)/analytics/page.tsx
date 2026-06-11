@@ -9,6 +9,7 @@ import { DateRangeSelector } from '@/components/features/analytics/DateRangeSele
 import { ExerciseFilter } from '@/components/features/analytics/ExerciseFilter'
 import { VolumeChart } from '@/components/features/analytics/VolumeChart'
 import { MuscleGroupChart } from '@/components/features/analytics/MuscleGroupChart'
+import { MuscleGroupSetsChart } from '@/components/features/analytics/MuscleGroupSetsChart'
 import { FrequencyCard } from '@/components/features/analytics/FrequencyCard'
 import { PRSummaryCard } from '@/components/features/analytics/PRSummaryCard'
 import { StatsGrid } from '@/components/features/dashboard/StatsGrid'
@@ -17,13 +18,22 @@ import type { DateRangePreset } from '@/types/analytics'
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState<DateRangePreset>('30d')
   const [exerciseId, setExerciseId] = useState<string | undefined>(undefined)
+  const [customStart, setCustomStart] = useState<Date | undefined>(undefined)
+  const [customEnd, setCustomEnd] = useState<Date | undefined>(undefined)
 
-  const { data, isLoading } = useAnalyticsOverview(dateRange)
+  // A custom range only drives queries once both bounds are picked; until then
+  // fall back to the default preset so the page still shows data.
+  const customReady = dateRange !== 'custom' || (!!customStart && !!customEnd)
+  const effectiveRange: DateRangePreset = customReady ? dateRange : '30d'
+  const custom = { startDate: customStart, endDate: customEnd }
+
+  const { data, isLoading } = useAnalyticsOverview(effectiveRange, custom)
 
   // Use separate query for exercise-filtered volume chart
   const { data: filteredVolume, isLoading: volumeLoading } = useVolumeProgression(
-    dateRange,
-    exerciseId
+    effectiveRange,
+    exerciseId,
+    custom
   )
 
   // When exercise filter is active, use the filtered data; otherwise use overview data
@@ -41,7 +51,16 @@ export default function AnalyticsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <DateRangeSelector value={dateRange} onValueChange={setDateRange} />
+          <DateRangeSelector
+            value={dateRange}
+            onValueChange={setDateRange}
+            customStart={customStart}
+            customEnd={customEnd}
+            onCustomRangeChange={(start, end) => {
+              setCustomStart(start)
+              setCustomEnd(end)
+            }}
+          />
           <Button variant="outline" size="sm" asChild>
             <Link href="/analytics/compare">
               <ArrowRightLeft className="mr-2 h-4 w-4" />
@@ -67,6 +86,11 @@ export default function AnalyticsPage() {
           />
         </div>
         <MuscleGroupChart data={data?.muscleGroupDistribution ?? []} isLoading={isLoading} />
+      </div>
+
+      {/* Set distribution by muscle group */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <MuscleGroupSetsChart data={data?.muscleGroupSetCounts ?? []} isLoading={isLoading} />
       </div>
 
       {/* Frequency & PRs Row */}

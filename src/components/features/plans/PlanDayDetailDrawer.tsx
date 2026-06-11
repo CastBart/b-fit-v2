@@ -32,10 +32,12 @@ import { startPlanDaySession } from '@/lib/utils/session-navigation'
 import { useActiveSessionGuard } from '@/hooks/useActiveSessionGuard'
 import { useSession } from '@/hooks/queries/useSession'
 import { PlanDayOptionsDrawer } from '@/components/features/plans/PlanDayOptionsDrawer'
+import { MuscleGroupSetCounts } from '@/components/features/workouts/MuscleGroupSetCounts'
+import { computeMuscleGroupSetCounts } from '@/lib/analytics/muscle-set-counts'
 import { formatDuration } from '@/lib/utils/format-time'
 import { cn } from '@/lib/utils'
 import type { ActivePlanDashboard, DayCompletionInfo } from '@/types/plan'
-import type { MetricType } from '@prisma/client'
+import type { MetricType, MuscleGroup } from '@prisma/client'
 
 interface PlanDayDetailDrawerProps {
   open: boolean
@@ -79,6 +81,14 @@ export function PlanDayDetailDrawer({
   const dayLabel = day.label || `Day ${day.dayNumber}`
 
   const totalSets = day.exercises.reduce((sum, e) => sum + e.sets, 0)
+
+  const muscleSetCounts = computeMuscleGroupSetCounts(
+    day.exercises.map((e) => ({
+      sets: e.sets,
+      primaryMuscleGroup: e.exercise.primaryMuscleGroup as MuscleGroup,
+      secondaryMuscleGroups: e.exercise.secondaryMuscleGroups as MuscleGroup[],
+    }))
+  )
 
   const handleStart = () => {
     guardedStart(() => {
@@ -152,6 +162,9 @@ export function PlanDayDetailDrawer({
               </div>
 
               <Separator />
+
+              {/* Weighted set counts per muscle group (planned) */}
+              {day.exercises.length > 0 && <MuscleGroupSetCounts counts={muscleSetCounts} />}
 
               {/* Pending day - exercise list */}
               {isPending && day.exercises.length > 0 && (
