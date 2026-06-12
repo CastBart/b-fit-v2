@@ -5,6 +5,7 @@ import { useClientAnalytics } from '@/hooks/queries/useAnalytics'
 import { DateRangeSelector } from '@/components/features/analytics/DateRangeSelector'
 import { VolumeChart } from '@/components/features/analytics/VolumeChart'
 import { MuscleGroupChart } from '@/components/features/analytics/MuscleGroupChart'
+import { MuscleGroupSetsChart } from '@/components/features/analytics/MuscleGroupSetsChart'
 import { FrequencyCard } from '@/components/features/analytics/FrequencyCard'
 import { PRSummaryCard } from '@/components/features/analytics/PRSummaryCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,14 +19,32 @@ interface ClientAnalyticsTabProps {
 
 export function ClientAnalyticsTab({ clientId }: ClientAnalyticsTabProps) {
   const [dateRange, setDateRange] = useState<DateRangePreset>('30d')
-  const { data, isLoading } = useClientAnalytics(clientId, dateRange)
+  const [customStart, setCustomStart] = useState<Date | undefined>(undefined)
+  const [customEnd, setCustomEnd] = useState<Date | undefined>(undefined)
+
+  const customReady = dateRange !== 'custom' || (!!customStart && !!customEnd)
+  const effectiveRange: DateRangePreset = customReady ? dateRange : '30d'
+
+  const { data, isLoading } = useClientAnalytics(clientId, effectiveRange, {
+    startDate: customStart,
+    endDate: customEnd,
+  })
 
   return (
     <div className="space-y-6">
       {/* Date range selector */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">Performance overview</p>
-        <DateRangeSelector value={dateRange} onValueChange={setDateRange} />
+        <DateRangeSelector
+          value={dateRange}
+          onValueChange={setDateRange}
+          customStart={customStart}
+          customEnd={customEnd}
+          onCustomRangeChange={(start, end) => {
+            setCustomStart(start)
+            setCustomEnd(end)
+          }}
+        />
       </div>
 
       {/* Mini stats grid */}
@@ -41,6 +60,11 @@ export function ClientAnalyticsTab({ clientId }: ClientAnalyticsTabProps) {
       <div className="grid gap-4 md:grid-cols-2">
         <VolumeChart data={data?.volumeProgression ?? []} isLoading={isLoading} />
         <MuscleGroupChart data={data?.muscleGroupDistribution ?? []} isLoading={isLoading} />
+      </div>
+
+      {/* Set distribution by muscle group */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <MuscleGroupSetsChart data={data?.muscleGroupSetCounts ?? []} isLoading={isLoading} />
       </div>
 
       {/* Frequency & PRs */}

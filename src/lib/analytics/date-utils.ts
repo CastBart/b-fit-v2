@@ -1,10 +1,11 @@
-import type { DateRange, DateRangePreset } from '@/types/analytics'
+import type { DateRange, DateRangePreset, FixedDateRangePreset } from '@/types/analytics'
 
 /**
- * Convert a preset string to an actual date range.
+ * Convert a fixed preset to an actual date range.
  * End date is always "now". Start date is calculated from the preset.
+ * ('custom' is handled by `resolveDateRange`, not here.)
  */
-export function getDateRange(preset: DateRangePreset): DateRange {
+export function getDateRange(preset: FixedDateRangePreset): DateRange {
   const end = new Date()
 
   switch (preset) {
@@ -33,6 +34,31 @@ export function getDateRange(preset: DateRangePreset): DateRange {
       return { start: new Date('2020-01-01'), end }
     }
   }
+}
+
+/**
+ * Resolve analytics filters to an explicit {start, end} range.
+ * For 'custom', uses the supplied bounds (normalized to whole-day edges).
+ * For any fixed preset, delegates to getDateRange. Falls back to '30d' if a
+ * custom range is requested without both bounds (shouldn't happen — the Zod
+ * schema enforces it — but keeps callers total).
+ */
+export function resolveDateRange(filters: {
+  dateRange: DateRangePreset
+  startDate?: Date
+  endDate?: Date
+}): DateRange {
+  if (filters.dateRange === 'custom') {
+    if (!filters.startDate || !filters.endDate) {
+      return getDateRange('30d')
+    }
+    const start = new Date(filters.startDate)
+    start.setHours(0, 0, 0, 0)
+    const end = new Date(filters.endDate)
+    end.setHours(23, 59, 59, 999)
+    return { start, end }
+  }
+  return getDateRange(filters.dateRange)
 }
 
 /**

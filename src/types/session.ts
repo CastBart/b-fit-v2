@@ -1,6 +1,7 @@
 import type {
   MetricType,
   ExerciseType,
+  MuscleGroup,
   SessionStatus as _PrismaSessionStatus,
 } from '@prisma/client'
 
@@ -68,6 +69,12 @@ export type SessionExerciseEntry = {
   // Exercise categorization (for timer, input rendering)
   exerciseType: ExerciseType // SMALL | MEDIUM | LARGE | STABILITY | CARDIO
   metricType: MetricType // WEIGHT_REPS | DURATION | etc.
+
+  // Muscle groups (denormalized for in-session displays and post-completion
+  // breakdowns — not persisted as part of SaveSessionPayload because the
+  // server can re-derive them from the Exercise table).
+  primaryMuscleGroup: MuscleGroup
+  secondaryMuscleGroups: MuscleGroup[]
 
   // Notes
   notes: string | null

@@ -29,7 +29,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { CheckCircle2, Clock, Dumbbell, Calendar, Trophy, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatDuration } from '@/lib/utils/format-time'
-import type { MetricType } from '@prisma/client'
+import { CompletedSessionActionsMenu } from './CompletedSessionActionsMenu'
+import { MuscleGroupSetCounts } from '@/components/features/workouts/MuscleGroupSetCounts'
+import { computeMuscleGroupSetCounts } from '@/lib/analytics/muscle-set-counts'
+import type { ExerciseType, MetricType, MuscleGroup } from '@prisma/client'
 
 // ============================================================================
 // TYPES
@@ -49,14 +52,29 @@ export type CompletedSetData = {
 }
 
 /**
- * Unified exercise data for display
+ * Unified exercise data for display.
+ *
+ * Carries the source workout-template target params and the exercise's muscle
+ * groups so the drawer can power downstream features that need to rebuild a
+ * session from a completed one (repeat session) or compute weighted
+ * muscle-group set counts.
  */
 export type CompletedExerciseData = {
   id: string
+  exerciseId: string
   name: string
   metricType: MetricType
+  exerciseType: ExerciseType
   sets: CompletedSetData[]
   notes?: string | null
+  // Source workout-template params (for repeat-session)
+  targetReps: number | null
+  targetWeight: number | null
+  targetRestSeconds: number
+  groupId: string | null
+  // Muscle group data (for weighted set-count breakdowns)
+  primaryMuscleGroup: MuscleGroup
+  secondaryMuscleGroups: MuscleGroup[]
 }
 
 /**
@@ -80,6 +98,24 @@ export type CompletedSessionData = {
   exercises: CompletedExerciseData[]
   sessionNotes?: string | null
   prs?: SessionPRDisplay[]
+  // Source markers — gate eligibility for "Save as Workout" (Chunk C).
+  // workoutId set → session came from an existing workout (ineligible)
+  // planId set → plan-day session (still eligible: PlanDay has no workoutId)
+  workoutId?: string | null
+  planId?: string | null
+}
+
+/**
+ * One footer button. Each action's onClick is responsible for closing the
+ * drawer itself when appropriate — the drawer no longer auto-closes after
+ * an action, because some flows (e.g. opening a name dialog on top) need to
+ * keep the drawer open.
+ */
+export type DrawerAction = {
+  label: string
+  onClick: () => void
+  variant?: 'default' | 'outline' | 'secondary'
+  disabled?: boolean
 }
 
 interface CompletedSessionDrawerProps {
@@ -87,8 +123,16 @@ interface CompletedSessionDrawerProps {
   onOpenChange: (open: boolean) => void
   data: CompletedSessionData | null
   onClose?: () => void
-  actionLabel?: string
-  onAction?: () => void
+  actions?: DrawerAction[]
+  /**
+   * Optional override for the "Repeat Session" action. Supplied by the live
+   * just-completed drawer (session page), whose close handler tears down the
+   * session and navigates away — so the default repeat flow would conflict.
+   * When omitted, the Repeat button self-handles the start.
+   */
+  onRepeat?: (data: CompletedSessionData) => void
+  /** Hide the "Repeat Session" button (e.g. when viewing another user's session). */
+  hideRepeat?: boolean
 }
 
 // ============================================================================
@@ -100,8 +144,9 @@ export function CompletedSessionDrawer({
   onOpenChange,
   data,
   onClose,
-  actionLabel = 'Done',
-  onAction,
+  actions,
+  onRepeat,
+  hideRepeat,
 }: CompletedSessionDrawerProps) {
   // Calculate session stats
   const stats = useMemo(() => {
@@ -138,14 +183,21 @@ export function CompletedSessionDrawer({
     }
   }, [data])
 
+  // Weighted set counts per muscle group, from COMPLETED sets only.
+  const muscleSetCounts = useMemo(() => {
+    if (!data) return []
+    return computeMuscleGroupSetCounts(
+      data.exercises.map((ex) => ({
+        sets: ex.sets.filter((s) => s.isCompleted).length,
+        primaryMuscleGroup: ex.primaryMuscleGroup,
+        secondaryMuscleGroups: ex.secondaryMuscleGroups,
+      }))
+    )
+  }, [data])
+
   const handleClose = () => {
     onOpenChange(false)
     onClose?.()
-  }
-
-  const handleAction = () => {
-    onAction?.()
-    handleClose()
   }
 
   if (!data) return null
@@ -155,9 +207,14 @@ export function CompletedSessionDrawer({
   return (
     <Drawer open={open} onOpenChange={onOpenChange} handleOnly repositionInputs={false}>
       <DrawerContent className="custom-drawer-fullscreen justify-self-center">
-        <DrawerHeader className="text-center pb-2">
+        <DrawerHeader className="relative pb-2 text-center">
           <DrawerTitle className="text-xl">Workout Complete!</DrawerTitle>
           <DrawerDescription className="text-base">{data.workoutName}</DrawerDescription>
+          {/* Session actions (Save as Workout / Repeat) live in a kebab menu
+              to the right of the title. Renders null if neither is available. */}
+          <div className="absolute right-3 top-3">
+            <CompletedSessionActionsMenu data={data} onRepeat={onRepeat} hideRepeat={hideRepeat} />
+          </div>
         </DrawerHeader>
 
         <ScrollArea className="flex-1 px-6">
@@ -230,7 +287,8 @@ export function CompletedSessionDrawer({
               </>
             )}
 
-            {/* <Separator /> */}
+            {/* Weighted set counts per muscle group (completed sets only) */}
+            <MuscleGroupSetCounts counts={muscleSetCounts} />
 
             {/* Exercises List */}
             <div className="space-y-2">
@@ -258,9 +316,23 @@ export function CompletedSessionDrawer({
         </ScrollArea>
 
         <DrawerFooter className="pt-4">
-          <Button onClick={handleAction} className="w-full">
-            {actionLabel}
-          </Button>
+          {actions && actions.length > 0 ? (
+            actions.map((action, idx) => (
+              <Button
+                key={`${idx}-${action.label}`}
+                onClick={action.onClick}
+                disabled={action.disabled}
+                variant={action.variant ?? 'default'}
+                className="w-full"
+              >
+                {action.label}
+              </Button>
+            ))
+          ) : (
+            <Button onClick={handleClose} className="w-full">
+              Done
+            </Button>
+          )}
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

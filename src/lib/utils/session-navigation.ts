@@ -9,7 +9,7 @@ import { generateId } from '@/lib/utils'
 import { startSession, startFreeSession } from '@/store/slices/sessionSlice'
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import type { SessionExerciseEntry } from '@/types/session'
-import type { ExerciseType, MetricType } from '@prisma/client'
+import type { ExerciseType, MetricType, MuscleGroup } from '@prisma/client'
 
 /**
  * Start a workout session from a workout object.
@@ -52,6 +52,8 @@ export function startWorkoutSession(
         name: string
         exerciseType: string
         metricType: string
+        primaryMuscleGroup: string
+        secondaryMuscleGroups: string[]
       }
       order: number
       groupId: string | null
@@ -80,6 +82,8 @@ export function startWorkoutSession(
       targetRestSeconds: we.restSeconds,
       exerciseType: we.exercise.exerciseType as ExerciseType,
       metricType: we.exercise.metricType as MetricType,
+      primaryMuscleGroup: we.exercise.primaryMuscleGroup as MuscleGroup,
+      secondaryMuscleGroups: we.exercise.secondaryMuscleGroups as MuscleGroup[],
       notes: we.notes,
     }))
 
@@ -145,6 +149,8 @@ export function startPlanDaySession(
         name: string
         exerciseType: string
         metricType: string
+        primaryMuscleGroup: string
+        secondaryMuscleGroups: string[]
       }
       order: number
       groupId: string | null
@@ -172,6 +178,8 @@ export function startPlanDaySession(
       targetRestSeconds: pde.restSeconds,
       exerciseType: pde.exercise.exerciseType as ExerciseType,
       metricType: pde.exercise.metricType as MetricType,
+      primaryMuscleGroup: pde.exercise.primaryMuscleGroup as MuscleGroup,
+      secondaryMuscleGroups: pde.exercise.secondaryMuscleGroups as MuscleGroup[],
       notes: pde.notes,
     }))
 
@@ -181,6 +189,69 @@ export function startPlanDaySession(
       workoutName: planDay.sessionName,
       planId: planDay.planId,
       planDayId: planDay.planDayId,
+      exercises,
+    })
+  )
+
+  router.push('/session')
+}
+
+/**
+ * Start a fresh session that repeats a completed one.
+ *
+ * The new session is always ad-hoc — `workoutId`, `planId`, and `planDayId`
+ * are all null. We intentionally do NOT re-attach plan tracking so repeating a
+ * plan-day session does not re-complete that plan day; re-doing a plan day
+ * should go through the plan UI.
+ *
+ * Set counts and target params are carried from the completed session;
+ * actual logged values are left blank and will be pre-filled from history when
+ * the session page initializes (same as any other session start).
+ */
+export function startRepeatedSession(
+  completed: {
+    workoutName: string
+    exercises: Array<{
+      exerciseId: string
+      name: string
+      exerciseType: string
+      metricType: string
+      targetReps: number | null
+      targetWeight: number | null
+      targetRestSeconds: number
+      groupId: string | null
+      primaryMuscleGroup: string
+      secondaryMuscleGroups: string[]
+      sets: Array<unknown>
+      notes?: string | null
+    }>
+  },
+  dispatch: AppDispatch,
+  router: AppRouterInstance
+): void {
+  const exercises: SessionExerciseEntry[] = completed.exercises.map((ex, index) => ({
+    instanceId: generateId(),
+    exerciseId: ex.exerciseId,
+    name: ex.name,
+    order: index,
+    groupId: ex.groupId,
+    targetSets: Math.max(1, ex.sets.length),
+    targetReps: ex.targetReps,
+    targetWeight: ex.targetWeight,
+    targetRestSeconds: ex.targetRestSeconds,
+    exerciseType: ex.exerciseType as ExerciseType,
+    metricType: ex.metricType as MetricType,
+    primaryMuscleGroup: ex.primaryMuscleGroup as MuscleGroup,
+    secondaryMuscleGroups: ex.secondaryMuscleGroups as MuscleGroup[],
+    notes: ex.notes ?? null,
+  }))
+
+  dispatch(
+    startSession({
+      workoutId: null,
+      workoutName: completed.workoutName,
+      planId: null,
+      planDayId: null,
       exercises,
     })
   )

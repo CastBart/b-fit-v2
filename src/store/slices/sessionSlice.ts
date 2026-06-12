@@ -4,6 +4,7 @@ import type {
   SessionState,
   SessionExerciseEntry,
   ExerciseProgress,
+  SessionSet,
   SetMetrics,
   HistorySet,
 } from '@/types/session'
@@ -36,6 +37,35 @@ function applyHistoryToProgress(progress: ExerciseProgress, historySets: History
     const historySet = historySets.find((h) => h.setNumber === set.setNumber)
     if (historySet) {
       set.metrics = historySetToMetrics(historySet)
+    }
+  }
+}
+
+const METRIC_FIELDS: (keyof SetMetrics)[] = [
+  'weight',
+  'reps',
+  'duration',
+  'distance',
+  'counterWeight',
+]
+
+/**
+ * Carry the just-completed set's metrics into the next set, but only into
+ * fields that are still blank or 0. User-entered (non-zero) values and
+ * history-prefilled values are preserved.
+ *
+ * Mutates `nextSet` in place (called on an Immer draft). No-op if `nextSet`
+ * is already completed.
+ */
+function autoPopulateNextSet(completedMetrics: SetMetrics, nextSet: SessionSet): void {
+  if (nextSet.completed) return
+  for (const field of METRIC_FIELDS) {
+    const value = completedMetrics[field]
+    if (value == null) continue // nothing to copy from
+    const existing = nextSet.metrics[field]
+    // Treat undefined / null / 0 as "blank" → fillable.
+    if (existing == null || existing === 0) {
+      nextSet.metrics[field] = value
     }
   }
 }
@@ -371,6 +401,16 @@ const sessionSlice = createSlice({
       set.completed = true
       set.metrics = action.payload.metrics
       set.completedAt = Date.now()
+
+      // Auto-populate the NEXT set of THIS exercise from the values just
+      // entered, but only into fields that are still blank or 0. Works for
+      // both solo and superset exercises (it targets this instance's next set
+      // by index, never a different exercise). Composes with history prefill:
+      // prefilled non-zero values are left untouched.
+      const nextSet = activeProgress.sets[activeSetIndex + 1]
+      if (nextSet) {
+        autoPopulateNextSet(set.metrics, nextSet)
+      }
 
       // Helper: start rest timer if applicable
       const startRestTimerIfApplicable = () => {

@@ -99,7 +99,7 @@ export function RecentSessions() {
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         data={selectedSession}
-        actionLabel="Close"
+        actions={[{ label: 'Close', onClick: () => setDrawerOpen(false) }]}
       />
     </>
   )
