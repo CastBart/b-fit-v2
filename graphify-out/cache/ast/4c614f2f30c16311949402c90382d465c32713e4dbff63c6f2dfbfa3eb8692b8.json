@@ -1,0 +1,335 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_phase_breakdowns_phase_4_payments_md",
+      "label": "phase-4-payments.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_phase_4_payments_subscriptions_detailed_task_breakdown",
+      "label": "Phase 4: Payments & Subscriptions - Detailed Task Breakdown",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_chunk_1_foundation_sdk_schema_stripe_utilities",
+      "label": "Chunk 1: Foundation (SDK, Schema, Stripe Utilities) \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_sub_tasks",
+      "label": "Sub-tasks",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L23"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_chunk_2_stripe_products_pricing_page",
+      "label": "Chunk 2: Stripe Products & Pricing Page \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_sub_tasks_62",
+      "label": "Sub-tasks",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L62"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_chunk_3_checkout_flow",
+      "label": "Chunk 3: Checkout Flow \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L92"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_sub_tasks_97",
+      "label": "Sub-tasks",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L97"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_chunk_4_webhooks",
+      "label": "Chunk 4: Webhooks \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L126"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_sub_tasks_131",
+      "label": "Sub-tasks",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L131"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_chunk_5_subscription_management_portal_billing_page",
+      "label": "Chunk 5: Subscription Management (Portal & Billing Page) \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L157"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_sub_tasks_162",
+      "label": "Sub-tasks",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L162"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_chunk_6_guards_capacity_enforcement_upgrade_flow_migration",
+      "label": "Chunk 6: Guards, Capacity Enforcement & Upgrade Flow Migration \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L196"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_sub_tasks_201",
+      "label": "Sub-tasks",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L201"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_chunk_7_auto_upgrade",
+      "label": "Chunk 7: Auto-Upgrade \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L228"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_sub_tasks_233",
+      "label": "Sub-tasks",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L233"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_chunk_8_polish_banners_trial_display_cleanup",
+      "label": "Chunk 8: Polish (Banners, Trial Display, Cleanup) \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L259"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_sub_tasks_264",
+      "label": "Sub-tasks",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L264"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_phase_4_completion_checklist",
+      "label": "Phase 4 Completion Checklist",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L297"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_stripe_integration",
+      "label": "Stripe Integration",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L299"
+    },
+    {
+      "id": "phase_breakdowns_phase_4_payments_subscription_management",
+      "label": "Subscription Management",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L307"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_phase_breakdowns_phase_4_payments_md",
+      "target": "phase_breakdowns_phase_4_payments_phase_4_payments_subscriptions_detailed_task_breakdown",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_phase_4_payments_subscriptions_detailed_task_breakdown",
+      "target": "phase_breakdowns_phase_4_payments_chunk_1_foundation_sdk_schema_stripe_utilities",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_chunk_1_foundation_sdk_schema_stripe_utilities",
+      "target": "phase_breakdowns_phase_4_payments_sub_tasks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_phase_4_payments_subscriptions_detailed_task_breakdown",
+      "target": "phase_breakdowns_phase_4_payments_chunk_2_stripe_products_pricing_page",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_chunk_2_stripe_products_pricing_page",
+      "target": "phase_breakdowns_phase_4_payments_sub_tasks_62",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_phase_4_payments_subscriptions_detailed_task_breakdown",
+      "target": "phase_breakdowns_phase_4_payments_chunk_3_checkout_flow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_chunk_3_checkout_flow",
+      "target": "phase_breakdowns_phase_4_payments_sub_tasks_97",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_phase_4_payments_subscriptions_detailed_task_breakdown",
+      "target": "phase_breakdowns_phase_4_payments_chunk_4_webhooks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_chunk_4_webhooks",
+      "target": "phase_breakdowns_phase_4_payments_sub_tasks_131",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_phase_4_payments_subscriptions_detailed_task_breakdown",
+      "target": "phase_breakdowns_phase_4_payments_chunk_5_subscription_management_portal_billing_page",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_chunk_5_subscription_management_portal_billing_page",
+      "target": "phase_breakdowns_phase_4_payments_sub_tasks_162",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L162",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_phase_4_payments_subscriptions_detailed_task_breakdown",
+      "target": "phase_breakdowns_phase_4_payments_chunk_6_guards_capacity_enforcement_upgrade_flow_migration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L196",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_chunk_6_guards_capacity_enforcement_upgrade_flow_migration",
+      "target": "phase_breakdowns_phase_4_payments_sub_tasks_201",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L201",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_phase_4_payments_subscriptions_detailed_task_breakdown",
+      "target": "phase_breakdowns_phase_4_payments_chunk_7_auto_upgrade",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L228",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_chunk_7_auto_upgrade",
+      "target": "phase_breakdowns_phase_4_payments_sub_tasks_233",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L233",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_phase_4_payments_subscriptions_detailed_task_breakdown",
+      "target": "phase_breakdowns_phase_4_payments_chunk_8_polish_banners_trial_display_cleanup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L259",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_chunk_8_polish_banners_trial_display_cleanup",
+      "target": "phase_breakdowns_phase_4_payments_sub_tasks_264",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L264",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_phase_4_payments_subscriptions_detailed_task_breakdown",
+      "target": "phase_breakdowns_phase_4_payments_phase_4_completion_checklist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L297",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_phase_4_completion_checklist",
+      "target": "phase_breakdowns_phase_4_payments_stripe_integration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L299",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_4_payments_phase_4_completion_checklist",
+      "target": "phase_breakdowns_phase_4_payments_subscription_management",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md",
+      "source_location": "L307",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

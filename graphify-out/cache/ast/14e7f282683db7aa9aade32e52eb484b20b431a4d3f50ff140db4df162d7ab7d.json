@@ -1,0 +1,191 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_architecture_02_data_model_md",
+      "label": "02-data-model.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "architecture_02_data_model_b_fit_data_model",
+      "label": "B-Fit Data Model",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "architecture_02_data_model_overview",
+      "label": "Overview",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "architecture_02_data_model_entity_relationship_diagram",
+      "label": "Entity Relationship Diagram",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "architecture_02_data_model_codeblock_1",
+      "label": "code:mermaid (erDiagram)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "architecture_02_data_model_key_design_patterns",
+      "label": "Key Design Patterns",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L307"
+    },
+    {
+      "id": "architecture_02_data_model_1_workout_copy_on_assign_pattern",
+      "label": "1. Workout Copy-on-Assign Pattern",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L309"
+    },
+    {
+      "id": "architecture_02_data_model_codeblock_2",
+      "label": "code:mermaid (flowchart LR)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L313"
+    },
+    {
+      "id": "architecture_02_data_model_2_session_instance_tracking_pattern",
+      "label": "2. Session Instance Tracking Pattern",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L332"
+    },
+    {
+      "id": "architecture_02_data_model_codeblock_3",
+      "label": "code:mermaid (flowchart TB)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L336"
+    },
+    {
+      "id": "architecture_02_data_model_3_superset_grouping_pattern",
+      "label": "3. Superset Grouping Pattern",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L361"
+    },
+    {
+      "id": "architecture_02_data_model_codeblock_4",
+      "label": "code:mermaid (flowchart TB)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L365"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_architecture_02_data_model_md",
+      "target": "architecture_02_data_model_b_fit_data_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_02_data_model_b_fit_data_model",
+      "target": "architecture_02_data_model_overview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_02_data_model_b_fit_data_model",
+      "target": "architecture_02_data_model_entity_relationship_diagram",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_02_data_model_entity_relationship_diagram",
+      "target": "architecture_02_data_model_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_02_data_model_b_fit_data_model",
+      "target": "architecture_02_data_model_key_design_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L307",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_02_data_model_key_design_patterns",
+      "target": "architecture_02_data_model_1_workout_copy_on_assign_pattern",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L309",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_02_data_model_1_workout_copy_on_assign_pattern",
+      "target": "architecture_02_data_model_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L313",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_02_data_model_key_design_patterns",
+      "target": "architecture_02_data_model_2_session_instance_tracking_pattern",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L332",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_02_data_model_2_session_instance_tracking_pattern",
+      "target": "architecture_02_data_model_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L336",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_02_data_model_key_design_patterns",
+      "target": "architecture_02_data_model_3_superset_grouping_pattern",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L361",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_02_data_model_3_superset_grouping_pattern",
+      "target": "architecture_02_data_model_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md",
+      "source_location": "L365",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

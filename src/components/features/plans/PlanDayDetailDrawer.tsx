@@ -34,10 +34,17 @@ import { useSession } from '@/hooks/queries/useSession'
 import { PlanDayOptionsDrawer } from '@/components/features/plans/PlanDayOptionsDrawer'
 import { MuscleGroupSetCounts } from '@/components/features/workouts/MuscleGroupSetCounts'
 import { computeMuscleGroupSetCounts } from '@/lib/analytics/muscle-set-counts'
+import { SupersetManager, createSupersetStyleResolver } from '@/lib/superset-manager'
+import type { SupersetGroupInfo, SupersetStyle } from '@/lib/superset-manager'
 import { formatDuration } from '@/lib/utils/format-time'
 import { cn } from '@/lib/utils'
+import { EquipmentTypeLabels, MuscleGroupLabels } from '@/types/exercise'
 import type { ActivePlanDashboard, DayCompletionInfo } from '@/types/plan'
-import type { MetricType, MuscleGroup } from '@prisma/client'
+import type { EquipmentType, MetricType, MuscleGroup } from '@prisma/client'
+
+const supersetManager = new SupersetManager<
+  ActivePlanDashboard['days'][number]['exercises'][number]
+>()
 
 interface PlanDayDetailDrawerProps {
   open: boolean
@@ -89,6 +96,8 @@ export function PlanDayDetailDrawer({
       secondaryMuscleGroups: e.exercise.secondaryMuscleGroups as MuscleGroup[],
     }))
   )
+
+  const getSupersetStyle = createSupersetStyleResolver(day.exercises)
 
   const handleStart = () => {
     guardedStart(() => {
@@ -173,16 +182,13 @@ export function PlanDayDetailDrawer({
                     {day.exercises.length} exercises · {totalSets} total sets
                   </p>
                   <div className="space-y-2">
-                    {day.exercises.map((exercise) => (
-                      <div
+                    {day.exercises.map((exercise, index) => (
+                      <PendingExerciseCard
                         key={exercise.id}
-                        className="flex items-center justify-between rounded-lg border p-3"
-                      >
-                        <span className="text-sm font-medium">{exercise.exercise.name}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {exercise.sets}x{exercise.reps ?? '—'}
-                        </span>
-                      </div>
+                        exercise={exercise}
+                        supersetInfo={supersetManager.getSupersetInfo(day.exercises, index)}
+                        supersetStyle={getSupersetStyle(exercise.groupId)}
+                      />
                     ))}
                   </div>
                 </>
@@ -247,6 +253,61 @@ export function PlanDayDetailDrawer({
         }}
       />
     </>
+  )
+}
+
+// ============================================================================
+// Pending Exercise Card
+// ============================================================================
+
+function PendingExerciseCard({
+  exercise,
+  supersetInfo,
+  supersetStyle,
+}: {
+  exercise: ActivePlanDashboard['days'][number]['exercises'][number]
+  supersetInfo: SupersetGroupInfo
+  supersetStyle: SupersetStyle | null
+}) {
+  const equipmentLabel = EquipmentTypeLabels[exercise.exercise.equipmentType as EquipmentType]
+  const muscleLabel = MuscleGroupLabels[exercise.exercise.primaryMuscleGroup as MuscleGroup]
+  const showBar = supersetInfo.isInSuperset && supersetStyle
+
+  return (
+    <div className="relative flex items-center gap-3 rounded-lg border p-3">
+      {/* Superset indicator bar */}
+      {showBar && (
+        <div
+          className={cn(
+            `absolute left-0 w-1 ${supersetStyle.colors.line}`,
+            supersetInfo.isFirstInSuperset && 'rounded-t-full top-0 -bottom-2',
+            supersetInfo.isLastInSuperset && 'rounded-b-full -top-2 bottom-0',
+            !supersetInfo.isFirstInSuperset && !supersetInfo.isLastInSuperset && '-top-1 -bottom-1'
+          )}
+        />
+      )}
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium">{exercise.exercise.name}</p>
+        <p className="truncate text-xs text-muted-foreground">
+          {[equipmentLabel, muscleLabel].filter(Boolean).join(' · ')}
+        </p>
+      </div>
+
+      <div className="flex shrink-0 items-center gap-2">
+        {showBar && (
+          <Badge
+            variant="outline"
+            className={`text-xs ${supersetStyle.colors.bg} ${supersetStyle.colors.text} ${supersetStyle.colors.border}`}
+          >
+            {supersetStyle.label}
+          </Badge>
+        )}
+        <span className="whitespace-nowrap text-sm text-muted-foreground">
+          {exercise.sets} × {exercise.reps ?? '—'}
+        </span>
+      </div>
+    </div>
   )
 }
 

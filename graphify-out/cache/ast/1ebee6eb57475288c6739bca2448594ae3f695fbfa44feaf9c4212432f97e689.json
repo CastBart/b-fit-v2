@@ -1,0 +1,383 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_phase_breakdowns_phase_0_complete_md",
+      "label": "PHASE-0-COMPLETE.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "label": "Phase 0: Documentation & Setup - COMPLETE \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_summary",
+      "label": "Summary",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_completed_deliverables",
+      "label": "Completed Deliverables",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L15"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_1_repository_setup",
+      "label": "1. Repository Setup \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L17"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_2_architecture_documentation",
+      "label": "2. Architecture Documentation \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_3_phase_implementation_plans",
+      "label": "3. Phase Implementation Plans \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L44"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_4_existing_documentation",
+      "label": "4. Existing Documentation \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L66"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_5_project_configuration",
+      "label": "5. Project Configuration \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L84"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_key_accomplishments",
+      "label": "Key Accomplishments",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L92"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_documentation_quality",
+      "label": "Documentation Quality",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L94"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_project_architecture",
+      "label": "Project Architecture",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L101"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_implementation_readiness",
+      "label": "Implementation Readiness",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L108"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_phase_breakdown_statistics",
+      "label": "Phase Breakdown Statistics",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L117"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_what_s_not_in_phase_0",
+      "label": "What's NOT in Phase 0",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L131"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_next_steps_phase_1_foundation",
+      "label": "Next Steps: Phase 1 - Foundation",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L141"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_week_1_tasks",
+      "label": "Week 1 Tasks:",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L145"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_week_2_tasks",
+      "label": "Week 2 Tasks:",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L153"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_git_commit_log",
+      "label": "Git Commit Log",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L166"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_codeblock_1",
+      "label": "code:block1 (ecda8d0 - system architecture and phase 1-6 documented)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L168"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_success_metrics_phase_0",
+      "label": "Success Metrics - Phase 0",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L175"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_recommendations_for_phase_1",
+      "label": "Recommendations for Phase 1",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L185"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_documentation_access",
+      "label": "Documentation Access",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L195"
+    },
+    {
+      "id": "phase_breakdowns_phase_0_complete_quality_checklist",
+      "label": "Quality Checklist",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L206"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_phase_breakdowns_phase_0_complete_md",
+      "target": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "target": "phase_breakdowns_phase_0_complete_summary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "target": "phase_breakdowns_phase_0_complete_completed_deliverables",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_completed_deliverables",
+      "target": "phase_breakdowns_phase_0_complete_1_repository_setup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_completed_deliverables",
+      "target": "phase_breakdowns_phase_0_complete_2_architecture_documentation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_completed_deliverables",
+      "target": "phase_breakdowns_phase_0_complete_3_phase_implementation_plans",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_completed_deliverables",
+      "target": "phase_breakdowns_phase_0_complete_4_existing_documentation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_completed_deliverables",
+      "target": "phase_breakdowns_phase_0_complete_5_project_configuration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "target": "phase_breakdowns_phase_0_complete_key_accomplishments",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_key_accomplishments",
+      "target": "phase_breakdowns_phase_0_complete_documentation_quality",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_key_accomplishments",
+      "target": "phase_breakdowns_phase_0_complete_project_architecture",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_key_accomplishments",
+      "target": "phase_breakdowns_phase_0_complete_implementation_readiness",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "target": "phase_breakdowns_phase_0_complete_phase_breakdown_statistics",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L117",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "target": "phase_breakdowns_phase_0_complete_what_s_not_in_phase_0",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "target": "phase_breakdowns_phase_0_complete_next_steps_phase_1_foundation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_next_steps_phase_1_foundation",
+      "target": "phase_breakdowns_phase_0_complete_week_1_tasks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_next_steps_phase_1_foundation",
+      "target": "phase_breakdowns_phase_0_complete_week_2_tasks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L153",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "target": "phase_breakdowns_phase_0_complete_git_commit_log",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L166",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_git_commit_log",
+      "target": "phase_breakdowns_phase_0_complete_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "target": "phase_breakdowns_phase_0_complete_success_metrics_phase_0",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "target": "phase_breakdowns_phase_0_complete_recommendations_for_phase_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L185",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "target": "phase_breakdowns_phase_0_complete_documentation_access",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L195",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_0_complete_phase_0_documentation_setup_complete",
+      "target": "phase_breakdowns_phase_0_complete_quality_checklist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md",
+      "source_location": "L206",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

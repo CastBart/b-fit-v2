@@ -1,0 +1,831 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_claude_agents_e2e_runner_md",
+      "label": "e2e-runner.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "agents_e2e_runner_e2e_test_runner",
+      "label": "E2E Test Runner",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L8"
+    },
+    {
+      "id": "agents_e2e_runner_core_responsibilities",
+      "label": "Core Responsibilities",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "agents_e2e_runner_tools_at_your_disposal",
+      "label": "Tools at Your Disposal",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L21"
+    },
+    {
+      "id": "agents_e2e_runner_playwright_testing_framework",
+      "label": "Playwright Testing Framework",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L23"
+    },
+    {
+      "id": "agents_e2e_runner_test_commands",
+      "label": "Test Commands",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L30"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_1",
+      "label": "code:bash (# Run all E2E tests)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L32"
+    },
+    {
+      "id": "agents_e2e_runner_e2e_testing_workflow",
+      "label": "E2E Testing Workflow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L63"
+    },
+    {
+      "id": "agents_e2e_runner_1_test_planning_phase",
+      "label": "1. Test Planning Phase",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L65"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_2",
+      "label": "code:block2 (a) Identify critical user journeys)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L67"
+    },
+    {
+      "id": "agents_e2e_runner_2_test_creation_phase",
+      "label": "2. Test Creation Phase",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L85"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_3",
+      "label": "code:block3 (For each user journey:)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L87"
+    },
+    {
+      "id": "agents_e2e_runner_3_test_execution_phase",
+      "label": "3. Test Execution Phase",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L109"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_4",
+      "label": "code:block4 (a) Run tests locally)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L111"
+    },
+    {
+      "id": "agents_e2e_runner_playwright_test_structure",
+      "label": "Playwright Test Structure",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L128"
+    },
+    {
+      "id": "agents_e2e_runner_test_file_organization",
+      "label": "Test File Organization",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L130"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_5",
+      "label": "code:block5 (tests/)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L132"
+    },
+    {
+      "id": "agents_e2e_runner_page_object_model_pattern",
+      "label": "Page Object Model Pattern",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L157"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_6",
+      "label": "code:typescript (// pages/MarketsPage.ts)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L159"
+    },
+    {
+      "id": "agents_e2e_runner_example_test_with_best_practices",
+      "label": "Example Test with Best Practices",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L204"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_7",
+      "label": "code:typescript (// tests/e2e/markets/search.spec.ts)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L206"
+    },
+    {
+      "id": "agents_e2e_runner_example_project_specific_test_scenarios",
+      "label": "Example Project-Specific Test Scenarios",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L264"
+    },
+    {
+      "id": "agents_e2e_runner_critical_user_journeys_for_example_project",
+      "label": "Critical User Journeys for Example Project",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L266"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_8",
+      "label": "code:typescript (test('user can browse and view markets', async ({ page }) =>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L270"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_9",
+      "label": "code:typescript (test('semantic search returns relevant results', async ({ pa)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L294"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_10",
+      "label": "code:typescript (test('user can connect wallet', async ({ page, context }) =>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L321"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_11",
+      "label": "code:typescript (test('authenticated user can create market', async ({ page })",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L359"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_12",
+      "label": "code:typescript (test('user can place trade with sufficient balance', async ()",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L389"
+    },
+    {
+      "id": "agents_e2e_runner_playwright_configuration",
+      "label": "Playwright Configuration",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L430"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_13",
+      "label": "code:typescript (// playwright.config.ts)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L432"
+    },
+    {
+      "id": "agents_e2e_runner_flaky_test_management",
+      "label": "Flaky Test Management",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L482"
+    },
+    {
+      "id": "agents_e2e_runner_identifying_flaky_tests",
+      "label": "Identifying Flaky Tests",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L484"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_14",
+      "label": "code:bash (# Run test multiple times to check stability)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L486"
+    },
+    {
+      "id": "agents_e2e_runner_quarantine_pattern",
+      "label": "Quarantine Pattern",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L494"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_15",
+      "label": "code:typescript (// Mark flaky test for quarantine)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L496"
+    },
+    {
+      "id": "agents_e2e_runner_common_flakiness_causes_fixes",
+      "label": "Common Flakiness Causes & Fixes",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L512"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_16",
+      "label": "code:typescript (// \u274c FLAKY: Don't assume element is ready)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L516"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_17",
+      "label": "code:typescript (// \u274c FLAKY: Arbitrary timeout)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L526"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_18",
+      "label": "code:typescript (// \u274c FLAKY: Click during animation)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L536"
+    },
+    {
+      "id": "agents_e2e_runner_artifact_management",
+      "label": "Artifact Management",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L546"
+    },
+    {
+      "id": "agents_e2e_runner_screenshot_strategy",
+      "label": "Screenshot Strategy",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L548"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_19",
+      "label": "code:typescript (// Take screenshot at key points)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L550"
+    },
+    {
+      "id": "agents_e2e_runner_trace_collection",
+      "label": "Trace Collection",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L563"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_20",
+      "label": "code:typescript (// Start trace)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L565"
+    },
+    {
+      "id": "agents_e2e_runner_video_recording",
+      "label": "Video Recording",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L579"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_21",
+      "label": "code:typescript (// Configured in playwright.config.ts)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L581"
+    },
+    {
+      "id": "agents_e2e_runner_ci_cd_integration",
+      "label": "CI/CD Integration",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L589"
+    },
+    {
+      "id": "agents_e2e_runner_github_actions_workflow",
+      "label": "GitHub Actions Workflow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L591"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_22",
+      "label": "code:yaml (# .github/workflows/e2e.yml)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L593"
+    },
+    {
+      "id": "agents_e2e_runner_test_report_format",
+      "label": "Test Report Format",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L636"
+    },
+    {
+      "id": "agents_e2e_runner_codeblock_23",
+      "label": "code:markdown (# E2E Test Report)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L638"
+    },
+    {
+      "id": "agents_e2e_runner_success_metrics",
+      "label": "Success Metrics",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L722"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_claude_agents_e2e_runner_md",
+      "target": "agents_e2e_runner_e2e_test_runner",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_test_runner",
+      "target": "agents_e2e_runner_core_responsibilities",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_test_runner",
+      "target": "agents_e2e_runner_tools_at_your_disposal",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_tools_at_your_disposal",
+      "target": "agents_e2e_runner_playwright_testing_framework",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_tools_at_your_disposal",
+      "target": "agents_e2e_runner_test_commands",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_test_commands",
+      "target": "agents_e2e_runner_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_test_runner",
+      "target": "agents_e2e_runner_e2e_testing_workflow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_testing_workflow",
+      "target": "agents_e2e_runner_1_test_planning_phase",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_1_test_planning_phase",
+      "target": "agents_e2e_runner_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_testing_workflow",
+      "target": "agents_e2e_runner_2_test_creation_phase",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_2_test_creation_phase",
+      "target": "agents_e2e_runner_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_testing_workflow",
+      "target": "agents_e2e_runner_3_test_execution_phase",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_3_test_execution_phase",
+      "target": "agents_e2e_runner_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_test_runner",
+      "target": "agents_e2e_runner_playwright_test_structure",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_playwright_test_structure",
+      "target": "agents_e2e_runner_test_file_organization",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_test_file_organization",
+      "target": "agents_e2e_runner_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L132",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_playwright_test_structure",
+      "target": "agents_e2e_runner_page_object_model_pattern",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_page_object_model_pattern",
+      "target": "agents_e2e_runner_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L159",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_playwright_test_structure",
+      "target": "agents_e2e_runner_example_test_with_best_practices",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L204",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_example_test_with_best_practices",
+      "target": "agents_e2e_runner_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L206",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_test_runner",
+      "target": "agents_e2e_runner_example_project_specific_test_scenarios",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L264",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_example_project_specific_test_scenarios",
+      "target": "agents_e2e_runner_critical_user_journeys_for_example_project",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L266",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_critical_user_journeys_for_example_project",
+      "target": "agents_e2e_runner_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L270",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_critical_user_journeys_for_example_project",
+      "target": "agents_e2e_runner_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L294",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_critical_user_journeys_for_example_project",
+      "target": "agents_e2e_runner_codeblock_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L321",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_critical_user_journeys_for_example_project",
+      "target": "agents_e2e_runner_codeblock_11",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L359",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_critical_user_journeys_for_example_project",
+      "target": "agents_e2e_runner_codeblock_12",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L389",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_test_runner",
+      "target": "agents_e2e_runner_playwright_configuration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L430",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_playwright_configuration",
+      "target": "agents_e2e_runner_codeblock_13",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L432",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_test_runner",
+      "target": "agents_e2e_runner_flaky_test_management",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L482",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_flaky_test_management",
+      "target": "agents_e2e_runner_identifying_flaky_tests",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L484",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_identifying_flaky_tests",
+      "target": "agents_e2e_runner_codeblock_14",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L486",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_flaky_test_management",
+      "target": "agents_e2e_runner_quarantine_pattern",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L494",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_quarantine_pattern",
+      "target": "agents_e2e_runner_codeblock_15",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L496",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_flaky_test_management",
+      "target": "agents_e2e_runner_common_flakiness_causes_fixes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L512",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_common_flakiness_causes_fixes",
+      "target": "agents_e2e_runner_codeblock_16",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L516",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_common_flakiness_causes_fixes",
+      "target": "agents_e2e_runner_codeblock_17",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L526",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_common_flakiness_causes_fixes",
+      "target": "agents_e2e_runner_codeblock_18",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L536",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_test_runner",
+      "target": "agents_e2e_runner_artifact_management",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L546",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_artifact_management",
+      "target": "agents_e2e_runner_screenshot_strategy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L548",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_screenshot_strategy",
+      "target": "agents_e2e_runner_codeblock_19",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L550",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_artifact_management",
+      "target": "agents_e2e_runner_trace_collection",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L563",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_trace_collection",
+      "target": "agents_e2e_runner_codeblock_20",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L565",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_artifact_management",
+      "target": "agents_e2e_runner_video_recording",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L579",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_video_recording",
+      "target": "agents_e2e_runner_codeblock_21",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L581",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_test_runner",
+      "target": "agents_e2e_runner_ci_cd_integration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L589",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_ci_cd_integration",
+      "target": "agents_e2e_runner_github_actions_workflow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L591",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_github_actions_workflow",
+      "target": "agents_e2e_runner_codeblock_22",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L593",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_test_runner",
+      "target": "agents_e2e_runner_test_report_format",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L636",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_test_report_format",
+      "target": "agents_e2e_runner_codeblock_23",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L638",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_e2e_runner_e2e_test_runner",
+      "target": "agents_e2e_runner_success_metrics",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md",
+      "source_location": "L722",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

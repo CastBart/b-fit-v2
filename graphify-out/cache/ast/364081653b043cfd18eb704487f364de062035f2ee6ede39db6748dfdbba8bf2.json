@@ -1,0 +1,1791 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_feature_flows_md",
+      "label": "feature-flows.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_feature_flows_b_fit_feature_flow_specifications",
+      "label": "B-Fit Feature Flow Specifications",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_feature_flows_overview",
+      "label": "Overview",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "docs_feature_flows_1_workout_builder_flow",
+      "label": "1. Workout Builder Flow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "docs_feature_flows_user_story",
+      "label": "User Story",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "docs_feature_flows_flow_steps",
+      "label": "Flow Steps",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L15"
+    },
+    {
+      "id": "docs_feature_flows_1_1_navigate_to_create_workout",
+      "label": "1.1 Navigate to Create Workout",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L17"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_1",
+      "label": "code:tsx (<WorkoutsPage>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "docs_feature_flows_1_2_enter_workout_metadata",
+      "label": "1.2 Enter Workout Metadata",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L55"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_2",
+      "label": "code:tsx (<WorkoutMetadataForm>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "docs_feature_flows_1_3_add_exercises",
+      "label": "1.3 Add Exercises",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L71"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_3",
+      "label": "code:tsx (<WorkoutBuilder className=\"grid grid-cols-[400px_1fr]\">)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L77"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_4",
+      "label": "code:tsx (;<WorkoutBuilder>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L151"
+    },
+    {
+      "id": "docs_feature_flows_1_4_configure_exercise_parameters",
+      "label": "1.4 Configure Exercise Parameters",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L215"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_5",
+      "label": "code:tsx (<WorkoutExerciseTable>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L236"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_6",
+      "label": "code:tsx (<MetricEditorModal exercise={selectedExercise}>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L299"
+    },
+    {
+      "id": "docs_feature_flows_1_5_reorder_exercises",
+      "label": "1.5 Reorder Exercises",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L316"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_7",
+      "label": "code:typescript (function handleDragEnd(event: DragEndEvent) {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L324"
+    },
+    {
+      "id": "docs_feature_flows_1_6_create_superset",
+      "label": "1.6 Create Superset",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L350"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_8",
+      "label": "code:typescript (interface SupersetManagerOptions {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L371"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_9",
+      "label": "code:typescript (// Create superset with next exercise)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L445"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_10",
+      "label": "code:typescript (function handleExerciseDragEnd()",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L508"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_11",
+      "label": "code:tsx (<WorkoutExerciseCard exercise={exercise}>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L553"
+    },
+    {
+      "id": "docs_feature_flows_1_7_save_workout",
+      "label": "1.7 Save Workout",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L570"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_12",
+      "label": "code:typescript (const result = await createWorkout({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L581"
+    },
+    {
+      "id": "docs_feature_flows_2_live_session_flow",
+      "label": "2. Live Session Flow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L610"
+    },
+    {
+      "id": "docs_feature_flows_user_story_612",
+      "label": "User Story",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L612"
+    },
+    {
+      "id": "docs_feature_flows_flow_steps_616",
+      "label": "Flow Steps",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L616"
+    },
+    {
+      "id": "docs_feature_flows_2_1_start_session",
+      "label": "2.1 Start Session",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L618"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_13",
+      "label": "code:typescript (// From Workouts Dashboard)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L627"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_14",
+      "label": "code:typescript (// From Workout Details Page)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L653"
+    },
+    {
+      "id": "docs_feature_flows_2_2_session_ui_layout",
+      "label": "2.2 Session UI Layout",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L671"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_15",
+      "label": "code:tsx (<SessionLayout>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L679"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_16",
+      "label": "code:tsx (<Drawer open={settingsDrawerOpen} position=\"right\">)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L731"
+    },
+    {
+      "id": "docs_feature_flows_2_3_log_set",
+      "label": "2.3 Log Set",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L770"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_17",
+      "label": "code:tsx (<SetLogger metricType={exercise.metricType}>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L774"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_18",
+      "label": "code:tsx (<Drawer open={setDrawerOpen} position=\"bottom\">)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L833"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_19",
+      "label": "code:typescript (async function handleSetComplete(setIndex: number) {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L853"
+    },
+    {
+      "id": "docs_feature_flows_2_4_rest_timer",
+      "label": "2.4 Rest Timer",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L899"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_20",
+      "label": "code:typescript (function handleSetComplete(set: SetData) {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L913"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_21",
+      "label": "code:tsx (<RestTimer duration={restSeconds} onComplete={playAlert}>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L953"
+    },
+    {
+      "id": "docs_feature_flows_2_5_navigate_between_exercises",
+      "label": "2.5 Navigate Between Exercises",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L975"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_22",
+      "label": "code:typescript (function setCurrentExercise(index: number) {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L988"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_23",
+      "label": "code:tsx (<SessionFooter>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1015"
+    },
+    {
+      "id": "docs_feature_flows_2_6_handle_page_refresh",
+      "label": "2.6 Handle Page Refresh",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1039"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_24",
+      "label": "code:typescript (useEffect(() => {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1051"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_25",
+      "label": "code:typescript (interface SessionBackup {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1086"
+    },
+    {
+      "id": "docs_feature_flows_2_7_complete_session",
+      "label": "2.7 Complete Session",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1126"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_26",
+      "label": "code:typescript (function isExerciseComplete(exercise: SessionExercise): bool)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1132"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_27",
+      "label": "code:typescript (// Show complete button only when all exercises are complete)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1144"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_28",
+      "label": "code:typescript (function handleAddSet(exerciseId: string) {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1153"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_29",
+      "label": "code:tsx ({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1173"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_30",
+      "label": "code:tsx (<Drawer open={settingsDrawerOpen}>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1191"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_31",
+      "label": "code:typescript (async function handleCompleteFromSettings() {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1220"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_32",
+      "label": "code:typescript (async function handleCancel() {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1248"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_33",
+      "label": "code:typescript (async function completeSession() {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1276"
+    },
+    {
+      "id": "docs_feature_flows_2_8_session_summary",
+      "label": "2.8 Session Summary",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1301"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_34",
+      "label": "code:tsx (<SessionSummary session={session} summary={summary}>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1303"
+    },
+    {
+      "id": "docs_feature_flows_3_client_assignment_flow_pt",
+      "label": "3. Client Assignment Flow (PT)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1342"
+    },
+    {
+      "id": "docs_feature_flows_user_story_1344",
+      "label": "User Story",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1344"
+    },
+    {
+      "id": "docs_feature_flows_flow_steps_1348",
+      "label": "Flow Steps",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1348"
+    },
+    {
+      "id": "docs_feature_flows_3_1_clients_dashboard",
+      "label": "3.1 Clients Dashboard",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1350"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_35",
+      "label": "code:tsx (<ClientsDashboard>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1356"
+    },
+    {
+      "id": "docs_feature_flows_3_2_client_profile",
+      "label": "3.2 Client Profile",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1392"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_36",
+      "label": "code:tsx (<ClientProfile client={client}>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1398"
+    },
+    {
+      "id": "docs_feature_flows_3_3_workouts_tab",
+      "label": "3.3 Workouts Tab",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1428"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_37",
+      "label": "code:tsx (<WorkoutsTab clientId={clientId}>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1432"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_38",
+      "label": "code:tsx (<Drawer open={workoutSelectorOpen} position=\"right\" width=\"5)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1472"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_39",
+      "label": "code:typescript (async function assignSelectedWorkouts() {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1500"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_40",
+      "label": "code:typescript (function openBespokeWorkoutBuilder() {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1525"
+    },
+    {
+      "id": "docs_feature_flows_3_4_plans_tab",
+      "label": "3.4 Plans Tab",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1534"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_41",
+      "label": "code:tsx (<PlansTab clientId={clientId}>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1538"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_42",
+      "label": "code:tsx (<Drawer open={planSelectorOpen} position=\"right\" width=\"500p)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1594"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_43",
+      "label": "code:typescript (async function copySelectedPlans() {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1620"
+    },
+    {
+      "id": "docs_feature_flows_4_role_upgrade_flow",
+      "label": "4. Role Upgrade Flow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1645"
+    },
+    {
+      "id": "docs_feature_flows_user_story_1647",
+      "label": "User Story",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1647"
+    },
+    {
+      "id": "docs_feature_flows_flow_steps_1651",
+      "label": "Flow Steps",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1651"
+    },
+    {
+      "id": "docs_feature_flows_4_1_navigate_to_upgrade",
+      "label": "4.1 Navigate to Upgrade",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1653"
+    },
+    {
+      "id": "docs_feature_flows_4_2_view_pricing_tiers",
+      "label": "4.2 View Pricing Tiers",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1663"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_44",
+      "label": "code:tsx (<PricingPage>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1665"
+    },
+    {
+      "id": "docs_feature_flows_4_3_stripe_checkout",
+      "label": "4.3 Stripe Checkout",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1694"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_45",
+      "label": "code:typescript (async function handleUpgrade(priceId: string) {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1696"
+    },
+    {
+      "id": "docs_feature_flows_4_4_post_payment_redirect",
+      "label": "4.4 Post-Payment Redirect",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1715"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_46",
+      "label": "code:tsx ({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1721"
+    },
+    {
+      "id": "docs_feature_flows_5_messaging_flow",
+      "label": "5. Messaging Flow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1747"
+    },
+    {
+      "id": "docs_feature_flows_user_story_1749",
+      "label": "User Story",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1749"
+    },
+    {
+      "id": "docs_feature_flows_flow_steps_1753",
+      "label": "Flow Steps",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1753"
+    },
+    {
+      "id": "docs_feature_flows_5_1_open_conversation",
+      "label": "5.1 Open Conversation",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1755"
+    },
+    {
+      "id": "docs_feature_flows_5_2_compose_message",
+      "label": "5.2 Compose Message",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1766"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_47",
+      "label": "code:tsx (<MessageComposer>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1768"
+    },
+    {
+      "id": "docs_feature_flows_5_3_upload_media_optional",
+      "label": "5.3 Upload Media (Optional)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1803"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_48",
+      "label": "code:typescript (async function handleMediaUpload(file: File) {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1805"
+    },
+    {
+      "id": "docs_feature_flows_5_4_send_message",
+      "label": "5.4 Send Message",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1833"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_49",
+      "label": "code:typescript (async function sendMessage() {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1835"
+    },
+    {
+      "id": "docs_feature_flows_5_5_view_conversation",
+      "label": "5.5 View Conversation",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1862"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_50",
+      "label": "code:tsx (<Conversation>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1864"
+    },
+    {
+      "id": "docs_feature_flows_6_planning_flow",
+      "label": "6. Planning Flow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1898"
+    },
+    {
+      "id": "docs_feature_flows_user_story_1900",
+      "label": "User Story",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1900"
+    },
+    {
+      "id": "docs_feature_flows_6_1_personal_account_plans_dashboard",
+      "label": "6.1 Personal Account - Plans Dashboard",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1904"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_51",
+      "label": "code:tsx (<PlansDashboard>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1910"
+    },
+    {
+      "id": "docs_feature_flows_6_2_create_plan_flow",
+      "label": "6.2 Create Plan Flow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1966"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_52",
+      "label": "code:tsx (<CreatePlanStep1>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1970"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_53",
+      "label": "code:tsx (<CreatePlanStep2>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1994"
+    },
+    {
+      "id": "docs_feature_flows_6_3_days_planning_edit_plan",
+      "label": "6.3 Days Planning (Edit Plan)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2034"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_54",
+      "label": "code:tsx (<PlanBuilder plan={plan}>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2038"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_55",
+      "label": "code:tsx (<Drawer open={workoutSelectorOpen} position=\"bottom\" height=)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2096"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_56",
+      "label": "code:typescript (async function copyExercisesFromWorkout(workoutId: string) {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2118"
+    },
+    {
+      "id": "docs_feature_flows_6_4_plan_details_view",
+      "label": "6.4 Plan Details View",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2145"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_57",
+      "label": "code:tsx (<PlanDetails plan={plan}>)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2149"
+    },
+    {
+      "id": "docs_feature_flows_codeblock_58",
+      "label": "code:typescript (async function activatePlan(planId: string) {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2195"
+    },
+    {
+      "id": "docs_feature_flows_6_5_pt_account_personal_use_plans",
+      "label": "6.5 PT Account - Personal Use Plans",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2211"
+    },
+    {
+      "id": "docs_feature_flows_6_6_pt_account_client_plans",
+      "label": "6.6 PT Account - Client Plans",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2219"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_feature_flows_md",
+      "target": "docs_feature_flows_b_fit_feature_flow_specifications",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_b_fit_feature_flow_specifications",
+      "target": "docs_feature_flows_overview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_b_fit_feature_flow_specifications",
+      "target": "docs_feature_flows_1_workout_builder_flow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_workout_builder_flow",
+      "target": "docs_feature_flows_user_story",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_workout_builder_flow",
+      "target": "docs_feature_flows_flow_steps",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps",
+      "target": "docs_feature_flows_1_1_navigate_to_create_workout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_1_navigate_to_create_workout",
+      "target": "docs_feature_flows_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps",
+      "target": "docs_feature_flows_1_2_enter_workout_metadata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_2_enter_workout_metadata",
+      "target": "docs_feature_flows_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps",
+      "target": "docs_feature_flows_1_3_add_exercises",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_3_add_exercises",
+      "target": "docs_feature_flows_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_3_add_exercises",
+      "target": "docs_feature_flows_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps",
+      "target": "docs_feature_flows_1_4_configure_exercise_parameters",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L215",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_4_configure_exercise_parameters",
+      "target": "docs_feature_flows_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L236",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_4_configure_exercise_parameters",
+      "target": "docs_feature_flows_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L299",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps",
+      "target": "docs_feature_flows_1_5_reorder_exercises",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L316",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_5_reorder_exercises",
+      "target": "docs_feature_flows_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L324",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps",
+      "target": "docs_feature_flows_1_6_create_superset",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L350",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_6_create_superset",
+      "target": "docs_feature_flows_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L371",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_6_create_superset",
+      "target": "docs_feature_flows_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L445",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_6_create_superset",
+      "target": "docs_feature_flows_codeblock_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L508",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_6_create_superset",
+      "target": "docs_feature_flows_codeblock_11",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L553",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps",
+      "target": "docs_feature_flows_1_7_save_workout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L570",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_1_7_save_workout",
+      "target": "docs_feature_flows_codeblock_12",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L581",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_b_fit_feature_flow_specifications",
+      "target": "docs_feature_flows_2_live_session_flow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L610",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_live_session_flow",
+      "target": "docs_feature_flows_user_story_612",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L612",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_live_session_flow",
+      "target": "docs_feature_flows_flow_steps_616",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L616",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_616",
+      "target": "docs_feature_flows_2_1_start_session",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L618",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_1_start_session",
+      "target": "docs_feature_flows_codeblock_13",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L627",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_1_start_session",
+      "target": "docs_feature_flows_codeblock_14",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L653",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_616",
+      "target": "docs_feature_flows_2_2_session_ui_layout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L671",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_2_session_ui_layout",
+      "target": "docs_feature_flows_codeblock_15",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L679",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_2_session_ui_layout",
+      "target": "docs_feature_flows_codeblock_16",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L731",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_616",
+      "target": "docs_feature_flows_2_3_log_set",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L770",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_3_log_set",
+      "target": "docs_feature_flows_codeblock_17",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L774",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_3_log_set",
+      "target": "docs_feature_flows_codeblock_18",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L833",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_3_log_set",
+      "target": "docs_feature_flows_codeblock_19",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L853",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_616",
+      "target": "docs_feature_flows_2_4_rest_timer",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L899",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_4_rest_timer",
+      "target": "docs_feature_flows_codeblock_20",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L913",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_4_rest_timer",
+      "target": "docs_feature_flows_codeblock_21",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L953",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_616",
+      "target": "docs_feature_flows_2_5_navigate_between_exercises",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L975",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_5_navigate_between_exercises",
+      "target": "docs_feature_flows_codeblock_22",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L988",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_5_navigate_between_exercises",
+      "target": "docs_feature_flows_codeblock_23",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1015",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_616",
+      "target": "docs_feature_flows_2_6_handle_page_refresh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1039",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_6_handle_page_refresh",
+      "target": "docs_feature_flows_codeblock_24",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1051",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_6_handle_page_refresh",
+      "target": "docs_feature_flows_codeblock_25",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1086",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_616",
+      "target": "docs_feature_flows_2_7_complete_session",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1126",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_7_complete_session",
+      "target": "docs_feature_flows_codeblock_26",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1132",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_7_complete_session",
+      "target": "docs_feature_flows_codeblock_27",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1144",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_7_complete_session",
+      "target": "docs_feature_flows_codeblock_28",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1153",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_7_complete_session",
+      "target": "docs_feature_flows_codeblock_29",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1173",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_7_complete_session",
+      "target": "docs_feature_flows_codeblock_30",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1191",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_7_complete_session",
+      "target": "docs_feature_flows_codeblock_31",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1220",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_7_complete_session",
+      "target": "docs_feature_flows_codeblock_32",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1248",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_7_complete_session",
+      "target": "docs_feature_flows_codeblock_33",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1276",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_616",
+      "target": "docs_feature_flows_2_8_session_summary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1301",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_2_8_session_summary",
+      "target": "docs_feature_flows_codeblock_34",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1303",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_b_fit_feature_flow_specifications",
+      "target": "docs_feature_flows_3_client_assignment_flow_pt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1342",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_3_client_assignment_flow_pt",
+      "target": "docs_feature_flows_user_story_1344",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1344",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_3_client_assignment_flow_pt",
+      "target": "docs_feature_flows_flow_steps_1348",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1348",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1348",
+      "target": "docs_feature_flows_3_1_clients_dashboard",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1350",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_3_1_clients_dashboard",
+      "target": "docs_feature_flows_codeblock_35",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1356",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1348",
+      "target": "docs_feature_flows_3_2_client_profile",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1392",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_3_2_client_profile",
+      "target": "docs_feature_flows_codeblock_36",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1398",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1348",
+      "target": "docs_feature_flows_3_3_workouts_tab",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1428",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_3_3_workouts_tab",
+      "target": "docs_feature_flows_codeblock_37",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1432",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_3_3_workouts_tab",
+      "target": "docs_feature_flows_codeblock_38",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1472",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_3_3_workouts_tab",
+      "target": "docs_feature_flows_codeblock_39",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1500",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_3_3_workouts_tab",
+      "target": "docs_feature_flows_codeblock_40",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1525",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1348",
+      "target": "docs_feature_flows_3_4_plans_tab",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1534",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_3_4_plans_tab",
+      "target": "docs_feature_flows_codeblock_41",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1538",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_3_4_plans_tab",
+      "target": "docs_feature_flows_codeblock_42",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1594",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_3_4_plans_tab",
+      "target": "docs_feature_flows_codeblock_43",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1620",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_b_fit_feature_flow_specifications",
+      "target": "docs_feature_flows_4_role_upgrade_flow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1645",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_4_role_upgrade_flow",
+      "target": "docs_feature_flows_user_story_1647",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1647",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_4_role_upgrade_flow",
+      "target": "docs_feature_flows_flow_steps_1651",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1651",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1651",
+      "target": "docs_feature_flows_4_1_navigate_to_upgrade",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1653",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1651",
+      "target": "docs_feature_flows_4_2_view_pricing_tiers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1663",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_4_2_view_pricing_tiers",
+      "target": "docs_feature_flows_codeblock_44",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1665",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1651",
+      "target": "docs_feature_flows_4_3_stripe_checkout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1694",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_4_3_stripe_checkout",
+      "target": "docs_feature_flows_codeblock_45",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1696",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1651",
+      "target": "docs_feature_flows_4_4_post_payment_redirect",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1715",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_4_4_post_payment_redirect",
+      "target": "docs_feature_flows_codeblock_46",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1721",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_b_fit_feature_flow_specifications",
+      "target": "docs_feature_flows_5_messaging_flow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1747",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_5_messaging_flow",
+      "target": "docs_feature_flows_user_story_1749",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1749",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_5_messaging_flow",
+      "target": "docs_feature_flows_flow_steps_1753",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1753",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1753",
+      "target": "docs_feature_flows_5_1_open_conversation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1755",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1753",
+      "target": "docs_feature_flows_5_2_compose_message",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1766",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_5_2_compose_message",
+      "target": "docs_feature_flows_codeblock_47",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1768",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1753",
+      "target": "docs_feature_flows_5_3_upload_media_optional",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1803",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_5_3_upload_media_optional",
+      "target": "docs_feature_flows_codeblock_48",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1805",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1753",
+      "target": "docs_feature_flows_5_4_send_message",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1833",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_5_4_send_message",
+      "target": "docs_feature_flows_codeblock_49",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1835",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_flow_steps_1753",
+      "target": "docs_feature_flows_5_5_view_conversation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1862",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_5_5_view_conversation",
+      "target": "docs_feature_flows_codeblock_50",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1864",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_b_fit_feature_flow_specifications",
+      "target": "docs_feature_flows_6_planning_flow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1898",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_planning_flow",
+      "target": "docs_feature_flows_user_story_1900",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1900",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_planning_flow",
+      "target": "docs_feature_flows_6_1_personal_account_plans_dashboard",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1904",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_1_personal_account_plans_dashboard",
+      "target": "docs_feature_flows_codeblock_51",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1910",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_1_personal_account_plans_dashboard",
+      "target": "docs_feature_flows_6_2_create_plan_flow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1966",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_2_create_plan_flow",
+      "target": "docs_feature_flows_codeblock_52",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1970",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_2_create_plan_flow",
+      "target": "docs_feature_flows_codeblock_53",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L1994",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_1_personal_account_plans_dashboard",
+      "target": "docs_feature_flows_6_3_days_planning_edit_plan",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2034",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_3_days_planning_edit_plan",
+      "target": "docs_feature_flows_codeblock_54",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2038",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_3_days_planning_edit_plan",
+      "target": "docs_feature_flows_codeblock_55",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2096",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_3_days_planning_edit_plan",
+      "target": "docs_feature_flows_codeblock_56",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2118",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_1_personal_account_plans_dashboard",
+      "target": "docs_feature_flows_6_4_plan_details_view",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2145",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_4_plan_details_view",
+      "target": "docs_feature_flows_codeblock_57",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2149",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_4_plan_details_view",
+      "target": "docs_feature_flows_codeblock_58",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2195",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_1_personal_account_plans_dashboard",
+      "target": "docs_feature_flows_6_5_pt_account_personal_use_plans",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2211",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_feature_flows_6_1_personal_account_plans_dashboard",
+      "target": "docs_feature_flows_6_6_pt_account_client_plans",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\feature-flows.md",
+      "source_location": "L2219",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

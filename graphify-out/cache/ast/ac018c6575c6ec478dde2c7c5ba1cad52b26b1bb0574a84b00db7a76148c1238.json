@@ -1,0 +1,143 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_claude_agents_code_reviewer_md",
+      "label": "code-reviewer.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "agents_code_reviewer_security_checks_critical",
+      "label": "Security Checks (CRITICAL)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "agents_code_reviewer_code_quality_high",
+      "label": "Code Quality (HIGH)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "agents_code_reviewer_performance_medium",
+      "label": "Performance (MEDIUM)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L58"
+    },
+    {
+      "id": "agents_code_reviewer_best_practices_medium",
+      "label": "Best Practices (MEDIUM)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L68"
+    },
+    {
+      "id": "agents_code_reviewer_review_output_format",
+      "label": "Review Output Format",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L78"
+    },
+    {
+      "id": "agents_code_reviewer_codeblock_1",
+      "label": "code:block1 ([CRITICAL] Hardcoded API key)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L82"
+    },
+    {
+      "id": "agents_code_reviewer_approval_criteria",
+      "label": "Approval Criteria",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L92"
+    },
+    {
+      "id": "agents_code_reviewer_project_specific_guidelines_example",
+      "label": "Project-Specific Guidelines (Example)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L98"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_claude_agents_code_reviewer_md",
+      "target": "agents_code_reviewer_security_checks_critical",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "d_projects_b_fit_v2_claude_agents_code_reviewer_md",
+      "target": "agents_code_reviewer_code_quality_high",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "d_projects_b_fit_v2_claude_agents_code_reviewer_md",
+      "target": "agents_code_reviewer_performance_medium",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "d_projects_b_fit_v2_claude_agents_code_reviewer_md",
+      "target": "agents_code_reviewer_best_practices_medium",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "d_projects_b_fit_v2_claude_agents_code_reviewer_md",
+      "target": "agents_code_reviewer_review_output_format",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_code_reviewer_review_output_format",
+      "target": "agents_code_reviewer_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "d_projects_b_fit_v2_claude_agents_code_reviewer_md",
+      "target": "agents_code_reviewer_approval_criteria",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "d_projects_b_fit_v2_claude_agents_code_reviewer_md",
+      "target": "agents_code_reviewer_project_specific_guidelines_example",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md",
+      "source_location": "L98",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

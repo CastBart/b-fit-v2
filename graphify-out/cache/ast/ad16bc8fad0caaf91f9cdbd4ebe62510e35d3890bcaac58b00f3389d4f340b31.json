@@ -1,0 +1,255 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_issues_analysis_unnecessary_refetches_md",
+      "label": "ANALYSIS-unnecessary-refetches.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_analysis_unnecessary_exercise_list_refetches",
+      "label": "Analysis: Unnecessary Exercise List Refetches",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_the_problem",
+      "label": "The Problem",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_root_cause",
+      "label": "Root Cause",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_codeblock_1",
+      "label": "code:typescript (const { data, isLoading, error } = useExercises({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_why_opening_drawer_causes_refetch",
+      "label": "Why Opening Drawer Causes Refetch",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L30"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_two_solutions",
+      "label": "Two Solutions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L40"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_option_1_fix_current_implementation_recommended",
+      "label": "Option 1: Fix Current Implementation (Recommended) \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L42"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_codeblock_2",
+      "label": "code:typescript (// Memoize filter params object for stable React Query key)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L61"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_option_2_switch_to_local_state_simpler_but_loses_benefits",
+      "label": "Option 2: Switch to Local State (Simpler but Loses Benefits)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L82"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_codeblock_3",
+      "label": "code:typescript (const [filters, setFilters] = useState({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L102"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_recommendation",
+      "label": "Recommendation",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L128"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_additional_optimization_remove_unnecessary_useeffect",
+      "label": "Additional Optimization: Remove Unnecessary useEffect",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L143"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_codeblock_4",
+      "label": "code:typescript (useEffect(() => {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L147"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_codeblock_5",
+      "label": "code:typescript (const { data, isLoading, error } = useExercises(filterParams)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L157"
+    },
+    {
+      "id": "issues_analysis_unnecessary_refetches_implementation_steps",
+      "label": "Implementation Steps",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L170"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_issues_analysis_unnecessary_refetches_md",
+      "target": "issues_analysis_unnecessary_refetches_analysis_unnecessary_exercise_list_refetches",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_analysis_unnecessary_exercise_list_refetches",
+      "target": "issues_analysis_unnecessary_refetches_the_problem",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_analysis_unnecessary_exercise_list_refetches",
+      "target": "issues_analysis_unnecessary_refetches_root_cause",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_root_cause",
+      "target": "issues_analysis_unnecessary_refetches_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_analysis_unnecessary_exercise_list_refetches",
+      "target": "issues_analysis_unnecessary_refetches_why_opening_drawer_causes_refetch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_analysis_unnecessary_exercise_list_refetches",
+      "target": "issues_analysis_unnecessary_refetches_two_solutions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_two_solutions",
+      "target": "issues_analysis_unnecessary_refetches_option_1_fix_current_implementation_recommended",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_option_1_fix_current_implementation_recommended",
+      "target": "issues_analysis_unnecessary_refetches_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_two_solutions",
+      "target": "issues_analysis_unnecessary_refetches_option_2_switch_to_local_state_simpler_but_loses_benefits",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_option_2_switch_to_local_state_simpler_but_loses_benefits",
+      "target": "issues_analysis_unnecessary_refetches_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_analysis_unnecessary_exercise_list_refetches",
+      "target": "issues_analysis_unnecessary_refetches_recommendation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_analysis_unnecessary_exercise_list_refetches",
+      "target": "issues_analysis_unnecessary_refetches_additional_optimization_remove_unnecessary_useeffect",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_additional_optimization_remove_unnecessary_useeffect",
+      "target": "issues_analysis_unnecessary_refetches_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_additional_optimization_remove_unnecessary_useeffect",
+      "target": "issues_analysis_unnecessary_refetches_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "issues_analysis_unnecessary_refetches_analysis_unnecessary_exercise_list_refetches",
+      "target": "issues_analysis_unnecessary_refetches_implementation_steps",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md",
+      "source_location": "L170",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

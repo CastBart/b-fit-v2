@@ -1,0 +1,943 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_todo_auth_enhancements_md",
+      "label": "auth-enhancements.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "todo_auth_enhancements_authentication_enhancements_todo",
+      "label": "Authentication Enhancements - TODO",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "todo_auth_enhancements_table_of_contents",
+      "label": "Table of Contents",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "todo_auth_enhancements_forgot_password_feature",
+      "label": "Forgot Password Feature",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L21"
+    },
+    {
+      "id": "todo_auth_enhancements_overview",
+      "label": "Overview",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L23"
+    },
+    {
+      "id": "todo_auth_enhancements_user_flow",
+      "label": "User Flow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L27"
+    },
+    {
+      "id": "todo_auth_enhancements_technical_requirements",
+      "label": "Technical Requirements",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "todo_auth_enhancements_1_email_service_setup",
+      "label": "1. Email Service Setup",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "todo_auth_enhancements_2_database_changes",
+      "label": "2. Database Changes",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L61"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_1",
+      "label": "code:prisma (model PasswordResetToken {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L65"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_2",
+      "label": "code:bash (npx prisma migrate dev --name add_password_reset_tokens)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L81"
+    },
+    {
+      "id": "todo_auth_enhancements_3_environment_variables",
+      "label": "3. Environment Variables",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L85"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_3",
+      "label": "code:env (# Email Service (Resend))",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L89"
+    },
+    {
+      "id": "todo_auth_enhancements_4_server_actions",
+      "label": "4. Server Actions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L96"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_4",
+      "label": "code:typescript ('use server')",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L100"
+    },
+    {
+      "id": "todo_auth_enhancements_5_new_pages_components",
+      "label": "5. New Pages & Components",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L216"
+    },
+    {
+      "id": "todo_auth_enhancements_6_ui_updates",
+      "label": "6. UI Updates",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L246"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_5",
+      "label": "code:tsx (// src/app/(auth)/login/page.tsx)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L252"
+    },
+    {
+      "id": "todo_auth_enhancements_7_validation_schema",
+      "label": "7. Validation Schema",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L261"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_6",
+      "label": "code:typescript (import { z } from 'zod')",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L265"
+    },
+    {
+      "id": "todo_auth_enhancements_security_considerations",
+      "label": "Security Considerations",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L292"
+    },
+    {
+      "id": "todo_auth_enhancements_testing_checklist",
+      "label": "Testing Checklist",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L301"
+    },
+    {
+      "id": "todo_auth_enhancements_google_oauth_authentication",
+      "label": "Google OAuth Authentication",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L317"
+    },
+    {
+      "id": "todo_auth_enhancements_overview_319",
+      "label": "Overview",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L319"
+    },
+    {
+      "id": "todo_auth_enhancements_user_flow_323",
+      "label": "User Flow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L323"
+    },
+    {
+      "id": "todo_auth_enhancements_technical_requirements_335",
+      "label": "Technical Requirements",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L335"
+    },
+    {
+      "id": "todo_auth_enhancements_1_google_cloud_console_setup",
+      "label": "1. Google Cloud Console Setup",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L337"
+    },
+    {
+      "id": "todo_auth_enhancements_2_environment_variables",
+      "label": "2. Environment Variables",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L361"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_7",
+      "label": "code:env (# Google OAuth)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L365"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_8",
+      "label": "code:env (# Google OAuth (optional - for social login))",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L373"
+    },
+    {
+      "id": "todo_auth_enhancements_3_nextauth_configuration",
+      "label": "3. NextAuth Configuration",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L379"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_9",
+      "label": "code:typescript (import GoogleProvider from 'next-auth/providers/google')",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L383"
+    },
+    {
+      "id": "todo_auth_enhancements_4_database_schema_update",
+      "label": "4. Database Schema Update",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L455"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_10",
+      "label": "code:prisma (model Account {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L459"
+    },
+    {
+      "id": "todo_auth_enhancements_5_ui_components",
+      "label": "5. UI Components",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L479"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_11",
+      "label": "code:tsx (import { signIn } from 'next-auth/react')",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L485"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_12",
+      "label": "code:tsx ('use client')",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L521"
+    },
+    {
+      "id": "todo_auth_enhancements_6_handle_account_linking",
+      "label": "6. Handle Account Linking",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L563"
+    },
+    {
+      "id": "todo_auth_enhancements_security_considerations_579",
+      "label": "Security Considerations",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L579"
+    },
+    {
+      "id": "todo_auth_enhancements_user_experience_improvements",
+      "label": "User Experience Improvements",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L588"
+    },
+    {
+      "id": "todo_auth_enhancements_testing_checklist_595",
+      "label": "Testing Checklist",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L595"
+    },
+    {
+      "id": "todo_auth_enhancements_implementation_order",
+      "label": "Implementation Order",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L613"
+    },
+    {
+      "id": "todo_auth_enhancements_phase_1_google_oauth_estimated_3_4_hours",
+      "label": "Phase 1: Google OAuth (Estimated: 3-4 hours)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L617"
+    },
+    {
+      "id": "todo_auth_enhancements_phase_2_forgot_password_estimated_3_4_hours",
+      "label": "Phase 2: Forgot Password (Estimated: 3-4 hours)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L635"
+    },
+    {
+      "id": "todo_auth_enhancements_dependencies_to_install",
+      "label": "Dependencies to Install",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L655"
+    },
+    {
+      "id": "todo_auth_enhancements_for_google_oauth",
+      "label": "For Google OAuth:",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L657"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_13",
+      "label": "code:bash (# NextAuth already installed, just need to add provider conf)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L659"
+    },
+    {
+      "id": "todo_auth_enhancements_for_forgot_password",
+      "label": "For Forgot Password:",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L664"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_14",
+      "label": "code:bash (# Email service (Resend - recommended))",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L666"
+    },
+    {
+      "id": "todo_auth_enhancements_environment_variables_summary",
+      "label": "Environment Variables Summary",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L678"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_15",
+      "label": "code:env (# Google OAuth)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L682"
+    },
+    {
+      "id": "todo_auth_enhancements_codeblock_16",
+      "label": "code:env (# Google OAuth (optional - for social login))",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L695"
+    },
+    {
+      "id": "todo_auth_enhancements_future_enhancements_post_mvp",
+      "label": "Future Enhancements (Post-MVP)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L708"
+    },
+    {
+      "id": "todo_auth_enhancements_additional_oauth_providers",
+      "label": "Additional OAuth Providers",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L710"
+    },
+    {
+      "id": "todo_auth_enhancements_two_factor_authentication_2fa",
+      "label": "Two-Factor Authentication (2FA)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L717"
+    },
+    {
+      "id": "todo_auth_enhancements_email_verification",
+      "label": "Email Verification",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L724"
+    },
+    {
+      "id": "todo_auth_enhancements_account_security_features",
+      "label": "Account Security Features",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L730"
+    },
+    {
+      "id": "todo_auth_enhancements_notes",
+      "label": "Notes",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L739"
+    },
+    {
+      "id": "todo_auth_enhancements_related_documentation",
+      "label": "Related Documentation",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L750"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_todo_auth_enhancements_md",
+      "target": "todo_auth_enhancements_authentication_enhancements_todo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_authentication_enhancements_todo",
+      "target": "todo_auth_enhancements_table_of_contents",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_authentication_enhancements_todo",
+      "target": "todo_auth_enhancements_forgot_password_feature",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_forgot_password_feature",
+      "target": "todo_auth_enhancements_overview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_forgot_password_feature",
+      "target": "todo_auth_enhancements_user_flow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_forgot_password_feature",
+      "target": "todo_auth_enhancements_technical_requirements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements",
+      "target": "todo_auth_enhancements_1_email_service_setup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements",
+      "target": "todo_auth_enhancements_2_database_changes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_2_database_changes",
+      "target": "todo_auth_enhancements_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_2_database_changes",
+      "target": "todo_auth_enhancements_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements",
+      "target": "todo_auth_enhancements_3_environment_variables",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_3_environment_variables",
+      "target": "todo_auth_enhancements_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements",
+      "target": "todo_auth_enhancements_4_server_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_4_server_actions",
+      "target": "todo_auth_enhancements_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements",
+      "target": "todo_auth_enhancements_5_new_pages_components",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L216",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements",
+      "target": "todo_auth_enhancements_6_ui_updates",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L246",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_6_ui_updates",
+      "target": "todo_auth_enhancements_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L252",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements",
+      "target": "todo_auth_enhancements_7_validation_schema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L261",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_7_validation_schema",
+      "target": "todo_auth_enhancements_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L265",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_forgot_password_feature",
+      "target": "todo_auth_enhancements_security_considerations",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L292",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_forgot_password_feature",
+      "target": "todo_auth_enhancements_testing_checklist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L301",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_authentication_enhancements_todo",
+      "target": "todo_auth_enhancements_google_oauth_authentication",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L317",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_google_oauth_authentication",
+      "target": "todo_auth_enhancements_overview_319",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L319",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_google_oauth_authentication",
+      "target": "todo_auth_enhancements_user_flow_323",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L323",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_google_oauth_authentication",
+      "target": "todo_auth_enhancements_technical_requirements_335",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L335",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements_335",
+      "target": "todo_auth_enhancements_1_google_cloud_console_setup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L337",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements_335",
+      "target": "todo_auth_enhancements_2_environment_variables",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L361",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_2_environment_variables",
+      "target": "todo_auth_enhancements_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L365",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_2_environment_variables",
+      "target": "todo_auth_enhancements_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L373",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements_335",
+      "target": "todo_auth_enhancements_3_nextauth_configuration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L379",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_3_nextauth_configuration",
+      "target": "todo_auth_enhancements_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L383",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements_335",
+      "target": "todo_auth_enhancements_4_database_schema_update",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L455",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_4_database_schema_update",
+      "target": "todo_auth_enhancements_codeblock_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L459",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements_335",
+      "target": "todo_auth_enhancements_5_ui_components",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L479",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_5_ui_components",
+      "target": "todo_auth_enhancements_codeblock_11",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L485",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_5_ui_components",
+      "target": "todo_auth_enhancements_codeblock_12",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L521",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_technical_requirements_335",
+      "target": "todo_auth_enhancements_6_handle_account_linking",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L563",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_google_oauth_authentication",
+      "target": "todo_auth_enhancements_security_considerations_579",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L579",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_google_oauth_authentication",
+      "target": "todo_auth_enhancements_user_experience_improvements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L588",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_google_oauth_authentication",
+      "target": "todo_auth_enhancements_testing_checklist_595",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L595",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_authentication_enhancements_todo",
+      "target": "todo_auth_enhancements_implementation_order",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L613",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_implementation_order",
+      "target": "todo_auth_enhancements_phase_1_google_oauth_estimated_3_4_hours",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L617",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_implementation_order",
+      "target": "todo_auth_enhancements_phase_2_forgot_password_estimated_3_4_hours",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L635",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_authentication_enhancements_todo",
+      "target": "todo_auth_enhancements_dependencies_to_install",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L655",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_dependencies_to_install",
+      "target": "todo_auth_enhancements_for_google_oauth",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L657",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_for_google_oauth",
+      "target": "todo_auth_enhancements_codeblock_13",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L659",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_dependencies_to_install",
+      "target": "todo_auth_enhancements_for_forgot_password",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L664",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_for_forgot_password",
+      "target": "todo_auth_enhancements_codeblock_14",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L666",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_authentication_enhancements_todo",
+      "target": "todo_auth_enhancements_environment_variables_summary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L678",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_environment_variables_summary",
+      "target": "todo_auth_enhancements_codeblock_15",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L682",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_environment_variables_summary",
+      "target": "todo_auth_enhancements_codeblock_16",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L695",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_authentication_enhancements_todo",
+      "target": "todo_auth_enhancements_future_enhancements_post_mvp",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L708",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_future_enhancements_post_mvp",
+      "target": "todo_auth_enhancements_additional_oauth_providers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L710",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_future_enhancements_post_mvp",
+      "target": "todo_auth_enhancements_two_factor_authentication_2fa",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L717",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_future_enhancements_post_mvp",
+      "target": "todo_auth_enhancements_email_verification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L724",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_future_enhancements_post_mvp",
+      "target": "todo_auth_enhancements_account_security_features",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L730",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_authentication_enhancements_todo",
+      "target": "todo_auth_enhancements_notes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L739",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_auth_enhancements_authentication_enhancements_todo",
+      "target": "todo_auth_enhancements_related_documentation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md",
+      "source_location": "L750",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

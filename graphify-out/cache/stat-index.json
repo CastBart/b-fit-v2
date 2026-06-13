@@ -1,0 +1,427 @@
+{
+  "D:\\Projects\\b-fit v2\\components.json": {
+    "size": 383,
+    "mtime_ns": 1781340105046810300,
+    "hash": "eff7c509f6630f26fd3d58c2a6fd27ae915cce32779b8b7108eaa9d693cae251"
+  },
+  "D:\\Projects\\b-fit v2\\package.json": {
+    "size": 3777,
+    "mtime_ns": 1781349666026572400,
+    "hash": "d4b43e6c6801266bf1f73fffc6c7651caf08de50fb6eb48b337ca5a4acfa47f0"
+  },
+  "D:\\Projects\\b-fit v2\\tsconfig.json": {
+    "size": 1020,
+    "mtime_ns": 1781340129553693800,
+    "hash": "f09c650f3d92abbfe7134bfb16bffd28ffc42a0b2a9163e66c77bab90d2ecc2c"
+  },
+  "D:\\Projects\\b-fit v2\\.claude\\settings.json": {
+    "size": 814,
+    "mtime_ns": 1781340104579649600,
+    "hash": "3b6bd2064ed16a0238ff4c9c723ceb232b295522d38d1af75ab165db2e06258e"
+  },
+  "D:\\Projects\\b-fit v2\\.claude\\settings.local.json": {
+    "size": 3539,
+    "mtime_ns": 1781349478708754700,
+    "hash": "c2170fb2ebe2e5677240fee41f81d2fc8a234b5b16119c09370498fa90c46be3"
+  },
+  "D:\\Projects\\b-fit v2\\.husky\\_\\husky.sh": {
+    "size": 160,
+    "mtime_ns": 1769461048194984500,
+    "hash": "6db0aa99aece6ebd17bbc27c5e5287a462fb39cc4a2ca3a82a6277c166bdb3a0"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260127091814_init\\migration.sql": {
+    "size": 585,
+    "mtime_ns": 1769505494839243900,
+    "hash": "b5616d7dadcd9b013ce738d57bd7cbd82cf89958e7ec32d1020007599e17b64b"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260127194649_add_auth_tables\\migration.sql": {
+    "size": 1585,
+    "mtime_ns": 1769545096246448300,
+    "hash": "be87af79d2a00959556e876c85a67ffdebe099d8036fc443cc6d3f3b251fc81b"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260128190145_add_exercise_model\\migration.sql": {
+    "size": 2408,
+    "mtime_ns": 1769626905107883800,
+    "hash": "d2ae6c987878462bd7c435865531c2f5911d1c07d043650aee741fbf3abeba78"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260129191328_add_workout_models\\migration.sql": {
+    "size": 2315,
+    "mtime_ns": 1769721202305673900,
+    "hash": "1d27dfef7bd8cb4ff7b140a1364cacf4ee79eceeec3d86a4bcfdff9a101b1fd1"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260201212400_add_session_models\\migration.sql": {
+    "size": 3855,
+    "mtime_ns": 1770047646951540500,
+    "hash": "ecfbaef0c446aac522ad4fbb25b0ff0800cbac782026edefdd1b414df1a8cfe9"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260207100803_add_plan_models\\migration.sql": {
+    "size": 3180,
+    "mtime_ns": 1770623442432824500,
+    "hash": "63371aafa5f1b4b37a2e17e33ac3209ec986b67eae4decb2e1d37422395953d6"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260208151707_add_plan_week_tracking\\migration.sql": {
+    "size": 2776,
+    "mtime_ns": 1770623442439413700,
+    "hash": "ee6f61a138c6708323dd810c6b3a02d0c053730b195ba580faeeabce0d3038bf"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260209204756_add_client_relationship\\migration.sql": {
+    "size": 1525,
+    "mtime_ns": 1770841727491250900,
+    "hash": "95c440f2b73dd0286ac84566b7f59c469f3ee2bfcc9c954d736bf9a7f0c3da19"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260210195837_add_invite_expiration\\migration.sql": {
+    "size": 90,
+    "mtime_ns": 1770841727491995900,
+    "hash": "c61457241fc08939f9e9eb4bddf4eccc5ed16c3924aec945984dc9610bc69f9f"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260212120000_add_subscription_model\\migration.sql": {
+    "size": 1682,
+    "mtime_ns": 1771752835629237700,
+    "hash": "b79cac12b420091298b91800f4a02bc81cf11673b1c8340c872fc55b66895ee2"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260215171311_add_organisation_models\\migration.sql": {
+    "size": 3806,
+    "mtime_ns": 1771752835629237700,
+    "hash": "5e4dadc75907213846953b5e53d2732150348c6c006eb728252a33d9a25519a5"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260217120000_expand_muscle_groups\\migration.sql": {
+    "size": 3421,
+    "mtime_ns": 1771752835629237700,
+    "hash": "3decd7e128d9223164c3fce57f0b3b11863ae097e25967b42da2f9b042c04480"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260417191258_add_client_id_to_exercise\\migration.sql": {
+    "size": 340,
+    "mtime_ns": 1779954284845362300,
+    "hash": "f7744732cb8273525abb02e39093aefdb6b5f2abb90d40048d9da64863c27d0d"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260426120000_add_client_id_to_workout_models\\migration.sql": {
+    "size": 681,
+    "mtime_ns": 1781240587149484300,
+    "hash": "a1d4629f2bd0e038992003b71a0b9cd32583b604fa5e42a3318e1f9ba51863a6"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260429120000_add_client_id_to_plan_models\\migration.sql": {
+    "size": 1335,
+    "mtime_ns": 1781240587149484300,
+    "hash": "3b62f7cb671b09da8e0855c17637dbd9c07a7611e6cb637e3e8558e5ca6edb6c"
+  },
+  "D:\\Projects\\b-fit v2\\b_fit_product_requirements_document_prd.md": {
+    "size": 7526,
+    "mtime_ns": 1769501350850432100,
+    "hash": "ad9e9a367754c1b1ba5c6796a114d99304d4b6e2972303575439b0eee7111191"
+  },
+  "D:\\Projects\\b-fit v2\\CLAUDE.md": {
+    "size": 5355,
+    "mtime_ns": 1781340105028177300,
+    "hash": "70ce940167f017997abc9c92993376affb1e31a46c6fe6dbed4ed3bb0b51a7f5"
+  },
+  "D:\\Projects\\b-fit v2\\README.md": {
+    "size": 6888,
+    "mtime_ns": 1769501352050858500,
+    "hash": "723aaf0fc9f22d9a14de6465bac42c75884b078ea0daaf76b0bccdf92eed3e7e"
+  },
+  "D:\\Projects\\b-fit v2\\.claude\\agents\\architect.md": {
+    "size": 6311,
+    "mtime_ns": 1769501350527095500,
+    "hash": "daf3eb84e56121c94f1a5dad0bc3c227601f532c7302fd1a5de89a88950c891d"
+  },
+  "D:\\Projects\\b-fit v2\\.claude\\agents\\code-reviewer.md": {
+    "size": 2894,
+    "mtime_ns": 1769501350547163700,
+    "hash": "ac018c6575c6ec478dde2c7c5ba1cad52b26b1bb0574a84b00db7a76148c1238"
+  },
+  "D:\\Projects\\b-fit v2\\.claude\\agents\\e2e-runner.md": {
+    "size": 19867,
+    "mtime_ns": 1769501350699661300,
+    "hash": "b983bb5d946606fc7cc4741d043f85d722b5f13e80c97b7119cf1deea41535d2"
+  },
+  "D:\\Projects\\b-fit v2\\.claude\\agents\\planner.md": {
+    "size": 3245,
+    "mtime_ns": 1769501350723725000,
+    "hash": "99f12f6fabfb00c16766aa9369e40572c5151c06be474088f18d9fb03ca0cc69"
+  },
+  "D:\\Projects\\b-fit v2\\.claude\\skills\\coding-standards\\SKILL.md": {
+    "size": 11412,
+    "mtime_ns": 1769501350807498600,
+    "hash": "1d34832b9306913eb89fcd8c556316ffd6743cc211e60b683e4a9371b0e60c4d"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\analytics-calculations.md": {
+    "size": 16350,
+    "mtime_ns": 1769501350952981200,
+    "hash": "cb9d6568cde24262b0591a6922afe094c14bec1e2a6123b7ffdc7db152013a26"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\api-specification.md": {
+    "size": 14384,
+    "mtime_ns": 1769501351032604400,
+    "hash": "8f51f47589d8a58cb0c48d66f643bb1fd4810f77709a19ae6fc2b64c139afc6f"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\auth-rbac.md": {
+    "size": 16621,
+    "mtime_ns": 1769501351119629000,
+    "hash": "64c2fe047dcefa78d3e80820460ebede57531a1846cffa9abaecab0e660addac"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\database-schema.md": {
+    "size": 26518,
+    "mtime_ns": 1769501351135180900,
+    "hash": "8c645e1608190115800bab312652a81076324c0380d36df4b8cc5a048719baa4"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\exercise-library.md": {
+    "size": 20661,
+    "mtime_ns": 1769501351206751100,
+    "hash": "75d894f5ad86ee6a5b8aaa32dd3ddcad3773b22a739a6ce1dd857e9c0c110837"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\feature-flows.md": {
+    "size": 57867,
+    "mtime_ns": 1769501351383551100,
+    "hash": "364081653b043cfd18eb704487f364de062035f2ee6ede39db6748dfdbba8bf2"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\infrastructure.md": {
+    "size": 18009,
+    "mtime_ns": 1769501515599322200,
+    "hash": "7bf845c9411c9f2647d66967329ac8ee47f160e0c717424f708f265e2ceaee3b"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\project-plan.md": {
+    "size": 12013,
+    "mtime_ns": 1769501351824137900,
+    "hash": "779051c7cb1347c945bb17c358aef8f08c86fb9ac9064447caaa95acff72b194"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\subscription-billing.md": {
+    "size": 14775,
+    "mtime_ns": 1769501351882998600,
+    "hash": "89746c36d8a5378bce720661f57fa0d562c849949ef7d8613ca12de37e074c19"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\technical-design.md": {
+    "size": 26124,
+    "mtime_ns": 1769501351928625600,
+    "hash": "85857399fc65d091b7705056355b238b8c16a2b24528eaf56a544484be57474d"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\testing-strategy.md": {
+    "size": 17078,
+    "mtime_ns": 1769501351974919500,
+    "hash": "56c03e75b14f55c1c0e6a1da1d4b3d4f826272b19cdec67bd1844eab15928799"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\ui-ux-spec.md": {
+    "size": 14338,
+    "mtime_ns": 1769501352027195900,
+    "hash": "dcfdf90530cafb22754669ab1fcd64b08350630ab209c06abf6ea3bb4d06a612"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\USER-TESTING-GUIDE.md": {
+    "size": 15914,
+    "mtime_ns": 1769547837267734200,
+    "hash": "9113e4baf18f432dcbd7153d1abb5dc1e345b5bda5698a5fc5aaa0213ea921d6"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\architecture\\01-system-architecture.md": {
+    "size": 9139,
+    "mtime_ns": 1769501351049288500,
+    "hash": "a2086fabbcf21837c28a98de2bcb62b376abe8fb496276c06c0eac7d158ad51c"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\architecture\\02-data-model.md": {
+    "size": 9060,
+    "mtime_ns": 1769415767650236900,
+    "hash": "14e7f282683db7aa9aade32e52eb484b20b431a4d3f50ff140db4df162d7ab7d"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\architecture\\03-user-roles.md": {
+    "size": 4987,
+    "mtime_ns": 1769415855597372700,
+    "hash": "b44bc2667ff58e9bc1357ae4cc58ceeb5ee948fc244b0d6d755ec20a05e68282"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md": {
+    "size": 4928,
+    "mtime_ns": 1769415858877950200,
+    "hash": "f8e7f0cc4558cef06a1cf5964dd3fb6420aecacf250bf989855ff98387af4383"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md": {
+    "size": 6743,
+    "mtime_ns": 1769501351064847000,
+    "hash": "a83351ae87288a8e9f1481366387a54a09d725c7b0c6c7c4a8eec1608d79b20c"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\architecture\\06-session-reload-persistence.md": {
+    "size": 13379,
+    "mtime_ns": 1781340105863008600,
+    "hash": "70d92d974fbe7617c4965a6c2243a25028b8f26d180a235a743b3e466d106ecb"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\architecture\\07-session-page-ui-spec.md": {
+    "size": 14112,
+    "mtime_ns": 1781340106031567400,
+    "hash": "e7ea627df4542ecb1bcaaa0d2e998135b4dd3885982ec3bae30e490b4c37bd61"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\architecture\\SESSION-IMPLEMENTATION-GUIDE.md": {
+    "size": 17325,
+    "mtime_ns": 1781340106235792500,
+    "hash": "9c1031e92fcf9c4587634cb9ac3fac15af77881e9ad87cbafc1ccf8f3372a25c"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\architecture\\SESSION-REFACTOR-PLAN.md": {
+    "size": 18342,
+    "mtime_ns": 1781340106422739500,
+    "hash": "71cb85cbe9894a42c03f1ac343c2b49a3146860473a6c14ae85d4c4e2b4c0f6e"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\examples\\exercise-list.md": {
+    "size": 9371,
+    "mtime_ns": 1781340106805569000,
+    "hash": "1585afac034584ec8d40a6ce1899c73c69a040b0a9bb11bfb7b40f4e7b3e7d7e"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\examples\\superset-manager-manual-testing.md": {
+    "size": 8193,
+    "mtime_ns": 1769969806874792700,
+    "hash": "01204b7d274652add13ff4fede9af3488897f156a4a58b8ee068f2665fdae1c8"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md": {
+    "size": 9169,
+    "mtime_ns": 1781340107898167700,
+    "hash": "06589328f55ced817ba59f340aa56c38846a3183aaa68ad196f677631eca34ac"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-c-save-as-workout.md": {
+    "size": 8048,
+    "mtime_ns": 1781340107956162700,
+    "hash": "6ebcebf1b9420c098fad56792be3334eac949e9f7f374662c27ddf4d7201ab61"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-d-repeat-session.md": {
+    "size": 11350,
+    "mtime_ns": 1781340108027751900,
+    "hash": "c9f328f813bc1edc02e132325a4d304d8f64984df90302a6f4b6d6db5901795c"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md": {
+    "size": 4445,
+    "mtime_ns": 1781340108074745400,
+    "hash": "49638a3a7007dfb7d3211beba6b77b15e94d8152b3c11d335e1620958e8f10dc"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-f-muscle-set-counts.md": {
+    "size": 5455,
+    "mtime_ns": 1781340108130464000,
+    "hash": "78f4557f570b959f4a113a1579ed5aabbd8c93784b66e62f5f268f3a93984f3e"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-g-analytics-custom-range.md": {
+    "size": 8350,
+    "mtime_ns": 1781349478712054800,
+    "hash": "f848fa4849f2bd3f90a5c05f0508b05fd0261fc9092b04644ec6f43a6f303c1d"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-h-analytics-set-count-chart.md": {
+    "size": 4840,
+    "mtime_ns": 1781340108271442400,
+    "hash": "0d5f09d8df54d709929f4afb2066495dfb2810c12f40902f695d72cbec028da1"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md": {
+    "size": 12170,
+    "mtime_ns": 1781340108409983100,
+    "hash": "536404a121997e963606b2699635213cf0cd750fad592f5845c9678a2eee1b81"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\issues\\ANALYSIS-unnecessary-refetches.md": {
+    "size": 5059,
+    "mtime_ns": 1769713792688578800,
+    "hash": "ad16bc8fad0caaf91f9cdbd4ebe62510e35d3890bcaac58b00f3389d4f340b31"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\issues\\chunk-a-quick-fixes.md": {
+    "size": 7533,
+    "mtime_ns": 1781340108785079400,
+    "hash": "c60e70326de0da76e619858f5009c1adf87441930c472e590a95f76a7fe8cd52"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\notes\\subscription-user-flows.md": {
+    "size": 16284,
+    "mtime_ns": 1781340108830022600,
+    "hash": "735adf8ce949f26cd98fa2aa55d8852dabb25e0136a976ee1fcc81274506e77f"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\offline\\implementation-blocks.md": {
+    "size": 218867,
+    "mtime_ns": 1781340109797192600,
+    "hash": "646b335cfd04ed360e18fcab46b6253edf56266da928199c6121632e5f65ff23"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\CURRENT-PROGRESS.md": {
+    "size": 211600,
+    "mtime_ns": 1781340111539355300,
+    "hash": "39af3b927371ecec554b80baba28164da2387d6d850d2e4c82e0c7294259fce0"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md": {
+    "size": 8263,
+    "mtime_ns": 1769501351483867500,
+    "hash": "1ebee6eb57475288c6739bca2448594ae3f695fbfa44feaf9c4212432f97e689"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-1-foundation.md": {
+    "size": 30716,
+    "mtime_ns": 1769550474857451600,
+    "hash": "d2f2aa7924fdbd327449eb4048d377e76f9039fa8d6f371859ca10ca89c0c37d"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-2-core-features.md": {
+    "size": 67406,
+    "mtime_ns": 1781340112603177200,
+    "hash": "2f8a8fdea31948e23aa6d674e4ce8e211179fd0d9464bc2179abcb161ed20ebf"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md": {
+    "size": 22015,
+    "mtime_ns": 1781340112761616900,
+    "hash": "f8268a79e8343efae34bb7b354dabe02953c63a6794943d5c8d8023af6a74492"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-4-payments.md": {
+    "size": 11225,
+    "mtime_ns": 1781340112877666300,
+    "hash": "4c614f2f30c16311949402c90382d465c32713e4dbff63c6f2dfbfa3eb8692b8"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-5-advanced.md": {
+    "size": 13999,
+    "mtime_ns": 1781340113005922300,
+    "hash": "7138a0c4161140b832eb1f774a98dbc0689b5fc5c676bd63497d4b9495a46f7d"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-6-polish-launch.md": {
+    "size": 10871,
+    "mtime_ns": 1769501351785337000,
+    "hash": "73f1ac34de77a3f74c0d0e8cb95d8bdcd37e715b00cd0c7c6e2b46d69f97a23e"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\session-refactor-summary.md": {
+    "size": 2009,
+    "mtime_ns": 1781340113178295800,
+    "hash": "4f3f1c785068b64b2a1d9897e3f6988db41132273422d7044c36d9d3ffb38183"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md": {
+    "size": 20626,
+    "mtime_ns": 1769548145219568400,
+    "hash": "fb697bbd2ff65ae92f2c90508c42d454405247b796c2b50b68851cddcef448d9"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\todo\\environment-variables-anagement.md": {
+    "size": 3489,
+    "mtime_ns": 1769550631432382100,
+    "hash": "6ef29f5a010ea21dcf25225aa0c8dc4ef5bcf992501f102675f3eaea91446c19"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\todo\\README.md": {
+    "size": 2195,
+    "mtime_ns": 1769548178240258600,
+    "hash": "e7964575fd27e910bedbad58d1616d8e2dd339b4c8b5db9c1164eaa214099f13"
+  },
+  "D:\\Projects\\b-fit v2\\src\\components\\features\\README.md": {
+    "size": 622,
+    "mtime_ns": 1769501199673901500,
+    "hash": "302b442baf1f4f7ee1e30f3ca547e86bef5ea2ddb063d19d8494586f4f4d656a"
+  },
+  "D:\\Projects\\b-fit v2\\src\\components\\layouts\\README.md": {
+    "size": 522,
+    "mtime_ns": 1769501201079067100,
+    "hash": "f782c432ddcb0d8b2053f7a4e97eb7984e3aadc2fade9a6fe2705e8140cd298a"
+  },
+  "D:\\Projects\\b-fit v2\\src\\components\\shared\\README.md": {
+    "size": 408,
+    "mtime_ns": 1769501202442015400,
+    "hash": "ada42ac0cecabcaa834670eda9be43a45d84e2b2d92cb998fd44801fb5ac58de"
+  },
+  "D:\\Projects\\b-fit v2\\src\\lib\\README.md": {
+    "size": 737,
+    "mtime_ns": 1769501206703780800,
+    "hash": "89615b07e8f4dbdd839d06cb76d60b4aa4bf116fa1b18782b72f1f279a0bb7c8"
+  },
+  "D:\\Projects\\b-fit v2\\src\\lib\\auth\\test-protected-routes.md": {
+    "size": 5035,
+    "mtime_ns": 1769546492457000700,
+    "hash": "61a186baec29c2d944deaa6688f4c6eb472168bf121ceb5dbf52cadcce9118c3"
+  },
+  "D:\\Projects\\b-fit v2\\src\\server\\actions\\README.md": {
+    "size": 1083,
+    "mtime_ns": 1769501203776605900,
+    "hash": "45720e125328491291022bf4a0062b5415dc6e6624ee027c107e75afb806d0d1"
+  },
+  "D:\\Projects\\b-fit v2\\src\\store\\README.md": {
+    "size": 1306,
+    "mtime_ns": 1769501205208697500,
+    "hash": "78ee5c9e3f22183bf22a129cf96ad4f67bbbbcda136e87cac21176588c22039b"
+  },
+  "D:\\Projects\\b-fit v2\\src\\types\\README.md": {
+    "size": 986,
+    "mtime_ns": 1769501352283363900,
+    "hash": "d34484d5d856560f7c0b3b12ce7f7d973a0c1b909c409913411ff38ba20d7224"
+  }
+}

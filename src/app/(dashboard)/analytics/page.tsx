@@ -41,12 +41,12 @@ export default function AnalyticsPage() {
   const volumeIsLoading = exerciseId ? volumeLoading : isLoading
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto flex h-[calc(100dvh-4.5rem)] flex-col px-4 pt-4 sm:px-6 sm:pt-6 md:h-[calc(100dvh-1rem)]">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-4 shrink-0 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Analytics</h1>
+          <p className="hidden sm:block mt-1 text-muted-foreground">
             Track your training progress and performance trends.
           </p>
         </div>

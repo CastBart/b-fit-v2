@@ -121,3 +121,54 @@ already present).
 - The fallback preset while a custom range is half-picked is `'30d'`
   (`'90d'` on the compare page, matching its default). Cosmetic; revisit if a
   "blank until applied" UX is preferred.
+
+---
+
+## Post-test revisions (2026-06-12)
+
+After testing the date filter, the selector was reworked per user direction:
+
+### 1. Preset selector: shadcn `Select` → scrollable `DropdownMenu`
+
+The shadcn `Select` showed chevron up/down scroll buttons on the (short) preset
+list because its popper viewport is height-capped to one row. Rather than
+touching the shared `select.tsx` (that change was reverted), the preset selector
+now uses a `DropdownMenu` with a `DropdownMenuRadioGroup` of the six options and
+a `DropdownMenuContent` that's `max-h-60 overflow-y-auto` (native scrollbar, no
+chevron buttons). The trigger is an outline `Button` showing the current label +
+a chevron. `select.tsx` is unchanged from its original.
+
+### 2. Calendar no longer auto-closes on selection
+
+Previously the popover closed as soon as a range looked complete, which — given
+`react-day-picker`'s first-click `{ from: date, to: date }` artifact — closed it
+after a single click. The popover is now **uncontrolled**: `handleSelect` just
+propagates the edited range and never calls `setOpen(false)`. The user can
+adjust both ends as many times as they like while it's open; it closes only on
+click-away (Radix Popover's default outside-click behaviour). `min` is left at
+the default, so single-day selections (start == end) are still possible and the
+charts behind the calendar live-update as the range is edited.
+
+### 3. Calendar rendered squeezed; `--cell-size` had no effect
+
+**Root cause — Tailwind v3 → v4 migration gap.** The shadcn `calendar.tsx` is a
+v3-era component: it sizes its grid with `*-[--cell-size]` utilities
+(`min-w-[--cell-size]`, `h-[--cell-size]`, `w-[--cell-size]`, `size-[--cell-size]`).
+This project runs `tailwindcss@4.1.18`, where referencing a CSS variable in a
+utility requires the **parens** form `*-(--cell-size)`; the bracket form is read
+as a literal arbitrary value (`min-width: --cell-size`, invalid) and does
+nothing. So every cell-size consumer in the calendar is a no-op under v4, the
+grid collapses to intrinsic content size (looks squeezed), and changing
+`--cell-size` (verified to be applied — `twMerge` keeps the last
+`[--cell-size:…]`) has no visual effect. `SessionCalendarView` already worked
+around this by sizing with flexbox + an explicit width rather than `--cell-size`.
+
+**Fix (Option A — scoped).** Mirror `SessionCalendarView` on the analytics
+calendar: an explicit `w-[20rem]` plus `classNames` overrides
+(`root: w-full`, `month*/weekdays/week: w-full`, `weekday/day: flex-1`) so the
+grid is laid out with flexbox and fills the width. No dependence on the broken
+var; no shared-component change. (A future Option B could fix `calendar.tsx`
+globally by switching its `*-[--cell-size]` references to `*-(--cell-size)`.)
+
+Files: `src/components/features/analytics/DateRangeSelector.tsx`
+(`src/components/ui/select.tsx` reverted to original).

@@ -1,15 +1,14 @@
 'use client'
 
-import { useState } from 'react'
 import type { DateRange as RdpDateRange } from 'react-day-picker'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon, ChevronDown } from 'lucide-react'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { Button } from '@/components/ui/button'
@@ -49,31 +48,40 @@ export function DateRangeSelector({
   customEnd,
   onCustomRangeChange,
 }: DateRangeSelectorProps) {
-  const [open, setOpen] = useState(false)
+  const currentLabel = DATE_RANGE_OPTIONS.find((o) => o.value === value)?.label ?? 'Select range'
 
+  // Just propagate the edited range. The calendar does NOT close on selection —
+  // the user can keep adjusting both ends while it's open; it closes only when
+  // they click away (Radix Popover's default outside-click behaviour).
   const handleSelect = (range: RdpDateRange | undefined) => {
     onCustomRangeChange?.(range?.from, range?.to)
-    // Close once a full range is picked.
-    if (range?.from && range?.to) setOpen(false)
   }
 
   return (
     <div className="flex items-center gap-2">
-      <Select value={value} onValueChange={(v) => onValueChange(v as DateRangePreset)}>
-        <SelectTrigger className="w-[160px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {DATE_RANGE_OPTIONS.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="w-[160px] justify-between font-normal">
+            {currentLabel}
+            <ChevronDown className="h-4 w-4 opacity-50" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="max-h-60 w-[160px] overflow-y-auto">
+          <DropdownMenuRadioGroup
+            value={value}
+            onValueChange={(v) => onValueChange(v as DateRangePreset)}
+          >
+            {DATE_RANGE_OPTIONS.map((option) => (
+              <DropdownMenuRadioItem key={option.value} value={option.value}>
+                {option.label}
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {value === 'custom' && (
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
@@ -87,6 +95,11 @@ export function DateRangeSelector({
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="end">
+            {/* The shadcn calendar's `--cell-size` sizing is dead under Tailwind
+                v4 (its `*-[--cell-size]` utilities need the v4 `*-(--cell-size)`
+                syntax to resolve), so size it the way SessionCalendarView does:
+                an explicit width + flex `classNames` overrides that make the grid
+                fill it. */}
             <Calendar
               mode="range"
               numberOfMonths={1}
@@ -95,6 +108,17 @@ export function DateRangeSelector({
               onSelect={handleSelect}
               disabled={{ after: new Date() }}
               autoFocus
+              className="w-[20rem]"
+              classNames={{
+                root: 'w-full overflow-hidden',
+                months: 'w-full relative',
+                month: 'w-full',
+                month_grid: 'w-full',
+                weekdays: 'flex w-full',
+                weekday: 'flex-1 text-center',
+                week: 'mt-2 flex w-full',
+                day: 'group/day relative flex-1',
+              }}
             />
           </PopoverContent>
         </Popover>
