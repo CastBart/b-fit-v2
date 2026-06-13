@@ -1,0 +1,21 @@
+# Normalize line endings: store as LF in the repo and check out LF on all
+# platforms. This keeps the working tree consistent with Prettier's
+# `endOfLine: "lf"` setting, regardless of git's core.autocrlf on Windows.
+* text=auto eol=lf
+
+# Binary assets — never normalize or diff as text.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.webp binary
+*.avif binary
+*.woff  binary
+*.woff2 binary
+*.ttf  binary
+*.eot  binary
+*.otf  binary
+*.pdf  binary
+*.mp4  binary
+*.webm binary
