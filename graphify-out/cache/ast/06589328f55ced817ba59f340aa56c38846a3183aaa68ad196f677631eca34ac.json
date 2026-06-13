@@ -1,0 +1,447 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_improvements_chunk_b_drawer_foundation_md",
+      "label": "chunk-b-drawer-foundation.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_chunk_b_drawer_multi_action_footer_completed_session_type_expansion",
+      "label": "Chunk B \u2014 Drawer multi-action footer + completed-session type expansion",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_why_this_exists",
+      "label": "Why this exists",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L17"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_type_expansion",
+      "label": "Type expansion",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L36"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_completedsessiondata_completedsessiondrawer_tsx",
+      "label": "`CompletedSessionData` (`CompletedSessionDrawer.tsx`)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L38"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_codeblock_1",
+      "label": "code:diff (export type CompletedSessionData = {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L40"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_completedexercisedata_completedsessiondrawer_tsx",
+      "label": "`CompletedExerciseData` (`CompletedSessionDrawer.tsx`)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L58"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_codeblock_2",
+      "label": "code:diff (export type CompletedExerciseData = {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L60"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_sessionexerciseentry_src_types_session_ts",
+      "label": "`SessionExerciseEntry` (`src/types/session.ts`)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L80"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_codeblock_3",
+      "label": "code:diff (export type SessionExerciseEntry = {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L82"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_populating_the_new_fields",
+      "label": "Populating the new fields",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L102"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_db_drawer_session_mappers_ts",
+      "label": "DB \u2192 drawer (`session-mappers.ts`)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L104"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_live_redux_drawer_session_page_tsx",
+      "label": "Live Redux \u2192 drawer (`session/page.tsx`)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L113"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_session_start_helpers_lib_utils_session_navigation_ts",
+      "label": "Session-start helpers (`lib/utils/session-navigation.ts`)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L122"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_server_query_widening_server_actions_plans_ts",
+      "label": "Server query widening (`server/actions/plans.ts`)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L128"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_drawer_footer_refactor",
+      "label": "Drawer footer refactor",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L141"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_before_single_fixed_action",
+      "label": "Before \u2014 single fixed action",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L143"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_codeblock_4",
+      "label": "code:ts (interface CompletedSessionDrawerProps {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L145"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_after_stacked_actions",
+      "label": "After \u2014 stacked `actions[]`",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L153"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_codeblock_5",
+      "label": "code:ts (export type DrawerAction = {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L155"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_call_site_migrations_4_files",
+      "label": "Call-site migrations (4 files)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L178"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_codeblock_6",
+      "label": "code:diff (-<CompletedSessionDrawer)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L180"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_codeblock_7",
+      "label": "code:diff (-  actionLabel=\"Go to Dashboard\")",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L198"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_files_touched",
+      "label": "Files touched",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L208"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_codeblock_8",
+      "label": "code:block8 (src/components/features/sessions/CompletedSessionDrawer.tsx )",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L210"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_validation",
+      "label": "Validation",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L227"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_cache_caveat",
+      "label": "Cache caveat",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L244"
+    },
+    {
+      "id": "improvements_chunk_b_drawer_foundation_carry_overs",
+      "label": "Carry-overs",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L254"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_improvements_chunk_b_drawer_foundation_md",
+      "target": "improvements_chunk_b_drawer_foundation_chunk_b_drawer_multi_action_footer_completed_session_type_expansion",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_chunk_b_drawer_multi_action_footer_completed_session_type_expansion",
+      "target": "improvements_chunk_b_drawer_foundation_why_this_exists",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_chunk_b_drawer_multi_action_footer_completed_session_type_expansion",
+      "target": "improvements_chunk_b_drawer_foundation_type_expansion",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_type_expansion",
+      "target": "improvements_chunk_b_drawer_foundation_completedsessiondata_completedsessiondrawer_tsx",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_completedsessiondata_completedsessiondrawer_tsx",
+      "target": "improvements_chunk_b_drawer_foundation_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_type_expansion",
+      "target": "improvements_chunk_b_drawer_foundation_completedexercisedata_completedsessiondrawer_tsx",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_completedexercisedata_completedsessiondrawer_tsx",
+      "target": "improvements_chunk_b_drawer_foundation_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_type_expansion",
+      "target": "improvements_chunk_b_drawer_foundation_sessionexerciseentry_src_types_session_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_sessionexerciseentry_src_types_session_ts",
+      "target": "improvements_chunk_b_drawer_foundation_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_chunk_b_drawer_multi_action_footer_completed_session_type_expansion",
+      "target": "improvements_chunk_b_drawer_foundation_populating_the_new_fields",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_populating_the_new_fields",
+      "target": "improvements_chunk_b_drawer_foundation_db_drawer_session_mappers_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_populating_the_new_fields",
+      "target": "improvements_chunk_b_drawer_foundation_live_redux_drawer_session_page_tsx",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_populating_the_new_fields",
+      "target": "improvements_chunk_b_drawer_foundation_session_start_helpers_lib_utils_session_navigation_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_populating_the_new_fields",
+      "target": "improvements_chunk_b_drawer_foundation_server_query_widening_server_actions_plans_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_chunk_b_drawer_multi_action_footer_completed_session_type_expansion",
+      "target": "improvements_chunk_b_drawer_foundation_drawer_footer_refactor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_drawer_footer_refactor",
+      "target": "improvements_chunk_b_drawer_foundation_before_single_fixed_action",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_before_single_fixed_action",
+      "target": "improvements_chunk_b_drawer_foundation_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_drawer_footer_refactor",
+      "target": "improvements_chunk_b_drawer_foundation_after_stacked_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L153",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_after_stacked_actions",
+      "target": "improvements_chunk_b_drawer_foundation_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L155",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_drawer_footer_refactor",
+      "target": "improvements_chunk_b_drawer_foundation_call_site_migrations_4_files",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L178",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_call_site_migrations_4_files",
+      "target": "improvements_chunk_b_drawer_foundation_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L180",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_call_site_migrations_4_files",
+      "target": "improvements_chunk_b_drawer_foundation_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L198",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_chunk_b_drawer_multi_action_footer_completed_session_type_expansion",
+      "target": "improvements_chunk_b_drawer_foundation_files_touched",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L208",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_files_touched",
+      "target": "improvements_chunk_b_drawer_foundation_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L210",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_chunk_b_drawer_multi_action_footer_completed_session_type_expansion",
+      "target": "improvements_chunk_b_drawer_foundation_validation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L227",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_chunk_b_drawer_multi_action_footer_completed_session_type_expansion",
+      "target": "improvements_chunk_b_drawer_foundation_cache_caveat",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_b_drawer_foundation_chunk_b_drawer_multi_action_footer_completed_session_type_expansion",
+      "target": "improvements_chunk_b_drawer_foundation_carry_overs",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-b-drawer-foundation.md",
+      "source_location": "L254",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

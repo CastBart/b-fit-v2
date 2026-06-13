@@ -1,0 +1,431 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_phase_breakdowns_phase_3_multi_role_md",
+      "label": "phase-3-multi-role.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_phase_3_multi_role_features",
+      "label": "Phase 3: Multi-Role Features",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_design_decisions",
+      "label": "Design Decisions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_implementation_plan_9_chunks",
+      "label": "Implementation Plan (9 Chunks)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_chunk_1_rbac_utility",
+      "label": "Chunk 1: RBAC Utility \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_chunk_2_session_history_page",
+      "label": "Chunk 2: Session History Page \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_chunk_3_pr_enhancement",
+      "label": "Chunk 3: PR Enhancement \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_chunk_4_clientrelationship_schema_server_actions",
+      "label": "Chunk 4: ClientRelationship Schema & Server Actions \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L71"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_chunk_5_workout_plan_assignment",
+      "label": "Chunk 5: Workout & Plan Assignment \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L100"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_chunk_6_client_management_ui",
+      "label": "Chunk 6: Client Management UI \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L114"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_chunk_7_role_upgrade_flow",
+      "label": "Chunk 7: Role Upgrade Flow \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L148"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_chunk_8_client_side_experience_dashboard",
+      "label": "Chunk 8: Client-Side Experience & Dashboard \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L171"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_chunk_9_polish_edge_cases",
+      "label": "Chunk 9: Polish & Edge Cases \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L191"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_chunk_dependencies",
+      "label": "Chunk Dependencies",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L212"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_codeblock_1",
+      "label": "code:block1 (Chunk 1 (RBAC) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L214"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_completion_checklist",
+      "label": "Completion Checklist",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L239"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_session_features",
+      "label": "Session Features",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L241"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_pt_client_relationships",
+      "label": "PT-Client Relationships",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L247"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_role_management",
+      "label": "Role Management",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L258"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_client_experience",
+      "label": "Client Experience",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L265"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_files_created_chunks_1_5",
+      "label": "Files Created (Chunks 1-5)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L274"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_codeblock_2",
+      "label": "code:block2 (src/lib/auth/rbac.ts                                    - RB)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L276"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_files_modified_chunks_1_5",
+      "label": "Files Modified (Chunks 1-5)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L286"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_codeblock_3",
+      "label": "code:block3 (prisma/schema.prisma                                    - Cl)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L288"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_risks_mitigations",
+      "label": "Risks & Mitigations",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L302"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_post_phase_3_invite_flow_redesign",
+      "label": "Post-Phase 3: Invite Flow Redesign \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L314"
+    },
+    {
+      "id": "phase_breakdowns_phase_3_multi_role_post_phase_3_pt_client_relationship_improvements",
+      "label": "Post-Phase 3: PT-Client Relationship Improvements \u2705",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L330"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_phase_breakdowns_phase_3_multi_role_md",
+      "target": "phase_breakdowns_phase_3_multi_role_phase_3_multi_role_features",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_phase_3_multi_role_features",
+      "target": "phase_breakdowns_phase_3_multi_role_design_decisions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_phase_3_multi_role_features",
+      "target": "phase_breakdowns_phase_3_multi_role_implementation_plan_9_chunks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_implementation_plan_9_chunks",
+      "target": "phase_breakdowns_phase_3_multi_role_chunk_1_rbac_utility",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_implementation_plan_9_chunks",
+      "target": "phase_breakdowns_phase_3_multi_role_chunk_2_session_history_page",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_implementation_plan_9_chunks",
+      "target": "phase_breakdowns_phase_3_multi_role_chunk_3_pr_enhancement",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_implementation_plan_9_chunks",
+      "target": "phase_breakdowns_phase_3_multi_role_chunk_4_clientrelationship_schema_server_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_implementation_plan_9_chunks",
+      "target": "phase_breakdowns_phase_3_multi_role_chunk_5_workout_plan_assignment",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_implementation_plan_9_chunks",
+      "target": "phase_breakdowns_phase_3_multi_role_chunk_6_client_management_ui",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_implementation_plan_9_chunks",
+      "target": "phase_breakdowns_phase_3_multi_role_chunk_7_role_upgrade_flow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L148",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_implementation_plan_9_chunks",
+      "target": "phase_breakdowns_phase_3_multi_role_chunk_8_client_side_experience_dashboard",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L171",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_implementation_plan_9_chunks",
+      "target": "phase_breakdowns_phase_3_multi_role_chunk_9_polish_edge_cases",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L191",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_phase_3_multi_role_features",
+      "target": "phase_breakdowns_phase_3_multi_role_chunk_dependencies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L212",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_chunk_dependencies",
+      "target": "phase_breakdowns_phase_3_multi_role_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L214",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_phase_3_multi_role_features",
+      "target": "phase_breakdowns_phase_3_multi_role_completion_checklist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L239",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_completion_checklist",
+      "target": "phase_breakdowns_phase_3_multi_role_session_features",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L241",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_completion_checklist",
+      "target": "phase_breakdowns_phase_3_multi_role_pt_client_relationships",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L247",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_completion_checklist",
+      "target": "phase_breakdowns_phase_3_multi_role_role_management",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L258",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_completion_checklist",
+      "target": "phase_breakdowns_phase_3_multi_role_client_experience",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L265",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_phase_3_multi_role_features",
+      "target": "phase_breakdowns_phase_3_multi_role_files_created_chunks_1_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L274",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_files_created_chunks_1_5",
+      "target": "phase_breakdowns_phase_3_multi_role_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L276",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_phase_3_multi_role_features",
+      "target": "phase_breakdowns_phase_3_multi_role_files_modified_chunks_1_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L286",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_files_modified_chunks_1_5",
+      "target": "phase_breakdowns_phase_3_multi_role_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L288",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_phase_3_multi_role_features",
+      "target": "phase_breakdowns_phase_3_multi_role_risks_mitigations",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L302",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_phase_3_multi_role_features",
+      "target": "phase_breakdowns_phase_3_multi_role_post_phase_3_invite_flow_redesign",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L314",
+      "weight": 1.0
+    },
+    {
+      "source": "phase_breakdowns_phase_3_multi_role_phase_3_multi_role_features",
+      "target": "phase_breakdowns_phase_3_multi_role_post_phase_3_pt_client_relationship_improvements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\phase-3-multi-role.md",
+      "source_location": "L330",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

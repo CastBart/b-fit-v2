@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_examples_exercise_list_md",
+      "label": "exercise-list.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\examples\\exercise-list.md",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

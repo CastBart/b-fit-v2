@@ -1,0 +1,319 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_improvements_workouts_page_redesign_md",
+      "label": "workouts-page-redesign.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_workouts_page_redesign_list_table_quick_actions",
+      "label": "Workouts Page Redesign \u2014 List/Table + Quick Actions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_progress",
+      "label": "Progress",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_overview",
+      "label": "Overview",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_current_state",
+      "label": "Current State",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_implementation_plan",
+      "label": "Implementation Plan",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L35"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_chunk_1_view_toggle_state_persistence_done",
+      "label": "Chunk 1: View Toggle + State Persistence \u2014 DONE",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_chunk_2_list_view_row_card_component_done",
+      "label": "Chunk 2: List View \u2014 Row Card Component \u2014 DONE",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L59"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_chunk_3_pinned_workouts_section_done",
+      "label": "Chunk 3: Pinned Workouts Section \u2014 DONE",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L84"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_chunk_4_quick_action_buttons_with_hover_reveal_done",
+      "label": "Chunk 4: Quick Action Buttons with Hover Reveal \u2014 DONE",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L106"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_chunk_5_delete_confirmation_with_alertdialog_done",
+      "label": "Chunk 5: Delete Confirmation with AlertDialog \u2014 DONE",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L132"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_chunk_6_duplicate_workout_action_done",
+      "label": "Chunk 6: Duplicate Workout Action \u2014 DONE",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L158"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_chunk_7_grid_view_update_done",
+      "label": "Chunk 7: Grid View Update \u2014 DONE",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L179"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_chunk_8_refactor_page_to_use_new_components_done",
+      "label": "Chunk 8: Refactor Page to Use New Components \u2014 DONE",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L205"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_component_tree",
+      "label": "Component Tree",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L226"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_codeblock_1",
+      "label": "code:block1 (WorkoutsPage)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L228"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_dependencies",
+      "label": "Dependencies",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L244"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_chunk_order_dependencies",
+      "label": "Chunk Order & Dependencies",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L265"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_codeblock_2",
+      "label": "code:block2 (Chunk 1 (View Toggle)          \u2014 standalone)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L267"
+    },
+    {
+      "id": "improvements_workouts_page_redesign_mobile_considerations",
+      "label": "Mobile Considerations",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L282"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_improvements_workouts_page_redesign_md",
+      "target": "improvements_workouts_page_redesign_workouts_page_redesign_list_table_quick_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_workouts_page_redesign_list_table_quick_actions",
+      "target": "improvements_workouts_page_redesign_progress",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_workouts_page_redesign_list_table_quick_actions",
+      "target": "improvements_workouts_page_redesign_overview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_workouts_page_redesign_list_table_quick_actions",
+      "target": "improvements_workouts_page_redesign_current_state",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_workouts_page_redesign_list_table_quick_actions",
+      "target": "improvements_workouts_page_redesign_implementation_plan",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_implementation_plan",
+      "target": "improvements_workouts_page_redesign_chunk_1_view_toggle_state_persistence_done",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_implementation_plan",
+      "target": "improvements_workouts_page_redesign_chunk_2_list_view_row_card_component_done",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_implementation_plan",
+      "target": "improvements_workouts_page_redesign_chunk_3_pinned_workouts_section_done",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_implementation_plan",
+      "target": "improvements_workouts_page_redesign_chunk_4_quick_action_buttons_with_hover_reveal_done",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_implementation_plan",
+      "target": "improvements_workouts_page_redesign_chunk_5_delete_confirmation_with_alertdialog_done",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L132",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_implementation_plan",
+      "target": "improvements_workouts_page_redesign_chunk_6_duplicate_workout_action_done",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L158",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_implementation_plan",
+      "target": "improvements_workouts_page_redesign_chunk_7_grid_view_update_done",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L179",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_implementation_plan",
+      "target": "improvements_workouts_page_redesign_chunk_8_refactor_page_to_use_new_components_done",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L205",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_workouts_page_redesign_list_table_quick_actions",
+      "target": "improvements_workouts_page_redesign_component_tree",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L226",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_component_tree",
+      "target": "improvements_workouts_page_redesign_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L228",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_workouts_page_redesign_list_table_quick_actions",
+      "target": "improvements_workouts_page_redesign_dependencies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_workouts_page_redesign_list_table_quick_actions",
+      "target": "improvements_workouts_page_redesign_chunk_order_dependencies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L265",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_chunk_order_dependencies",
+      "target": "improvements_workouts_page_redesign_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L267",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_workouts_page_redesign_workouts_page_redesign_list_table_quick_actions",
+      "target": "improvements_workouts_page_redesign_mobile_considerations",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\workouts-page-redesign.md",
+      "source_location": "L282",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
