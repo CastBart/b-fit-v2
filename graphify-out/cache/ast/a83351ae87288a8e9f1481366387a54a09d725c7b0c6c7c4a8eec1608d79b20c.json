@@ -1,0 +1,223 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_architecture_05_session_state_management_md",
+      "label": "05-session-state-management.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "architecture_05_session_state_management_b_fit_session_state_management",
+      "label": "B-Fit Session State Management",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "architecture_05_session_state_management_overview",
+      "label": "Overview",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "architecture_05_session_state_management_conceptual_model",
+      "label": "Conceptual Model",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "architecture_05_session_state_management_codeblock_1",
+      "label": "code:mermaid (flowchart TB)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "architecture_05_session_state_management_state_architecture",
+      "label": "State Architecture",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "architecture_05_session_state_management_codeblock_2",
+      "label": "code:mermaid (flowchart TB)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L50"
+    },
+    {
+      "id": "architecture_05_session_state_management_session_lifecycle",
+      "label": "Session Lifecycle",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L94"
+    },
+    {
+      "id": "architecture_05_session_state_management_codeblock_3",
+      "label": "code:mermaid (stateDiagram-v2)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L96"
+    },
+    {
+      "id": "architecture_05_session_state_management_real_time_update_flow",
+      "label": "Real-Time Update Flow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L137"
+    },
+    {
+      "id": "architecture_05_session_state_management_codeblock_4",
+      "label": "code:mermaid (sequenceDiagram)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L139"
+    },
+    {
+      "id": "architecture_05_session_state_management_recovery_on_page_refresh",
+      "label": "Recovery on Page Refresh",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L181"
+    },
+    {
+      "id": "architecture_05_session_state_management_codeblock_5",
+      "label": "code:mermaid (flowchart TB)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L183"
+    },
+    {
+      "id": "architecture_05_session_state_management_performance_requirements",
+      "label": "Performance Requirements",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L230"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_architecture_05_session_state_management_md",
+      "target": "architecture_05_session_state_management_b_fit_session_state_management",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_b_fit_session_state_management",
+      "target": "architecture_05_session_state_management_overview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_b_fit_session_state_management",
+      "target": "architecture_05_session_state_management_conceptual_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_conceptual_model",
+      "target": "architecture_05_session_state_management_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_b_fit_session_state_management",
+      "target": "architecture_05_session_state_management_state_architecture",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_state_architecture",
+      "target": "architecture_05_session_state_management_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_b_fit_session_state_management",
+      "target": "architecture_05_session_state_management_session_lifecycle",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_session_lifecycle",
+      "target": "architecture_05_session_state_management_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_b_fit_session_state_management",
+      "target": "architecture_05_session_state_management_real_time_update_flow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L137",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_real_time_update_flow",
+      "target": "architecture_05_session_state_management_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L139",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_b_fit_session_state_management",
+      "target": "architecture_05_session_state_management_recovery_on_page_refresh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L181",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_recovery_on_page_refresh",
+      "target": "architecture_05_session_state_management_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L183",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_05_session_state_management_b_fit_session_state_management",
+      "target": "architecture_05_session_state_management_performance_requirements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\05-session-state-management.md",
+      "source_location": "L230",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

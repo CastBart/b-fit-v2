@@ -76,7 +76,13 @@
       "Bash(ls .prettierrc* .prettierignore)",
       "Bash(cat .prettierrc)",
       "Bash(cat .prettierrc.json)",
-      "Bash(cat .prettierrc.js)"
+      "Bash(cat .prettierrc.js)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 40)",
+      "PowerShell($out = npx tsc --noEmit 2>&1 | Select-String -NotMatch '\\\\.test\\\\.ts'; \"Non-test error lines: $\\($out.Count\\)\"; $out)",
+      "PowerShell(npx eslint \"src/components/features/plans/PlanDayDetailDrawer.tsx\" \"src/lib/superset-manager/colors.ts\" \"src/app/\\(dashboard\\)/plans/[id]/page.tsx\" 2>&1 | Select-Object -First 40)",
+      "PowerShell(npx eslint \"src/components/features/plans/PlanDayDetailDrawer.tsx\" \"src/lib/superset-manager/colors.ts\" 2>&1 | Select-Object -First 40)",
+      "PowerShell(npx eslint \"src/lib/superset-manager/colors.ts\" 2>&1)",
+      "PowerShell(graphify update *)"
     ]
   },
   "enabledPlugins": {

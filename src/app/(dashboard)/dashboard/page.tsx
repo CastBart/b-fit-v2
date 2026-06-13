@@ -109,33 +109,31 @@ export default function DashboardPage() {
       {userRole === 'CLIENT' && <TrainerCard />}
       {/* {userRole === 'PT' && <ClientsQuickCard />} */}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
         {/* Quick Actions */}
-        <Card>
+        <Card className="h-full flex flex-col">
           <CardHeader>
             <CardTitle className="text-xl sm:text-2xl lg:text-2xl tracking-tight">
               Quick Actions
             </CardTitle>
             <CardDescription>Start your workout or manage your training</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className=" flex flex-1 flex-col gap-3">
             <Button
-              className="w-full"
+              className="w-full flex-1 min-h-12 py-2"
               size="lg"
               onClick={() => guardedStart(() => startStandaloneSession(dispatch, router))}
             >
-              {/* <Link href="/workouts"> */}
               <PlayCircle className="mr-2 h-5 w-5" />
               Start Session
-              {/* </Link> */}
             </Button>
-            <Button asChild variant="outline" className="w-full">
+            <Button asChild variant="outline" className="w-full flex-1 min-h-12">
               <Link href="/workouts">
                 <Dumbbell className="mr-2 h-5 w-5" />
                 Browse Workouts
               </Link>
             </Button>
-            <Button asChild variant={'outline'} className="w-full">
+            <Button asChild variant={'outline'} className="w-full flex-1 min-h-12">
               <Link href="/sessions">
                 <BarChart3 className="mr-2 h-5 w-5" />
                 View Sessions

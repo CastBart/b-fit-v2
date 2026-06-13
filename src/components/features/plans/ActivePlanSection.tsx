@@ -107,7 +107,8 @@ export function ActivePlanSection() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-3 sm:flex-row sm:overflow-x-auto sm:pb-1">
+          {/* <div className="flex flex-col gap-3 sm:flex-row sm:overflow-x-auto sm:pb-1"> */}
+          <div className="flex flex-col gap-3 ">
             {days.map((day, index) => {
               const completion = getCompletionForDay(day.id)
               return (

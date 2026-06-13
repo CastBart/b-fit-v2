@@ -63,7 +63,7 @@ import {
   useCopyPlan,
 } from '@/hooks/mutations/usePlanMutations'
 import { formatPlanDuration, getCurrentWeek, getPlanProgress } from '@/lib/utils/plan-utils'
-import { SupersetManager } from '@/lib/superset-manager'
+import { SupersetManager, createSupersetStyleResolver } from '@/lib/superset-manager'
 import { MuscleGroupSetCounts } from '@/components/features/workouts/MuscleGroupSetCounts'
 import { computeMuscleGroupSetCounts } from '@/lib/analytics/muscle-set-counts'
 import { cn } from '@/lib/utils'
@@ -202,25 +202,6 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
     )
   )
 
-  // Build superset label mapping for all exercises
-  const groupColors = [
-    { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', line: 'bg-blue-500' },
-    {
-      bg: 'bg-purple-50',
-      text: 'text-purple-700',
-      border: 'border-purple-200',
-      line: 'bg-purple-500',
-    },
-    { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200', line: 'bg-green-500' },
-    {
-      bg: 'bg-orange-50',
-      text: 'text-orange-700',
-      border: 'border-orange-200',
-      line: 'bg-orange-500',
-    },
-    { bg: 'bg-pink-50', text: 'text-pink-700', border: 'border-pink-200', line: 'bg-pink-500' },
-  ]
-
   return (
     <div className="container mx-auto max-w-5xl pt-4 sm:pt-6 px-4">
       {/* Header row: back + title + active badge */}
@@ -337,26 +318,7 @@ export default function PlanDetailPage({ params }: PlanDetailPageProps) {
 
         {plan.days.map((day) => {
           // Build group label mapping for this day
-          const groupIdToLabel = new Map<string, string>()
-          const uniqueGroupIds = new Set<string>()
-          day.exercises.forEach((ex) => {
-            if (ex.groupId) uniqueGroupIds.add(ex.groupId)
-          })
-          let labelIndex = 0
-          uniqueGroupIds.forEach((groupId) => {
-            groupIdToLabel.set(groupId, String.fromCharCode(65 + labelIndex))
-            labelIndex++
-          })
-
-          const getSupersetStyle = (groupId: string | null | undefined) => {
-            if (!groupId) return null
-            const label = groupIdToLabel.get(groupId)
-            if (!label) return null
-            const colorIndex = Array.from(groupIdToLabel.keys()).indexOf(groupId)
-            const colors = groupColors[colorIndex % groupColors.length]
-            if (!colors) return null
-            return { label, colors }
-          }
+          const getSupersetStyle = createSupersetStyleResolver(day.exercises)
 
           return (
             <Card key={day.id}>

@@ -1,0 +1,207 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_improvements_chunk_e_autopopulate_next_set_md",
+      "label": "chunk-e-autopopulate-next-set.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_chunk_e_auto_populate_next_set_from_the_completed_set_2",
+      "label": "Chunk E \u2014 Auto-populate next set from the completed set (#2)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_decisions_confirmed_with_user",
+      "label": "Decisions (confirmed with user)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L14"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_implementation",
+      "label": "Implementation",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L23"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_new_helper_autopopulatenextset",
+      "label": "New helper `autoPopulateNextSet`",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L27"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_codeblock_1",
+      "label": "code:ts (const METRIC_FIELDS: (keyof SetMetrics)[] = [)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_wired_into_completeset",
+      "label": "Wired into `completeSet`",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L54"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_codeblock_2",
+      "label": "code:ts (set.completed = true)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L59"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_why_it_composes_cleanly",
+      "label": "Why it composes cleanly",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L77"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_files_touched",
+      "label": "Files touched",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L93"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_codeblock_3",
+      "label": "code:block3 (src/store/slices/sessionSlice.ts   - autoPopulateNextSet hel)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L95"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_validation",
+      "label": "Validation",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L105"
+    },
+    {
+      "id": "improvements_chunk_e_autopopulate_next_set_carry_overs",
+      "label": "Carry-overs",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L124"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_improvements_chunk_e_autopopulate_next_set_md",
+      "target": "improvements_chunk_e_autopopulate_next_set_chunk_e_auto_populate_next_set_from_the_completed_set_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_e_autopopulate_next_set_chunk_e_auto_populate_next_set_from_the_completed_set_2",
+      "target": "improvements_chunk_e_autopopulate_next_set_decisions_confirmed_with_user",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_e_autopopulate_next_set_chunk_e_auto_populate_next_set_from_the_completed_set_2",
+      "target": "improvements_chunk_e_autopopulate_next_set_implementation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_e_autopopulate_next_set_implementation",
+      "target": "improvements_chunk_e_autopopulate_next_set_new_helper_autopopulatenextset",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_e_autopopulate_next_set_new_helper_autopopulatenextset",
+      "target": "improvements_chunk_e_autopopulate_next_set_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_e_autopopulate_next_set_implementation",
+      "target": "improvements_chunk_e_autopopulate_next_set_wired_into_completeset",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_e_autopopulate_next_set_wired_into_completeset",
+      "target": "improvements_chunk_e_autopopulate_next_set_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_e_autopopulate_next_set_chunk_e_auto_populate_next_set_from_the_completed_set_2",
+      "target": "improvements_chunk_e_autopopulate_next_set_why_it_composes_cleanly",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_e_autopopulate_next_set_chunk_e_auto_populate_next_set_from_the_completed_set_2",
+      "target": "improvements_chunk_e_autopopulate_next_set_files_touched",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_e_autopopulate_next_set_files_touched",
+      "target": "improvements_chunk_e_autopopulate_next_set_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_e_autopopulate_next_set_chunk_e_auto_populate_next_set_from_the_completed_set_2",
+      "target": "improvements_chunk_e_autopopulate_next_set_validation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "improvements_chunk_e_autopopulate_next_set_chunk_e_auto_populate_next_set_from_the_completed_set_2",
+      "target": "improvements_chunk_e_autopopulate_next_set_carry_overs",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-e-autopopulate-next-set.md",
+      "source_location": "L124",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

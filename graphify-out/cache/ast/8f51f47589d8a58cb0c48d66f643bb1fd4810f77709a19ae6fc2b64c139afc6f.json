@@ -1,0 +1,1311 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_api_specification_md",
+      "label": "api-specification.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_api_specification_b_fit_api_specification",
+      "label": "B-Fit API Specification",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_api_specification_overview",
+      "label": "Overview",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "docs_api_specification_server_action_structure",
+      "label": "Server Action Structure",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "docs_api_specification_standard_pattern",
+      "label": "Standard Pattern",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "docs_api_specification_codeblock_1",
+      "label": "code:typescript ('use server')",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "docs_api_specification_return_type",
+      "label": "Return Type",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L55"
+    },
+    {
+      "id": "docs_api_specification_codeblock_2",
+      "label": "code:typescript (type ActionResult<T> =)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "docs_api_specification_workout_actions",
+      "label": "Workout Actions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L65"
+    },
+    {
+      "id": "docs_api_specification_createworkout",
+      "label": "createWorkout",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L67"
+    },
+    {
+      "id": "docs_api_specification_codeblock_3",
+      "label": "code:typescript ('use server')",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L71"
+    },
+    {
+      "id": "docs_api_specification_codeblock_4",
+      "label": "code:typescript (const result = await createWorkout({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L103"
+    },
+    {
+      "id": "docs_api_specification_updateworkout",
+      "label": "updateWorkout",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L118"
+    },
+    {
+      "id": "docs_api_specification_codeblock_5",
+      "label": "code:typescript (export async function updateWorkout()",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L120"
+    },
+    {
+      "id": "docs_api_specification_deleteworkout",
+      "label": "deleteWorkout",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L129"
+    },
+    {
+      "id": "docs_api_specification_codeblock_6",
+      "label": "code:typescript (export async function deleteWorkout(workoutId: string): Prom)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L131"
+    },
+    {
+      "id": "docs_api_specification_assignworkouttoclient",
+      "label": "assignWorkoutToClient",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L137"
+    },
+    {
+      "id": "docs_api_specification_codeblock_7",
+      "label": "code:typescript (const assignSchema = z.object({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L139"
+    },
+    {
+      "id": "docs_api_specification_getworkoutbyid",
+      "label": "getWorkoutById",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L168"
+    },
+    {
+      "id": "docs_api_specification_codeblock_8",
+      "label": "code:typescript (export async function getWorkoutById(workoutId: string): Pro)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L170"
+    },
+    {
+      "id": "docs_api_specification_listworkouts",
+      "label": "listWorkouts",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L182"
+    },
+    {
+      "id": "docs_api_specification_codeblock_9",
+      "label": "code:typescript (type ListWorkoutsFilters = {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L184"
+    },
+    {
+      "id": "docs_api_specification_session_actions",
+      "label": "Session Actions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L196"
+    },
+    {
+      "id": "docs_api_specification_startsession",
+      "label": "startSession",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L198"
+    },
+    {
+      "id": "docs_api_specification_codeblock_10",
+      "label": "code:typescript (const startSessionSchema = z.object({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L200"
+    },
+    {
+      "id": "docs_api_specification_codeblock_11",
+      "label": "code:typescript ({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L216"
+    },
+    {
+      "id": "docs_api_specification_updatesessionset",
+      "label": "updateSessionSet",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L241"
+    },
+    {
+      "id": "docs_api_specification_codeblock_12",
+      "label": "code:typescript (const updateSetSchema = z.object({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L243"
+    },
+    {
+      "id": "docs_api_specification_completesession",
+      "label": "completeSession",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L267"
+    },
+    {
+      "id": "docs_api_specification_codeblock_13",
+      "label": "code:typescript (export async function completeSession(sessionId: string): Pr)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L269"
+    },
+    {
+      "id": "docs_api_specification_codeblock_14",
+      "label": "code:typescript (type SessionSummary = {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L280"
+    },
+    {
+      "id": "docs_api_specification_abandonsession",
+      "label": "abandonSession",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L300"
+    },
+    {
+      "id": "docs_api_specification_codeblock_15",
+      "label": "code:typescript (export async function abandonSession(sessionId: string): Pro)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L302"
+    },
+    {
+      "id": "docs_api_specification_syncsessionstate",
+      "label": "syncSessionState",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L312"
+    },
+    {
+      "id": "docs_api_specification_codeblock_16",
+      "label": "code:typescript (const syncSchema = z.object({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L314"
+    },
+    {
+      "id": "docs_api_specification_exercise_actions",
+      "label": "Exercise Actions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L334"
+    },
+    {
+      "id": "docs_api_specification_createexercise",
+      "label": "createExercise",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L336"
+    },
+    {
+      "id": "docs_api_specification_codeblock_17",
+      "label": "code:typescript (const createExerciseSchema = z.object({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L338"
+    },
+    {
+      "id": "docs_api_specification_searchexercises",
+      "label": "searchExercises",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L366"
+    },
+    {
+      "id": "docs_api_specification_codeblock_18",
+      "label": "code:typescript (type SearchFilters = {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L368"
+    },
+    {
+      "id": "docs_api_specification_getexercisehistory",
+      "label": "getExerciseHistory",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L383"
+    },
+    {
+      "id": "docs_api_specification_codeblock_19",
+      "label": "code:typescript (export async function getExerciseHistory()",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L385"
+    },
+    {
+      "id": "docs_api_specification_user_actions",
+      "label": "User Actions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L402"
+    },
+    {
+      "id": "docs_api_specification_updateprofile",
+      "label": "updateProfile",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L404"
+    },
+    {
+      "id": "docs_api_specification_codeblock_20",
+      "label": "code:typescript (const updateProfileSchema = z.object({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L406"
+    },
+    {
+      "id": "docs_api_specification_upgradetopt",
+      "label": "upgradeToPT",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L420"
+    },
+    {
+      "id": "docs_api_specification_codeblock_21",
+      "label": "code:typescript (export async function upgradeToPT(): Promise<ActionResult<{ )",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L422"
+    },
+    {
+      "id": "docs_api_specification_inviteclient",
+      "label": "inviteClient",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L432"
+    },
+    {
+      "id": "docs_api_specification_codeblock_22",
+      "label": "code:typescript (const inviteClientSchema = z.object({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L434"
+    },
+    {
+      "id": "docs_api_specification_acceptclientinvitation",
+      "label": "acceptClientInvitation",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L451"
+    },
+    {
+      "id": "docs_api_specification_codeblock_23",
+      "label": "code:typescript (export async function acceptClientInvitation()",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L453"
+    },
+    {
+      "id": "docs_api_specification_endclientrelationship",
+      "label": "endClientRelationship",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L464"
+    },
+    {
+      "id": "docs_api_specification_codeblock_24",
+      "label": "code:typescript (const endRelationshipSchema = z.object({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L466"
+    },
+    {
+      "id": "docs_api_specification_analytics_actions",
+      "label": "Analytics Actions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L483"
+    },
+    {
+      "id": "docs_api_specification_getworkoutadherence",
+      "label": "getWorkoutAdherence",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L485"
+    },
+    {
+      "id": "docs_api_specification_codeblock_25",
+      "label": "code:typescript (type AdherenceParams = {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L487"
+    },
+    {
+      "id": "docs_api_specification_getvolumeprogression",
+      "label": "getVolumeProgression",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L508"
+    },
+    {
+      "id": "docs_api_specification_codeblock_26",
+      "label": "code:typescript (export async function getVolumeProgression(params: {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L510"
+    },
+    {
+      "id": "docs_api_specification_getpersonalrecords",
+      "label": "getPersonalRecords",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L531"
+    },
+    {
+      "id": "docs_api_specification_codeblock_27",
+      "label": "code:typescript (export async function getPersonalRecords(userId?: string): P)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L533"
+    },
+    {
+      "id": "docs_api_specification_message_actions",
+      "label": "Message Actions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L549"
+    },
+    {
+      "id": "docs_api_specification_sendmessage",
+      "label": "sendMessage",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L551"
+    },
+    {
+      "id": "docs_api_specification_codeblock_28",
+      "label": "code:typescript (const sendMessageSchema = z.object({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L553"
+    },
+    {
+      "id": "docs_api_specification_getconversation",
+      "label": "getConversation",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L570"
+    },
+    {
+      "id": "docs_api_specification_codeblock_29",
+      "label": "code:typescript (export async function getConversation()",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L572"
+    },
+    {
+      "id": "docs_api_specification_uploadmedia",
+      "label": "uploadMedia",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L590"
+    },
+    {
+      "id": "docs_api_specification_codeblock_30",
+      "label": "code:typescript (export async function uploadMedia(formData: FormData): Promi)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L592"
+    },
+    {
+      "id": "docs_api_specification_subscription_actions",
+      "label": "Subscription Actions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L603"
+    },
+    {
+      "id": "docs_api_specification_createcheckoutsession",
+      "label": "createCheckoutSession",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L605"
+    },
+    {
+      "id": "docs_api_specification_codeblock_31",
+      "label": "code:typescript (const checkoutSchema = z.object({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L607"
+    },
+    {
+      "id": "docs_api_specification_managebilling",
+      "label": "manageBilling",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L621"
+    },
+    {
+      "id": "docs_api_specification_codeblock_32",
+      "label": "code:typescript (export async function manageBilling(): Promise<ActionResult<)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L623"
+    },
+    {
+      "id": "docs_api_specification_upgradesubscription",
+      "label": "upgradeSubscription",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L632"
+    },
+    {
+      "id": "docs_api_specification_codeblock_33",
+      "label": "code:typescript (export async function upgradeSubscription(newPriceId: string)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L634"
+    },
+    {
+      "id": "docs_api_specification_error_handling",
+      "label": "Error Handling",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L644"
+    },
+    {
+      "id": "docs_api_specification_standard_error_codes",
+      "label": "Standard Error Codes",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L646"
+    },
+    {
+      "id": "docs_api_specification_codeblock_34",
+      "label": "code:typescript (const ERROR_CODES = {)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L648"
+    },
+    {
+      "id": "docs_api_specification_error_response_format",
+      "label": "Error Response Format",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L660"
+    },
+    {
+      "id": "docs_api_specification_codeblock_35",
+      "label": "code:typescript ({)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L662"
+    },
+    {
+      "id": "docs_api_specification_testing_server_actions",
+      "label": "Testing Server Actions",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L673"
+    },
+    {
+      "id": "docs_api_specification_unit_test_example",
+      "label": "Unit Test Example",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L675"
+    },
+    {
+      "id": "docs_api_specification_codeblock_36",
+      "label": "code:typescript (// features/workouts/actions/create-workout.test.ts)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L677"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_api_specification_md",
+      "target": "docs_api_specification_b_fit_api_specification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_b_fit_api_specification",
+      "target": "docs_api_specification_overview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_b_fit_api_specification",
+      "target": "docs_api_specification_server_action_structure",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_server_action_structure",
+      "target": "docs_api_specification_standard_pattern",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_standard_pattern",
+      "target": "docs_api_specification_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_server_action_structure",
+      "target": "docs_api_specification_return_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_return_type",
+      "target": "docs_api_specification_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_b_fit_api_specification",
+      "target": "docs_api_specification_workout_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_workout_actions",
+      "target": "docs_api_specification_createworkout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_createworkout",
+      "target": "docs_api_specification_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_createworkout",
+      "target": "docs_api_specification_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L103",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_workout_actions",
+      "target": "docs_api_specification_updateworkout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_updateworkout",
+      "target": "docs_api_specification_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_workout_actions",
+      "target": "docs_api_specification_deleteworkout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L129",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_deleteworkout",
+      "target": "docs_api_specification_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_workout_actions",
+      "target": "docs_api_specification_assignworkouttoclient",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L137",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_assignworkouttoclient",
+      "target": "docs_api_specification_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L139",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_workout_actions",
+      "target": "docs_api_specification_getworkoutbyid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_getworkoutbyid",
+      "target": "docs_api_specification_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L170",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_workout_actions",
+      "target": "docs_api_specification_listworkouts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L182",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_listworkouts",
+      "target": "docs_api_specification_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L184",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_b_fit_api_specification",
+      "target": "docs_api_specification_session_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L196",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_session_actions",
+      "target": "docs_api_specification_startsession",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L198",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_startsession",
+      "target": "docs_api_specification_codeblock_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L200",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_startsession",
+      "target": "docs_api_specification_codeblock_11",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L216",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_session_actions",
+      "target": "docs_api_specification_updatesessionset",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L241",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_updatesessionset",
+      "target": "docs_api_specification_codeblock_12",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L243",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_session_actions",
+      "target": "docs_api_specification_completesession",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L267",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_completesession",
+      "target": "docs_api_specification_codeblock_13",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L269",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_completesession",
+      "target": "docs_api_specification_codeblock_14",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L280",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_session_actions",
+      "target": "docs_api_specification_abandonsession",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L300",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_abandonsession",
+      "target": "docs_api_specification_codeblock_15",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L302",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_session_actions",
+      "target": "docs_api_specification_syncsessionstate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L312",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_syncsessionstate",
+      "target": "docs_api_specification_codeblock_16",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L314",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_b_fit_api_specification",
+      "target": "docs_api_specification_exercise_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L334",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_exercise_actions",
+      "target": "docs_api_specification_createexercise",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L336",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_createexercise",
+      "target": "docs_api_specification_codeblock_17",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L338",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_exercise_actions",
+      "target": "docs_api_specification_searchexercises",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L366",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_searchexercises",
+      "target": "docs_api_specification_codeblock_18",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L368",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_exercise_actions",
+      "target": "docs_api_specification_getexercisehistory",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L383",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_getexercisehistory",
+      "target": "docs_api_specification_codeblock_19",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L385",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_b_fit_api_specification",
+      "target": "docs_api_specification_user_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L402",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_user_actions",
+      "target": "docs_api_specification_updateprofile",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L404",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_updateprofile",
+      "target": "docs_api_specification_codeblock_20",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L406",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_user_actions",
+      "target": "docs_api_specification_upgradetopt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L420",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_upgradetopt",
+      "target": "docs_api_specification_codeblock_21",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L422",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_user_actions",
+      "target": "docs_api_specification_inviteclient",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L432",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_inviteclient",
+      "target": "docs_api_specification_codeblock_22",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L434",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_user_actions",
+      "target": "docs_api_specification_acceptclientinvitation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L451",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_acceptclientinvitation",
+      "target": "docs_api_specification_codeblock_23",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L453",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_user_actions",
+      "target": "docs_api_specification_endclientrelationship",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L464",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_endclientrelationship",
+      "target": "docs_api_specification_codeblock_24",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L466",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_b_fit_api_specification",
+      "target": "docs_api_specification_analytics_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L483",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_analytics_actions",
+      "target": "docs_api_specification_getworkoutadherence",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L485",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_getworkoutadherence",
+      "target": "docs_api_specification_codeblock_25",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L487",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_analytics_actions",
+      "target": "docs_api_specification_getvolumeprogression",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L508",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_getvolumeprogression",
+      "target": "docs_api_specification_codeblock_26",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L510",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_analytics_actions",
+      "target": "docs_api_specification_getpersonalrecords",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L531",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_getpersonalrecords",
+      "target": "docs_api_specification_codeblock_27",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L533",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_b_fit_api_specification",
+      "target": "docs_api_specification_message_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L549",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_message_actions",
+      "target": "docs_api_specification_sendmessage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L551",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_sendmessage",
+      "target": "docs_api_specification_codeblock_28",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L553",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_message_actions",
+      "target": "docs_api_specification_getconversation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L570",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_getconversation",
+      "target": "docs_api_specification_codeblock_29",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L572",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_message_actions",
+      "target": "docs_api_specification_uploadmedia",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L590",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_uploadmedia",
+      "target": "docs_api_specification_codeblock_30",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L592",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_b_fit_api_specification",
+      "target": "docs_api_specification_subscription_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L603",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_subscription_actions",
+      "target": "docs_api_specification_createcheckoutsession",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L605",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_createcheckoutsession",
+      "target": "docs_api_specification_codeblock_31",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L607",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_subscription_actions",
+      "target": "docs_api_specification_managebilling",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L621",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_managebilling",
+      "target": "docs_api_specification_codeblock_32",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L623",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_subscription_actions",
+      "target": "docs_api_specification_upgradesubscription",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L632",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_upgradesubscription",
+      "target": "docs_api_specification_codeblock_33",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L634",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_b_fit_api_specification",
+      "target": "docs_api_specification_error_handling",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L644",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_error_handling",
+      "target": "docs_api_specification_standard_error_codes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L646",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_standard_error_codes",
+      "target": "docs_api_specification_codeblock_34",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L648",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_error_handling",
+      "target": "docs_api_specification_error_response_format",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L660",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_error_response_format",
+      "target": "docs_api_specification_codeblock_35",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L662",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_b_fit_api_specification",
+      "target": "docs_api_specification_testing_server_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L673",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_testing_server_actions",
+      "target": "docs_api_specification_unit_test_example",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L675",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_api_specification_unit_test_example",
+      "target": "docs_api_specification_codeblock_36",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\api-specification.md",
+      "source_location": "L677",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

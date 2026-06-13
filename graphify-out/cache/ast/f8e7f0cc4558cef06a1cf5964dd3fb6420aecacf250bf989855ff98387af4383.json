@@ -1,0 +1,175 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_architecture_04_workout_assignment_flow_md",
+      "label": "04-workout-assignment-flow.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "architecture_04_workout_assignment_flow_b_fit_workout_assignment_flow",
+      "label": "B-Fit Workout Assignment Flow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "architecture_04_workout_assignment_flow_overview",
+      "label": "Overview",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "architecture_04_workout_assignment_flow_end_to_end_workflow",
+      "label": "End-to-End Workflow",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "architecture_04_workout_assignment_flow_codeblock_1",
+      "label": "code:mermaid (flowchart TB)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "architecture_04_workout_assignment_flow_copy_on_assign_pattern",
+      "label": "Copy-on-Assign Pattern",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L64"
+    },
+    {
+      "id": "architecture_04_workout_assignment_flow_codeblock_2",
+      "label": "code:mermaid (sequenceDiagram)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L66"
+    },
+    {
+      "id": "architecture_04_workout_assignment_flow_client_session_execution",
+      "label": "Client Session Execution",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L100"
+    },
+    {
+      "id": "architecture_04_workout_assignment_flow_codeblock_3",
+      "label": "code:mermaid (sequenceDiagram)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L102"
+    },
+    {
+      "id": "architecture_04_workout_assignment_flow_pt_visibility_of_client_data",
+      "label": "PT Visibility of Client Data",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L143"
+    },
+    {
+      "id": "architecture_04_workout_assignment_flow_codeblock_4",
+      "label": "code:mermaid (flowchart LR)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L145"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_architecture_04_workout_assignment_flow_md",
+      "target": "architecture_04_workout_assignment_flow_b_fit_workout_assignment_flow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_04_workout_assignment_flow_b_fit_workout_assignment_flow",
+      "target": "architecture_04_workout_assignment_flow_overview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_04_workout_assignment_flow_b_fit_workout_assignment_flow",
+      "target": "architecture_04_workout_assignment_flow_end_to_end_workflow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_04_workout_assignment_flow_end_to_end_workflow",
+      "target": "architecture_04_workout_assignment_flow_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_04_workout_assignment_flow_b_fit_workout_assignment_flow",
+      "target": "architecture_04_workout_assignment_flow_copy_on_assign_pattern",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_04_workout_assignment_flow_copy_on_assign_pattern",
+      "target": "architecture_04_workout_assignment_flow_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_04_workout_assignment_flow_b_fit_workout_assignment_flow",
+      "target": "architecture_04_workout_assignment_flow_client_session_execution",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_04_workout_assignment_flow_client_session_execution",
+      "target": "architecture_04_workout_assignment_flow_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_04_workout_assignment_flow_b_fit_workout_assignment_flow",
+      "target": "architecture_04_workout_assignment_flow_pt_visibility_of_client_data",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "architecture_04_workout_assignment_flow_pt_visibility_of_client_data",
+      "target": "architecture_04_workout_assignment_flow_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\architecture\\04-workout-assignment-flow.md",
+      "source_location": "L145",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

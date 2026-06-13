@@ -14,6 +14,21 @@ export function useRegisterSW() {
       return
     }
 
+    // In development we never want a service worker controlling the page —
+    // a stale `public/sw.js` (built by the last `next build`) would otherwise
+    // serve cached prod UI/data and mask local edits. Serwist's `disable` flag
+    // only stops the SW being *rebuilt* in dev; it doesn't stop an already
+    // installed one. Actively unregister any leftover worker so the next dev
+    // load is clean, then skip registration entirely.
+    if (process.env.NODE_ENV !== 'production') {
+      void navigator.serviceWorker
+        .getRegistrations()
+        .then((registrations) => registrations.forEach((registration) => registration.unregister()))
+        .catch(() => {})
+      setState('unsupported')
+      return
+    }
+
     let cancelled = false
 
     const register = async () => {
