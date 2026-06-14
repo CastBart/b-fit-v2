@@ -63,6 +63,8 @@ import {
 } from '@/components/features/sessions/CompletedSessionDrawer'
 import { formatDuration } from '@/lib/utils/format-time'
 import { startRepeatedSession } from '@/lib/utils/session-navigation'
+import { startFlow, mark, endFlow, measureAsync } from '@/lib/perf/timing'
+import { selectSessionView } from './session-view-state'
 import type { Exercise, MuscleGroup } from '@prisma/client'
 import type { SessionExerciseEntry } from '@/types/session'
 
@@ -120,6 +122,17 @@ export default function SessionPage() {
     null
   )
 
+  // True while tearing down a finished session and navigating to the
+  // dashboard. Gates the render so the "No exercises yet" / "No Active
+  // Session" branches can never flash during teardown.
+  const [leavingSession, setLeavingSession] = useState(false)
+
+  // Warm the dashboard route as soon as the completed drawer opens so the
+  // return trip is as instant as possible.
+  useEffect(() => {
+    if (completedSessionDrawerOpen) router.prefetch('/dashboard')
+  }, [completedSessionDrawerOpen, router])
+
   // Clear selected exercise when both drawers are closed
   useEffect(() => {
     if (!exerciseOptionsOpen && !supersetDrawerOpen) {
@@ -138,16 +151,22 @@ export default function SessionPage() {
       // Fetch history for all exercises to pre-fill set values
       if (exercises.length > 0 && onlineManager.isOnline()) {
         const exerciseIds = [...new Set(exercises.map((e) => e.exerciseId))]
+        mark('session-start', 'history prefill started')
         try {
-          const result = await getLatestHistoryBatch({ exerciseIds })
+          const result = await measureAsync('getLatestHistoryBatch', () =>
+            getLatestHistoryBatch({ exerciseIds })
+          )
           if (result.success && result.data) {
             dispatch(prefillSetsFromHistory({ historyMap: result.data }))
           }
         } catch {
           // Non-critical — session works fine without pre-fill
         }
+        mark('session-start', 'history prefill completed')
       }
       dispatch(sessionViewLoaded())
+      mark('session-start', 'sessionViewLoaded dispatched')
+      endFlow('session-start', 'session usable')
     }
 
     prefillAndLoad()
@@ -259,26 +278,41 @@ export default function SessionPage() {
 
   // Handle complete session from banner
   const handleCompleteSession = async () => {
+    startFlow('session-complete')
     setIsCommitting(true)
     try {
       // Build the drawer data BEFORE any state changes
+      mark('session-complete', 'build payload started')
       const drawerData = buildCompletedSessionData()
       const payload = buildSavePayload(SessionStatus.COMPLETED)
+      mark('session-complete', 'build payload completed')
 
       // Prepare session end (stops timer, sets completeTime, but keeps isActive = true)
       dispatch(prepareSessionEnd())
+      mark('session-complete', 'prepareSessionEnd dispatched')
 
       // Commit boundary: writes durable IDB marker, fires the mutation
       // (pauses offline), clears the localStorage backup. Survives a
       // crash between "tapped Complete" and "server confirmed".
+      mark('session-complete', 'commit started')
       await commitCompletedSession('complete', payload)
+      mark('session-complete', 'commit completed')
 
-      // Fetch PRs and attach to drawer data
-      await fetchAndAttachPRs(payload.sessionId, drawerData)
-
-      // Show the completed session drawer (state will be cleared when drawer closes)
+      // Show the completed session drawer immediately. The PR lookup is a
+      // ~230ms network call and is non-critical, so we enrich the drawer in
+      // the background rather than blocking the summary on it.
       setCompletedSessionData(drawerData)
       setCompletedSessionDrawerOpen(true)
+      mark('session-complete', 'completed drawer opened')
+
+      void fetchAndAttachPRs(payload.sessionId, drawerData).then(() => {
+        if (!drawerData.prs?.length) return
+        // Re-set with a fresh reference so the drawer re-renders with PRs,
+        // but only while this same session's summary is still showing.
+        setCompletedSessionData((prev) =>
+          prev && prev.sessionId === drawerData.sessionId ? { ...drawerData } : prev
+        )
+      })
     } catch (error) {
       console.error('Failed to complete session:', error)
       toast.error('Failed to save session. Please try again.')
@@ -290,14 +324,21 @@ export default function SessionPage() {
 
   // Handle closing the completed session drawer
   const handleCompletedSessionClose = () => {
-    // Now fully end the session and clear state
+    mark('session-complete', 'go to dashboard clicked')
+
+    // Gate the render BEFORE clearing Redux so the synchronous re-render from
+    // resetSessionState() can never hit the empty-state / no-session branches.
+    setLeavingSession(true)
+    setCompletedSessionDrawerOpen(false)
+    setCompletedSessionData(null)
+
+    // Kick off navigation, then tear down session state.
+    mark('session-complete', 'dashboard navigation started')
+    router.push('/dashboard')
+
     dispatch(endSession())
     dispatch(resetSessionState())
     clearSessionBackup()
-
-    setCompletedSessionDrawerOpen(false)
-    setCompletedSessionData(null)
-    router.push('/dashboard')
   }
 
   const handleCompletedDrawerOpenChange = (open: boolean) => {
@@ -334,14 +375,18 @@ export default function SessionPage() {
     // Build the drawer data while state is still available
     const drawerData = buildCompletedSessionData()
 
-    // Fetch PRs and attach to drawer data
-    if (sessionId) {
-      await fetchAndAttachPRs(sessionId, drawerData)
-    }
-
-    // Show the completed session drawer (state will be cleared when drawer closes)
+    // Show the summary immediately; enrich with PRs in the background.
     setCompletedSessionData(drawerData)
     setCompletedSessionDrawerOpen(true)
+
+    if (sessionId) {
+      void fetchAndAttachPRs(sessionId, drawerData).then(() => {
+        if (!drawerData.prs?.length) return
+        setCompletedSessionData((prev) =>
+          prev && prev.sessionId === drawerData.sessionId ? { ...drawerData } : prev
+        )
+      })
+    }
   }
 
   // Handle opening exercise options
@@ -493,8 +538,29 @@ export default function SessionPage() {
   // RENDER - LOADING STATES
   // ============================================================================
 
+  const view = selectSessionView({
+    leavingSession,
+    isRecovering,
+    hasActiveSession,
+    isActive,
+    isStarting,
+    error,
+    exerciseCount: exercises.length,
+  })
+
+  // Leaving for the dashboard after completing a session. Render a neutral
+  // transition (never the empty-session UI) while navigation completes and
+  // Redux state is torn down.
+  if (view === 'leaving') {
+    return (
+      <div className="flex h-[70vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
   // Recovery in progress
-  if (isRecovering) {
+  if (view === 'recovering') {
     return (
       <div className="flex h-[70vh] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -506,7 +572,7 @@ export default function SessionPage() {
   }
 
   // No active session (user navigated directly without starting)
-  if (!hasActiveSession || !isActive) {
+  if (view === 'no-session') {
     return (
       <div className="flex h-[70vh] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -522,7 +588,7 @@ export default function SessionPage() {
   }
 
   // Session starting (brief loading state)
-  if (isStarting) {
+  if (view === 'starting') {
     return (
       <div className="flex h-[70vh] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -534,7 +600,7 @@ export default function SessionPage() {
   }
 
   // Error state
-  if (error) {
+  if (view === 'error') {
     return (
       <div className="flex h-[70vh] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -551,7 +617,7 @@ export default function SessionPage() {
   // RENDER - EMPTY STATE (No exercises)
   // ============================================================================
 
-  if (exercises.length === 0) {
+  if (view === 'empty') {
     return (
       <>
         <div className="container mx-auto max-w-5xl space-y-2 py-2 sm:py-4 md:py-6 px-4">

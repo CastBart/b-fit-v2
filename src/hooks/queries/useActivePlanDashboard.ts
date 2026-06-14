@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { getActivePlanDashboard } from '@/server/actions/plans'
 import { offlineQueryFn } from '@/lib/react-query/offlineQueryFn'
+import { mark } from '@/lib/perf/timing'
 import type { ActivePlanDashboardResponse } from '@/types/plan'
 
 export function useActivePlanDashboard(weekNumber?: number) {
@@ -8,7 +9,9 @@ export function useActivePlanDashboard(weekNumber?: number) {
   return useQuery<ActivePlanDashboardResponse>({
     queryKey: ['activePlanDashboard', cacheKey],
     queryFn: offlineQueryFn(['activePlanDashboard', cacheKey], async () => {
+      mark('plan-progress', 'active plan query started')
       const result = await getActivePlanDashboard(weekNumber)
+      mark('plan-progress', 'active plan query completed')
       if (!result.success) {
         throw new Error(result.error || 'Failed to fetch active plan')
       }

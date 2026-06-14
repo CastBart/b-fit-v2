@@ -18,6 +18,7 @@ import { useMyPT } from '@/hooks/queries/useMyPT'
 import { useAppDispatch } from '@/store/hooks'
 import { startStandaloneSession } from '@/lib/utils/session-navigation'
 import { useActiveSessionGuard } from '@/hooks/useActiveSessionGuard'
+import { mark, endFlow } from '@/lib/perf/timing'
 
 function TrainerCard() {
   const { data: ptData, isLoading } = useMyPT()
@@ -80,6 +81,14 @@ export default function DashboardPage() {
   const dispatch = useAppDispatch()
   const { guardedStart } = useActiveSessionGuard()
   const userRole = session?.user?.role
+
+  // Perf: dashboard reached — close the completion flow and contribute the
+  // mount mark to the in-flight plan-progress flow (no-ops if neither exists).
+  useEffect(() => {
+    mark('session-complete', 'dashboard mounted')
+    endFlow('session-complete')
+    mark('plan-progress', 'dashboard mounted')
+  }, [])
 
   useEffect(() => {
     if (searchParams.get('checkout') === 'success') {
