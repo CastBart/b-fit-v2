@@ -35,8 +35,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\.claude\\settings.local.json": {
-    "mtime": 1781349478.7087548,
-    "ast_hash": "38e605be5e4cb551939ce7a5092ead1f",
+    "mtime": 1781424729.9525132,
+    "ast_hash": "ad315313ab2196f97a63925fd8cc4a7a",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\.husky\\_\\applypatch-msg": {
@@ -370,8 +370,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\dashboard\\page.tsx": {
-    "mtime": 1781349823.6202533,
-    "ast_hash": "ddf5414a8a43a0dece2dc4174af7841d",
+    "mtime": 1781420797.0266683,
+    "ast_hash": "5eed9ec56b896e51ff0315a510817456",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\exercises\\page.tsx": {
@@ -400,8 +400,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\session\\page.tsx": {
-    "mtime": 1781340116.442554,
-    "ast_hash": "a1ae98caa3f87ed244941247008a9eb3",
+    "mtime": 1781425542.013198,
+    "ast_hash": "dca67f05f5acc9c06d6f0db4639dcee5",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\sessions\\page.tsx": {
@@ -715,8 +715,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\plans\\ActivePlanSection.tsx": {
-    "mtime": 1781349478.714452,
-    "ast_hash": "1d0c1347a765691d42576baf2fea8f72",
+    "mtime": 1781420825.7480612,
+    "ast_hash": "cf62da050351034ca77368c654e43447",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\plans\\CopyFromWorkoutDrawer.tsx": {
@@ -785,8 +785,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\ContinueSessionButton.tsx": {
-    "mtime": 1781340120.617402,
-    "ast_hash": "6fbb3b3f490a99f430de4df4a63a9029",
+    "mtime": 1781425520.2140677,
+    "ast_hash": "30f2eabf557b9fb61806994f81ae32f4",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\ExerciseCarousel.tsx": {
@@ -945,8 +945,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\providers\\PersistQueryProvider.tsx": {
-    "mtime": 1781340121.9771092,
-    "ast_hash": "68eb2cfc183f8e42ea4e05ea505e2905",
+    "mtime": 1781420891.2641916,
+    "ast_hash": "f9e77d8955a4dfee9082a1ea684caee3",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\providers\\QueryProvider.tsx": {
@@ -1180,8 +1180,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\useSessionRecovery.ts": {
-    "mtime": 1781340123.6576095,
-    "ast_hash": "00c154872d3a3c8b7cb4c47255bc554c",
+    "mtime": 1781420721.781521,
+    "ast_hash": "5690b60c369975c7491e75422cfb81f4",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\useSmartBack.ts": {
@@ -1230,8 +1230,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\queries\\useActivePlanDashboard.ts": {
-    "mtime": 1781340123.1356368,
-    "ast_hash": "72977fd9610520bf7bd40ece05a2bfbb",
+    "mtime": 1781420806.95761,
+    "ast_hash": "5ba053d605cc75f372437530330dfe23",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\queries\\useAnalytics.ts": {
@@ -1415,8 +1415,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\commit-completed-session.ts": {
-    "mtime": 1781340124.31146,
-    "ast_hash": "6b98f0eed4a2511ab28e0e727f6431e0",
+    "mtime": 1781420861.2687683,
+    "ast_hash": "73fa78d2e2fa0b7faa7662d0337533e8",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\emitter.ts": {
@@ -1435,8 +1435,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\mutation-defaults.ts": {
-    "mtime": 1781340124.8326297,
-    "ast_hash": "0223ee80dfd1d60561c72e49437d4ab3",
+    "mtime": 1781421159.6435885,
+    "ast_hash": "16cf7953539d44ee81b9090b7adc01c6",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\onlineManagerSetup.ts": {
@@ -1455,8 +1455,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\recover-pending-commits.ts": {
-    "mtime": 1781340124.9415147,
-    "ast_hash": "ad9669695abfc6d8b55f1c3be8dd16d1",
+    "mtime": 1781420871.013083,
+    "ast_hash": "b7c9a02a30214fbb10518c79d10a1104",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\rewrite-exercise-id.ts": {
@@ -1550,8 +1550,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\utils\\session-navigation.ts": {
-    "mtime": 1781340126.359218,
-    "ast_hash": "f1eaa59ccd578ad1c2ae12608e0f8c7d",
+    "mtime": 1781420326.4234116,
+    "ast_hash": "6737c6c7cd7ce72906f797a27525ac9b",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\validations\\analytics.ts": {
@@ -2205,8 +2205,43 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\plans\\PlanDaySlide.tsx": {
-    "mtime": 1781351355.4624367,
-    "ast_hash": "e450b5f0e106c41cd11678a7c18f25b8",
+    "mtime": 1781351770.622099,
+    "ast_hash": "ce9ba87aca145da9a8d93db1995076cb",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\session\\session-view-state.test.ts": {
+    "mtime": 1781421374.0210745,
+    "ast_hash": "2c031b07c5dd744e4b239b3c5a233a7a",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\session\\session-view-state.ts": {
+    "mtime": 1781421316.128233,
+    "ast_hash": "36dcc72b4397fdb1b2544b11e5fcfbac",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\continue-session-button.helpers.test.ts": {
+    "mtime": 1781422308.138556,
+    "ast_hash": "972c3f096d52d9e25cf5993776ae7a38",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\continue-session-button.helpers.ts": {
+    "mtime": 1781422281.0450118,
+    "ast_hash": "e2a45652e406ba526bb13885501e1cf3",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\lib\\perf\\timing.ts": {
+    "mtime": 1781425547.2934291,
+    "ast_hash": "995601ac651cde37294ca230b8941097",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\optimistic-plan-progress.test.ts": {
+    "mtime": 1781421211.6368446,
+    "ast_hash": "aa8f47096b4fd8e0f1a6c3f73ed78fff",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\optimistic-plan-progress.ts": {
+    "mtime": 1781421124.2181616,
+    "ast_hash": "5dbc04510ba6a521ed80df70d1540c66",
     "semantic_hash": ""
   }
 }

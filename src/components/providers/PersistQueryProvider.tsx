@@ -9,6 +9,7 @@ import { idbPersister } from '@/lib/pwa/persister'
 import { isPersistedQueryKey } from '@/lib/pwa/cache-keys'
 import { recoverPendingSessionCommits } from '@/lib/pwa/recover-pending-commits'
 import { isActuallyOnline } from '@/lib/pwa/onlineProbe'
+import { mark, endFlow } from '@/lib/perf/timing'
 // Side-effect import: dev-only fetch interceptor for diagnosing offline
 // network calls. Must run before any other fetch-based code.
 import '@/lib/pwa/fetch-debugger'
@@ -135,9 +136,12 @@ export function PersistQueryProvider({ children }: { children: React.ReactNode }
         // onlineManager thinks we're online (to catch navigator.onLine lies).
         const online = onlineManager.isOnline() && (await isActuallyOnline())
         if (online) {
+          mark('offline-sync', 'sync started')
           await queryClient.resumePausedMutations()
+          mark('offline-sync', 'sync completed')
           queryClient.invalidateQueries({ queryKey: ['sessions'] })
           queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
+          endFlow('offline-sync', 'plan progress reconciled')
         }
       }}
     >

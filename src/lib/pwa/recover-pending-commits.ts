@@ -1,5 +1,6 @@
 import { queryClient } from '@/lib/react-query/queryClient'
 import { readPendingCommits } from './commit-completed-session'
+import { mark } from '@/lib/perf/timing'
 import type { SaveSessionPayload } from '@/types/session'
 
 // Boot-time recovery. Called by PersistQueryProvider.onSuccess BEFORE
@@ -23,6 +24,8 @@ export async function recoverPendingSessionCommits(): Promise<void> {
   const pending = await readPendingCommits()
   const entries = Object.entries(pending)
   if (entries.length === 0) return
+
+  mark('offline-sync', 'pending commit recovered')
 
   for (const [sessionId, entry] of entries) {
     if (paussedMutationExistsForSession(sessionId)) continue

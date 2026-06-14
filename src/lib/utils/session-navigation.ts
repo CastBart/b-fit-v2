@@ -7,6 +7,7 @@
 import type { AppDispatch } from '@/store/store'
 import { generateId } from '@/lib/utils'
 import { startSession, startFreeSession } from '@/store/slices/sessionSlice'
+import { startFlow, mark } from '@/lib/perf/timing'
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import type { SessionExerciseEntry } from '@/types/session'
 import type { ExerciseType, MetricType, MuscleGroup } from '@prisma/client'
@@ -88,6 +89,8 @@ export function startWorkoutSession(
     }))
 
   // Dispatch session start
+  startFlow('session-start')
+
   dispatch(
     startSession({
       workoutId: workout.id,
@@ -95,8 +98,10 @@ export function startWorkoutSession(
       exercises,
     })
   )
+  mark('session-start', 'startSession dispatched')
 
   // Navigate to session page
+  mark('session-start', 'navigation started')
   router.push('/session')
 }
 
@@ -129,7 +134,10 @@ export function startWorkoutSession(
  * ```
  */
 export function startStandaloneSession(dispatch: AppDispatch, router: AppRouterInstance): void {
+  startFlow('session-start')
   dispatch(startFreeSession({ name: 'Standalone Workout' }))
+  mark('session-start', 'startSession dispatched')
+  mark('session-start', 'navigation started')
   router.push('/session')
 }
 
@@ -183,6 +191,8 @@ export function startPlanDaySession(
       notes: pde.notes,
     }))
 
+  startFlow('session-start')
+
   dispatch(
     startSession({
       workoutId: null,
@@ -192,7 +202,9 @@ export function startPlanDaySession(
       exercises,
     })
   )
+  mark('session-start', 'startSession dispatched')
 
+  mark('session-start', 'navigation started')
   router.push('/session')
 }
 
@@ -246,6 +258,8 @@ export function startRepeatedSession(
     notes: ex.notes ?? null,
   }))
 
+  startFlow('session-start')
+
   dispatch(
     startSession({
       workoutId: null,
@@ -255,6 +269,8 @@ export function startRepeatedSession(
       exercises,
     })
   )
+  mark('session-start', 'startSession dispatched')
 
+  mark('session-start', 'navigation started')
   router.push('/session')
 }

@@ -8,6 +8,12 @@ import type { CreateExerciseInput, UpdateExerciseInput } from '@/lib/validations
 import { idMap } from './id-map'
 import { isTempId } from './temp-id'
 import { rewriteExerciseId } from './rewrite-exercise-id'
+import { startFlow, mark } from '@/lib/perf/timing'
+import {
+  optimisticallyCompletePlanDay,
+  restoreDashboards,
+  type DashboardSnapshot,
+} from './optimistic-plan-progress'
 
 // Stable HTTP transport for the offline-capable session mutations.
 //
@@ -121,6 +127,7 @@ function buildOptimisticSessionRow(action: CommitAction, payload: SaveSessionPay
 
 type SessionMutationContext = {
   snapshots: Array<[readonly unknown[], SessionsListShape | undefined]>
+  dashboardSnapshots: DashboardSnapshot
 }
 
 function registerSessionMutation(action: CommitAction) {
@@ -149,14 +156,34 @@ function registerSessionMutation(action: CommitAction) {
         }
       })
 
-      return { snapshots } satisfies SessionMutationContext
+      // Optimistically mark the plan day complete on the active-plan
+      // dashboard so the checkmark appears the instant the user returns —
+      // online or offline. Only for COMPLETED plan-day sessions; the
+      // onSettled refetch reconciles week advancement and anything else.
+      let dashboardSnapshots: DashboardSnapshot = []
+      const planId = payload.planId
+      const planDayId = payload.planDayId
+      if (action === 'complete' && planId && planDayId) {
+        await queryClient.cancelQueries({ queryKey: ['activePlanDashboard'] })
+        startFlow('plan-progress')
+        dashboardSnapshots = optimisticallyCompletePlanDay(
+          queryClient,
+          planId,
+          planDayId,
+          payload.sessionId
+        )
+        mark('plan-progress', 'active plan cache patched optimistically')
+      }
+
+      return { snapshots, dashboardSnapshots } satisfies SessionMutationContext
     },
     onError: (_err, _vars, context) => {
       const ctx = context as SessionMutationContext | undefined
-      if (!ctx?.snapshots) return
-      for (const [key, prev] of ctx.snapshots) {
+      if (!ctx) return
+      for (const [key, prev] of ctx.snapshots ?? []) {
         queryClient.setQueryData(key, prev)
       }
+      if (ctx.dashboardSnapshots) restoreDashboards(queryClient, ctx.dashboardSnapshots)
     },
     onSuccess: async (_data, { payload }: SessionVariables) => {
       // Clear the durable IDB marker ONLY after server confirmation.

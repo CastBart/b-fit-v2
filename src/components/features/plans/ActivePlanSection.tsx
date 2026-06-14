@@ -10,6 +10,7 @@ import { useActivePlanDashboard } from '@/hooks/queries/useActivePlanDashboard'
 import { PlanDayDetailDrawer } from '@/components/features/plans/PlanDayDetailDrawer'
 import type { ActivePlanDashboard, DayCompletionInfo } from '@/types/plan'
 import { cn } from '@/lib/utils'
+import { mark, endFlow } from '@/lib/perf/timing'
 
 export function ActivePlanSection() {
   const [viewedWeekNumber, setViewedWeekNumber] = useState<number | undefined>(undefined)
@@ -23,6 +24,15 @@ export function ActivePlanSection() {
       setViewedWeekNumber(data.activeWeekNumber)
     }
   }, [data, viewedWeekNumber])
+
+  // Perf: close the plan-progress flow once day cards render with data
+  // (captures commit → checkmark-visible). No-op when no flow is in flight.
+  useEffect(() => {
+    if (data && 'plan' in data && data.plan) {
+      mark('plan-progress', 'day cards rendered')
+      endFlow('plan-progress', 'checked state visible')
+    }
+  }, [data])
 
   if (isLoading) {
     return <ActivePlanSkeleton />

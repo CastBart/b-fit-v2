@@ -1,6 +1,8 @@
 import { get, set } from 'idb-keyval'
+import { onlineManager } from '@tanstack/react-query'
 import { queryClient } from '@/lib/react-query/queryClient'
 import { clearSessionBackup } from '@/store/middleware/persistence'
+import { startFlow, mark } from '@/lib/perf/timing'
 import type { SaveSessionPayload } from '@/types/session'
 
 // Durability boundary for the "Complete Workout" flow.
@@ -52,6 +54,13 @@ export async function commitCompletedSession(
   const pending = await readPendingCommits()
   pending[payload.sessionId] = { action, payload, queuedAt: Date.now() }
   await writePendingCommits(pending)
+
+  // Perf: when offline, this commit will sit queued until reconnect — open
+  // the offline-sync flow so we can measure queue → reconcile latency.
+  if (!onlineManager.isOnline()) {
+    startFlow('offline-sync')
+    mark('offline-sync', 'offline commit queued')
+  }
 
   // 2. Fire the mutation. Defaults from setMutationDefaults provide the
   //    mutationFn, onMutate, onError, onSuccess, onSettled. Offline paths
