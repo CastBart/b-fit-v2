@@ -209,6 +209,7 @@ export default function SessionPage() {
               duration: set.metrics.duration || null,
               distance: set.metrics.distance || null,
               counterWeight: set.metrics.counterWeight || null,
+              rir: set.metrics.rir ?? null, // ?? not || — RIR 0 (to failure) is a valid value
               isCompleted: set.completed,
               completedAt: set.completedAt || null,
             })) || [],
@@ -256,6 +257,7 @@ export default function SessionPage() {
               duration: set.metrics.duration,
               distance: set.metrics.distance,
               counterWeight: set.metrics.counterWeight,
+              rir: set.metrics.rir,
               isCompleted: set.completed,
             })) || [],
         }

@@ -38,8 +38,20 @@ import { completeSet, updateSet, updateExerciseNotes } from '@/store/slices/sess
 import { toast } from 'sonner'
 import { SetSettingsDrawer } from './SetSettingsDrawer'
 import { LatestHistoryPreview } from './ExerciseHistoryDisplay'
+import { estimateOneRepMax } from '@/lib/analytics/one-rep-max'
 import type { SessionExerciseEntry, SetMetrics, SessionSet } from '@/types/session'
 import type { MetricType } from '@prisma/client'
+
+// RIR is only meaningful where reps are counted.
+const RIR_METRICS = new Set<MetricType>([
+  'WEIGHT_REPS',
+  'COUNTER_WEIGHT_REPS',
+  'REPS',
+  'REPS_DURATION',
+])
+
+// Estimated 1RM requires a real external load + reps.
+const ONE_RM_METRICS = new Set<MetricType>(['WEIGHT_REPS'])
 
 interface SetLoggerProps {
   exercise: SessionExerciseEntry
@@ -164,10 +176,10 @@ export function SetLogger({
 
       {/* Set Logging Table */}
       <div className="overflow-x-auto -mx-4 px-4">
-        <Table className="[&_td]:py-1 [&_th]:py-1">
+        <Table className="[&_td]:px-1 [&_th]:px-1 [&_td]:py-1 [&_th]:py-1">
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center">Set</TableHead>
+              <TableHead className="w-7 px-1 text-left">#</TableHead>
               {renderTableHeaders(exercise.metricType)}
               <TableHead className="text-center">
                 <SetSettingsDrawer
@@ -193,7 +205,7 @@ export function SetLogger({
                     isCompleted && 'bg-muted/30'
                   )}
                 >
-                  <TableCell className="font-medium">{set.setNumber}</TableCell>
+                  <TableCell className="w-7 px-1 text-left font-medium">{set.setNumber}</TableCell>
 
                   {renderSetInputs(
                     set.setNumber,
@@ -261,6 +273,17 @@ export function SetLogger({
 
 function renderTableHeaders(metricType: MetricType): React.ReactNode {
   const classInput = 'text-center'
+  const baseHeaders = renderBaseHeaders(metricType, classInput)
+  return (
+    <>
+      {baseHeaders}
+      {RIR_METRICS.has(metricType) && <TableHead className={classInput}>RIR</TableHead>}
+      {ONE_RM_METRICS.has(metricType) && <TableHead className={classInput}>1RM</TableHead>}
+    </>
+  )
+}
+
+function renderBaseHeaders(metricType: MetricType, classInput: string): React.ReactNode {
   switch (metricType) {
     case 'WEIGHT_REPS':
       return (
@@ -329,7 +352,7 @@ function renderSetInputs(
   const isInputDisabled = !!disabled
 
   const inputClass = cn(
-    'text-center rounded-full',
+    'text-center rounded-full px-1',
     isActive && 'bg-muted',
     isCompleted && 'text-muted-foreground',
     !isActive && !isCompleted && 'opacity-80'
@@ -344,198 +367,236 @@ function renderSetInputs(
     return stored ?? ''
   }
 
-  switch (metricType) {
-    case 'WEIGHT_REPS':
-      return (
-        <>
-          <TableCell>
-            <Input
-              type="number"
-              step="0.5"
-              placeholder="0"
-              value={valueFor('weight')}
-              onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-          <TableCell>
-            <Input
-              type="number"
-              placeholder="0"
-              value={valueFor('reps')}
-              onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-        </>
-      )
-
-    case 'COUNTER_WEIGHT_REPS':
-      return (
-        <>
-          <TableCell>
-            <Input
-              type="number"
-              step="0.5"
-              placeholder="0"
-              value={valueFor('counterWeight')}
-              onChange={(e) => handleInputChange(setNumber, 'counterWeight', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-          <TableCell>
-            <Input
-              type="number"
-              placeholder="0"
-              value={valueFor('reps')}
-              onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-        </>
-      )
-
-    case 'REPS':
-      return (
-        <TableCell>
-          <Input
-            type="number"
-            placeholder="0"
-            value={valueFor('reps')}
-            onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
-            disabled={isInputDisabled}
-            className={inputClass}
-          />
-        </TableCell>
-      )
-
-    case 'REPS_DURATION':
-      return (
-        <>
-          <TableCell>
-            <Input
-              type="number"
-              placeholder="0"
-              value={valueFor('reps')}
-              onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-          <TableCell>
-            <Input
-              type="number"
-              placeholder="0"
-              value={valueFor('duration')}
-              onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-        </>
-      )
-
-    case 'DURATION':
-      return (
-        <TableCell>
-          <Input
-            type="number"
-            placeholder="0"
-            value={valueFor('duration')}
-            onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
-            disabled={isInputDisabled}
-            className={inputClass}
-          />
-        </TableCell>
-      )
-
-    case 'DISTANCE_DURATION':
-      return (
-        <>
-          <TableCell>
-            <Input
-              type="number"
-              placeholder="0"
-              value={valueFor('distance')}
-              onChange={(e) => handleInputChange(setNumber, 'distance', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-          <TableCell>
-            <Input
-              type="number"
-              placeholder="0"
-              value={valueFor('duration')}
-              onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-        </>
-      )
-
-    case 'WEIGHT_DISTANCE':
-      return (
-        <>
-          <TableCell>
-            <Input
-              type="number"
-              step="0.5"
-              placeholder="0"
-              value={valueFor('weight')}
-              onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-          <TableCell>
-            <Input
-              type="number"
-              placeholder="0"
-              value={valueFor('distance')}
-              onChange={(e) => handleInputChange(setNumber, 'distance', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-        </>
-      )
-
-    case 'WEIGHT_DURATION':
-      return (
-        <>
-          <TableCell>
-            <Input
-              type="number"
-              step="0.5"
-              placeholder="0"
-              value={valueFor('weight')}
-              onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-          <TableCell>
-            <Input
-              type="number"
-              placeholder="0"
-              value={valueFor('duration')}
-              onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-        </>
-      )
-
-    default:
-      return <TableCell>–</TableCell>
+  // Numeric accessor for 1RM computation (same active/stored precedence as valueFor).
+  const numFor = (field: keyof SetMetrics): number | null => {
+    const v = isActive ? (currentInputs[field] ?? set.metrics[field]) : set.metrics[field]
+    return typeof v === 'number' && !Number.isNaN(v) ? v : null
   }
+
+  const renderOneRm = (): React.ReactNode => {
+    const est = estimateOneRepMax(numFor('weight'), numFor('reps'), numFor('rir'))
+    return est == null ? <span className="text-muted-foreground">–</span> : est.toFixed(1)
+  }
+
+  const baseCells = ((): React.ReactNode => {
+    switch (metricType) {
+      case 'WEIGHT_REPS':
+        return (
+          <>
+            <TableCell>
+              <Input
+                type="number"
+                step="0.5"
+                placeholder="0"
+                value={valueFor('weight')}
+                onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+            <TableCell>
+              <Input
+                type="number"
+                placeholder="0"
+                value={valueFor('reps')}
+                onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+          </>
+        )
+
+      case 'COUNTER_WEIGHT_REPS':
+        return (
+          <>
+            <TableCell>
+              <Input
+                type="number"
+                step="0.5"
+                placeholder="0"
+                value={valueFor('counterWeight')}
+                onChange={(e) => handleInputChange(setNumber, 'counterWeight', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+            <TableCell>
+              <Input
+                type="number"
+                placeholder="0"
+                value={valueFor('reps')}
+                onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+          </>
+        )
+
+      case 'REPS':
+        return (
+          <TableCell>
+            <Input
+              type="number"
+              placeholder="0"
+              value={valueFor('reps')}
+              onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
+            />
+          </TableCell>
+        )
+
+      case 'REPS_DURATION':
+        return (
+          <>
+            <TableCell>
+              <Input
+                type="number"
+                placeholder="0"
+                value={valueFor('reps')}
+                onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+            <TableCell>
+              <Input
+                type="number"
+                placeholder="0"
+                value={valueFor('duration')}
+                onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+          </>
+        )
+
+      case 'DURATION':
+        return (
+          <TableCell>
+            <Input
+              type="number"
+              placeholder="0"
+              value={valueFor('duration')}
+              onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
+              disabled={isInputDisabled}
+              className={inputClass}
+            />
+          </TableCell>
+        )
+
+      case 'DISTANCE_DURATION':
+        return (
+          <>
+            <TableCell>
+              <Input
+                type="number"
+                placeholder="0"
+                value={valueFor('distance')}
+                onChange={(e) => handleInputChange(setNumber, 'distance', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+            <TableCell>
+              <Input
+                type="number"
+                placeholder="0"
+                value={valueFor('duration')}
+                onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+          </>
+        )
+
+      case 'WEIGHT_DISTANCE':
+        return (
+          <>
+            <TableCell>
+              <Input
+                type="number"
+                step="0.5"
+                placeholder="0"
+                value={valueFor('weight')}
+                onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+            <TableCell>
+              <Input
+                type="number"
+                placeholder="0"
+                value={valueFor('distance')}
+                onChange={(e) => handleInputChange(setNumber, 'distance', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+          </>
+        )
+
+      case 'WEIGHT_DURATION':
+        return (
+          <>
+            <TableCell>
+              <Input
+                type="number"
+                step="0.5"
+                placeholder="0"
+                value={valueFor('weight')}
+                onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+            <TableCell>
+              <Input
+                type="number"
+                placeholder="0"
+                value={valueFor('duration')}
+                onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
+                disabled={isInputDisabled}
+                className={inputClass}
+              />
+            </TableCell>
+          </>
+        )
+
+      default:
+        return <TableCell>–</TableCell>
+    }
+  })()
+
+  return (
+    <>
+      {baseCells}
+      {RIR_METRICS.has(metricType) && (
+        <TableCell>
+          <Input
+            type="number"
+            min="0"
+            step="1"
+            placeholder="0"
+            value={valueFor('rir')}
+            onChange={(e) => handleInputChange(setNumber, 'rir', e.target.value)}
+            disabled={isInputDisabled}
+            className={inputClass}
+          />
+        </TableCell>
+      )}
+      {ONE_RM_METRICS.has(metricType) && (
+        <TableCell className="text-center text-sm font-medium tabular-nums">
+          {renderOneRm()}
+        </TableCell>
+      )}
+    </>
+  )
 }
 
 /**
@@ -547,24 +608,32 @@ function validateMetrics(metricType: MetricType, metrics: SetMetrics): boolean {
   const hasNumber = (v: unknown) =>
     v !== undefined && v !== null && v !== '' && !(typeof v === 'number' && Number.isNaN(v))
 
-  switch (metricType) {
-    case 'WEIGHT_REPS':
-      return hasNumber(metrics.weight) && hasNumber(metrics.reps)
-    case 'COUNTER_WEIGHT_REPS':
-      return hasNumber(metrics.counterWeight) && hasNumber(metrics.reps)
-    case 'REPS':
-      return hasNumber(metrics.reps)
-    case 'REPS_DURATION':
-      return hasNumber(metrics.reps) && hasNumber(metrics.duration)
-    case 'DURATION':
-      return hasNumber(metrics.duration)
-    case 'DISTANCE_DURATION':
-      return hasNumber(metrics.distance) && hasNumber(metrics.duration)
-    case 'WEIGHT_DISTANCE':
-      return hasNumber(metrics.weight) && hasNumber(metrics.distance)
-    case 'WEIGHT_DURATION':
-      return hasNumber(metrics.weight) && hasNumber(metrics.duration)
-    default:
-      return false
-  }
+  const baseValid = ((): boolean => {
+    switch (metricType) {
+      case 'WEIGHT_REPS':
+        return hasNumber(metrics.weight) && hasNumber(metrics.reps)
+      case 'COUNTER_WEIGHT_REPS':
+        return hasNumber(metrics.counterWeight) && hasNumber(metrics.reps)
+      case 'REPS':
+        return hasNumber(metrics.reps)
+      case 'REPS_DURATION':
+        return hasNumber(metrics.reps) && hasNumber(metrics.duration)
+      case 'DURATION':
+        return hasNumber(metrics.duration)
+      case 'DISTANCE_DURATION':
+        return hasNumber(metrics.distance) && hasNumber(metrics.duration)
+      case 'WEIGHT_DISTANCE':
+        return hasNumber(metrics.weight) && hasNumber(metrics.distance)
+      case 'WEIGHT_DURATION':
+        return hasNumber(metrics.weight) && hasNumber(metrics.duration)
+      default:
+        return false
+    }
+  })()
+
+  // RIR is mandatory to complete a set on the metric types where it's displayed
+  // (RIR 0 = to failure is a valid value). Not collected/required elsewhere.
+  if (RIR_METRICS.has(metricType) && !hasNumber(metrics.rir)) return false
+
+  return baseValid
 }

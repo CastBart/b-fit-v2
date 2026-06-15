@@ -80,6 +80,7 @@ async function persistSession(userId: string, payload: SaveSessionPayload) {
               duration: set.duration,
               distance: set.distance,
               counterWeight: set.counterWeight,
+              rir: set.rir,
               isCompleted: set.isCompleted,
               completedAt: set.completedAt ? new Date(set.completedAt) : null,
             },

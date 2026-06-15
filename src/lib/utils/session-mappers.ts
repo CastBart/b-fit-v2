@@ -47,6 +47,7 @@ export function mapSessionToCompletedData(
         duration: set.duration,
         distance: set.distance,
         counterWeight: set.counterWeight,
+        rir: set.rir,
         isCompleted: set.isCompleted,
       })),
     })),

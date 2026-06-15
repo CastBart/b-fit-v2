@@ -35,6 +35,7 @@ export type SetMetrics = {
   duration?: number | null // seconds
   distance?: number | null // meters
   counterWeight?: number | null
+  rir?: number | null // reps in reserve (0 = to failure); rep-based metric types only
 }
 
 /**
@@ -186,6 +187,7 @@ export type SaveSessionPayload = {
       duration: number | null
       distance: number | null
       counterWeight: number | null
+      rir: number | null
       isCompleted: boolean
       completedAt: number | null
     }>
@@ -294,6 +296,7 @@ export type HistorySet = {
   duration: number | null
   distance: number | null
   counterWeight: number | null
+  rir: number | null
 }
 
 // A single history entry (one session's performance for an exercise)

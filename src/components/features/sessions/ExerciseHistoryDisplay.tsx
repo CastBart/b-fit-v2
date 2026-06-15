@@ -12,8 +12,18 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Calendar, History } from 'lucide-react'
 import { useLatestExerciseHistory, useExerciseHistory } from '@/hooks/queries/useExerciseHistory'
+import { estimateOneRepMax } from '@/lib/analytics/one-rep-max'
 import type { ExerciseHistoryEntry, HistorySet } from '@/types/session'
 import type { MetricType } from '@prisma/client'
+
+// RIR is only meaningful where reps are counted; 1RM requires a real load + reps.
+const RIR_METRICS = new Set<MetricType>([
+  'WEIGHT_REPS',
+  'COUNTER_WEIGHT_REPS',
+  'REPS',
+  'REPS_DURATION',
+])
+const ONE_RM_METRICS = new Set<MetricType>(['WEIGHT_REPS'])
 
 // ============================================================================
 // LATEST HISTORY PREVIEW (For SetLogger)
@@ -166,11 +176,13 @@ function HistorySetsTable({ sets, metricType, compact = false }: HistorySetsTabl
       <Table>
         <TableHeader>
           <TableRow className={compact ? 'text-xs' : ''}>
-            <TableHead className={compact ? 'w-10 py-1 px-2' : 'w-12'}>Set</TableHead>
+            <TableHead className={compact ? 'w-7 px-1 py-1 text-left' : 'w-7 px-1 text-left'}>
+              #
+            </TableHead>
             {headers.map((header) => (
               <TableHead
                 key={header.key}
-                className={compact ? 'py-1 px-2 text-center' : 'text-center'}
+                className={compact ? 'px-1 py-1 text-center' : 'px-1 text-center'}
               >
                 {header.label}
               </TableHead>
@@ -180,13 +192,17 @@ function HistorySetsTable({ sets, metricType, compact = false }: HistorySetsTabl
         <TableBody>
           {sets.map((set) => (
             <TableRow key={set.setNumber} className={compact ? 'text-xs' : ''}>
-              <TableCell className={compact ? 'py-1 px-2 font-medium' : 'font-medium'}>
+              <TableCell
+                className={
+                  compact ? 'w-7 px-1 py-1 text-left font-medium' : 'w-7 px-1 text-left font-medium'
+                }
+              >
                 {set.setNumber}
               </TableCell>
               {headers.map((header) => (
                 <TableCell
                   key={header.key}
-                  className={compact ? 'py-1 px-2 text-center' : 'text-center'}
+                  className={compact ? 'px-1 py-1 text-center' : 'px-1 text-center'}
                 >
                   {formatSetValue(set, header.key)}
                 </TableCell>
@@ -276,7 +292,7 @@ function HistoryLoadingSkeleton() {
 // HELPER FUNCTIONS
 // ============================================================================
 
-type HeaderKey = 'weight' | 'reps' | 'duration' | 'distance' | 'counterWeight'
+type HeaderKey = 'weight' | 'reps' | 'duration' | 'distance' | 'counterWeight' | 'rir' | 'oneRm'
 
 interface MetricHeader {
   key: HeaderKey
@@ -284,6 +300,13 @@ interface MetricHeader {
 }
 
 function getTableHeaders(metricType: MetricType): MetricHeader[] {
+  const headers = getBaseTableHeaders(metricType)
+  if (RIR_METRICS.has(metricType)) headers.push({ key: 'rir', label: 'RIR' })
+  if (ONE_RM_METRICS.has(metricType)) headers.push({ key: 'oneRm', label: '1RM' })
+  return headers
+}
+
+function getBaseTableHeaders(metricType: MetricType): MetricHeader[] {
   switch (metricType) {
     case 'WEIGHT_REPS':
       return [
@@ -325,6 +348,10 @@ function getTableHeaders(metricType: MetricType): MetricHeader[] {
 }
 
 function formatSetValue(set: HistorySet, key: HeaderKey): string {
+  if (key === 'oneRm') {
+    const est = estimateOneRepMax(set.weight, set.reps, set.rir)
+    return est == null ? '–' : est.toFixed(1)
+  }
   const value = set[key]
   if (value === null || value === undefined) {
     return '–'

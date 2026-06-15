@@ -38,6 +38,7 @@ export const saveSessionSchema = z.object({
           duration: z.number().int().min(1).max(86400).nullable(), // Max 24 hours
           distance: z.number().int().min(1).max(999999).nullable(), // Max ~999 km
           counterWeight: z.number().min(0).max(9999).nullable(),
+          rir: z.number().int().min(0).max(10).nullable(),
           isCompleted: z.boolean(),
           completedAt: z.number().int().positive().nullable(),
         })

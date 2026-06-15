@@ -32,6 +32,7 @@ import { formatDuration } from '@/lib/utils/format-time'
 import { CompletedSessionActionsMenu } from './CompletedSessionActionsMenu'
 import { MuscleGroupSetCounts } from '@/components/features/workouts/MuscleGroupSetCounts'
 import { computeMuscleGroupSetCounts } from '@/lib/analytics/muscle-set-counts'
+import { estimateOneRepMax } from '@/lib/analytics/one-rep-max'
 import type { ExerciseType, MetricType, MuscleGroup } from '@prisma/client'
 
 // ============================================================================
@@ -48,6 +49,7 @@ export type CompletedSetData = {
   duration?: number | null
   distance?: number | null
   counterWeight?: number | null
+  rir?: number | null
   isCompleted: boolean
 }
 
@@ -404,6 +406,7 @@ interface SetRowProps {
 
 function SetRow({ set, metricType }: SetRowProps) {
   const valueDisplay = formatSetValue(set, metricType)
+  const metaDisplay = set.isCompleted ? formatSetMeta(set, metricType) : null
 
   return (
     <div
@@ -416,6 +419,7 @@ function SetRow({ set, metricType }: SetRowProps) {
       <div className="flex items-center gap-2">
         <span className={set.isCompleted ? 'font-medium' : 'text-muted-foreground'}>
           {valueDisplay}
+          {metaDisplay && <span className="ml-1 text-xs text-muted-foreground">{metaDisplay}</span>}
         </span>
         {set.isCompleted && <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />}
       </div>
@@ -450,4 +454,18 @@ function formatSetValue(set: CompletedSetData, metricType: MetricType): string {
     default:
       return '—'
   }
+}
+
+/**
+ * Secondary per-set info: RIR (where logged) and estimated 1RM (WEIGHT_REPS only).
+ * Returns null when there's nothing extra to show.
+ */
+function formatSetMeta(set: CompletedSetData, metricType: MetricType): string | null {
+  const parts: string[] = []
+  if (set.rir != null) parts.push(`RIR ${set.rir}`)
+  if (metricType === 'WEIGHT_REPS') {
+    const oneRm = estimateOneRepMax(set.weight, set.reps, set.rir)
+    if (oneRm != null) parts.push(`1RM ~${oneRm.toFixed(1)}kg`)
+  }
+  return parts.length > 0 ? `· ${parts.join(' · ')}` : null
 }
