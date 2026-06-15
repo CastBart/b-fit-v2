@@ -24,6 +24,7 @@ function historySetToMetrics(historySet: HistorySet): SetMetrics {
   if (historySet.duration != null) metrics.duration = historySet.duration
   if (historySet.distance != null) metrics.distance = historySet.distance
   if (historySet.counterWeight != null) metrics.counterWeight = historySet.counterWeight
+  if (historySet.rir != null) metrics.rir = historySet.rir
   return metrics
 }
 
@@ -47,6 +48,7 @@ const METRIC_FIELDS: (keyof SetMetrics)[] = [
   'duration',
   'distance',
   'counterWeight',
+  'rir',
 ]
 
 /**

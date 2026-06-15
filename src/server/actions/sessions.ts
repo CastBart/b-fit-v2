@@ -360,6 +360,7 @@ export async function getExerciseHistory(
         duration: set.duration,
         distance: set.distance,
         counterWeight: set.counterWeight,
+        rir: set.rir,
       }))
 
       // Calculate metrics
@@ -496,6 +497,7 @@ export async function getLatestHistoryBatch(
         duration: set.duration,
         distance: set.distance,
         counterWeight: set.counterWeight,
+        rir: set.rir,
       }))
     }
 

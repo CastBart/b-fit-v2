@@ -128,6 +128,7 @@ export function SessionSettingsDrawer({ children, onSessionComplete }: SessionSe
               duration: set.metrics.duration || null,
               distance: set.metrics.distance || null,
               counterWeight: set.metrics.counterWeight || null,
+              rir: set.metrics.rir ?? null, // ?? not || — RIR 0 (to failure) is a valid value
               isCompleted: set.completed,
               completedAt: set.completedAt || null,
             })) || [],

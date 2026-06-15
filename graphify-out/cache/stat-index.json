@@ -423,5 +423,10 @@
     "size": 986,
     "mtime_ns": 1769501352283363900,
     "hash": "d34484d5d856560f7c0b3b12ce7f7d973a0c1b909c409913411ff38ba20d7224"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260615074117_add_session_set_rir\\migration.sql": {
+    "size": 69,
+    "mtime_ns": 1781509277648432800,
+    "hash": "a1e277f8896ef3e0a6ae299571896b015f02fbe2ea08563809c03ef4100d8078"
   }
 }
