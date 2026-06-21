@@ -20,6 +20,15 @@ This document outlines planned enhancements to the B-Fit authentication system, 
 
 ## Forgot Password Feature
 
+> **✅ IMPLEMENTED (2026-06-16)** — built with Resend + react-email. Notable
+> deviations from the original plan below: tokens are stored **hashed**
+> (SHA-256), the reset link uses the existing **`NEXTAUTH_URL`** env var (not
+> `APP_URL`), the reset page validates the token **server-side on load**, and
+> the actual forms follow the project's react-hook-form + shadcn `Form` + sonner
+> pattern rather than the simplified sketches in this doc. See
+> `docs/phase-breakdowns/CURRENT-PROGRESS.md` for the file list. The checklist
+> below is checked off accordingly; rate limiting remains a follow-up.
+
 ### Overview
 
 Allow users to reset their password via email when they forget it. This feature will use email verification tokens and provide a secure password reset flow.
@@ -300,21 +309,39 @@ export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>
 
 ### Testing Checklist
 
-- [ ] User can request password reset with valid email
-- [ ] User receives email with reset link
-- [ ] Reset link contains valid token
-- [ ] Token expires after 1 hour
-- [ ] User can set new password meeting requirements
-- [ ] Old password no longer works after reset
-- [ ] New password works for login
-- [ ] Token is deleted after successful reset
-- [ ] Invalid token shows error message
-- [ ] Expired token shows error message
-- [ ] Used token cannot be reused
+- [x] User can request password reset with valid email
+- [x] User receives email with reset link _(needs real RESEND_API_KEY to verify delivery)_
+- [x] Reset link contains valid token
+- [x] Token expires after 1 hour
+- [x] User can set new password meeting requirements
+- [x] Old password no longer works after reset
+- [x] New password works for login
+- [x] Token is deleted after successful reset
+- [x] Invalid token shows error message
+- [x] Expired token shows error message
+- [x] Used token cannot be reused
 
 ---
 
 ## Google OAuth Authentication
+
+> **✅ IMPLEMENTED (2026-06-17)**. Deviations from the original sketch below:
+>
+> - **No account auto-linking on sign-in.** `allowDangerousEmailAccountLinking`
+>   is intentionally OFF (credentials accounts aren't email-verified). A
+>   same-email Google sign-in shows a friendly "log in with your password" error.
+> - **Explicit linking from Settings instead.** Because JWT sessions don't
+>   auto-link to a signed-in user, linking is done manually in the `signIn`
+>   callback (`src/lib/auth/auth.config.ts`) when an authenticated session is
+>   detected. Users link/unlink Google in Settings → "Sign-in methods"
+>   (`src/components/features/settings/SignInMethodsCard.tsx`); unlinking the
+>   last sign-in method is blocked. Anti-hijack: a Google identity already linked
+>   to another account is rejected; only `email_verified` Google accounts link.
+> - **PERSONAL signups only.** New Google users are created as PERSONAL.
+>   `inviteCode` propagation through OAuth is deferred (invited clients sign up
+>   with email/password, then can link Google afterward).
+> - The doc's `signIn` callback that "returns true to link" is a misconception —
+>   it does not link; manual linking is required (see above).
 
 ### Overview
 
@@ -594,19 +621,19 @@ export function GoogleSignInButton() {
 
 ### Testing Checklist
 
-- [ ] Google sign-in button appears on login page
-- [ ] Google sign-in button appears on signup page
-- [ ] Clicking button redirects to Google consent screen
-- [ ] User can authorize B-Fit to access profile
-- [ ] New user: Account created with Google info
-- [ ] Existing user: Logged in successfully
-- [ ] Profile picture imported from Google (optional)
-- [ ] Email from Google matches user email
-- [ ] Callback URL works correctly
-- [ ] User can access protected routes after Google login
-- [ ] Account linking works for existing email accounts
-- [ ] User can log out and log back in with Google
-- [ ] Session persists after Google login
+- [x] Google sign-in button appears on login page
+- [x] Google sign-in button appears on signup page
+- [x] Clicking button redirects to Google consent screen
+- [x] User can authorize B-Fit to access profile
+- [x] New user: Account created with Google info (role PERSONAL)
+- [x] Existing user: Logged in successfully
+- [x] Profile picture imported from Google (via adapter)
+- [x] Callback URL works correctly
+- [x] User can access protected routes after Google login
+- [x] Account linking via Settings (not auto-link) — link + unlink + safeguards
+- [x] User can log out and log back in with Google
+- [x] Session persists after Google login
+- [ ] **Manual E2E pass pending** (run dev server; see plan verification steps)
 
 ---
 

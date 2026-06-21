@@ -98,6 +98,19 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// Password reset tokens for the forgot-password flow.
+// Stores a SHA-256 hash of the token (never the raw token) so a DB leak
+// cannot be used to reset passwords. The raw token is sent in the email link.
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  tokenHash String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
 // ============================================================================
 // ENUMS
 // ============================================================================

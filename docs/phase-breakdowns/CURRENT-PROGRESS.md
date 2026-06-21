@@ -1,10 +1,235 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-05-28
-**Current Phase**: Testing-Improvements — PWA field-testing PR series (Chunks A–H)
-**Recently Completed**: Chunk H — Analytics set-count chart per muscle group (#9). **All implementation chunks A–H are done.**
-**Next Tasks**: User verification of Chunks F/G/H (and the earlier pending-verification chunks). Then the only remaining work is **Chunk I** (deferred backlog): test-runner setup + unit tests, persister Date-aware serialization, plan-creator drag-flicker investigation, offline save-as-workout. See `~/.claude/plans/i-have-been-using-breezy-abelson.md` and `docs/improvements/chunk-h-analytics-set-count-chart.md`.
-**Branch**: `Testing-Improvements`
+**Last Updated**: 2026-06-17
+**Current Phase**: Auth Enhancements — Google OAuth + account linking + welcome email
+**Recently Completed**: Fixed first-login "stuck skeleton" (dashboard sync race vs pessimistic-offline boot). Plus set-password flow for Google-only accounts + welcome email.
+**Next Tasks**: Manual E2E pass for first-login dashboard (incl. Google signup) and the auth features (run dev server; needs real `RESEND_API_KEY` to confirm delivery). Also open: forgot-password E2E, Stripe/subscription E2E review (`docs/todo/stripe-subscription-testing-review.md`), PWA Chunk I backlog.
+**Branch**: `development`
+
+---
+
+## Fix: first-login dashboard "stuck skeleton" (2026-06-17) ✅ (pending verification)
+
+### Problem
+
+First-time users (esp. Google/email signup, which hard-navigates to /dashboard)
+saw the Active Plan stuck in its skeleton until they navigated away and back.
+
+### Root cause (confirmed via React Query Devtools)
+
+The real culprit is in `usePrefetchCriticalData`'s **no-active-plan** branch. For
+a brand-new account (no plan), `syncAllUserData()` returns `allWeeks.length === 0`
+and the hook ran `queryClient.removeQueries({ queryKey: ['activePlanDashboard'] })`.
+By then `ActivePlanSection` had already mounted a _fetching_
+`['activePlanDashboard','active']` query — `removeQueries` **destroyed that
+in-flight query out from under the live observer**, which then never refetched and
+stayed stuck on `isLoading: true` (the skeleton). Devtools confirmed it: the 5
+seeded keys were present but `['activePlanDashboard','active']` was **absent
+entirely** (it had been removed). Navigating away/back remounts
+`ActivePlanSection` → fresh query; sync no longer re-runs (`hasSyncedRef`), so it
+settles to `{ plan: null }` → "No active plan". Pure client logic → reproduced in
+**both** dev and prod; unrelated to the service worker.
+
+(An earlier hypothesis — the pessimistic-offline boot preventing the sync from
+running — was a real adjacent gap and the `isOnline` reactivity fix below is kept,
+but it was not what caused the stuck skeleton.)
+
+### Fix
+
+`src/hooks/usePrefetchCriticalData.ts`:
+
+- **Primary:** the no-active-plan branch now writes the canonical empty value
+  `setQueryData(['activePlanDashboard','active'], { plan: null })` (identical to
+  what `getActivePlanDashboard` returns) instead of `removeQueries`. This settles
+  the live observer into its empty state rather than destroying its query. Stale
+  per-week entries (from a since-deactivated plan, not observed on the dashboard)
+  are still cleared via a `predicate` that excludes the `'active'` key.
+- **Kept:** reactive `isOnline` (`useOnlineStatus`) dep so the nudge + seeding
+  sync re-run once connectivity is established (fixes the separate first-login
+  cache-seeding gap), idempotent via existing refs; plus a paused-mutation guard
+  so the reconnect sync can't clobber un-flushed offline writes.
+
+### Safety review (PWA/SW)
+
+No changes to `sw.ts`, `useRegisterSW`, the persister, or cache strategies. RQ's
+own `QueryClient.mount()` still handles resume/refetch on reconnect. The
+`setQueryData({plan:null})` is the same value a real fetch produces, so no
+data-shape or offline-write risk.
+
+### Files
+
+```
+src/hooks/usePrefetchCriticalData.ts   - no-plan branch: setQueryData instead of removeQueries; + isOnline reactivity & paused-mutation guard
+```
+
+### Validation
+
+- `npx tsc --noEmit` clean; `npx eslint` clean (one pre-existing unrelated warning).
+- **Manual E2E pending:** fresh (no-plan) signup → dashboard shows "No active
+  plan" immediately without navigating away; account _with_ a plan still renders;
+  normal load unchanged.
+
+---
+
+## Set-password (Google-only accounts) + welcome email (2026-06-17) ✅ (pending verification)
+
+### Problem
+
+Google-signup users had no password, so they couldn't unlink Google (the
+safeguard correctly blocked self-lockout) — with no way to add a password. Also,
+no registration/welcome email was sent on signup (either method).
+
+### Solution
+
+**Set password:** new `setPassword(password)` action
+(`src/server/actions/account-linking.ts`) — session-required, validates with the
+shared `resetPasswordSchema`, and sets `user.password` only if none exists
+(changing an existing password stays a separate, current-password-gated flow).
+New `SetPasswordDialog` + `useSetPassword`. In `SignInMethodsCard`: a standalone
+"Set a password" button for password-less users, and the **Unlink** button for
+Google-only users opens the dialog then auto-unlinks (sequential calls) on
+success.
+
+**Welcome email:** new `WelcomeEmail.tsx` + `sendWelcomeEmail()` helper
+(`src/lib/email/welcome.ts`, reuses Resend infra, best-effort/no-op without a
+key). Wired into the credentials `signup` action (both branches) and NextAuth
+`events.createUser` (Google) — no double-send since credentials users aren't
+created via the adapter.
+
+### New / Modified Files
+
+```
+src/emails/WelcomeEmail.tsx                                  - NEW
+src/lib/email/welcome.ts                                     - NEW (sendWelcomeEmail)
+src/server/actions/auth.ts                                   - send welcome on credentials signup
+src/lib/auth/auth.config.ts                                  - events.createUser → welcome email
+src/server/actions/account-linking.ts                        - setPassword action
+src/hooks/mutations/useSetPassword.ts                        - NEW
+src/components/features/settings/SetPasswordDialog.tsx       - NEW
+src/components/features/settings/SignInMethodsCard.tsx       - set-password + unlink flow
+```
+
+No schema/migration; no new deps.
+
+### Validation
+
+- `npx tsc --noEmit` clean; `npx eslint` clean.
+- **Manual E2E pending:** Google-only user sets a password standalone; Unlink →
+  set-password dialog → auto-unlink; welcome email on Google signup and on
+  email/password signup (incl. invited client).
+
+---
+
+## Google OAuth + account linking (2026-06-17) ✅ (pending verification)
+
+### Problem
+
+Auth was email/password only. Users wanted faster Google onboarding, and a way
+for existing users (incl. PT-invited clients) to link Google to their account.
+
+### Solution
+
+Added `GoogleProvider` to NextAuth (`src/lib/auth/auth.config.ts`). Because the
+app uses the **JWT session strategy** (required by the Credentials provider),
+OAuth does **not** auto-link to a signed-in user — so a custom `signIn` callback
+handles two modes: **standalone** (sign-in/up; blocks deactivated users; new
+users created as PERSONAL) and **linking** (when `auth()` finds an active
+session → manually writes the `Account` row for the signed-in user and returns a
+`/settings?link=...` redirect to preserve the existing session). Auto-linking by
+email is deliberately disabled (`allowDangerousEmailAccountLinking` OFF); a
+same-email Google sign-in shows a friendly error on `/login`. Settings →
+"Sign-in methods" card lets users link/unlink Google, with safeguards (require
+`email_verified`; reject Google identities already linked elsewhere; block
+unlinking the last sign-in method).
+
+### New / Modified Files
+
+```
+src/lib/auth/auth.config.ts                                  - GoogleProvider + signIn callback
+src/components/features/auth/GoogleSignInButton.tsx          - NEW (reusable)
+src/app/(auth)/login/page.tsx                                - Google button + divider + error alert
+src/app/(auth)/signup/page.tsx                               - Google button + divider
+src/server/actions/account-linking.ts                        - NEW (getLinkedAccounts, unlinkGoogleAccount)
+src/hooks/queries/useLinkedAccounts.ts                       - NEW
+src/hooks/mutations/useUnlinkGoogle.ts                       - NEW
+src/components/features/settings/SignInMethodsCard.tsx       - NEW
+src/app/(dashboard)/settings/page.tsx                        - render Sign-in methods card
+.env / .env.local                                            - GOOGLE_CLIENT_ID/SECRET (Phase 0, user)
+```
+
+No schema/migration (the `Account` model already had all OAuth fields). No new
+npm deps (Google provider ships with `next-auth`).
+
+### Validation
+
+- `npx tsc --noEmit` — clean.
+- `npx eslint` on all new/changed files — clean.
+- **Manual E2E pending:** new Google user, returning Google user, same-email
+  collision (friendly error, no link), link from Settings, anti-hijack
+  (`already_in_use`), unlink + lockout safeguard, invited-client linking.
+
+### Security notes
+
+Linking only occurs for an already-authenticated user from Settings, so it does
+not create the takeover vector that `allowDangerousEmailAccountLinking` would
+while credentials accounts remain unverified. See plan + doc for the full matrix.
+
+---
+
+## Forgot Password feature — email-based reset via Resend (2026-06-16) ✅ (pending verification)
+
+### Problem
+
+Users had no way to recover their account if they forgot their password — the
+login page only offered sign-in and sign-up.
+
+### Solution
+
+Self-contained email-based reset flow. `requestPasswordReset` generates a
+cryptographically random token, stores only its **SHA-256 hash** in a new
+`PasswordResetToken` model (1-hour expiry), and emails the raw token as a link
+via Resend using a react-email template. The reset page validates the token
+server-side on load (shows an "invalid/expired" state otherwise) before
+rendering the form. `resetPassword` re-verifies the token (constant-time
+compare), bcrypt-hashes the new password, and deletes all tokens for that email
+in a transaction (single-use). Email enumeration is prevented by always
+returning a generic success message. When `RESEND_API_KEY` is absent, the reset
+link is logged to the server console so local dev can exercise the flow.
+
+### New / Modified Files
+
+```
+prisma/schema.prisma                                       - PasswordResetToken model (hashed)
+prisma/migrations/.../add_password_reset_tokens            - NEW migration
+src/lib/email/resend.ts                                    - NEW (lazy Resend client + helpers)
+src/emails/PasswordResetEmail.tsx                          - NEW (react-email template)
+src/lib/validations/password-reset.ts                      - NEW (zod schemas)
+src/server/actions/password-reset.ts                       - NEW (request/verify/reset actions)
+src/components/features/auth/ForgotPasswordForm.tsx        - NEW
+src/components/features/auth/ResetPasswordForm.tsx         - NEW
+src/app/(auth)/forgot-password/page.tsx                    - NEW
+src/app/(auth)/reset-password/page.tsx                     - NEW (server-side token check)
+src/app/(auth)/login/page.tsx                              - "Forgot your password?" link
+.env / .env.local                                          - RESEND_API_KEY + FROM_EMAIL
+```
+
+New deps: `resend`, `@react-email/components`. Reuses existing `NEXTAUTH_URL`.
+
+### Validation
+
+- `npx tsc --noEmit` — clean.
+- `npx eslint` on all new/changed files — clean after auto-fixed formatting.
+- **Manual user-test pass pending:** requires a real `RESEND_API_KEY` +
+  verified sender. Verify: request link → email arrives → link valid 1h →
+  new password set → old password rejected → token single-use → expired/invalid
+  link shows error state.
+
+### Carry-overs / future work (from TODO doc, not built here)
+
+- Rate limiting on `requestPasswordReset` (no infra today).
+- JWT sessions can't be actively revoked on reset.
+- Resend custom domain verification for production sender.
+- Google OAuth (separate auth-enhancement phase).
 
 ---
 

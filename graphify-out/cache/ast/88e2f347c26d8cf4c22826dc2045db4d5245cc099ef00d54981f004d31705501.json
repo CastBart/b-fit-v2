@@ -1,0 +1,937 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_claude_settings_local_json",
+      "label": "settings.local.json",
+      "file_type": "code",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L1"
+    },
+    {
+      "id": "claude_settings_local_permissions",
+      "label": "permissions",
+      "file_type": "code",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "claude_settings_local_permissions_allow",
+      "label": "allow",
+      "file_type": "code",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "claude_settings_local_enabledplugins",
+      "label": "enabledPlugins",
+      "file_type": "code",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L92"
+    },
+    {
+      "id": "claude_settings_local_enabledplugins_everything_claude_code_everything_claude_code",
+      "label": "everything-claude-code@everything-claude-code",
+      "file_type": "code",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L93"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_claude_settings_local_json",
+      "target": "claude_settings_local_permissions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_settings_local_permissions",
+      "target": "claude_settings_local_permissions_allow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_cmd_c_dir_b",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_powershell_command_get_childitem_path_claude_recurse_name",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_create_next_app_latest_typescript_tailwind_eslint_app_src_dir_import_alias_use_npm",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_install",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_tailwindcss",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_tsc",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_run_build",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_git_add",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_git_commit",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_timeout_10_npm_run_dev",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_git_push",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_if_d_app",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_then_echo_app_directory_exists",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_fi",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_if_d_src",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_then_echo_src_directory_exists",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_shadcn_latest_add_button_input_card_dialog_dropdown_menu_label_form_toast_sheet_avatar_separator_skeleton",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_shadcn_latest_add_button",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_shadcn_latest_add_sheet_avatar_separator_skeleton_sonner",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_run_type_check",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_run_lint",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_run_format_check",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_husky_init",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_git_rm",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_netstat",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_findstr",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_tree",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_run_format",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_shadcn_latest_add",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_tsx",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_prisma_init",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_prisma_migrate",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_prisma_generate",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_rd_s_q_node_modules_prisma_client",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_prisma",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_echo",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_openssl_rand",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_run_lint_fix",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_dir",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_eslint",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_git_restore",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_run_dev",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_timeout_15_tail",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_taskkill",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_node",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_prettier",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_test",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_ls",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_printf",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_run",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_next_build",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_ls",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_git_checkout",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_tasklist",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_cmd_c_taskkill_pid_5752_f",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_cmd_c",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_git_stash",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_find",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_websearch",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_mcp_ide_getdiagnostics",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_grep",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_cat",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_webfetch_domain_github_com",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_webfetch_domain_vaul_emilkowal_ski",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_i",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_serwist_suppress_turbopack_warning_1_npm_run_build",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npm_start",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_powershell",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_npx_next",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_curl_s_o_dev_null_w_http_code_x_head_http_localhost_3000_api_auth_session",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_cat_husky_pre_commit",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_ls_husky",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_ls_prettierrc_prettierignore",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_cat_prettierrc",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_cat_prettierrc_json",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_cat_prettierrc_js",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_npx_tsc_noemit_2_1_select_object_first_40",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_out_npx_tsc_noemit_2_1_select_string_notmatch_test_ts_non_test_error_lines_out_count_out",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_npx_eslint_src_components_features_plans_plandaydetaildrawer_tsx_src_lib_superset_manager_colors_ts_src_app_dashboard_plans_id_page_tsx_2_1_select_object_first_40",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_npx_eslint_src_components_features_plans_plandaydetaildrawer_tsx_src_lib_superset_manager_colors_ts_2_1_select_object_first_40",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_npx_eslint_src_lib_superset_manager_colors_ts_2_1",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_graphify_update",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_npm_run",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_npx_eslint_src_lib_perf_timing_ts_src_lib_pwa_optimistic_plan_progress_ts_src_lib_pwa_optimistic_plan_progress_test_ts_src_lib_pwa_mutation_defaults_ts_src_lib_pwa_commit_completed_session_ts_src_lib_pwa_recover_pending_commits_ts_src_lib_utils_session_navigation_ts_src_hooks_usesessionrecovery_ts_src_hooks_queries_useactiveplandashboard_ts_src_components_features_plans_activeplansection_tsx_src_components_features_sessions_continuesessionbutton_tsx_src_components_features_sessions_continue_session_button_helpers_ts_src_components_features_sessions_continue_session_button_helpers_test_ts_src_components_providers_persistqueryprovider_tsx_src_app_dashboard_dashboard_page_tsx_src_app_dashboard_session_page_tsx_src_app_dashboard_session_session_view_state_ts_src_app_dashboard_session_session_view_state_test_ts",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_npx_eslint_src_lib_perf_timing_ts_src_lib_pwa_optimistic_plan_progress_ts_src_lib_pwa_optimistic_plan_progress_test_ts_src_lib_pwa_commit_completed_session_ts_src_lib_pwa_recover_pending_commits_ts_src_app_dashboard_session_session_view_state_ts_src_app_dashboard_session_session_view_state_test_ts_src_components_features_sessions_continue_session_button_helpers_ts_src_components_features_sessions_continue_session_button_helpers_test_ts",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_graphify_update",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "d_projects_b_fit_v2_claude_settings_local_json",
+      "target": "claude_settings_local_enabledplugins",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_settings_local_enabledplugins",
+      "target": "claude_settings_local_enabledplugins_everything_claude_code_everything_claude_code",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\.claude\\settings.local.json",
+      "source_location": "L93",
+      "weight": 1.0
+    }
+  ]
+}

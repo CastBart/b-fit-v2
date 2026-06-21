@@ -8,6 +8,7 @@ import { syncAllUserData, syncTopDetails } from '@/server/actions/sync'
 import { getSessionById } from '@/server/actions/sessions'
 import { getWorkoutById } from '@/server/actions/workouts'
 import { loadSessionBackup } from '@/store/middleware/persistence'
+import { useOnlineStatus } from '@/hooks/useOnlineStatus'
 import type { TrainingSessionWithDetails } from '@/types/session'
 
 // Public routes where we should NOT nudge SessionProvider — visiting these
@@ -126,6 +127,12 @@ export function usePrefetchCriticalData() {
   const queryClient = useQueryClient()
   const { status, update } = useSession()
   const pathname = usePathname()
+  // Reactive online state. The app boots "pessimistically offline"
+  // (see onlineManagerSetup) and only flips online once the probe resolves.
+  // Depending on `isOnline` lets the gated nudge + sync below re-run when
+  // connectivity is actually established, instead of bailing once at boot
+  // and never retrying (which left first-login dashboards stuck).
+  const { isOnline } = useOnlineStatus()
   const hasSyncedRef = useRef(false)
   const hasNudgedSessionRef = useRef(false)
 
@@ -149,7 +156,10 @@ export function usePrefetchCriticalData() {
 
     hasNudgedSessionRef.current = true
     void update()
-  }, [status, pathname, update])
+    // `isOnline` is a dep so the nudge retries once connectivity returns —
+    // at boot `onlineManager.isOnline()` is false (pessimistic), so without
+    // this the nudge would bail and never re-run.
+  }, [status, pathname, update, isOnline])
 
   useEffect(() => {
     // Re-run when auth status flips. After soft-nav login, SessionProvider
@@ -161,6 +171,17 @@ export function usePrefetchCriticalData() {
     const runSync = async () => {
       if (!onlineManager.isOnline()) return
       if (hasSyncedRef.current) return
+      // Safety for the offline-boot-then-reconnect case: if there are paused
+      // (un-flushed) offline writes, don't run the seeding sync — its
+      // setQueryData would briefly overwrite optimistic cache with stale server
+      // state. RQ's resumePausedMutations + the mutations' own invalidations
+      // populate fresh data instead. Leave hasSyncedRef false so a later
+      // trigger re-attempts once writes have flushed.
+      const hasPausedMutations = queryClient
+        .getMutationCache()
+        .getAll()
+        .some((m) => m.state.isPaused)
+      if (hasPausedMutations) return
       hasSyncedRef.current = true
 
       try {
@@ -173,8 +194,7 @@ export function usePrefetchCriticalData() {
           queryClient.setQueryData(['sessions', 'all'], result.data.sessions)
 
           // Active plan dashboard: seed every PlanWeek-keyed entry plus the
-          // canonical 'active' alias. If the user has no active plan (empty
-          // array), wipe any stale entries so a deactivation reflects offline.
+          // canonical 'active' alias.
           const allWeeks = result.data.activePlanDashboardAllWeeks
           if (allWeeks.length > 0) {
             const activeEntry =
@@ -184,7 +204,23 @@ export function usePrefetchCriticalData() {
               queryClient.setQueryData(['activePlanDashboard', week.viewedWeekNumber], week)
             }
           } else {
-            queryClient.removeQueries({ queryKey: ['activePlanDashboard'] })
+            // No active plan. Write the canonical empty value ({ plan: null },
+            // identical to what getActivePlanDashboard returns) to the 'active'
+            // key the dashboard observes — this settles a live ActivePlanSection
+            // observer into its "No active plan" empty state.
+            //
+            // IMPORTANT: do NOT removeQueries(['activePlanDashboard']) here. On
+            // first load ActivePlanSection has already mounted a fetching
+            // ['activePlanDashboard','active'] query; removing it destroys that
+            // in-flight query and strands the observer on its loading skeleton
+            // (it never refetches) until a remount on navigation. Stale per-week
+            // entries from a since-deactivated plan (not observed on the
+            // dashboard) are still cleared.
+            queryClient.setQueryData(['activePlanDashboard', 'active'], { plan: null })
+            queryClient.removeQueries({
+              queryKey: ['activePlanDashboard'],
+              predicate: (query) => query.queryKey[1] !== 'active',
+            })
           }
 
           if (result.data.dashboardStats) {
@@ -275,7 +311,10 @@ export function usePrefetchCriticalData() {
     }
 
     void runSync()
-    // No reconnect subscription -- refetchOnReconnect: true in queryClient.ts
-    // handles stale-query refetching on connectivity return.
-  }, [queryClient, status])
+    // `isOnline` is a dep so the one-shot seeding sync re-attempts when
+    // connectivity returns. At boot onlineManager is pessimistically offline,
+    // so without this the sync bails once and never seeds the dashboard caches
+    // (the first-login "stuck skeleton" bug). Stale-query refetching on
+    // reconnect is still handled by refetchOnReconnect in queryClient.ts.
+  }, [queryClient, status, isOnline])
 }

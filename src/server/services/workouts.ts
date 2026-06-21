@@ -262,11 +262,15 @@ export const workoutService = {
                 exerciseId: row.exerciseId,
                 order: row.order,
                 sets: row.sets,
-                reps: row.reps ?? undefined,
-                weight: row.weight ?? undefined,
+                // Use `?? null` (not `?? undefined`) so an explicit clear
+                // from the client persists. Prisma treats `undefined` as
+                // "leave column unchanged", which would silently keep a
+                // stale value (e.g. removing a superset leaves groupId set).
+                reps: row.reps ?? null,
+                weight: row.weight ?? null,
                 restSeconds: row.restSeconds ?? 60,
-                notes: row.notes ?? undefined,
-                groupId: row.groupId ?? undefined,
+                notes: row.notes ?? null,
+                groupId: row.groupId ?? null,
               },
             })
           )

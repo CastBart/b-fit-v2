@@ -2,6 +2,7 @@
 
 import { signIn } from '@/lib/auth/auth.config'
 import { hashPassword } from '@/lib/auth/auth'
+import { sendWelcomeEmail } from '@/lib/email/welcome'
 import { prisma } from '@/lib/db/prisma'
 import {
   signupSchema,
@@ -98,6 +99,9 @@ export async function signup(data: SignupInput) {
         },
       })
     }
+
+    // Send a best-effort welcome email (covers both standard and invited signups).
+    await sendWelcomeEmail({ email: validatedData.email, name: validatedData.name })
 
     // Auto-login after signup
     try {

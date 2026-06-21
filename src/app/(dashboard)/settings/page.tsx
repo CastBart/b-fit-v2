@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { Settings, User, Shield, ArrowUpCircle, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUserProfile } from '@/hooks/queries/useUserProfile'
 import { useUpdateProfile } from '@/hooks/mutations/useUserMutations'
+import { SignInMethodsCard } from '@/components/features/settings/SignInMethodsCard'
 
 export default function SettingsPage() {
   const { data: profile, isLoading } = useUserProfile()
@@ -183,6 +184,11 @@ export default function SettingsPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Sign-in methods Card */}
+        <Suspense fallback={<Skeleton className="h-40 w-full" />}>
+          <SignInMethodsCard />
+        </Suspense>
 
         {/* Billing Card */}
         {(profile.role === 'PT' || profile.role === 'PERSONAL') && (
