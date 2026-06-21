@@ -1,19 +1,19 @@
-# Graph Report - b-fit v2 (2026-06-15)
+# Graph Report - b-fit v2 (2026-06-19)
 
 ## Corpus Check
 
-- 428 files · ~393,132 words
+- 445 files · ~400,783 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
 
-- 4463 nodes · 7586 edges · 323 communities (312 shown, 11 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 42 edges (avg confidence: 0.8)
+- 4988 nodes · 8678 edges · 329 communities (318 shown, 11 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 42 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
 
-- Built from commit: `7ddffbd9`
+- Built from commit: `65743c68`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -323,74 +323,80 @@
 - [[_COMMUNITY_Community 320|Community 320]]
 - [[_COMMUNITY_Community 321|Community 321]]
 - [[_COMMUNITY_Community 322|Community 322]]
+- [[_COMMUNITY_Community 323|Community 323]]
+- [[_COMMUNITY_Community 324|Community 324]]
+- [[_COMMUNITY_Community 325|Community 325]]
+- [[_COMMUNITY_Community 326|Community 326]]
+- [[_COMMUNITY_Community 331|Community 331]]
+- [[_COMMUNITY_Community 335|Community 335]]
 
 ## God Nodes (most connected - your core abstractions)
 
-1. `cn()` - 86 edges
-2. `Button` - 78 edges
-3. `getServerSession()` - 57 edges
-4. `Card` - 49 edges
-5. `CardContent` - 46 edges
-6. `offlineQueryFn()` - 45 edges
-7. `Skeleton()` - 42 edges
-8. `B-Fit Project - Current Progress` - 42 edges
-9. `useAppDispatch` - 37 edges
-10. `CardHeader` - 35 edges
+1. `Phase 4: Payments & Subscriptions (Complete)` - 88 edges
+2. `cn()` - 86 edges
+3. `Phase 5: Analytics Feature (Complete)` - 84 edges
+4. `Button` - 83 edges
+5. `getServerSession()` - 61 edges
+6. `Card` - 52 edges
+7. `B-Fit Project - Current Progress` - 51 edges
+8. `CardContent` - 49 edges
+9. `offlineQueryFn()` - 45 edges
+10. `Skeleton()` - 44 edges
 
 ## Surprising Connections (you probably didn't know these)
 
-- `Navbar()` --calls--> `useSession()` [INFERRED]
-  src/components/layouts/Navbar.tsx → src/hooks/queries/useSession.ts
-- `Layout()` --calls--> `getServerSession()` [EXTRACTED]
-  src/app/(dashboard)/layout.tsx → src/lib/auth/auth.ts
 - `ClientsPage()` --calls--> `useSession()` [INFERRED]
   src/app/(dashboard)/clients/page.tsx → src/hooks/queries/useSession.ts
 - `ClientDetailPage()` --calls--> `useSession()` [INFERRED]
   src/app/(dashboard)/clients/[id]/page.tsx → src/hooks/queries/useSession.ts
 - `PlansPage()` --calls--> `useSession()` [INFERRED]
   src/app/(dashboard)/plans/page.tsx → src/hooks/queries/useSession.ts
+- `CreatePlanPage()` --calls--> `useSession()` [INFERRED]
+  src/app/(dashboard)/plans/create/page.tsx → src/hooks/queries/useSession.ts
+- `PlanDetailPage()` --calls--> `useSession()` [INFERRED]
+  src/app/(dashboard)/plans/[id]/page.tsx → src/hooks/queries/useSession.ts
 
-## Communities (323 total, 11 thin omitted)
+## Communities (329 total, 11 thin omitted)
 
 ### Community 0 - "Community 0"
 
 Cohesion: 0.03
-Nodes (64): buildOptimisticSessionRow(), buildSyntheticDashboard(), cached, CachedExerciseLookup, CreateExerciseVariables, ctx, DashboardCompletion, DashboardDay (+56 more)
+Nodes (61): CommitAction, buildOptimisticSessionRow(), buildSyntheticDashboard(), cached, CachedExerciseLookup, CreateExerciseVariables, ctx, DashboardCompletion (+53 more)
 
 ### Community 1 - "Community 1"
 
 Cohesion: 0.06
-Nodes (49): ClientAnalyticsTabProps, ClientStatsGridProps, COLORS, ComparisonChart(), ComparisonChartProps, formatWeekLabel(), FrequencyCard(), FrequencyCardProps (+41 more)
+Nodes (52): ClientAnalyticsTabProps, ClientStatsGridProps, COLORS, ComparisonChartProps, formatWeekLabel(), FrequencyCard(), FrequencyCardProps, MUSCLE_GROUP_COLORS (+44 more)
 
 ### Community 2 - "Community 2"
 
-Cohesion: 0.05
-Nodes (54): errorResponse(), POST(), errorResponse(), POST(), errorResponse(), POST(), DELETE(), errorResponse() (+46 more)
+Cohesion: 0.10
+Nodes (23): errorResponse(), POST(), errorResponse(), POST(), errorResponse(), POST(), DELETE(), errorResponse() (+15 more)
 
 ### Community 3 - "Community 3"
 
-Cohesion: 0.07
-Nodes (45): getWorkoutById(), AssignWorkoutDrawer(), ClientSessionsTab(), ClientSessionsTabProps, ViewMode, ClientWorkoutsTab(), ClientWorkoutsTabProps, ViewMode (+37 more)
+Cohesion: 0.08
+Nodes (33): getWorkoutById(), withAuth(), AssignWorkoutDrawer(), AssignWorkoutDrawerProps, ClientWorkoutsTab(), ClientWorkoutsTabProps, ViewMode, WorkoutWithExerciseCount (+25 more)
 
 ### Community 4 - "Community 4"
 
-Cohesion: 0.04
-Nodes (57): dependencies, @auth/prisma-adapter, bcryptjs, class-variance-authority, clsx, date-fns, @dnd-kit/core, @dnd-kit/modifiers (+49 more)
+Cohesion: 0.03
+Nodes (59): dependencies, @auth/prisma-adapter, bcryptjs, class-variance-authority, clsx, date-fns, @dnd-kit/core, @dnd-kit/modifiers (+51 more)
 
 ### Community 5 - "Community 5"
 
-Cohesion: 0.07
-Nodes (35): ActionResponse, autoUpgradeTier(), createCheckoutSession(), createPortalSession(), getOrCreateStripeCustomer(), getSubscription(), SubscriptionDetails(), getDaysRemaining() (+27 more)
+Cohesion: 0.20
+Nodes (12): ActionResponse, autoUpgradeTier(), createCheckoutSession(), createPortalSession(), getOrCreateStripeCustomer(), getSubscription(), getNextTier(), isAnnualPrice() (+4 more)
 
 ### Community 6 - "Community 6"
 
-Cohesion: 0.12
-Nodes (15): useOnlineStatus(), BottomNav(), BottomNavProps, NavButton(), useScrollDirection(), DashboardLayoutProps, SidebarProps, bottomNavPriority (+7 more)
+Cohesion: 0.17
+Nodes (8): getSessionById(), useOnlineStatus(), PUBLIC_PATH_PREFIXES, waitForServiceWorkerControl(), WARM_ROUTES, warmRoutes(), warmTopLevelRoutes(), SyncStatusIndicator()
 
 ### Community 7 - "Community 7"
 
-Cohesion: 0.07
-Nodes (44): acceptInvitation(), ActionResponse, cancelInvitation(), endRelationship(), getClientDetail(), getClientSessions(), getInvitationDetail(), getMyClients() (+36 more)
+Cohesion: 0.09
+Nodes (33): acceptInvitation(), ActionResponse, cancelInvitation(), endRelationship(), inviteClient(), refreshInvitation(), rejectInvitation(), ClientCardProps (+25 more)
 
 ### Community 8 - "Community 8"
 
@@ -399,8 +405,8 @@ Nodes (47): 1. Auto-Save & Sync, 1. Session Header, 2. Exercise Navigation Tabs,
 
 ### Community 9 - "Community 9"
 
-Cohesion: 0.11
-Nodes (32): AssignPlanDrawer(), ExerciseFilterDialogProps, FilterOption, InstructionsFieldProps, DURATION_OPTIONS, PlanDetailPage(), PlanDetailPageProps, useActivatePlan() (+24 more)
+Cohesion: 0.10
+Nodes (28): ExerciseFilterDialog(), ExerciseFilterDialogProps, FilterOption, InstructionsFieldProps, useSetPassword(), CompletedSessionActionsMenuProps, WORKOUTS_ALL_KEY, WorkoutsListShape (+20 more)
 
 ### Community 10 - "Community 10"
 
@@ -434,13 +440,13 @@ Nodes (43): 1. Complete Workout Session, 2. PT Assigns Workout to Client, 3. Sub
 
 ### Community 16 - "Community 16"
 
-Cohesion: 0.11
-Nodes (19): withAuth(), DashboardPage(), ExerciseDrawer(), useCanCreateWorkout(), useSkipPlanDay(), CompletedSessionInline(), formatSetValue(), PendingExerciseCard() (+11 more)
+Cohesion: 0.09
+Nodes (22): 1. Scope, 2. Current implementation (as reviewed), 3. The 14-day trial — answering the key questions, 4. Gaps / risks found during review, 5. End-to-End test script (Stripe **test mode**), 6. Open product decisions (resolve before finalising expected behaviour), 7. Related, Q1. Is the user charged when they subscribe, or only on day 14? (+14 more)
 
 ### Community 17 - "Community 17"
 
-Cohesion: 0.11
-Nodes (19): duplicateWorkout(), CreateVariables, DeleteVariables, offlineGuard(), SyncExercisesVariables, UpdateVariables, useAddExerciseToWorkout(), useCopyWorkout() (+11 more)
+Cohesion: 0.05
+Nodes (53): ActionResponse, assignWorkoutToClient(), copyWorkout(), duplicateWorkout(), WorkoutBasic, WorkoutExerciseWithExercise, WorkoutWithDetails, CreateVariables (+45 more)
 
 ### Community 18 - "Community 18"
 
@@ -450,7 +456,7 @@ Nodes (40): code:typescript (// 1. Start session from workout), code:block10 (sr
 ### Community 19 - "Community 19"
 
 Cohesion: 0.09
-Nodes (17): generateId(), createSupersetStyleResolver(), groupColors, SupersetColors, SupersetStyle, SupersetManager, exercises, first (+9 more)
+Nodes (16): generateId(), groupColors, SupersetColors, SupersetStyle, SupersetManager, exercises, first, info (+8 more)
 
 ### Community 20 - "Community 20"
 
@@ -460,32 +466,32 @@ Nodes (37): 10. Success Metrics, 11. Risks & Constraints, 12. Open Questions, 1.
 ### Community 21 - "Community 21"
 
 Cohesion: 0.05
-Nodes (38): Analytics Feature Summary, Chunk A10: Exercise Comparison Page ✅, Chunk A1: Install Recharts + Analytics Types + Date Utilities ✅, Chunk A2: Volume Progression + Muscle Group Distribution ✅, Chunk A3: Adherence + Frequency + Consistency ✅, Chunk A4: Enhanced PR Detection (All Metric Types) ✅, Chunk A5: Analytics Server Actions ✅, Chunk A6: Analytics Query Hooks ✅ (+30 more)
+Nodes (66): Analytics Feature Summary, Chunk A10: Exercise Comparison Page ✅, Chunk A1: Install Recharts + Analytics Types + Date Utilities ✅, Chunk A2: Volume Progression + Muscle Group Distribution ✅, Chunk A3: Adherence + Frequency + Consistency ✅, Chunk A4: Enhanced PR Detection (All Metric Types) ✅, Chunk A5: Analytics Server Actions ✅, Chunk A6: Analytics Query Hooks ✅ (+58 more)
 
 ### Community 22 - "Community 22"
 
-Cohesion: 0.16
-Nodes (14): DELETE(), PATCH(), DefaultExerciseImmutableError, ExerciseNotFoundError, ExerciseOwnershipError, exerciseService, errorResponse(), POST() (+6 more)
+Cohesion: 0.08
+Nodes (29): code:block1 (src/hooks/usePrefetchCriticalData.ts - no-plan branch: set), code:block2 (src/emails/WelcomeEmail.tsx ), code:block3 (src/lib/auth/auth.config.ts ), code:block5 (src/lib/analytics/volume.ts ), Files, Google OAuth + account linking (2026-06-17) ✅ (pending verification), Modified Files, Modified Files (+21 more)
 
 ### Community 23 - "Community 23"
 
-Cohesion: 0.05
-Nodes (37): Chunk 1: Foundation (SDK, Schema, Stripe Utilities) ✅, Chunk 2: Stripe Products & Pricing Page ✅, Chunk 3: Checkout Flow ✅, Chunk 4: Webhooks ✅, Chunk 5: Subscription Management (Portal & Billing Page) ✅, Chunk 6: Guards, Capacity Enforcement & Upgrade Flow Migration ✅, Chunk 7: Auto-Upgrade ✅, Chunk 8: Polish (Banners, Trial Display, Cleanup) ✅ (+29 more)
+Cohesion: 0.09
+Nodes (36): Chunk 1: Foundation (SDK, Schema, Stripe Utilities) ✅, Chunk 2: Stripe Products & Pricing Page ✅, Chunk 3: Checkout Flow ✅, Chunk 4: Webhooks ✅, Chunk 5: Subscription Management (Portal & Billing Page) ✅, Chunk 6: Guards, Capacity Enforcement & Upgrade Flow Migration ✅, Chunk 7: Auto-Upgrade ✅, Chunk 8: Polish (Banners, Trial Display, Cleanup) ✅ (+28 more)
 
 ### Community 24 - "Community 24"
 
-Cohesion: 0.10
-Nodes (33): ClientPlansTab(), ClientPlansTabProps, ViewMode, Navbar(), NavbarProps, Sidebar(), useDeactivatePlan(), PlanGridCard() (+25 more)
+Cohesion: 0.08
+Nodes (26): Carry-overs to next chunk, Chunk A — PWA field-testing quick wins (2026-05-28) ✅ (pending verification), code:block12 (src/components/features/workouts/ExerciseSelectorPanel.tsx ), Modified Files, Modified Files, Modified Files, Modified Files, Modified Files (+18 more)
 
 ### Community 25 - "Community 25"
 
-Cohesion: 0.11
-Nodes (20): estimateOneRepMax(), useExerciseHistory(), ExerciseHistoryList(), ExerciseHistoryListProps, formatDate(), formatDateFull(), formatSetValue(), getBaseTableHeaders() (+12 more)
+Cohesion: 0.08
+Nodes (35): estimateOneRepMax(), useExerciseHistory(), ExerciseHistoryList(), ExerciseHistoryListProps, formatDate(), formatDateFull(), formatSetValue(), getBaseTableHeaders() (+27 more)
 
 ### Community 26 - "Community 26"
 
-Cohesion: 0.12
-Nodes (21): ActionResponse, getExerciseHistory(), getLatestHistoryBatch(), getSessionPRs(), countMetricPRs(), detectSessionBodyweightRepsPRs(), detectSessionMetricPRs(), detectSessionPRs() (+13 more)
+Cohesion: 0.11
+Nodes (18): CopyFromWorkoutDrawerProps, PlanDayDetailDrawerProps, PlanDayOptionsDrawerProps, ActivePlanDashboard, ActivePlanDashboardResponse, CreatePlanFormData, DayCompletionInfo, PlanDayCompletionEntity (+10 more)
 
 ### Community 27 - "Community 27"
 
@@ -495,27 +501,27 @@ Nodes (20): A, b, c(), d(), eb, ei, en, eo (+12 more)
 ### Community 28 - "Community 28"
 
 Cohesion: 0.12
-Nodes (23): AssignPlanDrawerProps, AssignWorkoutDrawerProps, CreateExerciseDrawerProps, ExerciseDrawerProps, allocateSkipDayClientId, DayBuilderOptionsDrawerProps, newTempId(), supersetManager (+15 more)
+Nodes (29): AssignPlanDrawerProps, allocateSkipDayClientId, useSkipPlanDay(), DayBuilderOptionsDrawerProps, CompletedSessionInline(), formatSetValue(), PendingExerciseCard(), SessionWithDetails (+21 more)
 
 ### Community 29 - "Community 29"
 
-Cohesion: 0.10
-Nodes (37): createExercise(), deleteExercise(), getExerciseById(), updateExercise(), ActionResponse, activatePlan(), assignPlanToClient(), canModifyPlan() (+29 more)
+Cohesion: 0.05
+Nodes (55): ActionResponse, assignPlanToClient(), copyPlan(), getActivePlanDashboard(), getPlanById(), PlanWithDetails, CreatePlanForClientPage(), ActivateVariables (+47 more)
 
 ### Community 30 - "Community 30"
 
-Cohesion: 0.09
-Nodes (32): ActionResponse, getAnalyticsOverview(), getClientAnalytics(), getExerciseComparisonData(), getVolumeProgressionData(), ActionResponse, getDashboardStats(), calculateAdherence() (+24 more)
+Cohesion: 0.12
+Nodes (29): ActionResponse, getAnalyticsOverview(), getClientAnalytics(), getExerciseComparisonData(), getVolumeProgressionData(), getDashboardStats(), calculateAdherence(), calculateSessionFrequency() (+21 more)
 
 ### Community 31 - "Community 31"
 
-Cohesion: 0.27
-Nodes (9): ClientAnalyticsTab(), AnalyticsPage(), ExerciseComparisonPage(), CustomRange, rangeKeyParts(), useAnalyticsOverview(), useClientAnalytics(), useExerciseComparison() (+1 more)
+Cohesion: 0.14
+Nodes (9): applyHistoryToProgress(), historySetToMetrics(), initialState, METRIC_FIELDS, sessionSlice, supersetManager, ExerciseProgress, HistorySet (+1 more)
 
 ### Community 32 - "Community 32"
 
-Cohesion: 0.06
-Nodes (27): clearSessionBackup(), hasBackupForSession(), loadSessionBackup(), SessionVariables, applyHistoryToProgress(), historySetToMetrics(), initialState, METRIC_FIELDS (+19 more)
+Cohesion: 0.13
+Nodes (27): ExerciseFilterBarProps, ExerciseFilterState, WorkoutDetailPageProps, NavbarProps, PlanGridCardProps, PlanListItem, PlanListItem, PlanRowCardProps (+19 more)
 
 ### Community 33 - "Community 33"
 
@@ -529,23 +535,23 @@ Nodes (30): Action taken, Audit, Chunk A — Quick wins: 4 independent bug fixes
 
 ### Community 35 - "Community 35"
 
-Cohesion: 0.13
-Nodes (29): useElapsedSessionTime(), useRestTimer(), useSessionRecovery(), SessionPage(), ExerciseCarousel(), ExerciseCarouselCard(), ExerciseCarouselCardProps, ExerciseCarouselProps (+21 more)
+Cohesion: 0.09
+Nodes (23): BottomNav(), BottomNavProps, NavButton(), useScrollDirection(), DashboardLayout(), DashboardLayoutProps, SidebarProps, bottomNavPriority (+15 more)
 
 ### Community 36 - "Community 36"
 
-Cohesion: 0.33
-Nodes (6): hashPassword(), verifyPassword(), testAuth(), Layout(), DashboardLayout(), ActiveSessionGuardProvider()
+Cohesion: 0.11
+Nodes (20): createExercise(), deleteExercise(), getExerciseById(), updateExercise(), createPlan(), createPlanForClient(), getClientPlans(), createWorkout() (+12 more)
 
 ### Community 37 - "Community 37"
 
-Cohesion: 0.08
-Nodes (27): ExerciseCardProps, ExerciseFilterBarProps, ExerciseFilterState, ExerciseFilterDialog(), difficultyOptions, equipmentOptions, ExerciseFilterDrawer(), ExerciseFilterDrawerProps (+19 more)
+Cohesion: 0.05
+Nodes (37): CreateExerciseDrawer(), ExerciseCard(), ExerciseDrawer(), ExerciseDrawerProps, ExerciseFilterBar(), difficultyOptions, equipmentOptions, ExerciseFilterDrawer() (+29 more)
 
 ### Community 38 - "Community 38"
 
-Cohesion: 0.38
-Nodes (6): getDateRange(), getISOWeekNumber(), getISOWeekYear(), getWeekKey(), DateRange, FixedDateRangePreset
+Cohesion: 0.13
+Nodes (22): ClientSessionsTabProps, ViewMode, useSessions(), CompletedSessionDrawer(), SessionHistoryPage(), StatusFilter, ViewMode, SessionCalendarView() (+14 more)
 
 ### Community 39 - "Community 39"
 
@@ -589,8 +595,8 @@ Nodes (27): After — stacked `actions[]`, Before — single fixed action, Cache
 
 ### Community 47 - "Community 47"
 
-Cohesion: 0.21
-Nodes (13): PlanDayOptionsDrawerProps, filterPlans(), filterSessions(), filterWorkouts(), DashboardStats, ExerciseListResponse, ActivePlanDashboard, ExerciseHistoryEntry (+5 more)
+Cohesion: 0.12
+Nodes (20): ActionResponse, getExerciseHistory(), getLatestHistoryBatch(), getSessionPRs(), countMetricPRs(), detectSessionBodyweightRepsPRs(), detectSessionMetricPRs(), detectSessionPRs() (+12 more)
 
 ### Community 48 - "Community 48"
 
@@ -609,18 +615,18 @@ Nodes (26): AddExerciseToWorkoutData, CopyWorkoutData, OrganizedWorkoutExercises
 
 ### Community 51 - "Community 51"
 
-Cohesion: 0.08
-Nodes (24): 1. Created SupersetManager Class Library, 1. Drag-and-Drop Reordering (Sub-task 1), 2. Refactored Workout Builder to Use Manager, 2. Superset Manager UI (Sub-task 2), 3. Refactored SupersetManagerDrawer to Use Manager, 3. Visual Superset Representation, 4. Comprehensive Unit Tests, 5. Manual Testing Documentation (+16 more)
+Cohesion: 0.22
+Nodes (9): ActionResponse, getLinkedAccounts(), LinkedAccountsInfo, setPassword(), unlinkGoogleAccount(), hashPassword(), verifyPassword(), testAuth() (+1 more)
 
 ### Community 52 - "Community 52"
 
-Cohesion: 0.10
-Nodes (23): DATE_RANGE_OPTIONS, DateRangeSelector(), DateRangeSelectorProps, formatRangeLabel(), LogoutButtonProps, BillingInfo(), cn(), DayCard() (+15 more)
+Cohesion: 0.08
+Nodes (30): ComparisonChart(), DATE_RANGE_OPTIONS, DateRangeSelector(), DateRangeSelectorProps, formatRangeLabel(), ExerciseMultiSelect(), ExerciseMultiSelectProps, LogoutButtonProps (+22 more)
 
 ### Community 53 - "Community 53"
 
-Cohesion: 0.16
-Nodes (19): login(), signup(), LoginForm(), SignupForm(), testAuthFlow(), FormControl, FormDescription, FormField() (+11 more)
+Cohesion: 0.05
+Nodes (55): login(), signup(), ExerciseFilter(), ExerciseFilterProps, signIn(), ForgotPasswordForm(), LoginForm(), ResetPasswordForm() (+47 more)
 
 ### Community 54 - "Community 54"
 
@@ -629,8 +635,8 @@ Nodes (26): devDependencies, autoprefixer, eslint, eslint-config-next, eslint-co
 
 ### Community 55 - "Community 55"
 
-Cohesion: 0.08
-Nodes (24): B-Fit Project - Current Progress, Chunk O1: Prisma Schema Changes ✅, code:block14 (prisma/schema.prisma - Organisa), code:block43 (prisma/schema.prisma - Added exp), code:block48 (src/types/dashboard.ts - DashboardS), code:block49 (src/app/(dashboard)/dashboard/page.tsx - Replaced h), Dashboard Real Data + Analytics Foundation ✅, Environment Status (+16 more)
+Cohesion: 0.13
+Nodes (14): B-Fit Project - Current Progress, Environment Status, Next Phase: Phase 2 - Core Features, Next Steps: Week 6 - Live Session Mode, Phase 1 Status: COMPLETE ✅, Phase 2 Progress Summary, PR3 — Plan offline capabilities (2026-04-30) ✅, 🚀 Ready for Testing! (+6 more)
 
 ### Community 56 - "Community 56"
 
@@ -639,13 +645,13 @@ Nodes (23): allGroups, backOutlineFills, backOutlineStrokes, clean, content, dMa
 
 ### Community 57 - "Community 57"
 
-Cohesion: 0.16
-Nodes (12): CompletedExerciseData, CompletedSessionDrawerProps, CompletedSetData, DrawerAction, ExerciseCardProps, formatSetMeta(), formatSetValue(), SessionPRDisplay (+4 more)
+Cohesion: 0.17
+Nodes (12): code:block41 (src/server/actions/stripe.ts - C), code:block44 (src/app/page.tsx - Added "), Files Modified, Modified Files, Modified Files, Modified Files, Modified Files, Modified Files (+4 more)
 
 ### Community 58 - "Community 58"
 
-Cohesion: 0.09
-Nodes (22): 2.1 Start Session, 2.2 Session UI Layout, 2.3 Log Set, 2.4 Rest Timer, 2.5 Navigate Between Exercises, 2.6 Handle Page Refresh, 2.8 Session Summary, code:typescript (// From Workouts Dashboard) (+14 more)
+Cohesion: 0.08
+Nodes (24): 2.1 Start Session, 2.2 Session UI Layout, 2.4 Rest Timer, 2.5 Navigate Between Exercises, 2.7 Complete Session, 2.8 Session Summary, code:typescript (// From Workouts Dashboard), code:typescript (// From Workout Details Page) (+16 more)
 
 ### Community 59 - "Community 59"
 
@@ -674,18 +680,18 @@ Nodes (21): 1. Read Operations (Server Components), 2. Write Operations (Server 
 
 ### Community 64 - "Community 64"
 
-Cohesion: 0.19
-Nodes (17): MuscleGroupIconProps, ExerciseWithMuscles, useMuscleFrequency(), ALL_SVG_MUSCLE_KEYS, getMuscleColor(), MUSCLE_GROUP_TO_SVG_KEYS, MUSCLE_GROUP_VIEWBOX, SvgMuscleKey (+9 more)
+Cohesion: 0.17
+Nodes (18): MuscleGroupIcon, MuscleGroupIconProps, ExerciseWithMuscles, useMuscleFrequency(), ALL_SVG_MUSCLE_KEYS, getMuscleColor(), MUSCLE_GROUP_TO_SVG_KEYS, MUSCLE_GROUP_VIEWBOX (+10 more)
 
 ### Community 65 - "Community 65"
 
-Cohesion: 0.12
-Nodes (17): ExerciseFilter(), CreateExerciseDrawer(), ExerciseCard(), ExerciseFilterBar(), ExercisesContent(), useCanCreateExercise(), useCreateExercise(), useExercises() (+9 more)
+Cohesion: 0.22
+Nodes (18): 1. Drag-and-Drop Reordering (Sub-task 1), 2. Superset Manager UI (Sub-task 2), 3. Visual Superset Representation, code:block78 (src/hooks/mutations/useExerciseMutations.ts), code:block79 (src/app/(dashboard)/exercises/page.tsx), code:block80 (prisma/migrations/20260129191328_add_workout_models/migratio), code:block81 (prisma/schema.prisma (added Workout and WorkoutExercise mode), code:block82 (src/lib/validations/workout.ts) (+10 more)
 
 ### Community 66 - "Community 66"
 
-Cohesion: 0.16
-Nodes (24): EndRelationshipDialog(), EndRelationshipDialogProps, InviteClientDrawer(), InviteClientDrawerProps, ActiveClientViewProps, ClientDetailPage(), PendingInvitationViewProps, TabValue (+16 more)
+Cohesion: 0.12
+Nodes (35): AssignPlanDrawer(), EndRelationshipDialog(), EndRelationshipDialogProps, InviteClientDrawer(), InviteClientDrawerProps, ActiveClientView(), ActiveClientViewProps, PendingInvitationView() (+27 more)
 
 ### Community 67 - "Community 67"
 
@@ -704,13 +710,13 @@ Nodes (19): Chunk 1: View Toggle + State Persistence — DONE, Chunk 2: List Vie
 
 ### Community 70 - "Community 70"
 
-Cohesion: 0.10
-Nodes (20): code:block64 (prisma/migrations/20260128190145_add_exercise_model/migratio), code:block65 (prisma/schema.prisma), code:block66 (prisma/seed.ts), code:block67 (package.json (added prisma.seed configuration)), code:block68 (src/lib/validations/exercise.ts), code:block69 (src/components/features/exercises/ExerciseCard.tsx), code:block70 (src/components/features/exercises/ExerciseDrawer.tsx), code:block71 (src/app/(dashboard)/exercises/page.tsx) (+12 more)
+Cohesion: 0.24
+Nodes (19): code:block67 (package.json (added postinstall script)), code:block68 (prisma/migrations/20260128190145_add_exercise_model/migratio), code:block69 (prisma/schema.prisma), code:block70 (prisma/seed.ts), code:block71 (package.json (added prisma.seed configuration)), code:block72 (src/lib/validations/exercise.ts), code:block73 (src/components/features/exercises/ExerciseCard.tsx), code:block74 (src/components/features/exercises/ExerciseDrawer.tsx) (+11 more)
 
 ### Community 71 - "Community 71"
 
-Cohesion: 0.12
-Nodes (18): CreatePlanForClientPage(), ActivateVariables, CreateVariables, DeactivateVariables, DeleteVariables, offlineGuard(), SaveAllDaysVariables, SkipDayVariables (+10 more)
+Cohesion: 0.19
+Nodes (13): ActionResponse, filterPlans(), filterSessions(), filterWorkouts(), DashboardStats, ExerciseListResponse, ExerciseHistoryEntry, PlanListResponse (+5 more)
 
 ### Community 73 - "Community 73"
 
@@ -724,23 +730,23 @@ Nodes (16): abductorExercises, adductorExercises, calfExercises, calfExercises2,
 
 ### Community 75 - "Community 75"
 
-Cohesion: 0.23
-Nodes (17): endFlow(), Flow, FlowName, flows, FlowStep, isEnabled(), mark(), markName() (+9 more)
+Cohesion: 0.14
+Nodes (26): clearSessionBackup(), endFlow(), Flow, FlowName, flows, FlowStep, isEnabled(), mark() (+18 more)
 
 ### Community 76 - "Community 76"
 
-Cohesion: 0.13
-Nodes (14): CopyFromWorkoutDrawerProps, CreatePlanFormData, PlanDayCompletionEntity, PlanDayEntity, PlanDayExerciseEntity, PlanDayExerciseFormData, PlanDayExerciseWithExercise, PlanDayWithExercises (+6 more)
+Cohesion: 0.05
+Nodes (44): WorkoutBuilder(), WorkoutBuilderPageProps, WorkoutExercise, CreateWorkoutForClientProps, CreateExerciseDrawerProps, EditWorkoutPageProps, useSavePlanAllDays(), useAddMultipleExercisesToWorkout() (+36 more)
 
 ### Community 77 - "Community 77"
 
-Cohesion: 0.12
-Nodes (17): code:block100 (src/app/(dashboard)/sessions/[id]/page.tsx), code:block92 (src/types/session.ts (200+ lines)), code:block93 (prisma/schema.prisma (+120 lines)), code:block94 (src/server/actions/sessions.ts (800+ lines)), code:typescript (SessionState = {), code:typescript (SessionBackup = {), code:typescript (SyncPayload = {), code:block98 (src/components/features/sessions/ExerciseCarousel.tsx) (+9 more)
+Cohesion: 0.20
+Nodes (24): ✅ Active Plan Dashboard with Week Tracking (COMPLETED), code:typescript (SessionBackup = {), code:typescript (SyncPayload = {), code:block102 (src/components/features/sessions/ExerciseCarousel.tsx), code:block103 (src/components/features/sessions/SetLogger.tsx), code:block104 (src/app/(dashboard)/sessions/[id]/page.tsx), code:block105 (src/lib/validations/plan.ts (MODIFIED - new days-b), code:block106 (prisma/schema.prisma (mod) (+16 more)
 
 ### Community 78 - "Community 78"
 
-Cohesion: 0.17
-Nodes (14): ExerciseFilterProps, ExerciseForm(), ExerciseFormProps, ExerciseFormValues, InstructionsField(), DropdownMenuCheckboxItem, SelectContent, SelectItem (+6 more)
+Cohesion: 0.40
+Nodes (5): Forgot Password Feature, Overview, Security Considerations, Testing Checklist, User Flow
 
 ### Community 79 - "Community 79"
 
@@ -764,8 +770,8 @@ Nodes (16): Pre-Task: Organisation Schema + Config (Chunk O1) ✅ (2026-02-15), 
 
 ### Community 83 - "Community 83"
 
-Cohesion: 0.21
-Nodes (11): ReactQueryDevtoolsProduction, isPersistedQueryKey(), NON_PERSISTED_QUERY_KEYS, PERSISTED_QUERY_KEYS, apply(), clearOfflineMark(), handleOffline(), handleOnline() (+3 more)
+Cohesion: 0.19
+Nodes (12): PersistQueryProvider(), ReactQueryDevtoolsProduction, isPersistedQueryKey(), NON_PERSISTED_QUERY_KEYS, PERSISTED_QUERY_KEYS, apply(), clearOfflineMark(), handleOffline() (+4 more)
 
 ### Community 84 - "Community 84"
 
@@ -774,8 +780,8 @@ Nodes (10): ActionResponse, getUserProfile(), updateUserProfile(), UserProfile, 
 
 ### Community 85 - "Community 85"
 
-Cohesion: 0.13
-Nodes (21): ONE_RM_METRICS, renderBaseHeaders(), renderSetInputs(), renderTableHeaders(), RIR_METRICS, SheetContent, SheetContentProps, SheetDescription (+13 more)
+Cohesion: 0.07
+Nodes (30): Carry-overs, Chunk H — Analytics set-count chart per muscle group (2026-05-28) ✅ (pending verification), Fix, Fix: first-login dashboard "stuck skeleton" (2026-06-17) ✅ (pending verification), Problem, Problem, Problem, Problem (+22 more)
 
 ### Community 86 - "Community 86"
 
@@ -819,13 +825,13 @@ Nodes (14): 6.1 Personal Account - Plans Dashboard, 6.2 Create Plan Flow, 6.3 Da
 
 ### Community 95 - "Community 95"
 
-Cohesion: 0.14
-Nodes (14): Chunk 1: RBAC Utility ✅, Chunk 2: Session History Page ✅, Chunk 3: PR Enhancement ✅, Chunk 4: ClientRelationship Schema & Server Actions ✅, Chunk 5: Workout & Plan Assignment ✅, Chunk 6: Client Management UI ✅, Chunk 7: Role Upgrade Flow ✅, Chunk 8: Client-Side Experience & Dashboard ✅ (+6 more)
+Cohesion: 0.08
+Nodes (34): Chunk 1: Role-Based UI Hiding + Session Click, Chunk 2: Display Client Workouts/Plans in Detail Tabs, Chunk 3: PT Write Access to Client Workouts/Plans, Chunk 4: PT Creates Workouts/Plans for Clients, Chunk 5: Query Invalidation Polish, code:block45 (src/lib/stripe/stripe.ts - Stripe SDK sin), code:block46 (prisma/schema.prisma - Added enums, U), code:block47 (prisma/schema.prisma - Added exp) (+26 more)
 
 ### Community 96 - "Community 96"
 
-Cohesion: 0.14
-Nodes (14): code:block57 (.env.local (git-ignored)), code:block58 (prisma/schema.prisma), code:block59 (src/lib/auth/auth.config.ts), code:block60 (src/lib/validations/auth.ts), code:block61 (src/middleware.ts), code:block62 (src/app/layout.tsx (added SessionProvider)), code:block63 (package.json (added postinstall script)), ✅ Task 2.1: Set Up Vercel Postgres (COMPLETED) (+6 more)
+Cohesion: 0.31
+Nodes (15): code:block59 (src/components/layouts/), code:block60 (src/app/), code:block61 (.env.local (git-ignored)), code:block62 (prisma/schema.prisma), code:block63 (src/lib/auth/auth.config.ts), code:block64 (src/lib/validations/auth.ts), code:block65 (src/middleware.ts), code:block66 (src/app/layout.tsx (added SessionProvider)) (+7 more)
 
 ### Community 97 - "Community 97"
 
@@ -889,8 +895,8 @@ Nodes (13): Block 2 — Persisted Cache + Offline Reads, Blockers encountered an
 
 ### Community 109 - "Community 109"
 
-Cohesion: 0.15
-Nodes (13): code:block50 (package.json), code:block51 (components.json), code:block52 (eslint.config.mjs), code:block53 (package.json (added scripts and lint-staged config)), code:block54 (src/), code:block55 (src/components/layouts/), code:block56 (src/app/), ✅ Task 1.1: Initialize Next.js Project (COMPLETED) (+5 more)
+Cohesion: 0.30
+Nodes (15): code:block51 (prisma/schema.prisma - Cl), code:block52 (src/types/dashboard.ts - DashboardS), code:block53 (src/app/(dashboard)/dashboard/page.tsx - Replaced h), code:block54 (package.json), code:block55 (components.json), code:block56 (eslint.config.mjs), code:block57 (package.json (added scripts and lint-staged config)), code:block58 (src/) (+7 more)
 
 ### Community 110 - "Community 110"
 
@@ -909,18 +915,18 @@ Nodes (4): ed, eu(), S(), v()
 
 ### Community 113 - "Community 113"
 
-Cohesion: 0.18
-Nodes (9): inter, metadata, outfit, viewport, PersistQueryProvider(), SessionProvider(), SessionProviderProps, Toaster() (+1 more)
+Cohesion: 0.08
+Nodes (27): Carry-overs, Carry-overs, Carry-overs, Carry-overs, Carry-overs, Carry-overs, Chunk F — Muscle-group set counts (2026-05-28) ✅ (pending verification), code:block7 (src/lib/analytics/muscle-set-counts.ts ) (+19 more)
 
 ### Community 114 - "Community 114"
 
-Cohesion: 0.14
-Nodes (15): getInvitation(), getMyPT(), ClientsPage(), InviteAcceptPage(), TrainerCard(), useClientPlans(), useClients(), useDashboardStats() (+7 more)
+Cohesion: 0.15
+Nodes (13): getInvitation(), getMyClients(), getMyPT(), TrainerCard(), useActivePlanDashboard(), useClients(), useDashboardStats(), useExercise() (+5 more)
 
 ### Community 115 - "Community 115"
 
-Cohesion: 0.15
-Nodes (13): 1. Google Cloud Console Setup, 2. Environment Variables, 3. NextAuth Configuration, 4. Database Schema Update, 5. UI Components, 6. Handle Account Linking, code:prisma (model Account {), code:tsx (import { signIn } from 'next-auth/react') (+5 more)
+Cohesion: 0.23
+Nodes (15): 1. Google Cloud Console Setup, 2. Environment Variables, 3. NextAuth Configuration, 4. Database Schema Update, 5. UI Components, 6. Handle Account Linking, code:prisma (model Account {), code:tsx (import { signIn } from 'next-auth/react') (+7 more)
 
 ### Community 116 - "Community 116"
 
@@ -959,8 +965,8 @@ Nodes (12): Block 1 — PWA Foundation, Blockers encountered and how they were r
 
 ### Community 123 - "Community 123"
 
-Cohesion: 0.17
-Nodes (12): code:block86 ((Created as part of Task 4.3)), code:block87 ((Integrated into ExerciseConfigPanel)), code:block88 ((Created as part of Task 4.3)), code:block89 (src/app/(dashboard)/workouts/[id]/page.tsx), code:block90 (src/app/(dashboard)/workouts/builder/[id]/page.tsx), code:block91 (src/lib/validations/workout.ts (+21 lines - new schema and t), ✅ Task 5.1: Set/Rep/Weight Configuration (COMPLETED as part of Task 4.3), ✅ Task 5.2: Exercise Notes (COMPLETED as part of Task 4.3) (+4 more)
+Cohesion: 0.31
+Nodes (15): 5. Manual Testing Documentation, code:block86 (src/components/ui/floating-action-button.tsx (~30 lines)), code:block87 (src/components/features/workouts/ExerciseSelectorPanel.tsx (), code:block88 (src/lib/superset-manager/SupersetManager.ts (~520 lines)), code:block89 (src/app/(dashboard)/workouts/builder/page.tsx (-85 lines, +3), code:block90 ((Created as part of Task 4.3)), code:block91 ((Integrated into ExerciseConfigPanel)), code:block92 ((Created as part of Task 4.3)) (+7 more)
 
 ### Community 124 - "Community 124"
 
@@ -969,13 +975,13 @@ Nodes (12): Enhancement: Mobile-Responsive Drawer UI (In Planning), Sub-tasks:, 
 
 ### Community 125 - "Community 125"
 
-Cohesion: 0.14
-Nodes (18): computeMuscleGroupSetCounts(), formatSetCount(), MuscleGroupSetCount, MuscleSetCountInput, PlanDaysCarousel(), PlanDaysCarouselProps, PlanDaySlide(), PlanDaySlideProps (+10 more)
+Cohesion: 0.09
+Nodes (33): computeMuscleGroupSetCounts(), formatSetCount(), MuscleGroupSetCount, MuscleSetCountInput, ClientPlansTab(), ClientPlansTabProps, ViewMode, DURATION_OPTIONS (+25 more)
 
 ### Community 126 - "Community 126"
 
-Cohesion: 0.10
-Nodes (20): useSavePlanAllDays(), CopyFromWorkoutDrawer(), DayBuilderOptionsDrawer(), DayCardPresentation(), DayCardPresentationProps, DayCarousel(), DayCarouselProps, DayInfo (+12 more)
+Cohesion: 0.12
+Nodes (16): GoogleSignInButton(), GoogleSignInButtonProps, BillingInfo(), STATUS_LABELS, SubscriptionDetails(), getDaysRemaining(), SubscriptionStatusBanner(), SubscriptionBadge() (+8 more)
 
 ### Community 127 - "Community 127"
 
@@ -1039,8 +1045,8 @@ Nodes (10): Authentication Enhancements - TODO, code:env (# Google OAuth), code:
 
 ### Community 139 - "Community 139"
 
-Cohesion: 0.17
-Nodes (16): getExercises(), getAllActivePlanDashboardWeeks(), getPlans(), getSessionById(), getUserSessions(), ActionResponse, selectTopPlans(), selectTopWorkouts() (+8 more)
+Cohesion: 0.10
+Nodes (34): getPendingInvitations(), getExercises(), activatePlan(), canModifyPlan(), copyWorkoutToPlanDay(), deactivatePlan(), deletePlan(), getAllActivePlanDashboardWeeks() (+26 more)
 
 ### Community 140 - "Community 140"
 
@@ -1054,8 +1060,8 @@ Nodes (9): B-Fit Offline-First PWA — Implementation Blocks, Block 7 — Final 
 
 ### Community 142 - "Community 142"
 
-Cohesion: 0.20
-Nodes (10): Chunk 1: Role-Based UI Hiding + Session Click, Chunk 2: Display Client Workouts/Plans in Detail Tabs, Chunk 3: PT Write Access to Client Workouts/Plans, Chunk 4: PT Creates Workouts/Plans for Clients, Chunk 5: Query Invalidation Polish, code:block44 (src/app/(dashboard)/workouts/[id]/page.tsx - Hide E), code:block45 (src/app/(dashboard)/clients/[id]/workouts/create/page.tsx -), Files Modified (+2 more)
+Cohesion: 0.09
+Nodes (24): code:block16 (src/components/ui/scroll-area.tsx ), code:block20 (src/lib/analytics/volume.ts - Added getVolumePro), Modified Files, Modified Files, Modified Files, Modified Files, Modified Files, Modified Files (+16 more)
 
 ### Community 143 - "Community 143"
 
@@ -1134,8 +1140,8 @@ Nodes (9): code:block13 (http://localhost:3000/login), code:block14 (http://loca
 
 ### Community 158 - "Community 158"
 
-Cohesion: 0.22
-Nodes (9): Bugfix (same session) — unclickable page after live Repeat, Carry-overs, Chunk D — Repeat Session from a completed session (2026-05-28) ✅ (pending verification), code:block5 (src/lib/utils/session-navigation.ts ), Modified Files, Problem, Solution, UI follow-up (same session) — actions moved to a kebab menu (+1 more)
+Cohesion: 0.11
+Nodes (19): Carry-overs / future work (from TODO doc, not built here), code:block4 (prisma/schema.prisma -), Forgot Password feature — email-based reset via Resend (2026-06-16) ✅ (pending verification), Modified Files, Modified Files, New / Modified Files, New / Modified Files, Problem (+11 more)
 
 ### Community 159 - "Community 159"
 
@@ -1154,18 +1160,18 @@ Nodes (3): n, R, z
 
 ### Community 162 - "Community 162"
 
-Cohesion: 0.36
-Nodes (6): localStoragePersistenceMiddleware(), ReduxProvider(), AppDispatch, AppStore, makeStore(), RootState
+Cohesion: 0.12
+Nodes (28): useElapsedSessionTime(), useRestTimer(), useSessionRecovery(), SessionPage(), selectSessionView(), SessionView, SessionViewInput, ExerciseCarousel() (+20 more)
 
 ### Community 163 - "Community 163"
 
-Cohesion: 0.10
-Nodes (19): addExerciseToWorkoutSchema, AddMultipleExercisesToWorkoutInput, addMultipleExercisesToWorkoutSchema, copyWorkoutSchema, nestedOfflineExerciseSchema, OfflineSyncWorkoutExercisesInput, OfflineWorkoutCreateInput, OfflineWorkoutDeleteInput (+11 more)
+Cohesion: 0.17
+Nodes (10): button, buttonContainer, container, footer, heading, hr, link, main (+2 more)
 
 ### Community 164 - "Community 164"
 
-Cohesion: 0.11
-Nodes (18): ExerciseMultiSelect(), ExerciseMultiSelectProps, PricingCard(), PricingCardProps, TierConfig, TIER_ORDER, PricingToggle(), PricingToggleProps (+10 more)
+Cohesion: 0.29
+Nodes (7): code:block35 (src/server/actions/stripe.ts - A), Modified Files, Modified Files, Modified Files, Modified Files, New Files, New Files
 
 ### Community 165 - "Community 165"
 
@@ -1219,18 +1225,18 @@ Nodes (7): B-Fit User Testing Guide - Protected Routes & Authentication, code:bl
 
 ### Community 175 - "Community 175"
 
-Cohesion: 0.25
-Nodes (8): Architecture Changes, Benefits Achieved, Code Statistics, Files Changed, Key Features Implemented, Next Steps (Phase 18 - Testing & Cleanup), 🎉 SESSION REFACTOR COMPLETE! (2026-02-02), Summary
+Cohesion: 0.15
+Nodes (13): Architecture Changes, Benefits Achieved, Code Statistics, Code Statistics, Code Statistics, Code Statistics, Code Statistics, Code Statistics (+5 more)
 
 ### Community 176 - "Community 176"
 
-Cohesion: 0.14
-Nodes (11): WorkoutBuilder(), WorkoutBuilderPageProps, WorkoutExercise, CreateWorkoutForClientProps, useSmartBack(), EditWorkoutPageProps, WorkoutDetailPage(), useAddMultipleExercisesToWorkout() (+3 more)
+Cohesion: 0.07
+Nodes (28): Carry-overs, Carry-overs, Carry-overs, Carry-overs, Carry-overs, Chunk E — Auto-populate next set from the completed set (2026-05-28) ✅ (pending verification), code:block8 (src/store/slices/sessionSlice.ts - autoP), Modified Files (+20 more)
 
 ### Community 177 - "Community 177"
 
-Cohesion: 0.47
-Nodes (3): selectSessionView(), SessionView, SessionViewInput
+Cohesion: 0.14
+Nodes (14): code:block13 (prisma/schema.prisma ), Modified Files, Modified Files, Modified Files, Modified Files, Modified Files, PR3 — Plan offline capabilities (2026-04-30) ✅, PR3 — Plan offline capabilities (2026-04-30) ✅ (+6 more)
 
 ### Community 178 - "Community 178"
 
@@ -1384,43 +1390,43 @@ Nodes (7): Block 6 — Offline Exercise CRUD, Exercise id cache inventory (the r
 
 ### Community 208 - "Community 208"
 
-Cohesion: 0.29
-Nodes (7): Carry-overs, Chunk E — Auto-populate next set from the completed set (2026-05-28) ✅ (pending verification), code:block4 (src/store/slices/sessionSlice.ts - autoP), Modified Files, Problem, Solution, Validation
+Cohesion: 0.09
+Nodes (23): Bugfix (same session) — unclickable page after live Repeat, Carry-overs, Carry-overs, Carry-overs, Carry-overs, Carry-overs, Chunk D — Repeat Session from a completed session (2026-05-28) ✅ (pending verification), Problem (+15 more)
 
 ### Community 209 - "Community 209"
 
-Cohesion: 0.29
-Nodes (7): Carry-overs, Chunk B — Drawer foundation + completed-session type expansion (2026-05-28) ✅, code:block7 (src/components/features/sessions/CompletedSessionDrawer.tsx ), Modified Files, Problem, Solution, Validation
+Cohesion: 0.07
+Nodes (31): Carry-overs, Carry-overs, Carry-overs, Carry-overs, Carry-overs, Carry-overs, Chunk B — Drawer foundation + completed-session type expansion (2026-05-28) ✅, code:block9 (src/lib/utils/session-navigation.ts ) (+23 more)
 
 ### Community 210 - "Community 210"
 
-Cohesion: 0.29
-Nodes (7): Carry-overs to next chunk, Chunk A — PWA field-testing quick wins (2026-05-28) ✅ (pending verification), code:block8 (src/components/features/workouts/ExerciseSelectorPanel.tsx ), Modified Files, Problem, Solution, Validation
+Cohesion: 0.22
+Nodes (10): hasBackupForSession(), loadSessionBackup(), localStoragePersistenceMiddleware(), ReduxProvider(), AppDispatch, AppStore, makeStore(), RootState (+2 more)
 
 ### Community 211 - "Community 211"
 
-Cohesion: 0.29
-Nodes (7): Carry-overs / considerations, Chunk C — Save completed session as a Workout (2026-05-28) ✅ (pending verification), code:block6 (src/hooks/useCanCreateWorkout.ts ), Modified Files, Problem, Solution, Validation
+Cohesion: 0.08
+Nodes (25): Carry-overs / considerations, Chunk C — Save completed session as a Workout (2026-05-28) ✅ (pending verification), code:block10 (src/hooks/useCanCreateWorkout.ts ), Modified Files, Modified Files, Modified Files, Modified Files, Modified Files (+17 more)
 
 ### Community 212 - "Community 212"
 
-Cohesion: 0.29
-Nodes (7): Carry-overs, Chunk H — Analytics set-count chart per muscle group (2026-05-28) ✅ (pending verification), code:block1 (src/lib/analytics/volume.ts ), Modified Files, Problem, Solution, Validation
+Cohesion: 0.08
+Nodes (27): Carry-overs, Carry-overs, Carry-overs, Carry-overs, Carry-overs, Carry-overs, Chunk G — Analytics custom date range (2026-05-28) ✅ (pending verification), code:block6 (src/types/analytics.ts ) (+19 more)
 
 ### Community 213 - "Community 213"
 
-Cohesion: 0.29
-Nodes (7): Carry-overs, Chunk F — Muscle-group set counts (2026-05-28) ✅ (pending verification), code:block3 (src/lib/analytics/muscle-set-counts.ts ), Modified Files, Problem, Solution, Validation
+Cohesion: 0.11
+Nodes (20): Carry-overs to PR2, code:block14 (src/server/actions/plans.ts - getAllActivePla), Modified Files, Modified Files, Modified Files, Modified Files, Modified Files, PR1.5 — Read-path completeness for detail routes (2026-04-26) ✅ (+12 more)
 
 ### Community 214 - "Community 214"
 
-Cohesion: 0.29
-Nodes (7): Carry-overs, Chunk G — Analytics custom date range (2026-05-28) ✅ (pending verification), code:block2 (src/types/analytics.ts ), Modified Files, Problem, Solution, Validation
+Cohesion: 0.09
+Nodes (25): Chunk O1: Prisma Schema Changes ✅, code:block17 (src/components/features/plans/PlanBuilderPage.tsx - Header ), code:block18 (prisma/schema.prisma - Organisa), code:block19 (src/types/analytics.ts - All analytics type), Fix 1: Plan Builder Save Button, Fix 2: Drawer Keyboard Behavior, Fix 3: Drawer Back Button, Mobile UX Fixes (2026-03-11) ✅ (+17 more)
 
 ### Community 215 - "Community 215"
 
-Cohesion: 0.29
-Nodes (7): Carry-overs to next PR, code:block9 (prisma/schema.prisma ), Modified Files, PR3 — Plan offline capabilities (2026-04-30) ✅, Problem, Solution, Validation
+Cohesion: 0.15
+Nodes (13): Chunk 1: RBAC Utility ✅, Chunk 2: Session History Page ✅, Chunk 3: PR Enhancement ✅, Chunk 4: ClientRelationship Schema & Server Actions ✅, Chunk 5: Workout & Plan Assignment ✅, Chunk 6: Client Management UI ✅, Chunk 7: Role Upgrade Flow ✅, Chunk 8: Client-Side Experience & Dashboard ✅ (+5 more)
 
 ### Community 216 - "Community 216"
 
@@ -1429,8 +1435,8 @@ Nodes (6): Analytics, Messaging & Media, Organisation, Phase 5: Advanced Feature
 
 ### Community 217 - "Community 217"
 
-Cohesion: 0.29
-Nodes (6): h, isAuth, online, originalFetch, parsed, \_stack
+Cohesion: 0.16
+Nodes (12): CompletedExerciseData, CompletedSessionDrawerProps, CompletedSetData, DrawerAction, ExerciseCardProps, formatSetMeta(), formatSetValue(), SessionPRDisplay (+4 more)
 
 ### Community 218 - "Community 218"
 
@@ -1499,23 +1505,23 @@ Nodes (6): Blockers encountered and how they were resolved, Deviations from the 
 
 ### Community 231 - "Community 231"
 
-Cohesion: 0.33
-Nodes (6): Carry-overs to PR2, code:block10 (src/server/actions/plans.ts - getAllActivePla), Modified Files, PR1.5 — Read-path completeness for detail routes (2026-04-26) ✅, Problem, Solution
+Cohesion: 0.09
+Nodes (22): Carry-overs to next PR, code:block11 (src/components/features/sessions/CompletedSessionDrawer.tsx ), Modified Files, Modified Files, Modified Files, Modified Files, Modified Files, Modified Files (+14 more)
 
 ### Community 232 - "Community 232"
 
-Cohesion: 0.33
-Nodes (6): Carry-overs to PR1.5, code:block11 (src/app/sw.ts - matchOptions: {), Modified Files, PR1 — Top-Level Route Warming for Offline Navigation (2026-04-26) ✅, Problem, Solution
+Cohesion: 0.15
+Nodes (13): code:block36 (src/lib/stripe/subscription.ts - S), code:block39 (src/server/actions/stripe.ts - A), Modified Files, Modified Files, Modified Files, Modified Files, Modified Files, New Files (+5 more)
 
 ### Community 233 - "Community 233"
 
-Cohesion: 0.33
-Nodes (6): code:block13 (src/components/features/plans/PlanBuilderPage.tsx - Header ), Fix 1: Plan Builder Save Button, Fix 2: Drawer Keyboard Behavior, Fix 3: Drawer Back Button, Mobile UX Fixes (2026-03-11) ✅, Modified Files
+Cohesion: 0.10
+Nodes (22): Carry-overs to PR1.5, code:block15 (src/app/sw.ts - matchOptions: {), Modified Files, Modified Files, Modified Files, Modified Files, New/Modified Files, PR1 — Top-Level Route Warming for Offline Navigation (2026-04-26) ✅ (+14 more)
 
 ### Community 234 - "Community 234"
 
-Cohesion: 0.33
-Nodes (6): Google OAuth Authentication, Overview, Security Considerations, Testing Checklist, User Experience Improvements, User Flow
+Cohesion: 0.14
+Nodes (14): Google OAuth Authentication, Overview, Overview, Overview, Security Considerations, Security Considerations, Security Considerations, Testing Checklist (+6 more)
 
 ### Community 235 - "Community 235"
 
@@ -1644,18 +1650,18 @@ Nodes (4): code:tsx (import { DashboardLayout } from '@/components/layouts/Dashb
 
 ### Community 260 - "Community 260"
 
-Cohesion: 0.40
-Nodes (5): ✅ Active Plan Dashboard with Week Tracking (COMPLETED), code:block101 (src/lib/validations/plan.ts (MODIFIED - new days-b), code:block102 (prisma/schema.prisma (mod), ✅ Task 7.10: Plan Builder - Add Day, Reorder Days, Copy Day (COMPLETED), Week 7 (continued): Plan Builder Enhancements
+Cohesion: 0.50
+Nodes (4): 2.3 Log Set, code:tsx (<SetLogger metricType={exercise.metricType}>), code:tsx (<Drawer open={setDrawerOpen} position="bottom">), code:typescript (async function handleSetComplete(setIndex: number) {)
 
 ### Community 261 - "Community 261"
 
-Cohesion: 0.40
-Nodes (5): code:block12 (src/components/ui/scroll-area.tsx ), Modified Files, Problem, ScrollArea Fix (2026-03-13) ✅, Solution
+Cohesion: 0.20
+Nodes (8): inter, metadata, outfit, viewport, SessionProvider(), SessionProviderProps, Toaster(), ToasterProps
 
 ### Community 262 - "Community 262"
 
-Cohesion: 0.40
-Nodes (5): code:block28 (src/components/features/auth/SignupForm.tsx - Clien), Modified Files, Navbar Session Hydration Fix, Pending Invitation Management (Cancel & Refresh), Post-Phase 4: Bug Fixes & Invitation Management
+Cohesion: 0.12
+Nodes (16): code:block30 (src/app/(dashboard)/clients/[id]/page.tsx - ), code:block33 (src/components/features/billing/SubscriptionStatusBanner.tsx), code:block37 (src/server/actions/clients.ts - A), Modified Files, Modified Files, Modified Files, Modified Files, Modified Files (+8 more)
 
 ### Community 263 - "Community 263"
 
@@ -1669,8 +1675,8 @@ Nodes (5): code:bash (# NextAuth already installed, just need to add provider co
 
 ### Community 265 - "Community 265"
 
-Cohesion: 0.40
-Nodes (5): Forgot Password Feature, Overview, Security Considerations, Testing Checklist, User Flow
+Cohesion: 0.67
+Nodes (3): 2.6 Handle Page Refresh, code:typescript (useEffect(() => {), code:typescript (interface SessionBackup {)
 
 ### Community 266 - "Community 266"
 
@@ -1699,8 +1705,8 @@ Nodes (3): nextConfig, packageVersion, withSerwist
 
 ### Community 271 - "Community 271"
 
-Cohesion: 0.20
-Nodes (15): ActionResponse, addExerciseToWorkout(), addMultipleExercisesToWorkout(), assignWorkoutToClient(), canModifyWorkout(), copyWorkout(), deleteWorkout(), removeExerciseFromWorkout() (+7 more)
+Cohesion: 0.29
+Nodes (11): getTierCapacity(), getTierFromPriceId(), getPeriodEnd(), handleCheckoutCompleted(), handlePaymentFailed(), handleSubscriptionDeleted(), handleSubscriptionUpdated(), mapStripeStatus() (+3 more)
 
 ### Community 272 - "Community 272"
 
@@ -1784,42 +1790,72 @@ Nodes (3): Billing Management, code:typescript (// features/subscriptions/action
 
 ### Community 294 - "Community 294"
 
-Cohesion: 0.24
-Nodes (9): clearPendingCommit(), CommitAction, PendingCommitEntry, PendingCommitMap, readPendingCommits(), writePendingCommits(), paussedMutationExistsForSession(), recoverPendingSessionCommits() (+1 more)
+Cohesion: 0.27
+Nodes (9): getClientDetail(), getClientSessions(), getInvitationDetail(), requireRole(), ClientSessionsTab(), ClientDetailPage(), useClientDetail(), useClientSessions() (+1 more)
 
 ### Community 295 - "Community 295"
 
-Cohesion: 0.17
-Nodes (10): CreateWorkoutServiceInput, SyncExerciseInput, WorkoutBasic, workoutBasicInclude, WorkoutWithExercises, workoutWithExercisesInclude, CreateWorkoutInput, createWorkoutSchema (+2 more)
+Cohesion: 0.10
+Nodes (19): createUser(), { handlers, auth, signIn, signOut }, getFromAddress(), getResendClient(), isEmailConfigured(), sendWelcomeEmail(), button, buttonContainer (+11 more)
 
 ### Community 318 - "Community 318"
 
-Cohesion: 0.22
-Nodes (9): 2.7 Complete Session, code:typescript (function isExerciseComplete(exercise: SessionExercise): bool), code:typescript (// Show complete button only when all exercises are complete), code:typescript (function handleAddSet(exerciseId: string) {), code:tsx ({), code:tsx (<Drawer open={settingsDrawerOpen}>), code:typescript (async function handleCompleteFromSettings() {), code:typescript (async function handleCancel() {) (+1 more)
+Cohesion: 0.31
+Nodes (8): ClientAnalyticsTab(), AnalyticsPage(), CustomRange, rangeKeyParts(), useAnalyticsOverview(), useClientAnalytics(), useExerciseComparison(), useVolumeProgression()
 
 ### Community 319 - "Community 319"
 
-Cohesion: 0.12
-Nodes (8): { handlers, auth, signIn, signOut }, persistSession(), sessionService, callbackUrl, config, checkAndAdvanceWeek(), TransactionClient, saveSessionSchema
+Cohesion: 0.09
+Nodes (18): SessionVariables, persistSession(), sessionService, ExerciseSessionMetrics, SaveSessionPayload, SessionExercise, SessionExerciseWithDetails, SessionFilters (+10 more)
 
 ### Community 320 - "Community 320"
 
-Cohesion: 0.29
-Nodes (4): IdMap, subscribers, Waiter, waiters
+Cohesion: 0.22
+Nodes (6): getDetailedMetricPRs(), getPRSummary(), RawPriorRow, RawPRRow, globalForPrisma, RecentPR
 
 ### Community 321 - "Community 321"
 
 Cohesion: 0.29
-Nodes (3): CreateVariables, DeleteVariables, UpdateVariables
+Nodes (4): IdMap, subscribers, Waiter, waiters
 
 ### Community 322 - "Community 322"
 
 Cohesion: 0.67
 Nodes (3): CI/CD Pipeline, code:yaml (# .github/workflows/ci.yml), GitHub Actions Workflow
 
+### Community 323 - "Community 323"
+
+Cohesion: 0.29
+Nodes (6): h, isAuth, online, originalFetch, parsed, \_stack
+
+### Community 324 - "Community 324"
+
+Cohesion: 0.33
+Nodes (6): code:block29 (src/components/features/analytics/ClientAnalyticsTab.tsx - ), Modified Files, Modified Files, New Files, New Files, New Files
+
+### Community 325 - "Community 325"
+
+Cohesion: 0.33
+Nodes (6): code:block43 (src/components/features/pricing/PricingToggle.tsx - Monthly), Modified Files, Modified Files, New Files, New Files, New Files
+
+### Community 326 - "Community 326"
+
+Cohesion: 0.53
+Nodes (3): ContinueButtonState, shouldShowContinueButton(), ContinueSessionButton()
+
+### Community 331 - "Community 331"
+
+Cohesion: 0.40
+Nodes (5): 1. Created SupersetManager Class Library, 2. Refactored Workout Builder to Use Manager, 3. Refactored SupersetManagerDrawer to Use Manager, 4. Comprehensive Unit Tests, ✅ Task 4.6: SupersetManager Refactor (COMPLETED)
+
+### Community 335 - "Community 335"
+
+Cohesion: 0.12
+Nodes (18): code:block31 (src/components/features/analytics/ExerciseMultiSelect.tsx -), code:block32 (src/components/features/auth/SignupForm.tsx - Clien), Modified Files, Modified Files, Modified Files, Modified Files, Modified Files, Modified Files (+10 more)
+
 ## Knowledge Gaps
 
-- **2048 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `css` (+2043 more)
+- **2186 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `css` (+2181 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -1827,17 +1863,17 @@ Nodes (3): CI/CD Pipeline, code:yaml (# .github/workflows/ci.yml), GitHub Action
 
 _Questions this graph is uniquely positioned to answer:_
 
+- **Why does `B-Fit Project - Current Progress` connect `Community 55` to `Community 134`, `Community 142`, `Community 21`, `Community 22`, `Community 23`, `Community 24`, `Community 158`, `Community 175`, `Community 176`, `Community 177`, `Community 65`, `Community 70`, `Community 77`, `Community 335`, `Community 208`, `Community 209`, `Community 211`, `Community 212`, `Community 85`, `Community 213`, `Community 214`, `Community 215`, `Community 95`, `Community 96`, `Community 231`, `Community 233`, `Community 109`, `Community 113`, `Community 123`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
 - **Why does `postSessionAction()` connect `Community 0` to `Community 42`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Why does `warmRouteRsc()` connect `Community 42` to `Community 0`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
-- **Why does `S()` connect `Community 112` to `Community 42`, `Community 27`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **What connects `$schema`, `style`, `rsc` to the rest of the system?**
-  _2048 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _2186 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.027913015254787406 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.028070175438596492 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.06474490963166324 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06472564389697648 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.04951923076923077 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0989247311827957 - nodes in this community are weakly interconnected._

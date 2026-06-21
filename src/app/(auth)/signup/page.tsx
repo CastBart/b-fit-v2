@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { SignupForm } from '@/components/features/auth/SignupForm'
+import { GoogleSignInButton } from '@/components/features/auth/GoogleSignInButton'
 import {
   Card,
   CardContent,
@@ -48,9 +49,20 @@ export default async function SignupPage({
             Enter your information below to create your account and start your fitness journey
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <Suspense fallback={<SignupFormSkeleton />}>
             <SignupForm />
+          </Suspense>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+            </div>
+          </div>
+          <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+            <GoogleSignInButton />
           </Suspense>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">

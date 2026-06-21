@@ -82,7 +82,15 @@
       "PowerShell(npx eslint \"src/components/features/plans/PlanDayDetailDrawer.tsx\" \"src/lib/superset-manager/colors.ts\" \"src/app/\\(dashboard\\)/plans/[id]/page.tsx\" 2>&1 | Select-Object -First 40)",
       "PowerShell(npx eslint \"src/components/features/plans/PlanDayDetailDrawer.tsx\" \"src/lib/superset-manager/colors.ts\" 2>&1 | Select-Object -First 40)",
       "PowerShell(npx eslint \"src/lib/superset-manager/colors.ts\" 2>&1)",
-      "PowerShell(graphify update *)"
+      "PowerShell(graphify update *)",
+      "PowerShell(npm run *)",
+      "PowerShell(npx eslint \"src/lib/perf/timing.ts\" \"src/lib/pwa/optimistic-plan-progress.ts\" \"src/lib/pwa/optimistic-plan-progress.test.ts\" \"src/lib/pwa/mutation-defaults.ts\" \"src/lib/pwa/commit-completed-session.ts\" \"src/lib/pwa/recover-pending-commits.ts\" \"src/lib/utils/session-navigation.ts\" \"src/hooks/useSessionRecovery.ts\" \"src/hooks/queries/useActivePlanDashboard.ts\" \"src/components/features/plans/ActivePlanSection.tsx\" \"src/components/features/sessions/ContinueSessionButton.tsx\" \"src/components/features/sessions/continue-session-button.helpers.ts\" \"src/components/features/sessions/continue-session-button.helpers.test.ts\" \"src/components/providers/PersistQueryProvider.tsx\" \"src/app/\\(dashboard\\)/dashboard/page.tsx\" \"src/app/\\(dashboard\\)/session/page.tsx\" \"src/app/\\(dashboard\\)/session/session-view-state.ts\" \"src/app/\\(dashboard\\)/session/session-view-state.test.ts\")",
+      "PowerShell(npx eslint \"src/lib/perf/timing.ts\" \"src/lib/pwa/optimistic-plan-progress.ts\" \"src/lib/pwa/optimistic-plan-progress.test.ts\" \"src/lib/pwa/commit-completed-session.ts\" \"src/lib/pwa/recover-pending-commits.ts\" \"src/app/\\(dashboard\\)/session/session-view-state.ts\" \"src/app/\\(dashboard\\)/session/session-view-state.test.ts\" \"src/components/features/sessions/continue-session-button.helpers.ts\" \"src/components/features/sessions/continue-session-button.helpers.test.ts\")",
+      "Bash(graphify update *)",
+      "Bash(graphify query *)",
+      "Bash(npx vitest *)",
+      "Bash(ls -d todo todos TODO docs/todo docs/todos)",
+      "Bash(find . -maxdepth 2 -type d -iname \"*todo*\" -not -path \"*/node_modules/*\")"
     ]
   },
   "enabledPlugins": {
