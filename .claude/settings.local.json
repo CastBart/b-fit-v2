@@ -88,7 +88,9 @@
       "PowerShell(npx eslint \"src/lib/perf/timing.ts\" \"src/lib/pwa/optimistic-plan-progress.ts\" \"src/lib/pwa/optimistic-plan-progress.test.ts\" \"src/lib/pwa/commit-completed-session.ts\" \"src/lib/pwa/recover-pending-commits.ts\" \"src/app/\\(dashboard\\)/session/session-view-state.ts\" \"src/app/\\(dashboard\\)/session/session-view-state.test.ts\" \"src/components/features/sessions/continue-session-button.helpers.ts\" \"src/components/features/sessions/continue-session-button.helpers.test.ts\")",
       "Bash(graphify update *)",
       "Bash(graphify query *)",
-      "Bash(npx vitest *)"
+      "Bash(npx vitest *)",
+      "Bash(ls -d todo todos TODO docs/todo docs/todos)",
+      "Bash(find . -maxdepth 2 -type d -iname \"*todo*\" -not -path \"*/node_modules/*\")"
     ]
   },
   "enabledPlugins": {

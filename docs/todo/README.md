@@ -31,6 +31,25 @@ Includes:
 - Environment setup instructions
 - Recommended implementation order
 
+### [legacy-plan-hooks-cleanup.md](./legacy-plan-hooks-cleanup.md)
+
+**Status**: Planned
+**Priority**: Low
+**Effort**: 1-2 hours
+
+Removal of confirmed-dead legacy plan-save code surfaced during the superset
+save-bug fix:
+
+- 4 dead server actions (`savePlanAllDays`, `syncPlanDayExercises`,
+  `copyWorkoutToPlanDay`, `updatePlanDay`)
+- 3 dead mutation hooks (`useSyncPlanDayExercises`, `useCopyWorkoutToPlanDay`,
+  `useUpdatePlanDay`)
+- Associated unused Zod schemas/types
+
+The live builder routes everything through `save-all-days` →
+`planService.saveAllDays`. Includes the keep-list (`copyPlan`,
+`createPlanForClient`) and step-by-step removal instructions.
+
 ## How to Use
 
 1. Review documents when planning next development phase
@@ -95,4 +114,4 @@ Additional context or considerations
 
 ---
 
-**Last Updated**: 2026-01-27
+**Last Updated**: 2026-06-21
