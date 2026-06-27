@@ -20,9 +20,9 @@
     "hash": "3b6bd2064ed16a0238ff4c9c723ceb232b295522d38d1af75ab165db2e06258e"
   },
   "D:\\Projects\\b-fit v2\\.claude\\settings.local.json": {
-    "size": 5047,
-    "mtime_ns": 1781595352841689900,
-    "hash": "88e2f347c26d8cf4c22826dc2045db4d5245cc099ef00d54981f004d31705501"
+    "size": 5257,
+    "mtime_ns": 1782028773623669900,
+    "hash": "a39ca20544bdf58bd0da6b475f6f294084a3b73eec855ddb014effb5186ff7aa"
   },
   "D:\\Projects\\b-fit v2\\.husky\\_\\husky.sh": {
     "size": 160,
@@ -325,9 +325,9 @@
     "hash": "646b335cfd04ed360e18fcab46b6253edf56266da928199c6121632e5f65ff23"
   },
   "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\CURRENT-PROGRESS.md": {
-    "size": 222345,
-    "mtime_ns": 1781894002186214200,
-    "hash": "c072aaa2ee0a7e469a2643d07425c4788714d0b620d3e47bc2f095fa922f8b04"
+    "size": 222346,
+    "mtime_ns": 1782028621419777400,
+    "hash": "f22b72fa85809d72cdab478fd2ecb0ff8fb85dbdc8d7bb8c88586986436a0b1f"
   },
   "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md": {
     "size": 8263,
@@ -370,9 +370,9 @@
     "hash": "4f3f1c785068b64b2a1d9897e3f6988db41132273422d7044c36d9d3ffb38183"
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md": {
-    "size": 22573,
-    "mtime_ns": 1781681637189259800,
-    "hash": "175ce4034c48b3f892e5e259a62f54fa8cc90e6aae04273f2376bb36488e206b"
+    "size": 22575,
+    "mtime_ns": 1782028621726489500,
+    "hash": "fc01f88f3d5173bb2e87dddb4434212e224d309fa6c752cb0df156003f5811e1"
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\environment-variables-anagement.md": {
     "size": 3489,
@@ -380,9 +380,9 @@
     "hash": "6ef29f5a010ea21dcf25225aa0c8dc4ef5bcf992501f102675f3eaea91446c19"
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\README.md": {
-    "size": 2195,
-    "mtime_ns": 1769548178240258600,
-    "hash": "e7964575fd27e910bedbad58d1616d8e2dd339b4c8b5db9c1164eaa214099f13"
+    "size": 2856,
+    "mtime_ns": 1782028827879504500,
+    "hash": "ea5729ba362ca172ccbbfcf96464adcb87663e2c47a3de4bd53ad87ea8ff9983"
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\README.md": {
     "size": 622,
@@ -435,8 +435,18 @@
     "hash": "ea1e38c8265e089e6cab586fd935b65a7d54cc1fe4c42fbbef6890d0742e4253"
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\stripe-subscription-testing-review.md": {
-    "size": 13038,
-    "mtime_ns": 1781637890025337800,
-    "hash": "b680cbcb7868a714b1042e6f0ce7505a5a6751ca8713b9c153ba54e269c7a118"
+    "size": 14827,
+    "mtime_ns": 1782028621846152100,
+    "hash": "b96220ddf9fd17ab8cec0461e39805186ae227d3443dc5ee8b9399e8cc6b1dd9"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260622072545_add_user_body_metrics\\migration.sql": {
+    "size": 1351,
+    "mtime_ns": 1782113145154613400,
+    "hash": "66b1fdf5efcac361d73a249e4cfd8ba403a5af566b86027c1a56fbf4437352b3"
+  },
+  "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md": {
+    "size": 4518,
+    "mtime_ns": 1782028813227524100,
+    "hash": "d49977a60262c1c39476709dee3d7747e15327f16e4f3c2244842bbd8192b6ed"
   }
 }
