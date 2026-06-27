@@ -5,6 +5,7 @@ import {
   ClipboardList,
   PlayCircle,
   BarChart3,
+  Calculator,
   Users,
   Building2,
   Settings,
@@ -55,6 +56,12 @@ export const navItems: NavItem[] = [
     href: '/analytics',
     icon: BarChart3,
     roles: ['PERSONAL', 'PT', 'ORG'],
+  },
+  {
+    title: 'Calorie Calculator',
+    href: '/calorie-calculator',
+    icon: Calculator,
+    roles: ['PERSONAL', 'PT', 'CLIENT'],
   },
   {
     title: 'Clients',

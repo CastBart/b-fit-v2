@@ -54,6 +54,9 @@ model User {
   // Subscription relation
   subscription  Subscription?
 
+  // Calorie calculator / body metrics (one per user)
+  bodyMetrics   UserBodyMetrics?
+
   @@index([email])
   @@index([role])
   @@index([isActive])
@@ -745,4 +748,66 @@ model OrgPTRelationship {
   @@index([ptId])
   @@index([status])
   @@index([inviteCode])
+}
+
+// ============================================================================
+// CALORIE CALCULATOR / BODY METRICS
+// ============================================================================
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+enum UnitSystem {
+  METRIC    // kg / cm
+  IMPERIAL  // lbs / ft+in
+}
+
+enum ActivityLevel {
+  SEDENTARY          // little or no exercise (x1.2)
+  LIGHTLY_ACTIVE     // light exercise 1-3 days/week (x1.375)
+  MODERATELY_ACTIVE  // moderate exercise 3-5 days/week (x1.55)
+  VERY_ACTIVE        // hard exercise 6-7 days/week (x1.725)
+  EXTRA_ACTIVE       // very hard exercise / physical job (x1.9)
+}
+
+enum GoalDirection {
+  LOSE
+  MAINTAIN
+  GAIN
+}
+
+// Body metrics + calorie targets (one record per user).
+// Values stored canonically in metric; unitPreference controls display only.
+model UserBodyMetrics {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Demographics (canonical metric units)
+  heightCm    Float
+  weightKg    Float
+  dateOfBirth DateTime
+  sex         Sex
+
+  // Goal: direction + weekly rate of weight change (stored in lb/week; null for MAINTAIN).
+  // Daily calorie delta = weeklyRateLbs * 500 (MyFitnessPal model).
+  activityLevel  ActivityLevel
+  goalDirection  GoalDirection @default(MAINTAIN)
+  weeklyRateLbs  Float?
+  unitPreference UnitSystem     @default(METRIC)
+
+  // Macro split (% of target calories). Null falls back to the default split.
+  proteinPct Int?
+  carbsPct   Int?
+  fatPct     Int?
+
+  // Cached results (computed server-side from the inputs above)
+  bmr            Float?
+  tdee           Float?
+  targetCalories Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

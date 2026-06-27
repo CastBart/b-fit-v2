@@ -1,10 +1,46 @@
 # B-Fit Project - Current Progress
 
-**Last Updated**: 2026-06-17
-**Current Phase**: Auth Enhancements — Google OAuth + account linking + welcome email
-**Recently Completed**: Fixed first-login "stuck skeleton" (dashboard sync race vs pessimistic-offline boot). Plus set-password flow for Google-only accounts + welcome email.
-**Next Tasks**: Manual E2E pass for first-login dashboard (incl. Google signup) and the auth features (run dev server; needs real `RESEND_API_KEY` to confirm delivery). Also open: forgot-password E2E, Stripe/subscription E2E review (`docs/todo/stripe-subscription-testing-review.md`), PWA Chunk I backlog.
-**Branch**: `development`
+**Last Updated**: 2026-06-22
+**Current Phase**: Calorie Calculator — Phase 1 (body metrics → daily calorie + macro targets)
+**Recently Completed**: New `/calorie-calculator` page for PERSONAL/PT/CLIENT. Captures height, weight, DOB, sex, activity level and goal; computes BMR (Mifflin-St Jeor) → TDEE → daily target + macro split. Metric/imperial toggle, results update live, inputs persist per user via new `UserBodyMetrics` model.
+**Next Tasks**: Manual E2E pass for the calorie calculator (run dev server: enter metrics, toggle units, switch goals, save + refresh to confirm persistence; confirm ORG can't see the nav item). Phase 2 ideas: link target to nutrition/food logging. Still open from prior phase: first-login dashboard E2E, forgot-password E2E, Stripe/subscription E2E review, PWA Chunk I backlog.
+**Branch**: `feature/calorie-calculator`
+
+---
+
+## Feature: Calorie Calculator — Phase 1 (2026-06-22) ✅ (pending manual verification)
+
+### What
+
+A standalone `/calorie-calculator` page so Personal Users (and PTs/Clients, who share
+Personal capabilities) can work out a daily calorie target. Inputs: height, weight,
+date of birth, sex, activity level, goal. Outputs: BMR, TDEE, daily target calories and
+a protein/carbs/fat macro split.
+
+### Approach
+
+- **Calc**: Mifflin-St Jeor BMR × activity multiplier (1.2–1.9) + goal delta
+  (lose −250/−500/−750, maintain, gain +250/+500). Pure, unit-tested helpers in
+  `src/lib/calorie/calculator.ts`; unit conversions in `src/lib/calorie/units.ts`.
+- **Data**: new `UserBodyMetrics` model (one per user, `onDelete: Cascade`), values stored
+  canonically in metric; cached `bmr/tdee/targetCalories` computed server-side.
+  Migration `20260622072545_add_user_body_metrics`.
+- **Server/hooks**: `getBodyMetrics` / `upsertBodyMetrics` actions (mirror `users.ts`),
+  `useBodyMetrics` query + `useUpsertBodyMetrics` mutation.
+- **UI**: `CalorieCalculatorForm` (react-hook-form + zod, metric/imperial Tabs toggle) and
+  `CalorieResults` (live recompute on the client). Nav item added in `src/lib/nav-items.ts`
+  for `['PERSONAL', 'PT', 'CLIENT']`.
+
+### Files
+
+- `prisma/schema.prisma` (+ `UserBodyMetrics`, enums `Sex`/`UnitSystem`/`ActivityLevel`/`CalorieGoal`)
+- `src/lib/calorie/{calculator,units}.ts` (+ `calculator.test.ts`, 7 passing)
+- `src/lib/validations/calorieMetrics.ts`
+- `src/server/actions/calorieMetrics.ts`
+- `src/hooks/queries/useBodyMetrics.ts`, `src/hooks/mutations/useBodyMetricsMutations.ts`
+- `src/components/features/calorie-calculator/{CalorieCalculatorForm,CalorieResults}.tsx`
+- `src/app/(dashboard)/calorie-calculator/page.tsx`
+- `src/lib/nav-items.ts`
 
 ---
 
