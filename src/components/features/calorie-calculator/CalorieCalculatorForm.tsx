@@ -64,9 +64,10 @@ function toDateInputValue(date?: Date): string {
 }
 
 function nearestOption(value: number, options: number[]): number {
+  if (options.length === 0) return value
   return options.reduce(
     (best, o) => (Math.abs(o - value) < Math.abs(best - value) ? o : best),
-    options[0]
+    options[0]!
   )
 }
 
