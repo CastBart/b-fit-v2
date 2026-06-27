@@ -1,0 +1,207 @@
+{
+  "nodes": [
+    {
+      "id": "d_projects_b_fit_v2_docs_todo_legacy_plan_hooks_cleanup_md",
+      "label": "legacy-plan-hooks-cleanup.md",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_legacy_plan_hooks_server_actions_cleanup_todo",
+      "label": "Legacy Plan Hooks & Server Actions Cleanup - TODO",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_overview",
+      "label": "Overview",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L8"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_background_the_superset_save_bug_already_fixed",
+      "label": "Background: the superset save bug (already fixed)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_dead_code_to_remove",
+      "label": "Dead code to remove",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L35"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_server_actions_src_server_actions_plans_ts",
+      "label": "Server actions (`src/server/actions/plans.ts`)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_mutation_hooks_src_hooks_mutations_useplanmutations_ts",
+      "label": "Mutation hooks (`src/hooks/mutations/usePlanMutations.ts`)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L50"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_validation_schemas_src_lib_validations_plan_ts",
+      "label": "Validation schemas (`src/lib/validations/plan.ts`)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L56"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_must_keep_still_live_do_not_remove",
+      "label": "Must KEEP (still live \u2014 do not remove)",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L64"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_implementation_steps",
+      "label": "Implementation Steps",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L72"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_testing",
+      "label": "Testing",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L81"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_dependencies",
+      "label": "Dependencies",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L90"
+    },
+    {
+      "id": "todo_legacy_plan_hooks_cleanup_notes",
+      "label": "Notes",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L95"
+    }
+  ],
+  "edges": [
+    {
+      "source": "d_projects_b_fit_v2_docs_todo_legacy_plan_hooks_cleanup_md",
+      "target": "todo_legacy_plan_hooks_cleanup_legacy_plan_hooks_server_actions_cleanup_todo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_legacy_plan_hooks_cleanup_legacy_plan_hooks_server_actions_cleanup_todo",
+      "target": "todo_legacy_plan_hooks_cleanup_overview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_legacy_plan_hooks_cleanup_overview",
+      "target": "todo_legacy_plan_hooks_cleanup_background_the_superset_save_bug_already_fixed",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_legacy_plan_hooks_cleanup_legacy_plan_hooks_server_actions_cleanup_todo",
+      "target": "todo_legacy_plan_hooks_cleanup_dead_code_to_remove",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_legacy_plan_hooks_cleanup_dead_code_to_remove",
+      "target": "todo_legacy_plan_hooks_cleanup_server_actions_src_server_actions_plans_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_legacy_plan_hooks_cleanup_dead_code_to_remove",
+      "target": "todo_legacy_plan_hooks_cleanup_mutation_hooks_src_hooks_mutations_useplanmutations_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_legacy_plan_hooks_cleanup_dead_code_to_remove",
+      "target": "todo_legacy_plan_hooks_cleanup_validation_schemas_src_lib_validations_plan_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_legacy_plan_hooks_cleanup_legacy_plan_hooks_server_actions_cleanup_todo",
+      "target": "todo_legacy_plan_hooks_cleanup_must_keep_still_live_do_not_remove",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_legacy_plan_hooks_cleanup_legacy_plan_hooks_server_actions_cleanup_todo",
+      "target": "todo_legacy_plan_hooks_cleanup_implementation_steps",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_legacy_plan_hooks_cleanup_legacy_plan_hooks_server_actions_cleanup_todo",
+      "target": "todo_legacy_plan_hooks_cleanup_testing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_legacy_plan_hooks_cleanup_legacy_plan_hooks_server_actions_cleanup_todo",
+      "target": "todo_legacy_plan_hooks_cleanup_dependencies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "todo_legacy_plan_hooks_cleanup_legacy_plan_hooks_server_actions_cleanup_todo",
+      "target": "todo_legacy_plan_hooks_cleanup_notes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md",
+      "source_location": "L95",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -35,8 +35,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\.claude\\settings.local.json": {
-    "mtime": 1781595352.8416898,
-    "ast_hash": "ede7890a5c12a8c43c2fe47134082dc8",
+    "mtime": 1782028773.6236699,
+    "ast_hash": "dac054de325714de865fec1cf26b826b",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\.husky\\_\\applypatch-msg": {
@@ -1325,8 +1325,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\nav-items.ts": {
-    "mtime": 1781340124.274508,
-    "ast_hash": "fc6c4f102384b1b17b39e7635bdbeb86",
+    "mtime": 1782113226.0764215,
+    "ast_hash": "c931f0b01ef56257a4b737aadab5ec12",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\utils.ts": {
@@ -1660,8 +1660,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\services\\plans.ts": {
-    "mtime": 1781340128.6128402,
-    "ast_hash": "345e1a435cb5c4c18cedabf44867d046",
+    "mtime": 1781942050.6903567,
+    "ast_hash": "e6124aaae3af9473535bb84c91c987d1",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\services\\sessions.ts": {
@@ -1670,8 +1670,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\services\\workouts.ts": {
-    "mtime": 1781340128.7587786,
-    "ast_hash": "b7e3c918ff985987966655e09e76901d",
+    "mtime": 1781942113.9167717,
+    "ast_hash": "bda23250e15009c2a486625bc968c880",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\utils\\plan-week-utils.ts": {
@@ -1975,8 +1975,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\CURRENT-PROGRESS.md": {
-    "mtime": 1781894002.1862142,
-    "ast_hash": "e38948cc6e703a63f6c9232ba472d7fc",
+    "mtime": 1782028621.4197774,
+    "ast_hash": "5c10206a6d4a7eea428f89e04ea974a8",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md": {
@@ -2025,8 +2025,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md": {
-    "mtime": 1781681637.1892598,
-    "ast_hash": "fe8f61e2f4db1896c48f1af2331a8f5c",
+    "mtime": 1782028621.7264895,
+    "ast_hash": "3b702a71da9e6b45435ecf41cf33ef26",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\environment-variables-anagement.md": {
@@ -2035,8 +2035,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\README.md": {
-    "mtime": 1769548178.2402587,
-    "ast_hash": "ac54fb9cae95d3964d3281c35f2ae368",
+    "mtime": 1782028827.8795044,
+    "ast_hash": "caf069d133427158cb9cbc5f785f60e3",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\README.md": {
@@ -2320,8 +2320,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\stripe-subscription-testing-review.md": {
-    "mtime": 1781637890.0253377,
-    "ast_hash": "2098d239b6c928acfafdcab46c2662f4",
+    "mtime": 1782028621.846152,
+    "ast_hash": "924c41349b1fb87c7c7ebfe816bf0855",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\settings\\SetPasswordDialog.tsx": {
@@ -2342,6 +2342,66 @@
   "D:\\Projects\\b-fit v2\\src\\lib\\email\\welcome.ts": {
     "mtime": 1781854393.0502036,
     "ast_hash": "a9b03fe12a98fe8a5e977eb3a4cae550",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260622072545_add_user_body_metrics\\migration.sql": {
+    "mtime": 1782113145.1546135,
+    "ast_hash": "2005e2c482c4004d9ece3bc3f67415b5",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\calorie-calculator\\page.tsx": {
+    "mtime": 1782113347.724146,
+    "ast_hash": "ade75051e11b50b3f9afc0aa925efa58",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\components\\features\\calorie-calculator\\CalorieCalculatorForm.tsx": {
+    "mtime": 1782113937.1262052,
+    "ast_hash": "c76a5e0a823caee5a2d6ead589dd7852",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\components\\features\\calorie-calculator\\CalorieResults.tsx": {
+    "mtime": 1782113325.2129834,
+    "ast_hash": "4a41d8e54c82106795990bd46ae2ab4a",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\hooks\\mutations\\useBodyMetricsMutations.ts": {
+    "mtime": 1782113217.2714756,
+    "ast_hash": "e46b02f76970bfd99300a6efcb938d2a",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\hooks\\queries\\useBodyMetrics.ts": {
+    "mtime": 1782113210.667644,
+    "ast_hash": "7256e0342a5379a58d542fbd0558c728",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\lib\\calorie\\calculator.test.ts": {
+    "mtime": 1782113362.0083709,
+    "ast_hash": "e727365820c514e6bb17495525e39337",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\lib\\calorie\\calculator.ts": {
+    "mtime": 1782113170.9981697,
+    "ast_hash": "93cd8165f33d02483af4b04056465d16",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\lib\\calorie\\units.ts": {
+    "mtime": 1782113178.6276777,
+    "ast_hash": "11d3202e301925aabef62937896dc46e",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\lib\\validations\\calorieMetrics.ts": {
+    "mtime": 1782113943.324017,
+    "ast_hash": "99370cd220285f5e5a3d8a9ec58c5c9b",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\src\\server\\actions\\calorieMetrics.ts": {
+    "mtime": 1782113200.4846315,
+    "ast_hash": "817af341da6b172fc0918c872b3f9ba6",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md": {
+    "mtime": 1782028813.227524,
+    "ast_hash": "1079fc26f9c927cbb042440733218b9e",
     "semantic_hash": ""
   }
 }
