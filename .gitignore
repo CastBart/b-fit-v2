@@ -72,3 +72,6 @@ prisma/migrations/migration_lock.toml
 .cache
 
 /src/generated/prisma
+
+# graphify (generated knowledge graph — regenerate locally with `graphify update .`)
+graphify-out/

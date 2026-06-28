@@ -53,8 +53,8 @@ const METRIC_FIELDS: (keyof SetMetrics)[] = [
 
 /**
  * Carry the just-completed set's metrics into the next set, but only into
- * fields that are still blank or 0. User-entered (non-zero) values and
- * history-prefilled values are preserved.
+ * fields that are still unset (null/undefined). User-entered values — including
+ * 0 (e.g. RIR 0 = to failure) — and history-prefilled values are preserved.
  *
  * Mutates `nextSet` in place (called on an Immer draft). No-op if `nextSet`
  * is already completed.
@@ -65,8 +65,8 @@ function autoPopulateNextSet(completedMetrics: SetMetrics, nextSet: SessionSet):
     const value = completedMetrics[field]
     if (value == null) continue // nothing to copy from
     const existing = nextSet.metrics[field]
-    // Treat undefined / null / 0 as "blank" → fillable.
-    if (existing == null || existing === 0) {
+    // Only fill truly unset fields; 0 is a valid value (e.g. RIR 0 = to failure).
+    if (existing == null) {
       nextSet.metrics[field] = value
     }
   }
