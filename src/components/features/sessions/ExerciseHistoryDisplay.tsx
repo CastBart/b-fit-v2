@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Calendar, History } from 'lucide-react'
 import { useLatestExerciseHistory, useExerciseHistory } from '@/hooks/queries/useExerciseHistory'
+import { useAppSelector } from '@/store/hooks'
 import { estimateOneRepMax } from '@/lib/analytics/one-rep-max'
 import type { ExerciseHistoryEntry, HistorySet } from '@/types/session'
 import type { MetricType } from '@prisma/client'
@@ -35,7 +36,17 @@ interface LatestHistoryPreviewProps {
 }
 
 export function LatestHistoryPreview({ exerciseId, metricType }: LatestHistoryPreviewProps) {
-  const { data: latestHistory, isLoading } = useLatestExerciseHistory(exerciseId)
+  // Scope the "last time" preview to the active session's plan day / workout so
+  // it matches the values prefilled at session start (falls back to global
+  // most-recent server-side when there's no matching prior session).
+  const workoutId = useAppSelector((state) => state.session.workoutId)
+  const planId = useAppSelector((state) => state.session.planId)
+  const planDayId = useAppSelector((state) => state.session.planDayId)
+  const { data: latestHistory, isLoading } = useLatestExerciseHistory(exerciseId, {
+    workoutId,
+    planId,
+    planDayId,
+  })
 
   if (isLoading) {
     return (
@@ -52,12 +63,14 @@ export function LatestHistoryPreview({ exerciseId, metricType }: LatestHistoryPr
 
   return (
     <div className="rounded-lg border border-dashed bg-muted/30 p-3 space-y-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <History className="h-4 w-4 text-muted-foreground" />
-          <span className="text-xs font-medium text-muted-foreground">Last session</span>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <History className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <span className="truncate text-xs font-medium text-muted-foreground">
+            {latestHistory.sessionName || 'Last session'}
+          </span>
         </div>
-        <span className="text-xs text-muted-foreground">
+        <span className="shrink-0 text-xs text-muted-foreground">
           {formatDate(latestHistory.sessionDate)}
         </span>
       </div>

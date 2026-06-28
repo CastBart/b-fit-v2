@@ -34,6 +34,42 @@ type ActionResponse<T = void> = {
 }
 
 // ============================================================================
+// HISTORY SCOPE HELPERS
+// ============================================================================
+
+/**
+ * "Previous performance" should be contextual to where the session came from.
+ * A plan-day session prefers the last time that same plan day was done; a
+ * workout session prefers the last time that workout was done. Ad-hoc sessions
+ * (no workout/plan) are unscoped. Callers fall back to global most-recent when a
+ * scope yields no match.
+ */
+type HistoryScope = { kind: 'planDay'; planDayId: string } | { kind: 'workout'; workoutId: string }
+
+function resolveHistoryScope(input: {
+  workoutId?: string | null
+  planId?: string | null
+  planDayId?: string | null
+}): HistoryScope | null {
+  if (input.planId && input.planDayId) {
+    return { kind: 'planDay', planDayId: input.planDayId }
+  }
+  if (input.workoutId) {
+    return { kind: 'workout', workoutId: input.workoutId }
+  }
+  return null
+}
+
+function sessionMatchesScope(
+  session: { workoutId: string | null; planDayId: string | null },
+  scope: HistoryScope
+): boolean {
+  return scope.kind === 'planDay'
+    ? session.planDayId === scope.planDayId
+    : session.workoutId === scope.workoutId
+}
+
+// ============================================================================
 // SAVE COMPLETED SESSION (The Single Critical Action)
 // ============================================================================
 
@@ -317,7 +353,14 @@ export async function getExerciseHistory(
 
     const validated = getExerciseHistorySchema.parse(input)
 
-    // Find all session exercises for this exercise in completed sessions
+    // Optional scope (e.g. the in-session "Last: …" preview): prefer history from
+    // the same plan day / workout, fall back to global most-recent.
+    const scope = resolveHistoryScope(validated)
+
+    // Find all session exercises for this exercise in completed sessions.
+    // When a scope is set we must fetch the full ordered list (not a capped
+    // `take`) so a scoped match further down the list isn't truncated away
+    // before the scoped-vs-global selection below.
     const sessionExercises = await prisma.sessionExercise.findMany({
       where: {
         exerciseId: validated.exerciseId,
@@ -325,6 +368,8 @@ export async function getExerciseHistory(
           userId: session.user.id,
           status: 'COMPLETED',
         },
+        // Exclude orphan exercises that have no completed sets (legacy data).
+        sets: { some: { isCompleted: true } },
       },
       include: {
         session: {
@@ -332,6 +377,8 @@ export async function getExerciseHistory(
             id: true,
             name: true,
             startedAt: true,
+            workoutId: true,
+            planDayId: true,
           },
         },
         sets: {
@@ -348,11 +395,19 @@ export async function getExerciseHistory(
           startedAt: 'desc',
         },
       },
-      take: validated.limit,
+      ...(scope ? {} : { take: validated.limit }),
     })
 
+    // Apply scope preference: if any in-scope sessions exist, use those;
+    // otherwise fall back to the global most-recent. Then cap to the limit.
+    const selectedExercises = (() => {
+      if (!scope) return sessionExercises
+      const scoped = sessionExercises.filter((se) => sessionMatchesScope(se.session, scope))
+      return (scoped.length > 0 ? scoped : sessionExercises).slice(0, validated.limit)
+    })()
+
     // Transform to ExerciseHistoryEntry format
-    const history: ExerciseHistoryEntry[] = sessionExercises.map((se) => {
+    const history: ExerciseHistoryEntry[] = selectedExercises.map((se) => {
       const sets = se.sets.map((set) => ({
         setNumber: set.setNumber,
         weight: set.weight,
@@ -456,9 +511,14 @@ export async function getLatestHistoryBatch(
 
     const validated = getLatestHistoryBatchSchema.parse(input)
 
+    // Resolve the scope for "previous performance": prefer the same plan day,
+    // then the same workout, otherwise no scope (global most-recent).
+    const scope = resolveHistoryScope(validated)
+
     // For each exerciseId, find the most recent completed session exercise.
     // We fetch all matching session exercises ordered by session date desc,
-    // then pick the first per exerciseId in JS.
+    // then, per exercise, pick the most recent one in the requested scope and
+    // fall back to the most recent overall when the scope has no match.
     const sessionExercises = await prisma.sessionExercise.findMany({
       where: {
         exerciseId: { in: validated.exerciseIds },
@@ -466,11 +526,15 @@ export async function getLatestHistoryBatch(
           userId: session.user.id,
           status: 'COMPLETED',
         },
+        // Skip orphan exercises that have no completed sets (legacy data).
+        sets: { some: { isCompleted: true } },
       },
       include: {
         session: {
           select: {
             startedAt: true,
+            workoutId: true,
+            planDayId: true,
           },
         },
         sets: {
@@ -485,12 +549,8 @@ export async function getLatestHistoryBatch(
       },
     })
 
-    // Group by exerciseId, keep only the latest (first in desc order)
-    const historyMap: Record<string, HistorySet[]> = {}
-    for (const se of sessionExercises) {
-      if (historyMap[se.exerciseId]) continue // already have the latest
-
-      historyMap[se.exerciseId] = se.sets.map((set) => ({
+    const toHistorySets = (se: (typeof sessionExercises)[number]): HistorySet[] =>
+      se.sets.map((set) => ({
         setNumber: set.setNumber,
         weight: set.weight,
         reps: set.reps,
@@ -499,6 +559,24 @@ export async function getLatestHistoryBatch(
         counterWeight: set.counterWeight,
         rir: set.rir,
       }))
+
+    // Walk the desc-ordered list once, tracking per exercise the latest scoped
+    // match and the latest overall match. Scoped wins; global fills the gaps.
+    const scopedMap: Record<string, HistorySet[]> = {}
+    const globalMap: Record<string, HistorySet[]> = {}
+    for (const se of sessionExercises) {
+      if (!globalMap[se.exerciseId]) {
+        globalMap[se.exerciseId] = toHistorySets(se)
+      }
+      if (scope && !scopedMap[se.exerciseId] && sessionMatchesScope(se.session, scope)) {
+        scopedMap[se.exerciseId] = toHistorySets(se)
+      }
+    }
+
+    const historyMap: Record<string, HistorySet[]> = {}
+    for (const exerciseId of validated.exerciseIds) {
+      const sets = scopedMap[exerciseId] ?? globalMap[exerciseId]
+      if (sets) historyMap[exerciseId] = sets
     }
 
     return { success: true, data: historyMap }
