@@ -387,7 +387,6 @@ function renderSetInputs(
               <Input
                 type="number"
                 step="0.5"
-                placeholder="0"
                 value={valueFor('weight')}
                 onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
                 disabled={isInputDisabled}
@@ -397,7 +396,6 @@ function renderSetInputs(
             <TableCell>
               <Input
                 type="number"
-                placeholder="0"
                 value={valueFor('reps')}
                 onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
                 disabled={isInputDisabled}
@@ -414,7 +412,6 @@ function renderSetInputs(
               <Input
                 type="number"
                 step="0.5"
-                placeholder="0"
                 value={valueFor('counterWeight')}
                 onChange={(e) => handleInputChange(setNumber, 'counterWeight', e.target.value)}
                 disabled={isInputDisabled}
@@ -424,7 +421,6 @@ function renderSetInputs(
             <TableCell>
               <Input
                 type="number"
-                placeholder="0"
                 value={valueFor('reps')}
                 onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
                 disabled={isInputDisabled}
@@ -439,7 +435,6 @@ function renderSetInputs(
           <TableCell>
             <Input
               type="number"
-              placeholder="0"
               value={valueFor('reps')}
               onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
               disabled={isInputDisabled}
@@ -454,7 +449,6 @@ function renderSetInputs(
             <TableCell>
               <Input
                 type="number"
-                placeholder="0"
                 value={valueFor('reps')}
                 onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
                 disabled={isInputDisabled}
@@ -464,7 +458,6 @@ function renderSetInputs(
             <TableCell>
               <Input
                 type="number"
-                placeholder="0"
                 value={valueFor('duration')}
                 onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
                 disabled={isInputDisabled}
@@ -479,7 +472,6 @@ function renderSetInputs(
           <TableCell>
             <Input
               type="number"
-              placeholder="0"
               value={valueFor('duration')}
               onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
               disabled={isInputDisabled}
@@ -494,7 +486,6 @@ function renderSetInputs(
             <TableCell>
               <Input
                 type="number"
-                placeholder="0"
                 value={valueFor('distance')}
                 onChange={(e) => handleInputChange(setNumber, 'distance', e.target.value)}
                 disabled={isInputDisabled}
@@ -504,7 +495,6 @@ function renderSetInputs(
             <TableCell>
               <Input
                 type="number"
-                placeholder="0"
                 value={valueFor('duration')}
                 onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
                 disabled={isInputDisabled}
@@ -521,7 +511,6 @@ function renderSetInputs(
               <Input
                 type="number"
                 step="0.5"
-                placeholder="0"
                 value={valueFor('weight')}
                 onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
                 disabled={isInputDisabled}
@@ -531,7 +520,6 @@ function renderSetInputs(
             <TableCell>
               <Input
                 type="number"
-                placeholder="0"
                 value={valueFor('distance')}
                 onChange={(e) => handleInputChange(setNumber, 'distance', e.target.value)}
                 disabled={isInputDisabled}
@@ -548,7 +536,6 @@ function renderSetInputs(
               <Input
                 type="number"
                 step="0.5"
-                placeholder="0"
                 value={valueFor('weight')}
                 onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
                 disabled={isInputDisabled}
@@ -558,7 +545,6 @@ function renderSetInputs(
             <TableCell>
               <Input
                 type="number"
-                placeholder="0"
                 value={valueFor('duration')}
                 onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
                 disabled={isInputDisabled}
@@ -582,7 +568,6 @@ function renderSetInputs(
             type="number"
             min="0"
             step="1"
-            placeholder="0"
             value={valueFor('rir')}
             onChange={(e) => handleInputChange(setNumber, 'rir', e.target.value)}
             disabled={isInputDisabled}
