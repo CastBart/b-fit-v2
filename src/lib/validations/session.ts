@@ -73,6 +73,11 @@ export const sessionFiltersSchema = z.object({
 export const getExerciseHistorySchema = z.object({
   exerciseId: z.string().cuid('Invalid exercise ID'),
   limit: z.number().int().min(1).max(50).optional().default(10),
+  // Optional scope: when provided, history is preferentially drawn from sessions
+  // belonging to the same plan day / workout, falling back to global most-recent.
+  workoutId: z.string().cuid('Invalid workout ID').nullable().optional(),
+  planId: z.string().cuid('Invalid plan ID').nullable().optional(),
+  planDayId: z.string().cuid('Invalid plan day ID').nullable().optional(),
 })
 
 /**
@@ -80,6 +85,11 @@ export const getExerciseHistorySchema = z.object({
  */
 export const getLatestHistoryBatchSchema = z.object({
   exerciseIds: z.array(z.string().cuid('Invalid exercise ID')).min(1).max(50),
+  // Optional scope (same semantics as getExerciseHistorySchema): prefer history
+  // from the same plan day / workout, with global fallback.
+  workoutId: z.string().cuid('Invalid workout ID').nullable().optional(),
+  planId: z.string().cuid('Invalid plan ID').nullable().optional(),
+  planDayId: z.string().cuid('Invalid plan day ID').nullable().optional(),
 })
 
 // ============================================================================

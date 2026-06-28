@@ -195,6 +195,14 @@ function registerSessionMutation(action: CommitAction) {
       if (onlineManager.isOnline()) {
         queryClient.invalidateQueries({ queryKey: ['sessions'] })
         queryClient.invalidateQueries({ queryKey: ['activePlanDashboard'] })
+        // Completing a session changes "previous performance" for the logged
+        // exercises. Invalidate the prefix so every scope variant (standalone,
+        // workout, plan-day) and both the "Last: …" preview and the full
+        // history drawer refetch fresh on next mount. Without this, a stale
+        // cached entry (e.g. a standalone preview first populated when the only
+        // history was a workout's) keeps showing the old value until staleTime
+        // lapses on a later mount.
+        queryClient.invalidateQueries({ queryKey: ['exerciseHistory'] })
       }
     },
   })

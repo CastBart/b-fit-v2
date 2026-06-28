@@ -47,7 +47,18 @@ async function persistSession(userId: string, payload: SaveSessionPayload) {
         },
       })
 
-      for (const exercise of validated.exercises) {
+      // INVARIANT: only exercises with at least one completed set are persisted.
+      // An exercise the user scrolled past (or typed into but never tapped the
+      // check on any set) must never create a SessionExercise row — otherwise it
+      // surfaces as a fake/empty entry in exercise history, the completed-session
+      // drawer, the "Last: …" preview, and "Repeat this session". This mirrors the
+      // set-level filter below and is the single write path for both the server
+      // action and the offline route handler; keep this filter intact.
+      const exercisesToPersist = validated.exercises.filter((exercise) =>
+        exercise.sets.some((set) => set.isCompleted)
+      )
+
+      for (const exercise of exercisesToPersist) {
         const sessionExercise = await tx.sessionExercise.create({
           data: {
             sessionId: newSession.id,

@@ -15,7 +15,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\package.json": {
-    "mtime": 1781595055.0163481,
+    "mtime": 1782540628.706722,
     "ast_hash": "2fe35fefaf37fbc92e32eb72b566e91a",
     "semantic_hash": ""
   },
@@ -35,7 +35,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\.claude\\settings.local.json": {
-    "mtime": 1782028773.6236699,
+    "mtime": 1782540628.5210426,
     "ast_hash": "dac054de325714de865fec1cf26b826b",
     "semantic_hash": ""
   },
@@ -325,12 +325,12 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(auth)\\login\\page.tsx": {
-    "mtime": 1781681458.6823246,
+    "mtime": 1782540628.7137215,
     "ast_hash": "9d7fd74b87bfcec2654dd2304e56898a",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(auth)\\signup\\page.tsx": {
-    "mtime": 1781681470.562244,
+    "mtime": 1782540628.714722,
     "ast_hash": "fc209d4b65daf1cb229c63d0d398bce5",
     "semantic_hash": ""
   },
@@ -340,7 +340,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\analytics\\page.tsx": {
-    "mtime": 1781349478.7135646,
+    "mtime": 1782540628.7157214,
     "ast_hash": "f3339b479ba3e10bb5d67b763550fe37",
     "semantic_hash": ""
   },
@@ -370,7 +370,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\dashboard\\page.tsx": {
-    "mtime": 1781420797.0266683,
+    "mtime": 1782540628.7177215,
     "ast_hash": "5eed9ec56b896e51ff0315a510817456",
     "semantic_hash": ""
   },
@@ -395,13 +395,13 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\plans\\[id]\\page.tsx": {
-    "mtime": 1781351415.3064222,
+    "mtime": 1782540628.7177215,
     "ast_hash": "13958bcd5c34259f75ee5f2830e5d30b",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\session\\page.tsx": {
-    "mtime": 1781510694.4854958,
-    "ast_hash": "00359d1ffed86c368f149e7737d01c55",
+    "mtime": 1782579425.1130884,
+    "ast_hash": "a3e4e2e0e759d9a45e43b55a4d04e66f",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\sessions\\page.tsx": {
@@ -410,7 +410,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\settings\\page.tsx": {
-    "mtime": 1781681563.214905,
+    "mtime": 1782540628.720957,
     "ast_hash": "9887e00e1ee85deff8a9a1f9048a0765",
     "semantic_hash": ""
   },
@@ -550,7 +550,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\analytics\\DateRangeSelector.tsx": {
-    "mtime": 1781349478.714452,
+    "mtime": 1782540628.7219567,
     "ast_hash": "3b4cc6ef56a516ec0688e18568709b69",
     "semantic_hash": ""
   },
@@ -715,7 +715,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\plans\\ActivePlanSection.tsx": {
-    "mtime": 1781420825.7480612,
+    "mtime": 1782540628.7329574,
     "ast_hash": "cf62da050351034ca77368c654e43447",
     "semantic_hash": ""
   },
@@ -740,7 +740,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\plans\\PlanDayDetailDrawer.tsx": {
-    "mtime": 1781349823.6202533,
+    "mtime": 1782540628.7339573,
     "ast_hash": "ff576b6c72126422171fe0c881c10ee7",
     "semantic_hash": ""
   },
@@ -780,12 +780,12 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\CompletedSessionDrawer.tsx": {
-    "mtime": 1781510694.4860787,
+    "mtime": 1782540628.7369568,
     "ast_hash": "71b6d1b84979e12e71a9950b92039764",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\ContinueSessionButton.tsx": {
-    "mtime": 1781425520.2140677,
+    "mtime": 1782540628.7379565,
     "ast_hash": "30f2eabf557b9fb61806994f81ae32f4",
     "semantic_hash": ""
   },
@@ -795,8 +795,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\ExerciseHistoryDisplay.tsx": {
-    "mtime": 1781510694.4860787,
-    "ast_hash": "2d4dcf1f60ff619ef6c145883de675fa",
+    "mtime": 1782575856.860862,
+    "ast_hash": "401c15ba2f1e54a876349f2ae2991ec9",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\ExerciseOptionsDrawer.tsx": {
@@ -825,12 +825,12 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\SessionSettingsDrawer.tsx": {
-    "mtime": 1781510694.4877472,
+    "mtime": 1782540628.739112,
     "ast_hash": "b1a088b17c6e6361939e6ebc1ac60f8e",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\SetLogger.tsx": {
-    "mtime": 1781510694.4877472,
+    "mtime": 1782548040.3603501,
     "ast_hash": "aefb0513c5fa321259876b45a9b6a939",
     "semantic_hash": ""
   },
@@ -945,7 +945,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\providers\\PersistQueryProvider.tsx": {
-    "mtime": 1781420891.2641916,
+    "mtime": 1782540628.74395,
     "ast_hash": "f9e77d8955a4dfee9082a1ea684caee3",
     "semantic_hash": ""
   },
@@ -1165,12 +1165,12 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\usePrefetchCriticalData.ts": {
-    "mtime": 1781893935.8396938,
+    "mtime": 1782540628.7499502,
     "ast_hash": "81dc7433db10bcfcb8c5fd79f89f4252",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\useRegisterSW.ts": {
-    "mtime": 1781349478.7183368,
+    "mtime": 1782540628.75095,
     "ast_hash": "31c519f1ca7f9dd5d5a34bd8f67ded3c",
     "semantic_hash": ""
   },
@@ -1180,7 +1180,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\useSessionRecovery.ts": {
-    "mtime": 1781420721.781521,
+    "mtime": 1782540628.75095,
     "ast_hash": "5690b60c369975c7491e75422cfb81f4",
     "semantic_hash": ""
   },
@@ -1230,7 +1230,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\queries\\useActivePlanDashboard.ts": {
-    "mtime": 1781420806.95761,
+    "mtime": 1782540628.7479498,
     "ast_hash": "5ba053d605cc75f372437530330dfe23",
     "semantic_hash": ""
   },
@@ -1260,8 +1260,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\queries\\useExerciseHistory.ts": {
-    "mtime": 1781340123.252519,
-    "ast_hash": "6eeb2232e400f8373d785fabda13911a",
+    "mtime": 1782575913.9830647,
+    "ast_hash": "0984fb146a8ce8d42c809be559e6645e",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\queries\\useExercises.ts": {
@@ -1325,7 +1325,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\nav-items.ts": {
-    "mtime": 1782113226.0764215,
+    "mtime": 1782540640.0497112,
     "ast_hash": "c931f0b01ef56257a4b737aadab5ec12",
     "semantic_hash": ""
   },
@@ -1365,7 +1365,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\auth\\auth.config.ts": {
-    "mtime": 1781855025.9111745,
+    "mtime": 1782540628.7529495,
     "ast_hash": "cad7d039ac770b83515b7ece5cedee67",
     "semantic_hash": ""
   },
@@ -1415,7 +1415,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\commit-completed-session.ts": {
-    "mtime": 1781420861.2687683,
+    "mtime": 1782540628.7579427,
     "ast_hash": "73fa78d2e2fa0b7faa7662d0337533e8",
     "semantic_hash": ""
   },
@@ -1435,8 +1435,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\mutation-defaults.ts": {
-    "mtime": 1781421159.6435885,
-    "ast_hash": "16cf7953539d44ee81b9090b7adc01c6",
+    "mtime": 1782579419.711611,
+    "ast_hash": "8a3e82be14049009cea9a85e6c6853d3",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\onlineManagerSetup.ts": {
@@ -1455,7 +1455,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\recover-pending-commits.ts": {
-    "mtime": 1781420871.013083,
+    "mtime": 1782540628.7624977,
     "ast_hash": "b7c9a02a30214fbb10518c79d10a1104",
     "semantic_hash": ""
   },
@@ -1510,12 +1510,12 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\superset-manager\\colors.ts": {
-    "mtime": 1781349478.9118865,
+    "mtime": 1782540628.7624977,
     "ast_hash": "66af77783a6f5b9000d45b6f95319ac9",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\superset-manager\\index.ts": {
-    "mtime": 1781349478.7183368,
+    "mtime": 1782540628.7624977,
     "ast_hash": "224964ba251c0adfabf9ce9ef39b97e5",
     "semantic_hash": ""
   },
@@ -1545,12 +1545,12 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\utils\\session-mappers.ts": {
-    "mtime": 1781510694.4877472,
+    "mtime": 1782540628.76388,
     "ast_hash": "4d3de78d013704373f558079365538ea",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\utils\\session-navigation.ts": {
-    "mtime": 1781420326.4234116,
+    "mtime": 1782540628.7653673,
     "ast_hash": "6737c6c7cd7ce72906f797a27525ac9b",
     "semantic_hash": ""
   },
@@ -1580,8 +1580,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\validations\\session.ts": {
-    "mtime": 1781510694.4877472,
-    "ast_hash": "a6b15be8e65cacb20f30e8f1de261178",
+    "mtime": 1782575730.8045394,
+    "ast_hash": "1722971e7de417c6f8247d3e5699a39c",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\validations\\subscription.ts": {
@@ -1605,7 +1605,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\actions\\auth.ts": {
-    "mtime": 1781854407.133386,
+    "mtime": 1782540628.7678058,
     "ast_hash": "5f7dbb8eacf929c64f964c727e3977fd",
     "semantic_hash": ""
   },
@@ -1625,13 +1625,13 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\actions\\plans.ts": {
-    "mtime": 1781349478.7183368,
+    "mtime": 1782540628.7698052,
     "ast_hash": "fc4b56714e988b53aebe73266c0b7aca",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\actions\\sessions.ts": {
-    "mtime": 1781510694.4877472,
-    "ast_hash": "965bd5cf54f4d1a5192b5c86c67bd196",
+    "mtime": 1782575913.94986,
+    "ast_hash": "0ddfecfc1aaa997a90a11bf920ce6c3e",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\actions\\stripe.ts": {
@@ -1660,17 +1660,17 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\services\\plans.ts": {
-    "mtime": 1781942050.6903567,
+    "mtime": 1782540628.771805,
     "ast_hash": "e6124aaae3af9473535bb84c91c987d1",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\services\\sessions.ts": {
-    "mtime": 1781510694.4877472,
-    "ast_hash": "f8605192d889e9564b1099d70fa276fe",
+    "mtime": 1782575673.6652238,
+    "ast_hash": "5e31ef77e4c96ae29148161d951f82d9",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\services\\workouts.ts": {
-    "mtime": 1781942113.9167717,
+    "mtime": 1782540628.7732923,
     "ast_hash": "bda23250e15009c2a486625bc968c880",
     "semantic_hash": ""
   },
@@ -1695,7 +1695,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\store\\slices\\sessionSlice.ts": {
-    "mtime": 1781510694.4877472,
+    "mtime": 1782548040.3603501,
     "ast_hash": "8b893fecb8bcfeabbd167b17465a843d",
     "semantic_hash": ""
   },
@@ -1725,12 +1725,12 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\types\\plan.ts": {
-    "mtime": 1781349478.7183368,
+    "mtime": 1782540628.775616,
     "ast_hash": "95fedc42154380ce14ee734ea52cb34c",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\types\\session.ts": {
-    "mtime": 1781510694.4877472,
+    "mtime": 1782540628.775616,
     "ast_hash": "e0bcd7cfd106340b6310b2ed3c750688",
     "semantic_hash": ""
   },
@@ -1935,7 +1935,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-g-analytics-custom-range.md": {
-    "mtime": 1781349478.7120547,
+    "mtime": 1782540628.5235326,
     "ast_hash": "c35492106819c03083728771db285cbc",
     "semantic_hash": ""
   },
@@ -1975,8 +1975,8 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\CURRENT-PROGRESS.md": {
-    "mtime": 1782028621.4197774,
-    "ast_hash": "5c10206a6d4a7eea428f89e04ea974a8",
+    "mtime": 1782540640.021942,
+    "ast_hash": "524646d61f53b9201c8ad959001f44b8",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md": {
@@ -2025,7 +2025,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md": {
-    "mtime": 1782028621.7264895,
+    "mtime": 1782540628.560988,
     "ast_hash": "3b702a71da9e6b45435ecf41cf33ef26",
     "semantic_hash": ""
   },
@@ -2035,7 +2035,7 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\README.md": {
-    "mtime": 1782028827.8795044,
+    "mtime": 1782540628.5504725,
     "ast_hash": "caf069d133427158cb9cbc5f785f60e3",
     "semantic_hash": ""
   },
@@ -2190,218 +2190,223 @@
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\vitest.config.ts": {
-    "mtime": 1781349666.0265725,
+    "mtime": 1782540628.7766676,
     "ast_hash": "c2f41a1d989cdb5786dddd5b10ec0c8b",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\vitest.d.ts": {
-    "mtime": 1781349666.0265725,
+    "mtime": 1782540628.7771733,
     "ast_hash": "349a22abda966e99a4c114d2d694871f",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\plans\\PlanDaysCarousel.tsx": {
-    "mtime": 1781351378.198322,
+    "mtime": 1782540628.7359571,
     "ast_hash": "952f6f19577e9691038c60b9592db854",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\plans\\PlanDaySlide.tsx": {
-    "mtime": 1781351770.622099,
+    "mtime": 1782540628.734957,
     "ast_hash": "ce9ba87aca145da9a8d93db1995076cb",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\session\\session-view-state.test.ts": {
-    "mtime": 1781421374.0210745,
+    "mtime": 1782540628.7199566,
     "ast_hash": "2c031b07c5dd744e4b239b3c5a233a7a",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\session\\session-view-state.ts": {
-    "mtime": 1781421316.128233,
+    "mtime": 1782540628.7199566,
     "ast_hash": "36dcc72b4397fdb1b2544b11e5fcfbac",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\continue-session-button.helpers.test.ts": {
-    "mtime": 1781422308.138556,
+    "mtime": 1782540628.741115,
     "ast_hash": "972c3f096d52d9e25cf5993776ae7a38",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\sessions\\continue-session-button.helpers.ts": {
-    "mtime": 1781422281.0450118,
+    "mtime": 1782540628.741115,
     "ast_hash": "e2a45652e406ba526bb13885501e1cf3",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\perf\\timing.ts": {
-    "mtime": 1781425547.2934291,
+    "mtime": 1782540628.7564776,
     "ast_hash": "995601ac651cde37294ca230b8941097",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\optimistic-plan-progress.test.ts": {
-    "mtime": 1781421211.6368446,
+    "mtime": 1782540628.7600436,
     "ast_hash": "aa8f47096b4fd8e0f1a6c3f73ed78fff",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\pwa\\optimistic-plan-progress.ts": {
-    "mtime": 1781421124.2181616,
+    "mtime": 1782540628.761493,
     "ast_hash": "5dbc04510ba6a521ed80df70d1540c66",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260615074117_add_session_set_rir\\migration.sql": {
-    "mtime": 1781510694.4834929,
+    "mtime": 1782540628.7077217,
     "ast_hash": "ca6a3d3ef5fd10b7b7eecf1ddfa216f7",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\analytics\\one-rep-max.test.ts": {
-    "mtime": 1781510694.4877472,
+    "mtime": 1782540628.7519498,
     "ast_hash": "e4f477b571740b42594e530ebd27a2ca",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\analytics\\one-rep-max.ts": {
-    "mtime": 1781510694.4877472,
+    "mtime": 1782540628.7529495,
     "ast_hash": "909d7626b9cf94edfec57334a5fe277b",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260616073137_add_password_reset_tokens\\migration.sql": {
-    "mtime": 1781595097.8818886,
+    "mtime": 1782540628.7097218,
     "ast_hash": "7c2cd78b68858b6439471dc5a1b21e18",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(auth)\\forgot-password\\page.tsx": {
-    "mtime": 1781595244.1822195,
+    "mtime": 1782540628.7127218,
     "ast_hash": "d93413cc912922c360f2f792aa26ad36",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(auth)\\reset-password\\page.tsx": {
-    "mtime": 1781595260.3740215,
+    "mtime": 1782540628.714722,
     "ast_hash": "45cfa3bff00d15884e68ef304665f387",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\auth\\ForgotPasswordForm.tsx": {
-    "mtime": 1781595244.1822195,
+    "mtime": 1782540628.722957,
     "ast_hash": "0ac49b6a8639cc9ad0fd54920ac24a97",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\auth\\ResetPasswordForm.tsx": {
-    "mtime": 1781595244.1822195,
+    "mtime": 1782540628.7239568,
     "ast_hash": "5912dd643cb27a6fd2593bdcd11cfefe",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\emails\\PasswordResetEmail.tsx": {
-    "mtime": 1781595244.1822195,
+    "mtime": 1782540628.7459495,
     "ast_hash": "c8b651c5a3c86c17257717dc37e3a63b",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\email\\resend.ts": {
-    "mtime": 1781595244.1822195,
+    "mtime": 1782540628.7554736,
     "ast_hash": "dd8da34834d5fc99939c380d0aa7a3a5",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\auth\\GoogleSignInButton.tsx": {
-    "mtime": 1781681588.1711879,
+    "mtime": 1782540628.722957,
     "ast_hash": "e521ca35c75ca844a6afe0ed72eb1651",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\settings\\SignInMethodsCard.tsx": {
-    "mtime": 1781854505.865994,
+    "mtime": 1782540628.7429473,
     "ast_hash": "5aa60ccb4cfec4d6f16d8cbec83c48a7",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\mutations\\useUnlinkGoogle.ts": {
-    "mtime": 1781681507.06772,
+    "mtime": 1782540628.7479498,
     "ast_hash": "e35c8a2c46adb7ac7a3b8c115cacaa9d",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\queries\\useLinkedAccounts.ts": {
-    "mtime": 1781681501.3058891,
+    "mtime": 1782540628.7489502,
     "ast_hash": "6ea2c676cc42c17ce03988bfb89802ec",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\actions\\account-linking.ts": {
-    "mtime": 1781854530.7983992,
+    "mtime": 1782540628.7678058,
     "ast_hash": "6b35c3fdd43da555875f60545227fea9",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\stripe-subscription-testing-review.md": {
-    "mtime": 1782028621.846152,
+    "mtime": 1782540628.5739868,
     "ast_hash": "924c41349b1fb87c7c7ebfe816bf0855",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\settings\\SetPasswordDialog.tsx": {
-    "mtime": 1781854487.039208,
+    "mtime": 1782540628.742442,
     "ast_hash": "46faa5ee98fcc449e195aa7fab1df061",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\emails\\WelcomeEmail.tsx": {
-    "mtime": 1781854545.5942044,
+    "mtime": 1782540628.7459495,
     "ast_hash": "44e98dcaf1804bc8accc868c07368bf1",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\mutations\\useSetPassword.ts": {
-    "mtime": 1781854454.221511,
+    "mtime": 1782540628.7469506,
     "ast_hash": "640205ad51a86f79f091dd019ab48ef5",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\email\\welcome.ts": {
-    "mtime": 1781854393.0502036,
+    "mtime": 1782540628.7564776,
     "ast_hash": "a9b03fe12a98fe8a5e977eb3a4cae550",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260622072545_add_user_body_metrics\\migration.sql": {
-    "mtime": 1782113145.1546135,
+    "mtime": 1782540640.0471117,
     "ast_hash": "2005e2c482c4004d9ece3bc3f67415b5",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\app\\(dashboard)\\calorie-calculator\\page.tsx": {
-    "mtime": 1782113347.724146,
-    "ast_hash": "ade75051e11b50b3f9afc0aa925efa58",
+    "mtime": 1782540640.0491116,
+    "ast_hash": "c0d2cb822afafd4b75c9c1a1fadffc95",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\calorie-calculator\\CalorieCalculatorForm.tsx": {
-    "mtime": 1782113937.1262052,
-    "ast_hash": "c76a5e0a823caee5a2d6ead589dd7852",
+    "mtime": 1782548040.3593564,
+    "ast_hash": "5e55697854bf56290701c6c5e75b76cd",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\calorie-calculator\\CalorieResults.tsx": {
-    "mtime": 1782113325.2129834,
-    "ast_hash": "4a41d8e54c82106795990bd46ae2ab4a",
+    "mtime": 1782540640.0497112,
+    "ast_hash": "308aa770249c1f7f0f13b5bba22a2757",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\mutations\\useBodyMetricsMutations.ts": {
-    "mtime": 1782113217.2714756,
-    "ast_hash": "e46b02f76970bfd99300a6efcb938d2a",
+    "mtime": 1782540640.0497112,
+    "ast_hash": "6ec7fcdcd289f9cbc7423eb987325c1e",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\hooks\\queries\\useBodyMetrics.ts": {
-    "mtime": 1782113210.667644,
+    "mtime": 1782540640.0497112,
     "ast_hash": "7256e0342a5379a58d542fbd0558c728",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\calorie\\calculator.test.ts": {
-    "mtime": 1782113362.0083709,
-    "ast_hash": "e727365820c514e6bb17495525e39337",
+    "mtime": 1782540640.0497112,
+    "ast_hash": "92f5f44b2c800cbec72bda80649e614c",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\calorie\\calculator.ts": {
-    "mtime": 1782113170.9981697,
-    "ast_hash": "93cd8165f33d02483af4b04056465d16",
+    "mtime": 1782540640.0497112,
+    "ast_hash": "8d5cb56adbb4da39864f94c922dbb969",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\calorie\\units.ts": {
-    "mtime": 1782113178.6276777,
+    "mtime": 1782540640.0497112,
     "ast_hash": "11d3202e301925aabef62937896dc46e",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\lib\\validations\\calorieMetrics.ts": {
-    "mtime": 1782113943.324017,
-    "ast_hash": "99370cd220285f5e5a3d8a9ec58c5c9b",
+    "mtime": 1782540640.0540154,
+    "ast_hash": "3fb8d6abf9022cfd65253e9e7e8251d6",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\src\\server\\actions\\calorieMetrics.ts": {
-    "mtime": 1782113200.4846315,
-    "ast_hash": "817af341da6b172fc0918c872b3f9ba6",
+    "mtime": 1782540640.0540154,
+    "ast_hash": "1f1451c3060c46bf957d82d630f4dcf8",
     "semantic_hash": ""
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md": {
-    "mtime": 1782028813.227524,
+    "mtime": 1782540628.5659883,
     "ast_hash": "1079fc26f9c927cbb042440733218b9e",
+    "semantic_hash": ""
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260622080000_mfp_calorie_model\\migration.sql": {
+    "mtime": 1782540640.0471117,
+    "ast_hash": "ccab9d0317ae02b9e37a49e8b3736655",
     "semantic_hash": ""
   }
 }

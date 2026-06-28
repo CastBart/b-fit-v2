@@ -154,7 +154,7 @@ export default function SessionPage() {
         mark('session-start', 'history prefill started')
         try {
           const result = await measureAsync('getLatestHistoryBatch', () =>
-            getLatestHistoryBatch({ exerciseIds })
+            getLatestHistoryBatch({ exerciseIds, workoutId, planId, planDayId })
           )
           if (result.success && result.data) {
             dispatch(prefillSetsFromHistory({ historyMap: result.data }))
@@ -189,32 +189,37 @@ export default function SessionPage() {
       accumulatedPauseDuration,
       status,
       sessionNotes: sessionNotes || null,
-      exercises: exercises.map((exercise) => {
-        const exerciseProgress = progress[exercise.instanceId]
-        return {
-          instanceId: exercise.instanceId,
-          exerciseId: exercise.exerciseId,
-          order: exercise.order,
-          groupId: exercise.groupId,
-          targetSets: exercise.targetSets,
-          targetReps: exercise.targetReps,
-          targetWeight: exercise.targetWeight,
-          targetRestSeconds: exercise.targetRestSeconds,
-          notes: exerciseProgress?.notes || null,
-          sets:
-            exerciseProgress?.sets.map((set) => ({
-              setNumber: set.setNumber,
-              weight: set.metrics.weight || null,
-              reps: set.metrics.reps || null,
-              duration: set.metrics.duration || null,
-              distance: set.metrics.distance || null,
-              counterWeight: set.metrics.counterWeight || null,
-              rir: set.metrics.rir ?? null, // ?? not || — RIR 0 (to failure) is a valid value
-              isCompleted: set.completed,
-              completedAt: set.completedAt || null,
-            })) || [],
-        }
-      }),
+      // Defensive (mirrors the server-side filter in persistSession): only send
+      // exercises that have at least one completed set. Empty exercises must
+      // never be persisted as completed history.
+      exercises: exercises
+        .filter((exercise) => progress[exercise.instanceId]?.sets.some((set) => set.completed))
+        .map((exercise) => {
+          const exerciseProgress = progress[exercise.instanceId]
+          return {
+            instanceId: exercise.instanceId,
+            exerciseId: exercise.exerciseId,
+            order: exercise.order,
+            groupId: exercise.groupId,
+            targetSets: exercise.targetSets,
+            targetReps: exercise.targetReps,
+            targetWeight: exercise.targetWeight,
+            targetRestSeconds: exercise.targetRestSeconds,
+            notes: exerciseProgress?.notes || null,
+            sets:
+              exerciseProgress?.sets.map((set) => ({
+                setNumber: set.setNumber,
+                weight: set.metrics.weight || null,
+                reps: set.metrics.reps || null,
+                duration: set.metrics.duration || null,
+                distance: set.metrics.distance || null,
+                counterWeight: set.metrics.counterWeight || null,
+                rir: set.metrics.rir ?? null, // ?? not || — RIR 0 (to failure) is a valid value
+                isCompleted: set.completed,
+                completedAt: set.completedAt || null,
+              })) || [],
+          }
+        }),
     }
   }
 
@@ -234,34 +239,39 @@ export default function SessionPage() {
       sessionNotes: sessionNotes || null,
       workoutId,
       planId,
-      exercises: exercises.map((exercise) => {
-        const exerciseProgress = progress[exercise.instanceId]
-        return {
-          id: exercise.instanceId,
-          exerciseId: exercise.exerciseId,
-          name: exercise.name,
-          metricType: exercise.metricType,
-          exerciseType: exercise.exerciseType,
-          notes: exerciseProgress?.notes || null,
-          targetReps: exercise.targetReps,
-          targetWeight: exercise.targetWeight,
-          targetRestSeconds: exercise.targetRestSeconds,
-          groupId: exercise.groupId,
-          primaryMuscleGroup: exercise.primaryMuscleGroup,
-          secondaryMuscleGroups: exercise.secondaryMuscleGroups,
-          sets:
-            exerciseProgress?.sets.map((set) => ({
-              setNumber: set.setNumber,
-              weight: set.metrics.weight,
-              reps: set.metrics.reps,
-              duration: set.metrics.duration,
-              distance: set.metrics.distance,
-              counterWeight: set.metrics.counterWeight,
-              rir: set.metrics.rir,
-              isCompleted: set.completed,
-            })) || [],
-        }
-      }),
+      // Match what actually gets persisted (see buildSavePayload / persistSession):
+      // exclude exercises with no completed sets so the summary drawer never
+      // shows an empty exercise card.
+      exercises: exercises
+        .filter((exercise) => progress[exercise.instanceId]?.sets.some((set) => set.completed))
+        .map((exercise) => {
+          const exerciseProgress = progress[exercise.instanceId]
+          return {
+            id: exercise.instanceId,
+            exerciseId: exercise.exerciseId,
+            name: exercise.name,
+            metricType: exercise.metricType,
+            exerciseType: exercise.exerciseType,
+            notes: exerciseProgress?.notes || null,
+            targetReps: exercise.targetReps,
+            targetWeight: exercise.targetWeight,
+            targetRestSeconds: exercise.targetRestSeconds,
+            groupId: exercise.groupId,
+            primaryMuscleGroup: exercise.primaryMuscleGroup,
+            secondaryMuscleGroups: exercise.secondaryMuscleGroups,
+            sets:
+              exerciseProgress?.sets.map((set) => ({
+                setNumber: set.setNumber,
+                weight: set.metrics.weight,
+                reps: set.metrics.reps,
+                duration: set.metrics.duration,
+                distance: set.metrics.distance,
+                counterWeight: set.metrics.counterWeight,
+                rir: set.metrics.rir,
+                isCompleted: set.completed,
+              })) || [],
+          }
+        }),
     }
   }
 
@@ -280,6 +290,17 @@ export default function SessionPage() {
 
   // Handle complete session from banner
   const handleCompleteSession = async () => {
+    // Guard: a session with zero completed sets across all exercises has no real
+    // work to record. Block completion and keep the session active so the user
+    // can keep going (or abandon it via the existing path).
+    const hasAnyCompletedSet = exercises.some((exercise) =>
+      progress[exercise.instanceId]?.sets.some((set) => set.completed)
+    )
+    if (!hasAnyCompletedSet) {
+      toast.error('Complete at least one set before finishing your session.')
+      return
+    }
+
     startFlow('session-complete')
     setIsCommitting(true)
     try {
@@ -446,7 +467,9 @@ export default function SessionPage() {
     if (onlineManager.isOnline()) {
       try {
         const exerciseIds = [...new Set(sessionExercises.map((e) => e.exerciseId))]
-        const result = await getLatestHistoryBatch({ exerciseIds })
+        // Scope to the active session's context so adding an exercise mid-workout
+        // pre-fills from that workout/plan-day history (global for standalone).
+        const result = await getLatestHistoryBatch({ exerciseIds, workoutId, planId, planDayId })
         if (result.success && result.data) {
           historyMap = result.data
         }

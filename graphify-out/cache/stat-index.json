@@ -6,7 +6,7 @@
   },
   "D:\\Projects\\b-fit v2\\package.json": {
     "size": 3844,
-    "mtime_ns": 1781595055016348200,
+    "mtime_ns": 1782540628706722000,
     "hash": "54e5a03cf97e1f86788350b9f44307dc9dacaa1ecca6c6b705b705f137f8949a"
   },
   "D:\\Projects\\b-fit v2\\tsconfig.json": {
@@ -21,7 +21,7 @@
   },
   "D:\\Projects\\b-fit v2\\.claude\\settings.local.json": {
     "size": 5257,
-    "mtime_ns": 1782028773623669900,
+    "mtime_ns": 1782540628521042500,
     "hash": "a39ca20544bdf58bd0da6b475f6f294084a3b73eec855ddb014effb5186ff7aa"
   },
   "D:\\Projects\\b-fit v2\\.husky\\_\\husky.sh": {
@@ -291,7 +291,7 @@
   },
   "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-g-analytics-custom-range.md": {
     "size": 8350,
-    "mtime_ns": 1781349478712054800,
+    "mtime_ns": 1782540628523532700,
     "hash": "f848fa4849f2bd3f90a5c05f0508b05fd0261fc9092b04644ec6f43a6f303c1d"
   },
   "D:\\Projects\\b-fit v2\\docs\\improvements\\chunk-h-analytics-set-count-chart.md": {
@@ -325,9 +325,9 @@
     "hash": "646b335cfd04ed360e18fcab46b6253edf56266da928199c6121632e5f65ff23"
   },
   "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\CURRENT-PROGRESS.md": {
-    "size": 222346,
-    "mtime_ns": 1782028621419777400,
-    "hash": "f22b72fa85809d72cdab478fd2ecb0ff8fb85dbdc8d7bb8c88586986436a0b1f"
+    "size": 224370,
+    "mtime_ns": 1782540640021942000,
+    "hash": "e75fde227b5b2b35cddbb5382092d79f724f916e8158882a4c2e50fd86d7ff52"
   },
   "D:\\Projects\\b-fit v2\\docs\\phase-breakdowns\\PHASE-0-COMPLETE.md": {
     "size": 8263,
@@ -371,7 +371,7 @@
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\auth-enhancements.md": {
     "size": 22575,
-    "mtime_ns": 1782028621726489500,
+    "mtime_ns": 1782540628560987900,
     "hash": "fc01f88f3d5173bb2e87dddb4434212e224d309fa6c752cb0df156003f5811e1"
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\environment-variables-anagement.md": {
@@ -381,7 +381,7 @@
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\README.md": {
     "size": 2856,
-    "mtime_ns": 1782028827879504500,
+    "mtime_ns": 1782540628550472600,
     "hash": "ea5729ba362ca172ccbbfcf96464adcb87663e2c47a3de4bd53ad87ea8ff9983"
   },
   "D:\\Projects\\b-fit v2\\src\\components\\features\\README.md": {
@@ -426,27 +426,32 @@
   },
   "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260615074117_add_session_set_rir\\migration.sql": {
     "size": 69,
-    "mtime_ns": 1781510694483492800,
+    "mtime_ns": 1782540628707721600,
     "hash": "a1e277f8896ef3e0a6ae299571896b015f02fbe2ea08563809c03ef4100d8078"
   },
   "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260616073137_add_password_reset_tokens\\migration.sql": {
     "size": 502,
-    "mtime_ns": 1781595097881888600,
+    "mtime_ns": 1782540628709721700,
     "hash": "ea1e38c8265e089e6cab586fd935b65a7d54cc1fe4c42fbbef6890d0742e4253"
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\stripe-subscription-testing-review.md": {
     "size": 14827,
-    "mtime_ns": 1782028621846152100,
+    "mtime_ns": 1782540628573986800,
     "hash": "b96220ddf9fd17ab8cec0461e39805186ae227d3443dc5ee8b9399e8cc6b1dd9"
   },
   "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260622072545_add_user_body_metrics\\migration.sql": {
     "size": 1351,
-    "mtime_ns": 1782113145154613400,
+    "mtime_ns": 1782540640047111800,
     "hash": "66b1fdf5efcac361d73a249e4cfd8ba403a5af566b86027c1a56fbf4437352b3"
   },
   "D:\\Projects\\b-fit v2\\docs\\todo\\legacy-plan-hooks-cleanup.md": {
     "size": 4518,
-    "mtime_ns": 1782028813227524100,
+    "mtime_ns": 1782540628565988300,
     "hash": "d49977a60262c1c39476709dee3d7747e15327f16e4f3c2244842bbd8192b6ed"
+  },
+  "D:\\Projects\\b-fit v2\\prisma\\migrations\\20260622080000_mfp_calorie_model\\migration.sql": {
+    "size": 589,
+    "mtime_ns": 1782540640047111800,
+    "hash": "b8f2c9fd3b4b55cec9025d14a7063d49d0e00fd0e22449e3ecebca51e8cc1b71"
   }
 }
