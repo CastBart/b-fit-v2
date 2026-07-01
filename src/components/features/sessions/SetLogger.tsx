@@ -9,18 +9,16 @@
  * - Exercise notes
  * - Active set highlighting (only activeSetNumber shows "complete" button)
  *
- * FIXES:
- * - Any NON-completed set is now editable (not just the active set)
- * - Inputs always display their set.metrics values (no more blanking non-active rows)
- * - onChange updates the correct setNumber in Redux (not always activeSetNumber)
- * - Validation is "0-safe" (0 no longer fails validation)
+ * Metric entry uses <MetricInput>: on mobile it opens the custom metric editor
+ * (wheel + keypad) instead of the native keyboard; on desktop simple metrics use
+ * a native number input. Values are committed on the editor's Done/advance (not
+ * per keystroke). Distance is stored in meters, duration in seconds.
  */
 
 'use client'
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import {
@@ -38,7 +36,14 @@ import { completeSet, updateSet, updateExerciseNotes } from '@/store/slices/sess
 import { toast } from 'sonner'
 import { SetSettingsDrawer } from './SetSettingsDrawer'
 import { LatestHistoryPreview } from './ExerciseHistoryDisplay'
+import { MetricInput } from './MetricInput'
+import { NotesEditorDrawer } from './NotesEditorDrawer'
+import { useMetricEditor, type EditorField, type EditorSession } from './MetricEditorProvider'
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import { estimateOneRepMax } from '@/lib/analytics/one-rep-max'
+import { METRIC_CONFIG, type MetricField } from '@/lib/metrics/metric-config'
+import { useDistanceUnit } from '@/hooks/useDistanceUnit'
+import type { WheelDistanceUnit } from '@/lib/metrics/wheel-steps'
 import type { SessionExerciseEntry, SetMetrics, SessionSet } from '@/types/session'
 import type { MetricType } from '@prisma/client'
 
@@ -52,6 +57,24 @@ const RIR_METRICS = new Set<MetricType>([
 
 // Estimated 1RM requires a real external load + reps.
 const ONE_RM_METRICS = new Set<MetricType>(['WEIGHT_REPS'])
+
+// Ordered base (non-RIR) editable fields per metric type.
+const BASE_FIELDS: Record<MetricType, MetricField[]> = {
+  WEIGHT_REPS: ['weight', 'reps'],
+  COUNTER_WEIGHT_REPS: ['counterWeight', 'reps'],
+  REPS: ['reps'],
+  REPS_DURATION: ['reps', 'duration'],
+  DURATION: ['duration'],
+  DISTANCE_DURATION: ['distance', 'duration'],
+  WEIGHT_DISTANCE: ['weight', 'distance'],
+  WEIGHT_DURATION: ['weight', 'duration'],
+}
+
+/** Full ordered editable field list for a metric type (base + RIR where shown). */
+function getRowFields(metricType: MetricType): MetricField[] {
+  const base = BASE_FIELDS[metricType] ?? []
+  return RIR_METRICS.has(metricType) ? [...base, 'rir'] : base
+}
 
 interface SetLoggerProps {
   exercise: SessionExerciseEntry
@@ -67,6 +90,12 @@ export function SetLogger({
   onExerciseNameClick,
 }: SetLoggerProps) {
   const dispatch = useAppDispatch()
+  const editor = useMetricEditor()
+  const { unit, toggleUnit } = useDistanceUnit()
+  const coarse = useIsCoarsePointer()
+
+  // Mobile: edit exercise notes in a focused drawer (keeps the keyboard off the carousel).
+  const [notesDrawerOpen, setNotesDrawerOpen] = useState(false)
 
   // Get progress from Redux
   const progress = useAppSelector((state) => state.session.progress[exercise.instanceId])
@@ -111,27 +140,31 @@ export function SetLogger({
     }
   }
 
-  /**
-   * ✅ FIX: input change is now tied to the row's setNumber (not always activeSetNumber)
-   */
-  const handleInputChange = (setNumber: number, field: keyof SetMetrics, value: string) => {
-    const numValue = value === '' ? undefined : Number(value)
+  // Commit notes from the mobile notes drawer.
+  const handleNotesCommit = (text: string) => {
+    setNotes(text)
+    if (text !== (progress.notes ?? '')) {
+      dispatch(updateExerciseNotes({ instanceId: exercise.instanceId, notes: text }))
+    }
+  }
 
+  /**
+   * Commit a metric value (canonical) for a specific set number. Called by the
+   * metric editor on Done/advance (mobile) or the native input (desktop).
+   */
+  const handleInputChange = (setNumber: number, field: MetricField, value: number | undefined) => {
     // Update Redux for that exact set number
     dispatch(
       updateSet({
         instanceId: exercise.instanceId,
         setNumber,
-        metrics: { [field]: Number.isNaN(numValue as number) ? undefined : numValue },
+        metrics: { [field]: value },
       })
     )
 
     // If editing the active set, keep local state in sync (for validate + clear on complete)
     if (setNumber === activeSetNumber) {
-      setCurrentInputs((prev) => ({
-        ...prev,
-        [field]: Number.isNaN(numValue as number) ? undefined : numValue,
-      }))
+      setCurrentInputs((prev) => ({ ...prev, [field]: value }))
     }
   }
 
@@ -180,7 +213,7 @@ export function SetLogger({
           <TableHeader>
             <TableRow>
               <TableHead className="w-7 px-1 text-left">#</TableHead>
-              {renderTableHeaders(exercise.metricType)}
+              {renderTableHeaders(exercise.metricType, unit, toggleUnit)}
               <TableHead className="text-center">
                 <SetSettingsDrawer
                   instanceId={exercise.instanceId}
@@ -207,16 +240,17 @@ export function SetLogger({
                 >
                   <TableCell className="w-7 px-1 text-left font-medium">{set.setNumber}</TableCell>
 
-                  {renderSetInputs(
-                    set.setNumber,
-                    exercise.metricType,
+                  {renderSetInputs({
+                    setNumber: set.setNumber,
+                    metricType: exercise.metricType,
                     set,
                     isActive,
                     isCompleted,
                     disabled,
                     currentInputs,
-                    handleInputChange
-                  )}
+                    handleInputChange,
+                    openEditor: editor.open,
+                  })}
 
                   <TableCell>
                     {isCompleted ? (
@@ -246,16 +280,42 @@ export function SetLogger({
       {/* Exercise Notes */}
       <div className="space-y-2">
         <Label htmlFor={`notes-${exercise.instanceId}`}>Exercise Notes (Optional)</Label>
-        <Textarea
-          id={`notes-${exercise.instanceId}`}
-          placeholder="Add notes about this exercise..."
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          onBlur={handleNotesBlur}
-          rows={2}
-          className="resize-none"
-          disabled={disabled}
-        />
+        {coarse ? (
+          <>
+            <button
+              type="button"
+              id={`notes-${exercise.instanceId}`}
+              onClick={() => setNotesDrawerOpen(true)}
+              disabled={disabled}
+              className="flex min-h-10 w-full items-start rounded-md border border-input bg-background px-3 py-2 text-left text-sm disabled:opacity-50"
+            >
+              {notes ? (
+                <span className="line-clamp-2 whitespace-pre-wrap">{notes}</span>
+              ) : (
+                <span className="text-muted-foreground">Add notes about this exercise...</span>
+              )}
+            </button>
+            <NotesEditorDrawer
+              open={notesDrawerOpen}
+              onOpenChange={setNotesDrawerOpen}
+              title="Exercise Notes"
+              value={notes}
+              placeholder="Add notes about this exercise..."
+              onCommit={handleNotesCommit}
+            />
+          </>
+        ) : (
+          <Textarea
+            id={`notes-${exercise.instanceId}`}
+            placeholder="Add notes about this exercise..."
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            onBlur={handleNotesBlur}
+            rows={2}
+            className="resize-none"
+            disabled={disabled}
+          />
+        )}
       </div>
 
       {/* Latest History Preview */}
@@ -271,84 +331,82 @@ export function SetLogger({
 // HELPER FUNCTIONS
 // ============================================================================
 
-function renderTableHeaders(metricType: MetricType): React.ReactNode {
+function renderTableHeaders(
+  metricType: MetricType,
+  unit: WheelDistanceUnit,
+  onToggleUnit: () => void
+): React.ReactNode {
   const classInput = 'text-center'
-  const baseHeaders = renderBaseHeaders(metricType, classInput)
   return (
     <>
-      {baseHeaders}
-      {RIR_METRICS.has(metricType) && <TableHead className={classInput}>RIR</TableHead>}
+      {getRowFields(metricType).map((field) => (
+        <TableHead key={field} className={classInput}>
+          {headerLabel(field, unit, onToggleUnit)}
+        </TableHead>
+      ))}
       {ONE_RM_METRICS.has(metricType) && <TableHead className={classInput}>1RM</TableHead>}
     </>
   )
 }
 
-function renderBaseHeaders(metricType: MetricType, classInput: string): React.ReactNode {
-  switch (metricType) {
-    case 'WEIGHT_REPS':
+function headerLabel(
+  field: MetricField,
+  unit: WheelDistanceUnit,
+  onToggleUnit: () => void
+): React.ReactNode {
+  switch (field) {
+    case 'weight':
+      return 'Weight (kg)'
+    case 'counterWeight':
+      return 'Assist (kg)'
+    case 'reps':
+      return 'Reps'
+    case 'duration':
+      return 'Duration'
+    case 'rir':
+      return 'RIR'
+    case 'distance':
       return (
-        <>
-          <TableHead className={classInput}>Weight (kg)</TableHead>
-          <TableHead className={classInput}>Reps</TableHead>
-        </>
-      )
-    case 'COUNTER_WEIGHT_REPS':
-      return (
-        <>
-          <TableHead className={classInput}>Assist (kg)</TableHead>
-          <TableHead className={classInput}>Reps</TableHead>
-        </>
-      )
-    case 'REPS':
-      return <TableHead className={classInput}>Reps</TableHead>
-    case 'REPS_DURATION':
-      return (
-        <>
-          <TableHead className={classInput}>Reps</TableHead>
-          <TableHead className={classInput}>Duration (s)</TableHead>
-        </>
-      )
-    case 'DURATION':
-      return <TableHead className={classInput}>Duration (s)</TableHead>
-    case 'DISTANCE_DURATION':
-      return (
-        <>
-          <TableHead className={classInput}>Distance (m)</TableHead>
-          <TableHead className={classInput}>Duration (s)</TableHead>
-        </>
-      )
-    case 'WEIGHT_DISTANCE':
-      return (
-        <>
-          <TableHead className={classInput}>Weight (kg)</TableHead>
-          <TableHead className={classInput}>Distance (m)</TableHead>
-        </>
-      )
-    case 'WEIGHT_DURATION':
-      return (
-        <>
-          <TableHead className={classInput}>Weight (kg)</TableHead>
-          <TableHead className={classInput}>Duration (s)</TableHead>
-        </>
+        <button
+          type="button"
+          onClick={onToggleUnit}
+          className="underline decoration-dotted underline-offset-2"
+          title="Tap to switch km/mi"
+        >
+          Distance ({unit})
+        </button>
       )
     default:
-      return <TableHead className={classInput}>Value</TableHead>
+      return 'Value'
   }
 }
 
-function renderSetInputs(
-  setNumber: number,
-  metricType: MetricType,
-  set: SessionSet,
-  isActive: boolean,
-  isCompleted: boolean,
-  disabled: boolean | undefined,
-  currentInputs: SetMetrics,
-  handleInputChange: (setNumber: number, field: keyof SetMetrics, value: string) => void
-): React.ReactNode {
-  // ✅ Edit rules:
-  // - allow editing ANY non-completed set
-  // - lock completed sets
+interface RenderSetInputsArgs {
+  setNumber: number
+  metricType: MetricType
+  set: SessionSet
+  isActive: boolean
+  isCompleted: boolean
+  disabled: boolean | undefined
+  currentInputs: SetMetrics
+  handleInputChange: (setNumber: number, field: MetricField, value: number | undefined) => void
+  openEditor: (session: EditorSession) => void
+}
+
+function renderSetInputs({
+  setNumber,
+  metricType,
+  set,
+  isActive,
+  isCompleted,
+  disabled,
+  currentInputs,
+  handleInputChange,
+  openEditor,
+}: RenderSetInputsArgs): React.ReactNode {
+  // Edit rules: any set is editable (including completed sets — editing a
+  // completed set updates its stored values without un-completing it). Only a
+  // logger-level `disabled` locks inputs.
   const isInputDisabled = !!disabled
 
   const inputClass = cn(
@@ -358,223 +416,45 @@ function renderSetInputs(
     !isActive && !isCompleted && 'opacity-80'
   )
 
-  // Helper: for active set, prefer local input (so user can type freely), fallback to stored metrics.
-  // For non-active sets, just show stored metrics.
-  const valueFor = (field: keyof SetMetrics) => {
-    const stored = set.metrics[field]
-    const activeLocal = currentInputs[field]
-    if (isActive) return activeLocal ?? stored ?? ''
-    return stored ?? ''
-  }
-
-  // Numeric accessor for 1RM computation (same active/stored precedence as valueFor).
-  const numFor = (field: keyof SetMetrics): number | null => {
+  // Numeric accessor: for the active set prefer local input, else stored metrics.
+  const numValueFor = (field: MetricField): number | undefined => {
     const v = isActive ? (currentInputs[field] ?? set.metrics[field]) : set.metrics[field]
-    return typeof v === 'number' && !Number.isNaN(v) ? v : null
+    return typeof v === 'number' && !Number.isNaN(v) ? v : undefined
   }
 
   const renderOneRm = (): React.ReactNode => {
-    const est = estimateOneRepMax(numFor('weight'), numFor('reps'), numFor('rir'))
+    const est = estimateOneRepMax(
+      numValueFor('weight') ?? null,
+      numValueFor('reps') ?? null,
+      numValueFor('rir') ?? null
+    )
     return est == null ? <span className="text-muted-foreground">–</span> : est.toFixed(1)
   }
 
-  const baseCells = ((): React.ReactNode => {
-    switch (metricType) {
-      case 'WEIGHT_REPS':
-        return (
-          <>
-            <TableCell>
-              <Input
-                type="number"
-                step="0.5"
-                value={valueFor('weight')}
-                onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-            <TableCell>
-              <Input
-                type="number"
-                value={valueFor('reps')}
-                onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-          </>
-        )
+  const rowFields = getRowFields(metricType)
 
-      case 'COUNTER_WEIGHT_REPS':
-        return (
-          <>
-            <TableCell>
-              <Input
-                type="number"
-                step="0.5"
-                value={valueFor('counterWeight')}
-                onChange={(e) => handleInputChange(setNumber, 'counterWeight', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-            <TableCell>
-              <Input
-                type="number"
-                value={valueFor('reps')}
-                onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-          </>
-        )
-
-      case 'REPS':
-        return (
-          <TableCell>
-            <Input
-              type="number"
-              value={valueFor('reps')}
-              onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-        )
-
-      case 'REPS_DURATION':
-        return (
-          <>
-            <TableCell>
-              <Input
-                type="number"
-                value={valueFor('reps')}
-                onChange={(e) => handleInputChange(setNumber, 'reps', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-            <TableCell>
-              <Input
-                type="number"
-                value={valueFor('duration')}
-                onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-          </>
-        )
-
-      case 'DURATION':
-        return (
-          <TableCell>
-            <Input
-              type="number"
-              value={valueFor('duration')}
-              onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
-              disabled={isInputDisabled}
-              className={inputClass}
-            />
-          </TableCell>
-        )
-
-      case 'DISTANCE_DURATION':
-        return (
-          <>
-            <TableCell>
-              <Input
-                type="number"
-                value={valueFor('distance')}
-                onChange={(e) => handleInputChange(setNumber, 'distance', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-            <TableCell>
-              <Input
-                type="number"
-                value={valueFor('duration')}
-                onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-          </>
-        )
-
-      case 'WEIGHT_DISTANCE':
-        return (
-          <>
-            <TableCell>
-              <Input
-                type="number"
-                step="0.5"
-                value={valueFor('weight')}
-                onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-            <TableCell>
-              <Input
-                type="number"
-                value={valueFor('distance')}
-                onChange={(e) => handleInputChange(setNumber, 'distance', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-          </>
-        )
-
-      case 'WEIGHT_DURATION':
-        return (
-          <>
-            <TableCell>
-              <Input
-                type="number"
-                step="0.5"
-                value={valueFor('weight')}
-                onChange={(e) => handleInputChange(setNumber, 'weight', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-            <TableCell>
-              <Input
-                type="number"
-                value={valueFor('duration')}
-                onChange={(e) => handleInputChange(setNumber, 'duration', e.target.value)}
-                disabled={isInputDisabled}
-                className={inputClass}
-              />
-            </TableCell>
-          </>
-        )
-
-      default:
-        return <TableCell>–</TableCell>
-    }
-  })()
+  // Build the editor session for this row so any cell opens a multi-field editor.
+  const editorFields: EditorField[] = rowFields.map((field) => ({
+    field,
+    config: METRIC_CONFIG[field],
+    canonicalValue: numValueFor(field),
+    commit: (value) => handleInputChange(setNumber, field, value),
+  }))
 
   return (
     <>
-      {baseCells}
-      {RIR_METRICS.has(metricType) && (
-        <TableCell>
-          <Input
-            type="number"
-            min="0"
-            step="1"
-            value={valueFor('rir')}
-            onChange={(e) => handleInputChange(setNumber, 'rir', e.target.value)}
+      {rowFields.map((field, i) => (
+        <TableCell key={field}>
+          <MetricInput
+            metric={field}
+            value={numValueFor(field)}
+            onChange={(value) => handleInputChange(setNumber, field, value)}
             disabled={isInputDisabled}
             className={inputClass}
+            onOpenEditor={() => openEditor({ fields: editorFields, index: i })}
           />
         </TableCell>
-      )}
+      ))}
       {ONE_RM_METRICS.has(metricType) && (
         <TableCell className="text-center text-sm font-medium tabular-nums">
           {renderOneRm()}

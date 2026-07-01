@@ -90,7 +90,12 @@
       "Bash(graphify query *)",
       "Bash(npx vitest *)",
       "Bash(ls -d todo todos TODO docs/todo docs/todos)",
-      "Bash(find . -maxdepth 2 -type d -iname \"*todo*\" -not -path \"*/node_modules/*\")"
+      "Bash(find . -maxdepth 2 -type d -iname \"*todo*\" -not -path \"*/node_modules/*\")",
+      "Bash(git fetch *)",
+      "Bash(git merge *)",
+      "Bash(git merge-tree *)",
+      "Bash(gh pr *)",
+      "Bash(npx jest *)"
     ]
   },
   "enabledPlugins": {

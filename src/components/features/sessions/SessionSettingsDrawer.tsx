@@ -215,7 +215,7 @@ export function SessionSettingsDrawer({ children, onSessionComplete }: SessionSe
             <Separator className="mt-2" />
           </DrawerHeader>
 
-          <div className="px-6 space-y-4">
+          <div className="max-h-[70vh] space-y-4 overflow-y-auto px-6 pb-8">
             {/* Start Time */}
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="flex items-center gap-3">
