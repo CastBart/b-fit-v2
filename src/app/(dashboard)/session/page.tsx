@@ -51,6 +51,7 @@ import { useElapsedSessionTime } from '@/hooks/useElapsedSessionTime'
 import { useRestTimer } from '@/hooks/useRestTimer'
 import { ExerciseCarousel } from '@/components/features/sessions/ExerciseCarousel'
 import { SetLoggerCarousel } from '@/components/features/sessions/SetLoggerCarousel'
+import { MetricEditorProvider } from '@/components/features/sessions/MetricEditorProvider'
 import { SessionSettingsDrawer } from '@/components/features/sessions/SessionSettingsDrawer'
 import { RestTimerDrawer } from '@/components/features/sessions/RestTimerDrawer'
 import { ExerciseSelectorDrawer } from '@/components/features/workouts/ExerciseSelectorDrawer'
@@ -695,146 +696,149 @@ export default function SessionPage() {
   const currentExerciseIndex = exercises.findIndex((ex) => ex.instanceId === activeExerciseId)
 
   return (
-    <div className="container mx-auto max-w-5xl space-y-2 py-2 sm:py-4 md:py-6 px-4">
-      {/* Session Header with Settings */}
-      <div className="space-y-4">
-        <SessionSettingsDrawer onSessionComplete={handleSessionCompleteFromDrawer}>
-          <Button
-            variant="ghost"
-            className="w-full justify-between text-sm sm:text-base md:text-lg lg:text-xl font-bold"
-          >
-            <span className="truncate">{workoutName || 'Standalone Workout'}</span>
-            <div className="flex items-center gap-2 shrink-0 ml-2">
-              {elapsedSeconds !== null && (
-                <span className="text-sm font-normal text-muted-foreground">
-                  {formatDuration(elapsedSeconds)}
-                </span>
-              )}
-              <Wrench className="h-4 w-4 sm:h-5 sm:w-5" />
-            </div>
-          </Button>
-        </SessionSettingsDrawer>
-
-        {/* Paused Indicator */}
-        {isPaused && (
-          <div className="rounded-lg border border-orange-500 bg-orange-50 dark:bg-orange-950 p-3 text-center">
-            <p className="text-sm font-medium text-orange-900 dark:text-orange-100">
-              Session Paused
-            </p>
-          </div>
-        )}
-
-        {/* Workout Complete Banner */}
-        {workoutCompleted && (
-          <div className="rounded-lg border-2 border-green-500 bg-green-50 dark:bg-green-950 p-4">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400 shrink-0" />
-                <div>
-                  <p className="font-semibold text-green-900 dark:text-green-100">
-                    Workout Complete!
-                  </p>
-                  <p className="text-sm text-green-700 dark:text-green-300">
-                    All exercises finished.
-                  </p>
-                </div>
+    <MetricEditorProvider>
+      <div className="container mx-auto max-w-5xl space-y-2 py-2 sm:py-4 md:py-6 px-4">
+        {/* Session Header with Settings */}
+        <div className="space-y-4">
+          <SessionSettingsDrawer onSessionComplete={handleSessionCompleteFromDrawer}>
+            <Button
+              variant="ghost"
+              className="w-full justify-between text-sm sm:text-base md:text-lg lg:text-xl font-bold"
+            >
+              <span className="truncate">{workoutName || 'Standalone Workout'}</span>
+              <div className="flex items-center gap-2 shrink-0 ml-2">
+                {elapsedSeconds !== null && (
+                  <span className="text-sm font-normal text-muted-foreground">
+                    {formatDuration(elapsedSeconds)}
+                  </span>
+                )}
+                <Wrench className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
-              <Button
-                onClick={() => setCompleteDialogOpen(true)}
-                disabled={isCommitting}
-                className="shrink-0 bg-green-600 hover:bg-green-700"
-              >
-                {isCommitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save'}
-              </Button>
+            </Button>
+          </SessionSettingsDrawer>
+
+          {/* Paused Indicator */}
+          {isPaused && (
+            <div className="rounded-lg border border-orange-500 bg-orange-50 dark:bg-orange-950 p-3 text-center">
+              <p className="text-sm font-medium text-orange-900 dark:text-orange-100">
+                Session Paused
+              </p>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Workout Complete Banner */}
+          {workoutCompleted && (
+            <div className="rounded-lg border-2 border-green-500 bg-green-50 dark:bg-green-950 p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-green-900 dark:text-green-100">
+                      Workout Complete!
+                    </p>
+                    <p className="text-sm text-green-700 dark:text-green-300">
+                      All exercises finished.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => setCompleteDialogOpen(true)}
+                  disabled={isCommitting}
+                  className="shrink-0 bg-green-600 hover:bg-green-700"
+                >
+                  {isCommitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Exercise Carousel */}
+        <ExerciseCarousel
+          exercises={exercises}
+          currentExerciseIndex={currentExerciseIndex}
+          onExerciseSelect={(index) => {
+            const exercise = exercises[index]
+            if (exercise) {
+              dispatch(goToExercise(exercise.instanceId))
+            }
+          }}
+          onAddExercise={() => setExerciseSelectorOpen(true)}
+        />
+
+        {/* Set Logger Carousel (swipeable between exercises) */}
+        <SetLoggerCarousel
+          exercises={exercises}
+          currentExerciseIndex={currentExerciseIndex}
+          onOpenExerciseOptions={handleOpenExerciseOptions}
+          onExerciseNameClick={handleExerciseNameClick}
+        />
+
+        {/* Exercise Selector Drawer */}
+        <ExerciseSelectorDrawer
+          open={exerciseSelectorOpen}
+          onOpenChange={(open) => {
+            setExerciseSelectorOpen(open)
+            if (!open) setReplaceMode(null)
+          }}
+          onExerciseSelect={replaceMode ? handleReplaceExercise : handleAddExercises}
+          multiSelect={!replaceMode}
+          replaceMode={!!replaceMode}
+          initialMuscleGroups={replaceMode?.muscleGroup ? [replaceMode.muscleGroup] : undefined}
+        />
+        {/* Single Exercise Options Drawer Instance */}
+        <ExerciseOptionsDrawer
+          exercise={selectedExercise}
+          open={exerciseOptionsOpen}
+          onOpenChange={setExerciseOptionsOpen}
+          onOpenSuperset={handleOpenSuperset}
+          onReplace={selectedExercise ? () => handleStartReplace(selectedExercise) : undefined}
+        />
+
+        {/* Single Superset Drawer Instance */}
+        <SupersetDrawer
+          exercise={selectedExercise}
+          open={supersetDrawerOpen}
+          onOpenChange={setSupersetDrawerOpen}
+        />
+
+        {/* Exercise Details Drawer */}
+        <ExerciseDrawer
+          exerciseId={exerciseDrawerId}
+          open={exerciseDrawerOpen}
+          onOpenChange={setExerciseDrawerOpen}
+        />
+
+        {/* Rest Timer (Floating Button) - Outside container for proper fixed positioning */}
+        <RestTimerDrawer remaining={restRemaining} isRunning={restIsRunning} />
+
+        {/* Complete Session Confirmation Dialog */}
+        <AlertDialog open={completeDialogOpen} onOpenChange={setCompleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Complete Session?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will save your session to the database. You can view it in your session
+                history.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleCompleteSession}>Complete</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Completed Session Summary Drawer */}
+        <CompletedSessionDrawer
+          open={completedSessionDrawerOpen}
+          onOpenChange={handleCompletedDrawerOpenChange}
+          data={completedSessionData}
+          onClose={handleCompletedSessionClose}
+          onRepeat={handleRepeatSession}
+          actions={[{ label: 'Go to Dashboard', onClick: handleCompletedSessionClose }]}
+        />
       </div>
-
-      {/* Exercise Carousel */}
-      <ExerciseCarousel
-        exercises={exercises}
-        currentExerciseIndex={currentExerciseIndex}
-        onExerciseSelect={(index) => {
-          const exercise = exercises[index]
-          if (exercise) {
-            dispatch(goToExercise(exercise.instanceId))
-          }
-        }}
-        onAddExercise={() => setExerciseSelectorOpen(true)}
-      />
-
-      {/* Set Logger Carousel (swipeable between exercises) */}
-      <SetLoggerCarousel
-        exercises={exercises}
-        currentExerciseIndex={currentExerciseIndex}
-        onOpenExerciseOptions={handleOpenExerciseOptions}
-        onExerciseNameClick={handleExerciseNameClick}
-      />
-
-      {/* Exercise Selector Drawer */}
-      <ExerciseSelectorDrawer
-        open={exerciseSelectorOpen}
-        onOpenChange={(open) => {
-          setExerciseSelectorOpen(open)
-          if (!open) setReplaceMode(null)
-        }}
-        onExerciseSelect={replaceMode ? handleReplaceExercise : handleAddExercises}
-        multiSelect={!replaceMode}
-        replaceMode={!!replaceMode}
-        initialMuscleGroups={replaceMode?.muscleGroup ? [replaceMode.muscleGroup] : undefined}
-      />
-      {/* Single Exercise Options Drawer Instance */}
-      <ExerciseOptionsDrawer
-        exercise={selectedExercise}
-        open={exerciseOptionsOpen}
-        onOpenChange={setExerciseOptionsOpen}
-        onOpenSuperset={handleOpenSuperset}
-        onReplace={selectedExercise ? () => handleStartReplace(selectedExercise) : undefined}
-      />
-
-      {/* Single Superset Drawer Instance */}
-      <SupersetDrawer
-        exercise={selectedExercise}
-        open={supersetDrawerOpen}
-        onOpenChange={setSupersetDrawerOpen}
-      />
-
-      {/* Exercise Details Drawer */}
-      <ExerciseDrawer
-        exerciseId={exerciseDrawerId}
-        open={exerciseDrawerOpen}
-        onOpenChange={setExerciseDrawerOpen}
-      />
-
-      {/* Rest Timer (Floating Button) - Outside container for proper fixed positioning */}
-      <RestTimerDrawer remaining={restRemaining} isRunning={restIsRunning} />
-
-      {/* Complete Session Confirmation Dialog */}
-      <AlertDialog open={completeDialogOpen} onOpenChange={setCompleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Complete Session?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will save your session to the database. You can view it in your session history.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleCompleteSession}>Complete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Completed Session Summary Drawer */}
-      <CompletedSessionDrawer
-        open={completedSessionDrawerOpen}
-        onOpenChange={handleCompletedDrawerOpenChange}
-        data={completedSessionData}
-        onClose={handleCompletedSessionClose}
-        onRepeat={handleRepeatSession}
-        actions={[{ label: 'Go to Dashboard', onClick: handleCompletedSessionClose }]}
-      />
-    </div>
+    </MetricEditorProvider>
   )
 }

@@ -451,7 +451,7 @@ model SessionSet {
   duration      Int? // seconds
   distance      Int? // meters
   counterWeight Float? // for assisted exercises (e.g., pull-up machine)
-  rir           Int? // reps in reserve (0 = to failure); only for rep-based metric types
+  rir           Float? // reps in reserve (0 = to failure, 0.5 steps); only for rep-based metric types
 
   // Set metadata
   isCompleted Boolean  @default(false)
